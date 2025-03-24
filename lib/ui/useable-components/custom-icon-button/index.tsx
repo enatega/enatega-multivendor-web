@@ -1,20 +1,28 @@
-import { IGlobalButtonProps } from '@/lib/utils/interfaces';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Button } from 'primereact/button';
+import { IGlobalButtonProps } from "@/lib/utils/interfaces";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Button } from "primereact/button";
 export default function CustomIconButton({
   Icon,
   title,
-  setVisible,
+  handleClick,
+  SvgIcon,
 }: IGlobalButtonProps) {
   return (
     <Button
-      className="flex items-center justify-center gap-3 rounded-md bg-black px-3 py-2 hover:bg-[#272727]"
-      onClick={() => setVisible(true)}
+      className="flex items-center justify-between px-3 rounded-full border border-gray-300 p-3 w-full"
+      onClick={handleClick}
     >
-      <span>
-        <FontAwesomeIcon icon={Icon} size="1x" color="white" />
-      </span>
-      <span className="text-white">{title}</span>
+      {!!SvgIcon ?
+        <SvgIcon width={30} height={30} />
+      : <span>
+          {!!Icon&&<FontAwesomeIcon
+            icon={Icon}
+            size="1x"
+            color="white"
+          />}
+        </span>
+      }
+      <span className="">{title}</span>
     </Button>
   );
 }

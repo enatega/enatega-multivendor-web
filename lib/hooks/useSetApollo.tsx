@@ -1,3 +1,7 @@
+// Environment
+import getEnv from "@/environment";
+
+// Apollo
 import {
   ApolloClient,
   ApolloLink,
@@ -9,16 +13,19 @@ import {
   Operation,
   split,
 } from "@apollo/client";
-import { SubscriptionClient } from "subscriptions-transport-ws";
-import { getMainDefinition } from "@apollo/client/utilities";
-import { WebSocketLink } from "@apollo/client/link/ws";
 import { onError } from "@apollo/client/link/error"; // Import onError utility
+import { WebSocketLink } from "@apollo/client/link/ws";
+import { getMainDefinition } from "@apollo/client/utilities";
+
+// GQL
+import { SubscriptionClient } from "subscriptions-transport-ws";
 
 // Utility imports
 import { Subscription } from "zen-observable-ts";
 
 export const useSetupApollo = (): ApolloClient<NormalizedCacheObject> => {
-  const { SERVER_URL, WS_SERVER_URL } = { SERVER_URL: "", WS_SERVER_URL: "" };
+  const { SERVER_URL, WS_SERVER_URL } = getEnv();
+  console.log("🚀 ~ useSetupApollo ~ SERVER_URL, WS_SERVER_URL:", SERVER_URL, WS_SERVER_URL)
 
   const cache = new InMemoryCache();
 
@@ -61,6 +68,7 @@ export const useSetupApollo = (): ApolloClient<NormalizedCacheObject> => {
       },
     });
   };
+
 
   // Request Link
   const requestLink = new ApolloLink(

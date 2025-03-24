@@ -19,7 +19,9 @@ import "./global.css";
 
 // Apollo
 import AuthProvider from "@/lib/context/auth/auth.context";
+import { ConfigurationProvider } from "@/lib/context/configuration/configuration.context";
 import { useSetupApollo } from "@/lib/hooks/useSetApollo";
+import Layout from "@/lib/ui/layouts/unprotected/main";
 
 export default function RootLayout({
   children,
@@ -46,9 +48,13 @@ export default function RootLayout({
       <body className={"flex flex-col flex-wrap"}>
         <PrimeReactProvider value={value}>
           <ApolloProvider client={client}>
-            <ToastProvider>
-              <AuthProvider>{children}</AuthProvider>
-            </ToastProvider>
+            <ConfigurationProvider>
+              <ToastProvider>
+                <AuthProvider>
+                  <Layout>{children}</Layout>
+                </AuthProvider>
+              </ToastProvider>
+            </ConfigurationProvider>
           </ApolloProvider>
         </PrimeReactProvider>
       </body>
