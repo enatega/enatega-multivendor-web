@@ -1,3 +1,3 @@
-namespace NumerTypes {
-  type TNumberMode = "decimal" | "currency" | undefined;
+export namespace NumerTypes {
+ export  type TNumberMode = "decimal" | "currency" | undefined;
 }
