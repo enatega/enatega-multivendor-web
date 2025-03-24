@@ -1,0 +1,51 @@
+"use client";
+
+// Core
+import { ApolloProvider } from "@apollo/client";
+
+// Prime React
+import { PrimeReactProvider } from "primereact/api";
+
+// Context
+import { ToastProvider } from "@/lib/context/global/toast.context";
+
+// Configuration
+// import { FontawesomeConfig } from '@/lib/config';
+
+// Styles
+import "primereact/resources/primereact.css";
+import "primereact/resources/themes/lara-light-cyan/theme.css";
+import "./global.css";
+
+// Apollo
+import { useSetupApollo } from "@/lib/hooks/useSetApollo";
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  // Apollo
+  const client = useSetupApollo();
+
+  // Constants
+  const value = {
+    ripple: true,
+  };
+
+  return (
+    <html lang="en">
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        {/* <FontawesomeConfig /> */}
+      </head>
+      <body className={"flex flex-col flex-wrap"}>
+        <PrimeReactProvider value={value}>
+          <ApolloProvider client={client}>
+            <ToastProvider>{children}</ToastProvider>
+          </ApolloProvider>
+        </PrimeReactProvider>
+      </body>
+    </html>
+  );
+}
