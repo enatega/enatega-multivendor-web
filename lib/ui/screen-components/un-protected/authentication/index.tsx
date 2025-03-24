@@ -31,13 +31,15 @@ export default function AuthModal({
       showHeader={false}
       visible={isAuthModalVisible}
       onHide={handleModalToggle}
-      className="lg:w-1/2 w-full h-2/3"
+      className="lg:w-1/3 w-full h-auto"
     >
       <div className="flex flex-col gap-y-2 items-center justify-start left-12">
         <h3 className="font-bold">Welcome!</h3>
         <p className="font-normal">Sign up or log in to continue</p>
       </div>
-     <CustomIconButton SvgIcon={GoogleLogo} title="Sign In With Google" handleClick={googleLogin}  />
+    <div className="my-4">
+    <CustomIconButton SvgIcon={GoogleLogo} title="Sign In With Google" handleClick={googleLogin}  />
+    </div>
     </Dialog>
   );
 }

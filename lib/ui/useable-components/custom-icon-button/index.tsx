@@ -9,7 +9,7 @@ export default function CustomIconButton({
 }: IGlobalButtonProps) {
   return (
     <Button
-      className="flex items-center justify-between px-3 rounded-full border border-gray-300 p-3 w-full"
+      className="flex items-center justify-center gap-x-4 px-3 rounded-full border border-gray-300 p-2 m-auto w-72"
       onClick={handleClick}
     >
       {!!SvgIcon ?
@@ -22,7 +22,7 @@ export default function CustomIconButton({
           />}
         </span>
       }
-      <span className="">{title}</span>
+      <span className="text-xs lg:text-sm">{title}</span>
     </Button>
   );
 }
