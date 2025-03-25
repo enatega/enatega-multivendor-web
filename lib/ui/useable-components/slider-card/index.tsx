@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Carousel } from "primereact/carousel";
 
 import { Tag } from "primereact/tag";
@@ -15,18 +15,18 @@ import {
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
 
+const responsiveOptions = [
+  { breakpoint: "1024px", numVisible: 4, numScroll: 1 }, // If screen width is ≤ 1024px, show 4 items
+  { breakpoint: "768px", numVisible: 3, numScroll: 1 }, // If screen width is ≤ 768px, show 3 items
+  { breakpoint: "560px", numVisible: 2, numScroll: 1 }, // If screen width is ≤ 560px, show 2 items
+  { breakpoint: "400px", numVisible: 1, numScroll: 1 }, // If screen width is ≤ 400px, show 1 item
+];
+
 const SliderCard = ({ title, data }: ISliderCardComponentProps) => {
   const [page, setPage] = useState(0);
+  const [numVisible, setNumVisible] = useState(getNumVisible());
 
-  const responsiveOptions = [
-    { breakpoint: "768px", numVisible: 1, numScroll: 1 }, // Mobile
-    { breakpoint: "1024px", numVisible: 2, numScroll: 1 }, // Tablets
-    { breakpoint: "1200px", numVisible: 3, numScroll: 1 }, // Laptops
-    { breakpoint: "1400px", numVisible: 4, numScroll: 1 }, // Desktops
-    { breakpoint: "1600px", numVisible: 5, numScroll: 1 }, // Large Desktops
-  ];
-
-  const getNumVisible = () => {
+  function getNumVisible() {
     // Get the current screen width
     const width = window.innerWidth;
 
@@ -35,9 +35,15 @@ const SliderCard = ({ title, data }: ISliderCardComponentProps) => {
       responsiveOptions.find((opt) => width <= parseInt(opt.breakpoint)) ||
       responsiveOptions[0];
 
-    return option.numVisible;
-  };
+    console.log({ width, option });
 
+    return option.numVisible;
+  }
+  const getItemWidth = () => {
+    const numVisible = getNumVisible(); // Get the correct number of visible items
+    const screenWidth = window.innerWidth; // Get current screen width
+    return `${screenWidth / numVisible}px`; // Set width dynamically
+  };
   const next = () => {
     setPage((prevPage) =>
       prevPage < totalPages - 1 ? prevPage + numScroll : 0
@@ -52,10 +58,7 @@ const SliderCard = ({ title, data }: ISliderCardComponentProps) => {
   // Templates
   const itemTemplate = (item: ISliderCardItemProps) => {
     return (
-      <div
-        className="rounded-lg overflow-hidden m-2 ml-2 mr-2"
-        style={{ width: "400px" }}
-      >
+      <div className="rounded-lg overflow-hidden m-2 ml-2 mr-2">
         <img
           src={item.image}
           alt={item.name}
@@ -77,13 +80,34 @@ const SliderCard = ({ title, data }: ISliderCardComponentProps) => {
     );
   };
 
+  // Effects
+  useEffect(() => {
+    const handleResize = () => setNumVisible(getNumVisible());
+
+    const handleDeviceChange = () => {
+      setNumVisible(getNumVisible());
+    };
+
+    window.addEventListener("resize", handleResize);
+    window
+      .matchMedia(`(resolution: ${window.devicePixelRatio}dppx)`)
+      .addEventListener("change", handleDeviceChange);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      window
+        .matchMedia(`(resolution: ${window.devicePixelRatio}dppx)`)
+        .removeEventListener("change", handleDeviceChange);
+    };
+  }, []);
+
   // Constants
-  const numVisible = getNumVisible(); // Visible items
+
   const numScroll = 1; // Scroll by 1 item
   const totalPages = Math.ceil((data.length - numVisible) / numScroll) + 1; // Total pages
 
   return (
-    <div className="ml-8 mr-10 md:ml-12 md:mr-14">
+    <div className=" ml-8 mr-10 md:ml-12 md:mr-14">
       <div className="flex justify-between">
         <span>{title}</span>
         <div className="flex items-center justify-end gap-x-2 mb-2">
