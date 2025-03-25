@@ -19,3 +19,5 @@ export * from "./table.interface";
 export * from "./text.interface";
 export * from "./toast.interface";
 export * from "./svg.interface";
+export * from "./banner.interface";
+export * from "./slider-card.interface";

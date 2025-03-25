@@ -1,48 +1,51 @@
-import type { Config } from 'tailwindcss';
+import type { Config } from "tailwindcss";
 
 const config = {
-  darkMode: ['class'],
+  darkMode: ["class"],
   content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}',
-    './lib/**/*.{ts,tsx}',
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+    "./lib/**/*.{ts,tsx}",
   ],
   // content: ["app/**/*.{ts,tsx}", "components/**/*.{ts,tsx}"],
-  prefix: '',
+  prefix: "",
   theme: {
     container: {
       center: true,
-      padding: '2rem',
+      padding: "2rem",
       screens: {
-        '2xl': '1400px',
+        "2xl": "1400px",
       },
     },
 
     extend: {
       transitionProperty: {
         // Customize or disable transition properties
-        none: 'none',
+        none: "none",
       },
       colors: {
-        'primary-color': '#b1c748',
-        'secondary-color': '#d8e3a3',
-        'secondary-border-color': '#111827',
+        "primary-color": "#b1c748",
+        "secondary-color": "#d8e3a3",
+        "secondary-border-color": "#111827",
       },
       width: {
-        'custom-button': '110px',
-        'app-bar-search-width': '408px',
+        "custom-button": "110px",
+        "app-bar-search-width": "408px",
       },
       height: {
-        'custom-button': '45px',
+        "custom-button": "45px",
       },
       fontSize: {
-        'heading-1': '20px',
-        'heading-2': '36px',
-        'card-h1': '16px',
-        'card-h2': '',
-        'btn-h': '',
+        "heading-1": "20px",
+        "heading-2": "36px",
+        "card-h1": "16px",
+        "card-h2": "",
+        "btn-h": "",
+      },
+      fontFamily: {
+        inter: ["Inter", "sans-serif"],
       },
     },
   },

@@ -3,22 +3,15 @@ import React from "react";
 
 export default function PaddingContainer({
   children,
-  ...props
+  paddingTop,
+  paddingBottom,
 }: IPaddingContainer) {
-  const {
-    paddingLeft = "80px",
-    paddingRight = "80px",
-    paddingBottom,
-    paddingTop,
-  } = props;
-
   return (
     <div
+      className="md:px-6 lg:px-12 xl:px-20 2xl:px-[80px]"
       style={{
-        paddingLeft: paddingLeft,
-        paddingRight: paddingRight,
-        paddingTop: paddingTop,
-        paddingBottom: paddingBottom,
+        paddingTop,
+        paddingBottom,
       }}
     >
       {children}

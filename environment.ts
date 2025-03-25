@@ -1,5 +1,5 @@
 export default function getEnv(env: "DEV" | "PROD") {
-  if (env === "PROD") {
+  if (env === "PROD" || typeof window === "undefined") {
     return {
       SERVER_URL: "https://enatega-multivendor.up.railway.app/",
       WS_SERVER_URL: "wss://enatega-multivendor.up.railway.app/",

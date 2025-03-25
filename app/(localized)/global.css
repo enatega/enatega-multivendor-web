@@ -578,3 +578,146 @@ body {
   .react-international-phone-country-selector-button {
   height: 40px;
 }
+
+/* 
+################################################
+Discovery Caurousal 
+################################################
+*/
+/* Target only this specific carousel */
+.carousel-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Responsive Image Styling */
+.carousel-image {
+  width: 100%;
+  height: 400px; /* Default height */
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+/* Adjust image height for smaller screens */
+@media (max-width: 1024px) {
+  .carousel-image {
+    height: 300px;
+  }
+}
+
+@media (max-width: 768px) {
+  .carousel-image {
+    height: 250px;
+  }
+}
+
+@media (max-width: 480px) {
+  .carousel-image {
+    height: 200px;
+  }
+}
+
+/* Navigation Buttons */
+.discovery-carousel .p-carousel-prev,
+.discovery-carousel .p-carousel-next {
+  background: #f9fafb;
+  color: #0f172a;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  box-shadow:
+    0px 4px 6px -2px rgba(0, 0, 0, 0.5),
+    0px 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* Adjust navigation button positions for responsiveness */
+.discovery-carousel .p-carousel-prev {
+  left: 20px;
+}
+
+.discovery-carousel .p-carousel-next {
+  right: 30px;
+}
+
+/* Reduce button size on smaller screens */
+@media (max-width: 768px) {
+  .discovery-carousel .p-carousel-prev,
+  .discovery-carousel .p-carousel-next {
+    width: 35px;
+    height: 35px;
+  }
+}
+
+@media (max-width: 480px) {
+  .discovery-carousel .p-carousel-prev,
+  .discovery-carousel .p-carousel-next {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+/* Reduce height for carousel items on smaller screens */
+.discovery-carousel .p-carousel-items .p-carousel-item {
+  height: 100px !important;
+}
+
+@media (max-width: 768px) {
+  .discovery-carousel .p-carousel-items .p-carousel-item {
+    height: 80px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .discovery-carousel .p-carousel-items .p-carousel-item {
+    height: 60px !important;
+  }
+}
+
+/* 
+########################################################
+  Card Slider
+
+########################################################
+*/
+/* Container */
+
+/* Header */
+.slider-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+/* ScrollPanel Styling (Horizontal) */
+.scroll-container {
+  width: 100%;
+  height: 350px; /* Adjust height as needed */
+  overflow-x: auto; /* Enable horizontal scrolling */
+  overflow-y: hidden;
+  white-space: nowrap; /* Prevent items from wrapping */
+}
+
+/* Scroll Content */
+.scroll-content {
+  display: flex;
+  gap: 12px;
+}
+
+/* Items */
+.slider-item {
+  flex: 0 0 auto;
+  width: 300px;
+}
+
+.slider-image {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 8px;
+}

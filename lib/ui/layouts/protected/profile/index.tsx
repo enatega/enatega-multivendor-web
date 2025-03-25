@@ -1,13 +1,13 @@
 "use client";
 
 import { IProtectedHomeLayoutComponent } from "@/lib/utils/interfaces";
-import { usePathname, useRouter } from "next/navigation";
+// import { usePathname, useRouter } from "next/navigation";
 
 export default function ProfileLayout({
   children,
 }: IProtectedHomeLayoutComponent) {
-  const router = useRouter();
-  const pathname = usePathname();
+  // const router = useRouter();
+  // const pathname = usePathname();
 
   return (
     <div className="w-screen">
