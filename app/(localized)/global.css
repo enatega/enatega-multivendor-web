@@ -71,8 +71,6 @@ body {
   height: 92%;
   display: flex;
   overflow: hidden;
-
-  padding: 0px 80px 0px 80px;
 }
 
 .layout-main {

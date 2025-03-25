@@ -87,5 +87,13 @@ export interface AppMenuItemProps {
   className?: string;
 }
 
+/* Containers */
+export interface IPaddingContainer extends IGlobalProps {
+  paddingLeft?: string;
+  paddingRight?: string;
+  paddingTop?: string;
+  paddingBottom?: string;
+}
+
 /* Home Layout  */
 export interface IProtectedHomeLayoutComponent extends IGlobalProps {}

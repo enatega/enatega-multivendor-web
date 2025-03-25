@@ -26,7 +26,6 @@
     "@react-oauth/google": "^0.12.1",
     "autosuggest-highlight": "^3.3.4",
     "chart.js": "^4.4.4",
-    "firebase": "^11.3.0",
     "formik": "^2.4.6",
     "gapi-script": "^1.2.0",
     "graphql": "^16.9.0",
