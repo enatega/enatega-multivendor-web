@@ -118,7 +118,7 @@ const SliderCard = ({ title, data }: ISliderCardComponentProps) => {
           </span>
 
           {/* Navigation Buttons */}
-          <div className="flex gap-x-2">
+          <div className="gap-x-2 hidden md:flex">
             <button
               className="w-8 h-8 flex items-center justify-center  shadow-md  rounded-full"
               onClick={prev}
