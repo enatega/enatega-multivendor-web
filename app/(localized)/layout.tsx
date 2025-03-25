@@ -21,7 +21,10 @@ import "./global.css";
 import AuthProvider from "@/lib/context/auth/auth.context";
 import { ConfigurationProvider } from "@/lib/context/configuration/configuration.context";
 import { useSetupApollo } from "@/lib/hooks/useSetApollo";
-import Layout from "@/lib/ui/layouts/unprotected/main";
+
+// Layout
+import AppLayout from "@/lib/ui/layouts/global";
+import { FontawesomeConfig } from "@/lib/config";
 
 export default function RootLayout({
   children,
@@ -39,11 +42,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1.0"
-        />
-        {/* <FontawesomeConfig /> */}
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <FontawesomeConfig />
       </head>
       <body className={"flex flex-col flex-wrap"}>
         <PrimeReactProvider value={value}>
@@ -51,7 +51,7 @@ export default function RootLayout({
             <ConfigurationProvider>
               <ToastProvider>
                 <AuthProvider>
-                  <Layout>{children}</Layout>
+                  <AppLayout>{children}</AppLayout>
                 </AuthProvider>
               </ToastProvider>
             </ConfigurationProvider>

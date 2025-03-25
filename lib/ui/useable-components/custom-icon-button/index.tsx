@@ -12,14 +12,10 @@ export default function CustomIconButton({
       className="flex items-center justify-center gap-x-4 px-3 rounded-full border border-gray-300 p-2 m-auto w-72"
       onClick={handleClick}
     >
-      {!!SvgIcon ?
+      {SvgIcon ?
         <SvgIcon width={30} height={30} />
       : <span>
-          {!!Icon&&<FontAwesomeIcon
-            icon={Icon}
-            size="1x"
-            color="white"
-          />}
+          {!!Icon && <FontAwesomeIcon icon={Icon} size="1x" color="white" />}
         </span>
       }
       <span className="text-xs lg:text-sm">{title}</span>

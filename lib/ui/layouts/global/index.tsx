@@ -1,17 +1,17 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
+import { useState } from "react";
 // Components
 import AppTopbar from "@/lib/ui/screen-components/un-protected/layout/app-bar";
 
 // Interface & Types
 import { IProvider } from "@/lib/utils/interfaces";
-import { useState } from "react";
 
 // Google OAuth
 import AuthModal from "@/lib/ui/screen-components/un-protected/authentication";
 
-const Layout = ({ children }: IProvider) => {
+const AppLayout = ({ children }: IProvider) => {
   // States
   const [isAuthModalVisible, setIsAuthModalVisible] = useState(false);
 
@@ -35,4 +35,4 @@ const Layout = ({ children }: IProvider) => {
   );
 };
 
-export default Layout;
+export default AppLayout;

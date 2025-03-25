@@ -18,4 +18,4 @@ export * from "./ripple.interface";
 export * from "./table.interface";
 export * from "./text.interface";
 export * from "./toast.interface";
-
+export * from "./svg.interface";

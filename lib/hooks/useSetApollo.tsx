@@ -24,8 +24,7 @@ import { SubscriptionClient } from "subscriptions-transport-ws";
 import { Subscription } from "zen-observable-ts";
 
 export const useSetupApollo = (): ApolloClient<NormalizedCacheObject> => {
-  const { SERVER_URL, WS_SERVER_URL } = getEnv();
-  console.log("🚀 ~ useSetupApollo ~ SERVER_URL, WS_SERVER_URL:", SERVER_URL, WS_SERVER_URL)
+  const { SERVER_URL, WS_SERVER_URL } = getEnv("PROD");
 
   const cache = new InMemoryCache();
 
@@ -68,7 +67,6 @@ export const useSetupApollo = (): ApolloClient<NormalizedCacheObject> => {
       },
     });
   };
-
 
   // Request Link
   const requestLink = new ApolloLink(

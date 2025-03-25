@@ -1,5 +1,6 @@
 import { ApolloError } from "@apollo/client";
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
+import React from "react";
 import { ReactNode } from "react";
 
 export interface IGlobalProps {
@@ -26,8 +27,8 @@ export interface QueryState {
 export interface IGlobalButtonProps {
   Icon?: IconDefinition;
   title: string;
-  handleClick: ()=>void;
-  SvgIcon?: (props: React.SVGProps<SVGSVGElement>) => JSX.Element
+  handleClick: () => void;
+  SvgIcon?: (props: React.SVGProps<SVGSVGElement>) => React.JSX.Element;
 }
 
 export interface ILazyQueryResult<T, V> {

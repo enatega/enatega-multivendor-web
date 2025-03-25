@@ -86,3 +86,6 @@ export interface AppMenuItemProps {
   root?: boolean;
   className?: string;
 }
+
+/* Home Layout  */
+export interface IProtectedHomeLayoutComponent extends IGlobalProps {}
