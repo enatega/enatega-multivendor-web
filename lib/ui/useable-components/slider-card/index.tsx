@@ -15,19 +15,28 @@ import {
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
 
-const responsiveOptions = [
-  { breakpoint: "768px", numVisible: 1, numScroll: 1 }, // Mobile
-  { breakpoint: "1024px", numVisible: 2, numScroll: 1 }, // Tablets
-  { breakpoint: "1200px", numVisible: 3, numScroll: 1 }, // Laptops
-  { breakpoint: "1400px", numVisible: 4, numScroll: 1 }, // Desktops
-  { breakpoint: "1600px", numVisible: 5, numScroll: 1 }, // Large Desktops
-];
 const SliderCard = ({ title, data }: ISliderCardComponentProps) => {
   const [page, setPage] = useState(0);
-  const numVisible = 4; // Visible items
-  const numScroll = 1; // Scroll by 1 item
 
-  const totalPages = Math.ceil((data.length - numVisible) / numScroll) + 1; // Total pages
+  const responsiveOptions = [
+    { breakpoint: "768px", numVisible: 1, numScroll: 1 }, // Mobile
+    { breakpoint: "1024px", numVisible: 2, numScroll: 1 }, // Tablets
+    { breakpoint: "1200px", numVisible: 3, numScroll: 1 }, // Laptops
+    { breakpoint: "1400px", numVisible: 4, numScroll: 1 }, // Desktops
+    { breakpoint: "1600px", numVisible: 5, numScroll: 1 }, // Large Desktops
+  ];
+
+  const getNumVisible = () => {
+    // Get the current screen width
+    const width = window.innerWidth;
+
+    // Find the matching responsive option
+    const option =
+      responsiveOptions.find((opt) => width <= parseInt(opt.breakpoint)) ||
+      responsiveOptions[0];
+
+    return option.numVisible;
+  };
 
   const next = () => {
     setPage((prevPage) =>
@@ -40,7 +49,7 @@ const SliderCard = ({ title, data }: ISliderCardComponentProps) => {
       prevPage > 0 ? prevPage - numScroll : totalPages - 1
     ); // Go to last page if at start
   };
-
+  // Templates
   const itemTemplate = (item: ISliderCardItemProps) => {
     return (
       <div
@@ -68,8 +77,13 @@ const SliderCard = ({ title, data }: ISliderCardComponentProps) => {
     );
   };
 
+  // Constants
+  const numVisible = getNumVisible(); // Visible items
+  const numScroll = 1; // Scroll by 1 item
+  const totalPages = Math.ceil((data.length - numVisible) / numScroll) + 1; // Total pages
+
   return (
-    <div className="ml-12 mr-14">
+    <div className="ml-8 mr-10 md:ml-12 md:mr-14">
       <div className="flex justify-between">
         <span>{title}</span>
         <div className="flex items-center justify-end gap-x-2 mb-2">
