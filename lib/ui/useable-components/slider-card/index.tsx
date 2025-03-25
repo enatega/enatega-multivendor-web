@@ -39,11 +39,7 @@ const SliderCard = ({ title, data }: ISliderCardComponentProps) => {
 
     return option.numVisible;
   }
-  const getItemWidth = () => {
-    const numVisible = getNumVisible(); // Get the correct number of visible items
-    const screenWidth = window.innerWidth; // Get current screen width
-    return `${screenWidth / numVisible}px`; // Set width dynamically
-  };
+
   const next = () => {
     setPage((prevPage) =>
       prevPage < totalPages - 1 ? prevPage + numScroll : 0
@@ -109,7 +105,9 @@ const SliderCard = ({ title, data }: ISliderCardComponentProps) => {
   return (
     <div className=" ml-8 mr-10 md:ml-12 md:mr-14">
       <div className="flex justify-between">
-        <span>{title}</span>
+        <span className="font-inter font-bold text-2xl leading-8 tracking-normal text-gray-900">
+          {title}
+        </span>
         <div className="flex items-center justify-end gap-x-2 mb-2">
           {/* "See all" Button */}
 
