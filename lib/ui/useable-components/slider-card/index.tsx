@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
 import { Carousel } from "primereact/carousel";
 
@@ -22,11 +24,12 @@ const responsiveOptions = [
   { breakpoint: "400px", numVisible: 1, numScroll: 1 }, // If screen width is ≤ 400px, show 1 item
 ];
 
-const SliderCard = ({ title, data }: ISliderCardComponentProps) => {
+const SliderCard = <T,>({ title, data }: ISliderCardComponentProps<T>) => {
   const [page, setPage] = useState(0);
   const [numVisible, setNumVisible] = useState(getNumVisible());
 
   function getNumVisible() {
+    if (typeof window === "undefined") return;
     // Get the current screen width
     const width = window.innerWidth;
 
@@ -35,9 +38,7 @@ const SliderCard = ({ title, data }: ISliderCardComponentProps) => {
       responsiveOptions.find((opt) => width <= parseInt(opt.breakpoint)) ||
       responsiveOptions[0];
 
-    console.log({ width, option });
-
-    return option.numVisible;
+    return option.numVisible || 0;
   }
 
   const next = () => {
@@ -97,10 +98,9 @@ const SliderCard = ({ title, data }: ISliderCardComponentProps) => {
     };
   }, []);
 
-  // Constants
-
   const numScroll = 1; // Scroll by 1 item
-  const totalPages = Math.ceil((data.length - numVisible) / numScroll) + 1; // Total pages
+  const totalPages =
+    Math.ceil((data.length - (numVisible || 0)) / numScroll) + 1; // Total pages
 
   return (
     <div className=" ml-8 mr-10 md:ml-12 md:mr-14">

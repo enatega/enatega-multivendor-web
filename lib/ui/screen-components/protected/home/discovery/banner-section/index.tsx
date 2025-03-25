@@ -18,7 +18,7 @@ export default function DiscoveryBannerSection() {
           width={890}
           height={300}
           alt={item.alt}
-          objectFit="cover"
+          objectFit="contain"
           style={{ borderRadius: 12 }}
           className="carousel-image"
         />

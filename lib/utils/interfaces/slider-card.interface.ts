@@ -1,8 +1,8 @@
 import { IGlobalComponentProps } from "./global.interface";
 
-export interface ISliderCardComponentProps extends IGlobalComponentProps {
+export interface ISliderCardComponentProps<T> extends IGlobalComponentProps {
   title: string;
-  data: any;
+  data: T[];
 }
 
 export interface ISliderCardItemProps {
