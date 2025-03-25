@@ -12,7 +12,7 @@ export default function DiscoveryBannerSection() {
   // Tempaltes
   const itemTemplate = (item: IBannerItem) => {
     return (
-      <div className="carousel-item mr-[12px]">
+      <div className="carousel-item md:mr-[12px]">
         <Image
           src={item.url}
           width={890}

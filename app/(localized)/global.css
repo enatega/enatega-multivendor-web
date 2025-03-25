@@ -650,6 +650,8 @@ Discovery Caurousal
   .discovery-carousel .p-carousel-next {
     width: 35px;
     height: 35px;
+    /* background: #000; */
+    visibility: hidden;
   }
 }
 
