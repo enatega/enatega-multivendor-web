@@ -6,7 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 // Svg
 import { CutlerySvg, HomeSvg, StoreSvg } from "@/lib/utils/assets/svg";
 
-export default function ProtectedHomeLayout({
+export default function HomeLayout({
   children,
 }: IProtectedHomeLayoutComponent) {
   const router = useRouter();
