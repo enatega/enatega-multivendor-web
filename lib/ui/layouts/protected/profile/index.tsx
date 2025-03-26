@@ -26,7 +26,7 @@ export default function ProfileLayout({
   if (user) {
     return (
       <PaddingContainer>
-        <div className="flex flex-col justify-center items-center py-4 px-4 md:px-0 ">
+        <div className="flex flex-col justify-center space-y-4 items-center py-4 px-4 md:px-0 ">
           <ProfileHeader/>
           <ProfileTabs />
         </div>

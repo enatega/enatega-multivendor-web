@@ -1,0 +1,1 @@
+export { default as PersonalInfoScreen } from "./personal-info";
