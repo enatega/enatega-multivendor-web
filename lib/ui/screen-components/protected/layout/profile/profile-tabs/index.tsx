@@ -26,7 +26,7 @@ export default function ProfileTabs({ className, tabs }: IProfileTabsProps & { t
             tab={tab}
             isActive={pathname === tab.path}
             onClick={() => router.push(tab.path)}
-            className="py-3 text-sm font-medium"
+            className="py-1 text-sm font-medium"
           />
         ))}
       </div>
@@ -39,7 +39,7 @@ export default function ProfileTabs({ className, tabs }: IProfileTabsProps & { t
             tab={tab}
             isActive={pathname === tab.path}
             onClick={() => router.push(tab.path)}
-            className="py-3 px-1 text-lg font-medium"
+            className="py-1 px-1 text-lg font-medium"
           />
         ))}
       </div>
