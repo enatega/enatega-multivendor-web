@@ -28,7 +28,6 @@ export default function ProfileLayout({
       <PaddingContainer>
         <div className="flex flex-col justify-center items-center py-4 px-4 md:px-0 ">
           <ProfileHeader/>
-          {/* <div>Profile Header</div> */}
           <ProfileTabs />
         </div>
         <div className="flex-1 overflow-auto px-4 md:px-20 lg:px-40">
