@@ -97,3 +97,15 @@ export interface IPaddingContainer extends IGlobalProps {
 
 /* Home Layout  */
 export interface IProtectedHomeLayoutComponent extends IGlobalProps {}
+
+/* Profile Layout  */
+export interface IProtectedProfileLayoutComponent extends IGlobalProps {}
+
+/* Profile Tabs  */
+export interface IProfileTabsProps {
+  className?: string
+}
+export interface ITabItem {
+  label: string;
+  path: string
+}

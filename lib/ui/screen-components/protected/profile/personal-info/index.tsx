@@ -2,7 +2,8 @@ import React from 'react'
 
 const PersonalInfo = () => {
   return (
-    <div>index</div>
+    <div>PersonalInfo</div>
+    
   )
 }
 

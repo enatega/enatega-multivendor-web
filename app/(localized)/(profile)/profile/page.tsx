@@ -1,5 +1,5 @@
 "use client";
 
-export default function ProfileInfo() {
-  return <div>Profile Info Page</div>;
+export default function PersonalInfo() {
+  return <div>Personal Info Page</div>;
 }
