@@ -1,5 +1,7 @@
 "use client";
 
-export default function Address() {
-  return <div>Addresses Page</div>;
+import AddressesScreen from "@/lib/ui/screens/protected/profile/addresses";
+
+export default function Addresses() {
+  return <AddressesScreen/>
 }

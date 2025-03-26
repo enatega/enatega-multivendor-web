@@ -2,7 +2,7 @@
 
 import ProfileLayoutScreen from "@/lib/ui/layouts/protected/profile";
 
-export default function ProfileLayout({
+export default function ProfileRootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;

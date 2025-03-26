@@ -8,7 +8,7 @@ export default function PaddingContainer({
 }: IPaddingContainer) {
   return (
     <div
-      className="md:px-6 lg:px-12 xl:px-20 2xl:px-[80px] w-screen"
+      className="md:px-6 lg:px-12 xl:px-20 2xl:px-[80px]"
       style={{
         paddingTop,
         paddingBottom,

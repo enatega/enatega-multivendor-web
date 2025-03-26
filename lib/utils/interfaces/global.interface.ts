@@ -27,6 +27,8 @@ export interface QueryState {
 export interface IGlobalButtonProps {
   Icon?: IconDefinition;
   title: string;
+  iconColor?: string;
+  classNames?: string;
   handleClick: () => void;
   SvgIcon?: (props: React.SVGProps<SVGSVGElement>) => React.JSX.Element;
 }
