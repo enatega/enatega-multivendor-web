@@ -89,6 +89,7 @@ export interface AppMenuItemProps {
 
 /* Containers */
 export interface IPaddingContainer extends IGlobalProps {
+  height?: string;
   paddingLeft?: string;
   paddingRight?: string;
   paddingTop?: string;
