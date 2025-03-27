@@ -24,3 +24,12 @@ export const DUMMY_BANNER_IMAGES_URL = [
     url: "https://images.ctfassets.net/23u853certza/6Cv99BeTRgtrg88Ateht1U/3ea23a65fc86d6e5b7e606a58cf2b063/subhero_merchant.jpg?w=1920&q=90&fm=webp",
   },
 ];
+
+export const ITEM_SECTIONS = [
+  { _id: "1", title: "Currydippi", price: 1.5 },
+  { _id: "2", title: "Sweet and sour dip", price: 1.2 },
+  { _id: "3", title: "BBQ dip", price: 1.8 },
+  { _id: "4", title: "McFeast™ Dip", price: 2.0 },
+  { _id: "5", title: "Chili Mayo Dip", price: 1.7 },
+  { _id: "6", title: "No Dip", price: 0.0 },
+];

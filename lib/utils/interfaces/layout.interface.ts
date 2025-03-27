@@ -90,6 +90,7 @@ export interface AppMenuItemProps {
 /* Containers */
 export interface IPaddingContainer extends IGlobalProps {
   height?: string;
+  style?: React.CSSProperties;
   paddingLeft?: string;
   paddingRight?: string;
   paddingTop?: string;
