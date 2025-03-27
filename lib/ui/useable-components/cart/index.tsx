@@ -1,138 +1,9 @@
-import { OrderItem, Recommendation } from "@/lib/utils/interfaces";
-import { faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-const orderItems: OrderItem[] = [
-  {
-    id: "1",
-    name: "Burger",
-    description: "Juicy beef patty with fresh lettuce",
-    imageUrl:
-      "https://images.ctfassets.net/23u853certza/0V5KYLmUImbVPRBerxy9b/78c9f84e09efbde9e124e74e6eef8fad/photocard_courier_v4.jpg?w=960&q=90&fm=webp",
-    price: 10.99,
-    quantity: 2,
-  },
-  {
-    id: "2",
-    name: "Pizza",
-    description: "Cheesy delight with fresh toppings",
-    imageUrl:
-      "https://images.ctfassets.net/23u853certza/0V5KYLmUImbVPRBerxy9b/78c9f84e09efbde9e124e74e6eef8fad/photocard_courier_v4.jpg?w=960&q=90&fm=webp",
-    price: 12.99,
-    quantity: 2,
-  },
-  {
-    id: "3",
-    name: "Biryani",
-    description: "Cheesy delight with fresh toppings",
-    imageUrl:
-      "https://images.ctfassets.net/23u853certza/0V5KYLmUImbVPRBerxy9b/78c9f84e09efbde9e124e74e6eef8fad/photocard_courier_v4.jpg?w=960&q=90&fm=webp",
-    price: 13.99,
-    quantity: 5,
-  },
-  {
-    id: "4",
-    name: "Qorma",
-    description: "Shahi Qorma",
-    imageUrl:
-      "https://images.ctfassets.net/23u853certza/0V5KYLmUImbVPRBerxy9b/78c9f84e09efbde9e124e74e6eef8fad/photocard_courier_v4.jpg?w=960&q=90&fm=webp",
-    price: 5.99,
-    quantity: 2,
-  },
-];
-
-const recommendations: Recommendation[] = [
-  {
-    id: "3",
-    name: "Fries",
-    imageUrl:
-      "https://images.ctfassets.net/23u853certza/0V5KYLmUImbVPRBerxy9b/78c9f84e09efbde9e124e74e6eef8fad/photocard_courier_v4.jpg?w=960&q=90&fm=webp",
-    price: 4.99,
-  },
-  {
-    id: "4",
-    name: "Soft Drink",
-    imageUrl:
-      "https://images.ctfassets.net/23u853certza/0V5KYLmUImbVPRBerxy9b/78c9f84e09efbde9e124e74e6eef8fad/photocard_courier_v4.jpg?w=960&q=90&fm=webp",
-    price: 2.99,
-  },
-  {
-    id: "5",
-    name: "Pani Puri",
-    imageUrl:
-      "https://images.ctfassets.net/23u853certza/0V5KYLmUImbVPRBerxy9b/78c9f84e09efbde9e124e74e6eef8fad/photocard_courier_v4.jpg?w=960&q=90&fm=webp",
-    price: 2.99,
-  },
-  {
-    id: "7",
-    name: "Soft Samosa",
-    imageUrl:
-      "https://images.ctfassets.net/23u853certza/0V5KYLmUImbVPRBerxy9b/78c9f84e09efbde9e124e74e6eef8fad/photocard_courier_v4.jpg?w=960&q=90&fm=webp",
-    price: 2.99,
-  },
-];
-const OrderSection: React.FC = () => {
-  return (
-    <div className="p-4">
-      {/* Order Items */}
-      <div>
-        <h2 className="text-xl font-semibold mb-4">Your Order</h2>
-        <div>
-          {orderItems.map((item) => (
-            <div key={item.id} className="flex items-center mb-4">
-              <img
-                src={item.imageUrl}
-                alt={item.name}
-                className="w-20 h-20 object-cover rounded-lg"
-              />
-              <div className="ml-4">
-                <h3 className="text-lg font-semibold">{item.name}</h3>
-                <p
-                  className="text-gray-500"
-                  dangerouslySetInnerHTML={{
-                    __html: item.description.replace("\n", "<br>"),
-                  }}
-                />
-                <p className="text-blue-500 font-semibold">${item.price}</p>
-              </div>
-              <div className="ml-auto">
-                <div className="flex items-center border rounded-lg px-2 py-1">
-                  <span className="text-lg">{item.quantity}</span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Recommendations */}
-      <div className="mt-6">
-        <h2 className="text-xl font-semibold mb-4">You May Also Like</h2>
-        <div className="flex space-x-4 overflow-x-auto">
-          {recommendations.map((item) => (
-            <div key={item.id} className="flex-shrink-0 w-40">
-              <div className="relative">
-                <img
-                  src={item.imageUrl}
-                  alt={item.name}
-                  className="w-full h-24 object-cover rounded-lg"
-                />
-                <button className="absolute top-2 right-2 bg-blue-500 text-white rounded-full p-1">
-                  <i className="fas fa-plus"></i>
-                </button>
-              </div>
-              <div className="mt-2 text-center">
-                <p className="text-blue-500 font-semibold">${item.price}</p>
-                <p className="text-gray-500">{item.name}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-};
+// Icons
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { ORDER_ITEMS, RECOMMENDATIONS } from "@/lib/utils/dummy";
 
 export default function Cart() {
   return (
@@ -145,7 +16,7 @@ export default function Cart() {
       {/* Order Items */}
       <div id="order-list" className="pt-4">
         <div>
-          {orderItems.map((item) => (
+          {ORDER_ITEMS.map((item) => (
             <div
               key={item.id}
               className="flex flex-wrap md:flex-nowrap items-center mb-4 gap-4 p-2 rounded-lg"
@@ -195,7 +66,7 @@ export default function Cart() {
         >
           <div className="mt-6">
             <div className="flex space-x-4 overflow-x-auto pb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-              {recommendations.map((item) => (
+              {RECOMMENDATIONS.map((item) => (
                 <div
                   key={item.id}
                   className="flex-shrink-0 h-[200px] w-[170px] flex flex-col justify-between  bg-white rounded-lg shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)]"
