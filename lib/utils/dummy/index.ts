@@ -1,3 +1,5 @@
+import { OrderItem, Recommendation } from "../interfaces";
+
 export const DUMMY_BANNER_IMAGES_URL = [
   {
     alt: "Image 2",
@@ -32,4 +34,74 @@ export const ITEM_SECTIONS = [
   { _id: "4", title: "McFeast™ Dip", price: 2.0 },
   { _id: "5", title: "Chili Mayo Dip", price: 1.7 },
   { _id: "6", title: "No Dip", price: 0.0 },
+];
+
+export const ORDER_ITEMS: OrderItem[] = [
+  {
+    id: "1",
+    name: "Burger",
+    description: "Juicy beef patty with fresh lettuce",
+    imageUrl:
+      "https://images.ctfassets.net/23u853certza/0V5KYLmUImbVPRBerxy9b/78c9f84e09efbde9e124e74e6eef8fad/photocard_courier_v4.jpg?w=960&q=90&fm=webp",
+    price: 10.99,
+    quantity: 2,
+  },
+  {
+    id: "2",
+    name: "Pizza",
+    description: "Cheesy delight with fresh toppings",
+    imageUrl:
+      "https://images.ctfassets.net/23u853certza/0V5KYLmUImbVPRBerxy9b/78c9f84e09efbde9e124e74e6eef8fad/photocard_courier_v4.jpg?w=960&q=90&fm=webp",
+    price: 12.99,
+    quantity: 2,
+  },
+  {
+    id: "3",
+    name: "Biryani",
+    description: "Cheesy delight with fresh toppings",
+    imageUrl:
+      "https://images.ctfassets.net/23u853certza/0V5KYLmUImbVPRBerxy9b/78c9f84e09efbde9e124e74e6eef8fad/photocard_courier_v4.jpg?w=960&q=90&fm=webp",
+    price: 13.99,
+    quantity: 5,
+  },
+  {
+    id: "4",
+    name: "Qorma",
+    description: "Shahi Qorma",
+    imageUrl:
+      "https://images.ctfassets.net/23u853certza/0V5KYLmUImbVPRBerxy9b/78c9f84e09efbde9e124e74e6eef8fad/photocard_courier_v4.jpg?w=960&q=90&fm=webp",
+    price: 5.99,
+    quantity: 2,
+  },
+];
+
+export const RECOMMENDATIONS: Recommendation[] = [
+  {
+    id: "3",
+    name: "Fries",
+    imageUrl:
+      "https://images.ctfassets.net/23u853certza/0V5KYLmUImbVPRBerxy9b/78c9f84e09efbde9e124e74e6eef8fad/photocard_courier_v4.jpg?w=960&q=90&fm=webp",
+    price: 4.99,
+  },
+  {
+    id: "4",
+    name: "Soft Drink",
+    imageUrl:
+      "https://images.ctfassets.net/23u853certza/0V5KYLmUImbVPRBerxy9b/78c9f84e09efbde9e124e74e6eef8fad/photocard_courier_v4.jpg?w=960&q=90&fm=webp",
+    price: 2.99,
+  },
+  {
+    id: "5",
+    name: "Pani Puri",
+    imageUrl:
+      "https://images.ctfassets.net/23u853certza/0V5KYLmUImbVPRBerxy9b/78c9f84e09efbde9e124e74e6eef8fad/photocard_courier_v4.jpg?w=960&q=90&fm=webp",
+    price: 2.99,
+  },
+  {
+    id: "7",
+    name: "Soft Samosa",
+    imageUrl:
+      "https://images.ctfassets.net/23u853certza/0V5KYLmUImbVPRBerxy9b/78c9f84e09efbde9e124e74e6eef8fad/photocard_courier_v4.jpg?w=960&q=90&fm=webp",
+    price: 2.99,
+  },
 ];
