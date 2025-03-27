@@ -1,7 +1,6 @@
 "use client";
 
 import type React from "react";
-
 import { useCallback, useState } from "react";
 import CustomInputSwitch from "@/lib/ui/useable-components/custom-input-switch";
 import { gql, useQuery } from "@apollo/client";
