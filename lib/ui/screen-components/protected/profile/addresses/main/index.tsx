@@ -83,12 +83,10 @@
 
 
 "use client";
-import { useCallback, useEffect, useState, useMemo, useRef, RefCallback } from "react";
-import { HomeSvg } from "@/lib/utils/assets/svg";
-import MenuSvg from "@/lib/utils/assets/svg/menu";
+import { useCallback, useEffect, useState, useMemo, useRef } from "react";
+import { HomeSvg,MenuSvg } from "@/lib/utils/assets/svg";
 import CustomIconButton from "@/lib/ui/useable-components/custom-icon-button";
-import { faPlus, faEllipsisV } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import TextComponent from "@/lib/ui/useable-components/text-field";
 import { DUMMY_PROFILE } from "@/lib/utils/dummy";
 import AddressesSkeleton from "@/lib/ui/useable-components/custom-skeletons/addresses.skelton";
@@ -201,7 +199,8 @@ export default function AddressesMain() {
               className="cursor-pointer"
               onClick={() => toggleDropdown(address._id)}
             >
-              <FontAwesomeIcon icon={faEllipsisV} width={28} height={28} />
+              <MenuSvg width={28} height={28} />
+              {/* <FontAwesomeIcon icon={faEllipsisV} width={28} height={28} /> */}
             </span>
             
             {activeDropdown === address._id && (
