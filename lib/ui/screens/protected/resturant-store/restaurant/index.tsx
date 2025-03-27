@@ -158,6 +158,7 @@ export default function RestaurantDetailsScreen() {
   // States
   const [visibleItems, setVisibleItems] = useState(10); // Default visible items
   const [showAll, setShowAll] = useState(false);
+  const [headerHeight, setHeaderHeight] = useState("64px"); // Default for desktop
   const [showDialog, setShowDialog] = useState(false);
 
   // Handlers
@@ -194,11 +195,25 @@ export default function RestaurantDetailsScreen() {
         setVisibleItems(5); // Large screens
       }
     };
+    const updateHeight = () => {
+      if (window.innerWidth >= 1024)
+        setHeaderHeight("64px"); // lg (desktop)
+      else if (window.innerWidth >= 768)
+        setHeaderHeight("80px"); // md (tablet)
+      else if (window.innerWidth >= 640)
+        setHeaderHeight("100px"); // sm (larger phones)
+      else setHeaderHeight("120px"); // xs (small phones)
+    };
 
+    updateHeight();
     updateVisibleItems();
+    window.addEventListener("resize", updateHeight);
     window.addEventListener("resize", updateVisibleItems);
 
-    return () => window.removeEventListener("resize", updateVisibleItems);
+    return () => {
+      window.removeEventListener("resize", updateVisibleItems);
+      window.removeEventListener("resize", updateHeight);
+    };
   }, []);
 
   return (
@@ -272,7 +287,7 @@ export default function RestaurantDetailsScreen() {
 
           {/* Category Section */}
           <PaddingContainer
-            height="64px"
+            height={headerHeight}
             style={{
               position: "sticky",
               top: 0,
@@ -283,44 +298,42 @@ export default function RestaurantDetailsScreen() {
           >
             <div className="p-3 h-full w-full flex flex-col md:flex-row gap-2 items-center justify-between">
               {/* Category List - Full Width on Small Screens, 80% on Larger Screens */}
-              <div className="h-full w-full md:w-[80%] flex flex-1 overflow-x-auto overflow-y-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                <ul className="flex space-x-4 items-center min-w-full">
-                  {(showAll ? categories : categories.slice(0, visibleItems)
-                  ).map((category, index) => (
-                    <li key={index} className="shrink-0">
-                      <button
-                        className="bg-gray-100 text-gray-600 rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap"
-                        onClick={() => handleScroll(category.href)}
-                      >
-                        {category.name}
-                      </button>
-                      {/* <a
-                        className="bg-gray-100 text-gray-600 rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap"
-                        href={category.href}
-                      >
-                        {category.name}
-                      </a> */}
-                    </li>
-                  ))}
+              <div className="relative w-full md:w-[80%]">
+                <div
+                  className="h-12 w-full overflow-x-auto overflow-y-hidden flex items-center 
+                  [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+                >
+                  <ul className="flex space-x-4 items-center w-max flex-nowrap">
+                    {(showAll ? categories : categories.slice(0, visibleItems)
+                    ).map((category, index) => (
+                      <li key={index} className="shrink-0">
+                        <button
+                          className="bg-gray-100 text-gray-600 rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap"
+                          onClick={() => handleScroll(category.href)}
+                        >
+                          {category.name}
+                        </button>
+                      </li>
+                    ))}
 
-                  {/* "More" button to show hidden categories */}
-                  {!showAll && categories.length > visibleItems && (
-                    <li className="shrink-0">
-                      <span
-                        className="bg-blue-500 text-white rounded-full px-4 py-2 font-medium text-[14px] cursor-pointer"
-                        onClick={() => setShowAll(true)}
-                      >
-                        More
-                      </span>
-                    </li>
-                  )}
-                </ul>
+                    {!showAll && categories.length > visibleItems && (
+                      <li className="shrink-0">
+                        <span
+                          className="bg-blue-500 text-white rounded-full px-4 py-2 font-medium text-[14px] cursor-pointer"
+                          onClick={() => setShowAll(true)}
+                        >
+                          More
+                        </span>
+                      </li>
+                    )}
+                  </ul>
+                </div>
               </div>
 
               {/* Search Input - 20% Width on Large Screens, Full Width on Small Screens */}
               <div className="h-full w-full md:w-[20%]">
                 <CustomIconTextField
-                  className="w-full rounded-full pl-10"
+                  className="w-full md:h-10 h-9 rounded-full pl-10"
                   iconProperties={{
                     icon: faSearch,
                     position: "left",
