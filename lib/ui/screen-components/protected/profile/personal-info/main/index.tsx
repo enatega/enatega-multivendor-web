@@ -29,24 +29,24 @@ export default function PersonalInfoMain() {
               {initials}
             </div>
           </div>
-          <TextComponent text={profileData?.profile?.name || "N/A"} className="text-2xl font-bold text-gray-900" />
+          <TextComponent text={profileData?.profile?.name || "N/A"} className="text-2xl md:text-3xl font-semibold text-gray-900" />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
           <div>
-            <TextComponent text="Email" className="text-black font-semibold" />
+            <TextComponent text="Email" className="text-black font-semibold text-xl md:text-2xl" />
             <TextComponent
               text={profileData?.profile?.email || "N/A"}
-              className=""
+              className="font-normal text-lg md:text-xl"
             />
           </div>
           <div>
             <TextComponent
               text="Phone number"
-              className="text-black font-semibold"
+              className="text-black font-semibold text-xl md:text-2xl"
             />
             <TextComponent
               text={profileData?.profile?.phone || "N/A"}
-              className=""
+              className="font-normal text-lg md:text-xl"
             />
           </div>
         </div>
