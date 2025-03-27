@@ -1,13 +1,15 @@
 import {
-  DiscoveryMain,
+  // DiscoveryMain,
   DiscoveryBannerSection,
+  RestaurantsNearYou
 } from "@/lib/ui/screen-components/protected/home";
 
 export default function DiscoveryScreen() {
   return (
     <>
       <DiscoveryBannerSection />
-      <DiscoveryMain />
+      {/* <DiscoveryMain /> */}
+      <RestaurantsNearYou />
       {/* <DiscoveryMain />
       <DiscoveryMain />
       <DiscoveryMain /> */}

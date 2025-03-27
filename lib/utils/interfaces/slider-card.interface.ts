@@ -9,8 +9,16 @@ export interface ISliderCardItemProps {
   name: string;
   category: string;
   image: string;
-  deliveryTime: string;
+  deliveryTime: number;
   time: string;
   reviews: string;
   rating: string;
+  cuisines: string[];
+  commissionRate: number;
+  tax: number;
+  reviewAverage: number;
+}
+
+export interface ICardProps {
+  item: ISliderCardItemProps;
 }
