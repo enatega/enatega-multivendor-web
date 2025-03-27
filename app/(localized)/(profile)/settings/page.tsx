@@ -1,5 +1,7 @@
 "use client";
 
+import { SettingsScreen } from "@/lib/ui/screens/protected/profile";
+
 export default function SettingsPage() {
-  return <div>Settings Page</div>;
+  return <SettingsScreen/>
 }

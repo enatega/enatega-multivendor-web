@@ -1,5 +1,7 @@
 "use client";
 
+import { OrderHistoryScreen } from "@/lib/ui/screens/protected/profile";
+
 export default function OrderHistoryPage() {
-  return <div>Order History Page</div>;
+  return <OrderHistoryScreen/>
 }

@@ -156,7 +156,7 @@ export default function AddressesMain() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [addresses]);
 
-  // Simulate loading (remove in production)
+  // Simulate loading (remove after data fetching implementation)
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 2000);
     return () => clearTimeout(timer);
@@ -200,7 +200,6 @@ export default function AddressesMain() {
               onClick={() => toggleDropdown(address._id)}
             >
               <MenuSvg width={28} height={28} />
-              {/* <FontAwesomeIcon icon={faEllipsisV} width={28} height={28} /> */}
             </span>
             
             {activeDropdown === address._id && (
