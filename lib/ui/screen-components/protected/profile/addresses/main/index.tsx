@@ -35,8 +35,8 @@ export default function AddressesMain() {
       });
 
   // Mutation for deleting address
-  const [mutate, { loading: loadingAddressMutation }] = useMutation(DELETE_ADDRESS, {
-    onCompleted
+  const [mutate, { loading: loadingAddressMutation, error:deleteAddressError }] = useMutation(DELETE_ADDRESS, {
+    onCompleted,
   })
 
   const addresses: ISingleAddress[] = profileData?.profile?.addresses || [];
@@ -95,6 +95,17 @@ export default function AddressesMain() {
   }, []);
 
   //UseEffects
+ // On Error Deleting Address Show Toast Of Error
+  useEffect(()=>{
+    if (deleteAddressError) {
+      showToast({
+        type: 'error',
+        title: 'Address',
+        message: 'Failed to delete address',
+        duration: 3000,
+      });
+    }
+  },[deleteAddressError])  
 
   // Outside click handler for dropdowns
   useEffect(() => {
