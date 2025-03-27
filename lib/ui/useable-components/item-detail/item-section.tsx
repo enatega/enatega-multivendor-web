@@ -1,46 +1,53 @@
 import { useState } from "react";
 
-interface Option {
-  _id: string;
-  title: string;
-  price: number;
-}
+// Interface
+import { SectionProps, Option } from "@/lib/utils/interfaces";
 
-interface SectionProps {
-  title: string;
-  options: Option[];
-  name: string;
-  onSelect: (selected: string) => void;
-  multiple?: boolean;
-}
+/**
+ * `ItemDetailSection` is a generic component that renders either radio buttons or checkboxes
+ * based on the `multiple` prop. It supports single or multiple selection.
+ *
+ * @template T - The type of the option items, which must include an `_id` field.
+ *
+ * @param {string} title - The title of the section.
+ * @param {T[]} options - The list of options to choose from.
+ * @param {string} name - The name attribute for radio or checkbox inputs.
+ * @param {boolean} [multiple=false] - If true, allows multiple selections.
+ * @param {T | null} singleSelected - The currently selected option
+ * @param {Dispatch<SetStateAction<T | null>>} onSingleSelect - Callback function when selection changes.
+ * @param {T[] | null} multiSelected - The currently selected options
+ * @param {Dispatch<SetStateAction<T | null>>} onMultiSelect - Callback function when multi-select changes
+ *
+ * @returns {JSX.Element} The rendered component.
+ */
 
-export const ItemDetailSection: React.FC<SectionProps> = ({
+export const ItemDetailSection = <
+  T extends { _id: string; title: string; price: number },
+>({
   title,
   options,
   name,
   multiple = false,
-}) => {
-  //   const [selectedOption, setSelectedOption] = useState(options[0]);
-  const [selectedOptions, setSelectedOptions] = useState<
-    Option[] | Option | null
-  >(multiple ? [] : null);
-
-  const handleSelect = (option: Option) => {
+  singleSelected,
+  onSingleSelect,
+  multiSelected,
+  onMultiSelect,
+}: SectionProps<T>) => {
+  const handleSelect = (option: T) => {
     if (multiple) {
-      setSelectedOptions((prevSelected) => {
-        const exists = (prevSelected as Option[]).some(
-          (o) => o._id === option._id
-        );
-        return exists ?
-            (prevSelected as Option[]).filter((o) => o._id !== option._id)
-          : [...(prevSelected as Option[]), option];
-      });
+      onMultiSelect &&
+        onMultiSelect((prevSelected) => {
+          const exists = (prevSelected as T[]).some(
+            (o) => o._id === option._id
+          );
+          return exists ?
+              (prevSelected as T[]).filter((o) => o._id !== option._id)
+            : [...(prevSelected as T[]), option];
+        });
     } else {
-      setSelectedOptions(option);
+      onSingleSelect && onSingleSelect(option);
     }
   };
-
-  console.log({ selectedOptions });
 
   return (
     <div className="mb-4">
@@ -58,11 +65,9 @@ export const ItemDetailSection: React.FC<SectionProps> = ({
               type={multiple ? "checkbox" : "radio"}
               name={name}
               checked={
-                multiple ?
-                  (selectedOptions as Option[]).some(
-                    (o) => o._id === option._id
-                  )
-                : (selectedOptions as Option | null)?._id === option._id
+                multiple && multiSelected ?
+                  multiSelected.some((o) => o._id === option._id)
+                : (singleSelected as Option | null)?._id === option._id
               }
               onChange={() => handleSelect(option)}
               //   className="hidden peer"

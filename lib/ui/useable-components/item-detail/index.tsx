@@ -1,10 +1,17 @@
 // import { IFoodItemDetalComponentProps } from "@/lib/utils/interfaces";
 
 import { ITEM_SECTIONS } from "@/lib/utils/dummy";
+import { Option } from "@/lib/utils/interfaces";
+import { useState } from "react";
+
+// Components
 import { ItemDetailSection } from "./item-section";
 import Divider from "../custom-divider";
 
 export default function FoodItemDetail(/* props: IFoodItemDetalComponentProps */) {
+  const [selectedOption, setSelectedOption] = useState<Option | null>(null); // Single
+  //   const [selectedOptions, setSelectedOptions] = useState<Option[] | null>(null); // Multiple
+
   return (
     <div className="bg-white  max-w-md w-full">
       <div className="flex justify-between items-center mb-4">
@@ -37,13 +44,20 @@ export default function FoodItemDetail(/* props: IFoodItemDetalComponentProps */
           title="Dip 1/2"
           options={ITEM_SECTIONS}
           name="dip1"
-          onSelect={(selected) => console.log("Dip 1:", selected)}
+          //   multiple={true}
+          //   multiSelected={selectedOptions}
+          //   onMultiSelect={setSelectedOptions}
+
+          singleSelected={selectedOption}
+          onSingleSelect={setSelectedOption}
         />
         <ItemDetailSection
           title="Dip 2/2"
           options={ITEM_SECTIONS}
           name="dip2"
-          onSelect={(selected) => console.log("Dip 2:", selected)}
+          //   multiple={true}
+          //   multiSelected={selectedOptions}
+          //   onMultiSelect={setSelectedOptions}
         />
       </div>
 
