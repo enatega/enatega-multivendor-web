@@ -47,6 +47,7 @@
     "@types/autosuggest-highlight": "^3.2.3",
     "@types/lodash": "^4.17.7",
     "@types/node": "^20.14.12",
+    "@types/prop-types": "^15.7.14",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@types/react-geocode": "^0.2.4",

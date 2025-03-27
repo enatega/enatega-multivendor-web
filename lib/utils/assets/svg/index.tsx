@@ -1,4 +1,9 @@
 export { default as HomeSvg } from "./home";
 export { default as CutlerySvg } from "./cutlery";
 export { default as StoreSvg } from "./store";
+export { default as HeartSvg } from "./heart";
+export { default as RatingSvg } from "./rating";
+export { default as InfoSvg } from "./info";
+export { default as ClockSvg } from "./clock";
+export { default as CircleCrossSvg } from "./circle-cross";
 export { default as MenuSvg } from "./menu";

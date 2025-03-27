@@ -1,11 +1,18 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+// Icons
+import { ClockSvg, HeartSvg, InfoSvg, RatingSvg } from "@/lib/utils/assets/svg";
+import { faPlus, faSearch } from "@fortawesome/free-solid-svg-icons";
+
+// Components
+import Spacer from "@/lib/ui/useable-components/spacer";
 import { PaddingContainer } from "@/lib/ui/useable-components/containers";
 import CustomIconTextField from "@/lib/ui/useable-components/input-icon-field";
-import Spacer from "@/lib/ui/useable-components/spacer";
-import { faPlus, faSearch } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useEffect, useState } from "react";
+import FoodItemDetail from "@/lib/ui/useable-components/item-detail";
+import { Dialog } from "primereact/dialog";
 
 const menuData = [
   {
@@ -139,27 +146,40 @@ const menuData = [
     ],
   },
 ];
+const categories = [
+  { name: "For greater hunger", href: "#for-greater-hunger" },
+  { name: "Burgers & Meals", href: "#burgers-meals" },
+  { name: "Snacks & Sides", href: "#snacks-sides" },
+  { name: "Drinks", href: "#drinks" },
+  { name: "Desserts", href: "#desserts" },
+];
 
 export default function RestaurantDetailsScreen() {
   // States
   const [visibleItems, setVisibleItems] = useState(10); // Default visible items
   const [showAll, setShowAll] = useState(false);
+  const [showDialog, setShowDialog] = useState(false);
 
-  const categories = [
-    { name: "For greater hunger", href: "#for-greater-hunger" },
-    { name: "Burger Meals®", href: "#burgers-meals" },
-    { name: "Happy Meal", href: "#happy-meal" },
-    { name: "Garnish", href: "#garnish" },
-    { name: "Specialty Pizza", href: "#specialty-pizza" },
-    { name: "Traditional", href: "#traditional-1" },
-    { name: "Traditional 2", href: "#traditional-2" },
-    { name: "Traditional 22", href: "#traditional-2" },
-    { name: "Traditional 3", href: "#traditional-2" },
-    { name: "Traditional 4", href: "#traditional-2" },
-    { name: "Traditional 5", href: "#traditional-2" },
-    { name: "Traditional 6", href: "#traditional-2" },
-    { name: "Traditional 7", href: "#traditional-2" },
-  ];
+  // Handlers
+
+  const handleScroll = (id: string) => {
+    const element = document.getElementById(id);
+    const container = document.querySelector(".scrollable-container"); // Adjust selector
+
+    if (element && container) {
+      const headerOffset = 120;
+      const elementPosition = element.offsetTop;
+      const offsetPosition = elementPosition - headerOffset;
+
+      console.log("Scrolling container to:", offsetPosition); // Debugging
+
+      console.log({ offsetPosition });
+      container.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth",
+      });
+    }
+  };
 
   // Function to show all categories
   useEffect(() => {
@@ -182,168 +202,210 @@ export default function RestaurantDetailsScreen() {
   }, []);
 
   return (
-    <div className="w-screen h-screen flex flex-col pb-20">
-      <div className="flex-1 overflow-auto">
-        {/* Banner */}
-        <div className="relative">
-          <img
-            alt="McDonald's banner with a burger and fries"
-            className="w-full h-72 object-cover"
-            height="300"
-            src="https://storage.googleapis.com/a1aa/image/l_S6V3o3Sf_fYnRuAefKySjq6q-HmTjiF37tvk6PiMU.jpg"
-            width="1200"
-          />
-          <div className="absolute bottom-0 left-0 md:left-20 p-4">
-            <div className="flex flex-col items-start">
-              <img
-                alt="McDonald's logo"
-                className="w-12 h-12 mb-2"
-                height="50"
-                src="https://storage.googleapis.com/a1aa/image/_a4rKBo9YwPTH-AHQzOLoIcNAirPNTI7alqAVAEqmOo.jpg"
-                width="50"
-              />
-              <div className="text-white">
-                <h1 className="text-3xl font-bold">McDonald&apos;s Espoo</h1>
-                <p className="text-lg">
-                  Preservation of the authentic taste of all traditional foods
-                  is upheld here.
-                </p>
+    <>
+      <div className="w-screen h-screen flex flex-col pb-20">
+        <div className="scrollable-container flex-1 overflow-auto">
+          {/* Banner */}
+          <div className="relative">
+            <img
+              alt="McDonald's banner with a burger and fries"
+              className="w-full h-72 object-cover"
+              height="300"
+              src="https://storage.googleapis.com/a1aa/image/l_S6V3o3Sf_fYnRuAefKySjq6q-HmTjiF37tvk6PiMU.jpg"
+              width="1200"
+            />
+            <div className="absolute bottom-0 left-0 md:left-20 p-4">
+              <div className="flex flex-col items-start">
+                <img
+                  alt="McDonald's logo"
+                  className="w-12 h-12 mb-2"
+                  height="50"
+                  src="https://storage.googleapis.com/a1aa/image/_a4rKBo9YwPTH-AHQzOLoIcNAirPNTI7alqAVAEqmOo.jpg"
+                  width="50"
+                />
+                <div className="text-white">
+                  <h1 className="font-inter font-extrabold text-[32px] leading-[100%] sm:text-[40px] md:text-[48px]">
+                    McDonald&apos;s Espoo
+                  </h1>
+                  <p className="font-inter font-medium text-[18px] leading-[28px] sm:text-[20px] sm:leading-[30px] md:text-[24px] md:leading-[32px]">
+                    Preservation of the authentic taste of all traditional foods
+                    is upheld here.
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-          <div className="absolute bottom-4 right-4">
-            <i className="far fa-heart text-white text-2xl"></i>
-          </div>
-        </div>
-
-        {/* Restaurnat Info */}
-        <div className="bg-gray-50  shadow-[0px_1px_3px_rgba(0,0,0,0.1)]  p-3 h-[80px] flex justify-between items-center">
-          <PaddingContainer>
-            <div className="flex items-center space-x-4">
-              <span className="text-gray-600">
-                <i className="far fa-clock"></i>
-                10:30 AM-8:30 PM
-              </span>
-              <span className="text-gray-600">
-                <i className="far fa-star"></i>
-                Excellent, 4.2
-              </span>
-              <a className="text-blue-500" href="#">
-                See more information
-              </a>
+            <div className="absolute top-4 right-4 md:bottom-4 md:right-4 md:top-auto rounded-full bg-white h-8 w-8 flex justify-center items-center">
+              {/* <FontAwesomeIcon icon={faHeart} className="  text-2xl" /> */}
+              <HeartSvg />
             </div>
-          </PaddingContainer>
-        </div>
+          </div>
 
-        <Spacer height="20px" />
+          {/* Restaurnat Info */}
+          <div className="bg-gray-50  shadow-[0px_1px_3px_rgba(0,0,0,0.1)]  p-3 h-[80px] flex justify-between items-center">
+            <PaddingContainer>
+              <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+                {/* Time */}
+                <span className="flex items-center gap-2 text-gray-600 font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle">
+                  <ClockSvg />
+                  10:30 AM - 8:30 PM
+                </span>
 
-        {/* Category Section */}
-        <PaddingContainer height="64px">
-          <div className="p-3 h-full w-full flex flex-col md:flex-row gap-2 items-center justify-between">
-            {/* Category List - Full Width on Small Screens, 80% on Larger Screens */}
-            <div className="h-full w-full md:w-[80%] flex flex-1 overflow-x-auto overflow-y-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-              <ul className="flex space-x-4 items-center min-w-full">
-                {(showAll ? categories : categories.slice(0, visibleItems)).map(
-                  (category, index) => (
+                {/* Rating */}
+                <span className="flex items-center gap-2 text-gray-600 font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle">
+                  <RatingSvg />
+                  Excellent, 4.2
+                </span>
+
+                {/* Info Link */}
+                <a
+                  className="flex items-center gap-2 text-[#0EA5E9] font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle"
+                  href="#"
+                >
+                  <InfoSvg />
+                  See more information
+                </a>
+              </div>
+            </PaddingContainer>
+          </div>
+
+          <Spacer height="20px" />
+
+          {/* Category Section */}
+          <PaddingContainer
+            height="64px"
+            style={{
+              position: "sticky",
+              top: 0,
+              zIndex: 50,
+              backgroundColor: "white",
+              boxShadow: "0 1px 1px rgba(0, 0, 0, 0.1)",
+            }}
+          >
+            <div className="p-3 h-full w-full flex flex-col md:flex-row gap-2 items-center justify-between">
+              {/* Category List - Full Width on Small Screens, 80% on Larger Screens */}
+              <div className="h-full w-full md:w-[80%] flex flex-1 overflow-x-auto overflow-y-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                <ul className="flex space-x-4 items-center min-w-full">
+                  {(showAll ? categories : categories.slice(0, visibleItems)
+                  ).map((category, index) => (
                     <li key={index} className="shrink-0">
-                      <a
-                        className="bg-gray-100 text-gray-600 rounded-full px-4 py-1 font-medium text-[14px] whitespace-nowrap"
+                      <button
+                        className="bg-gray-100 text-gray-600 rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap"
+                        onClick={() => handleScroll(category.href)}
+                      >
+                        {category.name}
+                      </button>
+                      {/* <a
+                        className="bg-gray-100 text-gray-600 rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap"
                         href={category.href}
                       >
                         {category.name}
-                      </a>
+                      </a> */}
                     </li>
-                  )
-                )}
+                  ))}
 
-                {/* "More" button to show hidden categories */}
-                {!showAll && categories.length > visibleItems && (
-                  <li className="shrink-0">
-                    <span
-                      className="bg-blue-500 text-white rounded-full px-4 py-2 font-medium text-[14px] cursor-pointer"
-                      onClick={() => setShowAll(true)}
-                    >
-                      More
-                    </span>
-                  </li>
-                )}
-              </ul>
-            </div>
+                  {/* "More" button to show hidden categories */}
+                  {!showAll && categories.length > visibleItems && (
+                    <li className="shrink-0">
+                      <span
+                        className="bg-blue-500 text-white rounded-full px-4 py-2 font-medium text-[14px] cursor-pointer"
+                        onClick={() => setShowAll(true)}
+                      >
+                        More
+                      </span>
+                    </li>
+                  )}
+                </ul>
+              </div>
 
-            {/* Search Input - 20% Width on Large Screens, Full Width on Small Screens */}
-            <div className="h-full w-full md:w-[20%]">
-              <CustomIconTextField
-                className="w-full rounded-full pl-10"
-                iconProperties={{
-                  icon: faSearch,
-                  position: "left",
-                  style: { marginTop: "-10px" },
-                }}
-                placeholder="Search for Restaurants"
-                type="text"
-                name="search"
-                showLabel={false}
-              />
-            </div>
-          </div>
-        </PaddingContainer>
-
-        <Spacer height="20px" />
-
-        {/* Main Section */}
-
-        <PaddingContainer>
-          {menuData.map((category, index) => (
-            <div className="mb-4 p-3" id={category.href}>
-              <h2 className="mb-4 font-inter text-gray-900 font-bold text-2xl sm:text-xl leading-snug tracking-tight">
-                {category.category}
-              </h2>
-
-              <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                {category.items.map((meal, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center gap-4 rounded-lg border border-gray-300 shadow-sm bg-white p-3 relative"
-                  >
-                    {/* Text Content */}
-                    <div className="flex-grow text-left md:text-left space-y-2">
-                      <h3 className="text-gray-900 text-lg font-semibold font-inter">
-                        {meal.name}
-                      </h3>
-
-                      <p className="text-gray-500 text-sm">
-                        {meal.description}
-                      </p>
-
-                      <div className="flex items-center gap-2">
-                        <span className="text-[#0EA5E9] text-lg font-semibold">
-                          Rs. {meal.price}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Image */}
-                    <div className="flex-shrink-0 w-24 h-24 md:w-28 md:h-28">
-                      <img
-                        alt={meal.name}
-                        className="w-full h-full object-contain mx-auto md:mx-0"
-                        src={meal.image}
-                      />
-                    </div>
-
-                    {/* Image Section */}
-                    <div className="absolute top-2 right-2">
-                      <button className="bg-[#0EA5E9] rounded-full shadow-md w-6 h-6 flex items-center justify-center">
-                        <FontAwesomeIcon icon={faPlus} color="white" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
+              {/* Search Input - 20% Width on Large Screens, Full Width on Small Screens */}
+              <div className="h-full w-full md:w-[20%]">
+                <CustomIconTextField
+                  className="w-full rounded-full pl-10"
+                  iconProperties={{
+                    icon: faSearch,
+                    position: "left",
+                    style: { marginTop: "-10px" },
+                  }}
+                  placeholder="Search for Restaurants"
+                  type="text"
+                  name="search"
+                  showLabel={false}
+                />
               </div>
             </div>
-          ))}
-        </PaddingContainer>
+          </PaddingContainer>
+
+          <Spacer height="20px" />
+
+          {/* Main Section */}
+
+          <PaddingContainer>
+            {menuData.map((category, index) => (
+              <div key={index} className="mb-4 p-3" id={category.href}>
+                <h2 className="mb-4 font-inter text-gray-900 font-bold text-2xl sm:text-xl leading-snug tracking-tight">
+                  {category.category}
+                </h2>
+
+                <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                  {category.items.map((meal, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center gap-4 rounded-lg border border-gray-300 shadow-sm bg-white p-3 relative"
+                    >
+                      {/* Text Content */}
+                      <div className="flex-grow text-left md:text-left space-y-2">
+                        <h3 className="text-gray-900 text-lg font-semibold font-inter">
+                          {meal.name}
+                        </h3>
+
+                        <p className="text-gray-500 text-sm">
+                          {meal.description}
+                        </p>
+
+                        <div className="flex items-center gap-2">
+                          <span className="text-[#0EA5E9] text-lg font-semibold">
+                            Rs. {meal.price}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Image */}
+                      <div className="flex-shrink-0 w-24 h-24 md:w-28 md:h-28">
+                        <img
+                          alt={meal.name}
+                          className="w-full h-full object-contain mx-auto md:mx-0"
+                          src={meal.image}
+                        />
+                      </div>
+
+                      {/* Image Section */}
+                      <div className="absolute top-2 right-2">
+                        <button
+                          className="bg-[#0EA5E9] rounded-full shadow-md w-6 h-6 flex items-center justify-center"
+                          onClick={() => setShowDialog(true)}
+                        >
+                          <FontAwesomeIcon icon={faPlus} color="white" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </PaddingContainer>
+        </div>
       </div>
-    </div>
+
+      <Dialog
+        visible={showDialog}
+        className="mx-4 md:mx-0" // Adds margin on small screens
+        onHide={() => {
+          if (!showDialog) return;
+          setShowDialog(false);
+        }}
+      >
+        <FoodItemDetail />
+      </Dialog>
+    </>
   );
 }

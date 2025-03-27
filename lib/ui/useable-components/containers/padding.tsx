@@ -3,6 +3,7 @@ import React from "react";
 
 export default function PaddingContainer({
   children,
+  style = {},
   height,
   paddingTop,
   paddingBottom,
@@ -14,6 +15,7 @@ export default function PaddingContainer({
         height,
         paddingTop,
         paddingBottom,
+        ...style,
       }}
     >
       {children}

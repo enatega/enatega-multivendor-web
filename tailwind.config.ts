@@ -29,6 +29,9 @@ const config = {
         "primary-color": "#b1c748",
         "secondary-color": "#d8e3a3",
         "secondary-border-color": "#111827",
+        sky: {
+          500: "#0EA5E9", // Ensure sky-500 is set correctly
+        },
       },
       width: {
         "custom-button": "110px",
