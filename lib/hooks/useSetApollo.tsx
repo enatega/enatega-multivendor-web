@@ -56,7 +56,8 @@ export const useSetupApollo = (): ApolloClient<NormalizedCacheObject> => {
 
   const request = async (operation: Operation): Promise<void> => {
     // const data = localStorage.getItem(`user-${APP_NAME}`);
-    let token = "";
+    // Set This Token empty later...
+    let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzExNWE2YWFkYTFiMzAzNjc1MzlkMzUiLCJlbWFpbCI6ImRlbW8tY3VzdG9tZXJAZW5hdGVnYS5jb20iLCJpYXQiOjE3NDMwNTQ4NDl9.8fETYE_BfY-KftpbxC-9-iy5_jEkV0ZAPejiekfsCz4";
     // if (data) {
     //   token = JSON.parse(data).token;
     // }

@@ -1,25 +1,26 @@
 import ProfileDetailsSkeleton from "@/lib/ui/useable-components/custom-skeletons/profile.details.skelton";
 import TextComponent from "@/lib/ui/useable-components/text-field";
-import { DUMMY_PROFILE } from "@/lib/utils/dummy";
 import { getInitials } from "@/lib/utils/methods";
-import { useEffect, useState } from "react";
+import { gql, useQuery } from "@apollo/client";
+import { profile } from "@/lib/api/graphql/queries/profile";
+
+// Query
+const PROFILE = gql`
+  ${profile}
+`;
 
 export default function PersonalInfoMain() {
-  const [loading, setLoading] = useState<boolean>(true);
+
+  // Get profile data by using the query
+    const { data,loading:profileLoading } = useQuery(PROFILE, {
+      fetchPolicy: "network-only",
+    });
+
   // Get initials from the name
-  const initials = getInitials(DUMMY_PROFILE?.data?.profile?.name);
-  console.log(DUMMY_PROFILE);
-
-  //   Remove this use effect and handcoded loading usestate after Realldata fatching implementation
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 2000);
-
-    return () => clearTimeout(timer); // Cleanup on unmount
-  }, []);
-
-  if (!loading) {
+  const initials = getInitials(data?.profile?.name);
+  
+  
+  if (!profileLoading) {
     return (
       <div className="p-6 w-full bg-white rounded-lg border border-gray-200 shadow-sm">
         <div className="flex items-center gap-4 mb-6">
@@ -29,16 +30,13 @@ export default function PersonalInfoMain() {
               {initials}
             </div>
           </div>
-          <h2 className="text-2xl font-bold text-gray-900">
-            {DUMMY_PROFILE?.data?.profile?.name}
-          </h2>
+          <TextComponent text={data?.profile?.name || "N/A"} className="text-2xl font-bold text-gray-900" />
         </div>
-
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
           <div>
             <TextComponent text="Email" className="text-black font-semibold" />
             <TextComponent
-              text={DUMMY_PROFILE?.data?.profile?.email}
+              text={data?.profile?.email || "N/A"}
               className=""
             />
           </div>
@@ -48,7 +46,7 @@ export default function PersonalInfoMain() {
               className="text-black font-semibold"
             />
             <TextComponent
-              text={DUMMY_PROFILE?.data?.profile?.phone}
+              text={data?.profile?.phone || "N/A"}
               className=""
             />
           </div>

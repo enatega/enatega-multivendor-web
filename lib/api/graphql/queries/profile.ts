@@ -1,0 +1,24 @@
+export const profile = `
+        query{
+          profile{
+            _id
+            name
+            phone
+            phoneIsVerified
+            email
+            emailIsVerified
+            notificationToken
+            isActive
+            isOrderNotification
+            isOfferNotification
+            addresses{
+              _id
+              label
+              deliveryAddress
+              details
+              location{coordinates}
+              selected
+            }
+            favourite
+          }
+        }`

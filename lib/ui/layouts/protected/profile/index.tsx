@@ -8,6 +8,8 @@ import { useRouter } from "next/navigation";
 import { useLayoutEffect, useState } from "react";
 // import { usePathname, useRouter } from "next/navigation";
 
+
+
 export default function ProfileLayout({
   children,
 }: IProtectedProfileLayoutComponent) {
