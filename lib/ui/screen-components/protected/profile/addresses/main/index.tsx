@@ -1,111 +1,49 @@
-// "use client";
-
-// import { useEffect, useState } from "react";
-// import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
-// import { HomeSvg } from "@/lib/utils/assets/svg";
-// import MenuSvg from "@/lib/utils/assets/svg/menu";
-// import CustomIconButton from "@/lib/ui/useable-components/custom-icon-button";
-// import { faPlus } from "@fortawesome/free-solid-svg-icons";
-// import TextComponent from "@/lib/ui/useable-components/text-field";
-// // import AddressForm from "@/components/address-form"
-// // import type { Address } from "@/types/address"
-// import { DUMMY_PROFILE } from "@/lib/utils/dummy";
-// import AddressesSkeleton from "@/lib/ui/useable-components/custom-skeletons/addresses.skelton";
-
-// export default function AddressesMain() {
-//   const [loading, setLoading] = useState<boolean>(true);
-//   const handleAddAddress = () => {};
-
-//   const handleEditAddress = () => {};
-
-//   const handleDeleteAddress = () => {};
-
-//   const handleSaveAddress = () => {};
-
-//   //   Remove this use effect and handcoded loading usestate after Realldata fatching implementation
-//   useEffect(() => {
-//     const timer = setTimeout(() => {
-//       setLoading(false);
-//     }, 2000);
-
-//     return () => clearTimeout(timer); // Cleanup on unmount
-//   }, []);
-
-//   const addresses = DUMMY_PROFILE?.data?.profile?.addresses;
-
-//   if (!loading) {
-//     return (
-//       <div className="w-full mx-auto">
-//         {addresses.map((address) => (
-//           <div
-//             key={address._id}
-//             className="flex items-center justify-between p-4 border-b"
-//           >
-//             <div className="flex items-center">
-//               <div className="mr-4">
-//                 <HomeSvg color="black" width={28} height={28} />
-//               </div>
-//               <div>
-//                 <TextComponent
-//                   text={address?.label}
-//                   className="font-medium md:text-[24px]"
-//                 />
-//                 <TextComponent
-//                   text={address.details}
-//                   className="md:text-[20px]"
-//                 />
-//               </div>
-//             </div>
-//             <span
-//               className="cursor-pointer"
-//               onClick={() => handleEditAddress()}
-//             >
-//               <MenuSvg width={28} height={28} />
-//             </span>
-//           </div>
-//         ))}
-
-//         <div className="flex justify-center mt-8">
-//           <CustomIconButton
-//             title="Add New Address"
-//             iconColor="black"
-//             classNames="bg-[#5AC12F] w-[content] px-4"
-//             Icon={faPlus}
-//             handleClick={handleAddAddress}
-//           />
-//         </div>
-//       </div>
-//     );
-//   } else {
-//     return <AddressesSkeleton />;
-//   }
-// }
-
-
 "use client";
-import { useCallback, useEffect, useState, useMemo, useRef } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import { HomeSvg,MenuSvg } from "@/lib/utils/assets/svg";
 import CustomIconButton from "@/lib/ui/useable-components/custom-icon-button";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import TextComponent from "@/lib/ui/useable-components/text-field";
-import { DUMMY_PROFILE } from "@/lib/utils/dummy";
 import AddressesSkeleton from "@/lib/ui/useable-components/custom-skeletons/addresses.skelton";
 import CustomDialog from "@/lib/ui/useable-components/delete-dialog";
+import { deleteAddress, profile } from "@/lib/api/graphql/queries/profile";
+import { gql, useMutation, useQuery } from "@apollo/client";
+import { ISingleAddress } from "@/lib/utils/interfaces/profile.interface";
+import useToast from "@/lib/hooks/useToast";
+// Query
+const PROFILE = gql`
+  ${profile}
+`;
 
+// Mutation
+const DELETE_ADDRESS = gql`
+  ${deleteAddress}
+`
 
 export default function AddressesMain() {
-  const [loading, setLoading] = useState(true);
+
+  //states
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+
+  // Use toast hook for showing messages
+  const { showToast } = useToast();
+
+  // Get profile data by using the query
+      const { data:profileData,loading:profileLoading } = useQuery(PROFILE, {
+        fetchPolicy: "cache-and-network",
+      });
+
+  // Mutation for deleting address
+  const [mutate, { loading: loadingAddressMutation }] = useMutation(DELETE_ADDRESS, {
+    onCompleted
+  })
+
+  const addresses: ISingleAddress[] = profileData?.profile?.addresses || [];
   
   // Use useRef for dropdown refs to avoid unnecessary re-renders
   const dropdownRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
-  // Memoize addresses to prevent unnecessary re-renders
-  const addresses = useMemo(() => 
-    DUMMY_PROFILE?.data?.profile?.addresses || [], 
-    []
-  );
 
   // Optimize dropdown toggle with useCallback
   const toggleDropdown = useCallback((addressId: string) => {
@@ -119,13 +57,30 @@ export default function AddressesMain() {
   }, []);
 
   // Confirm delete action
-  const handleConfirmDelete = useCallback(() => {
+  const handleConfirmDelete = useCallback(async() => {
     if (deleteTarget) {
-      console.log(`Deleting address: ${deleteTarget}`);
-      // Actual delete logic would go here
+      await mutate({ variables: { id: deleteTarget } })
+      .then((response) => {
+        console.log('Mutation success:', response);
+      })
+      .catch((error) => {
+        console.log('Mutation error:', error);
+        // Handle errors appropriately (optional)
+      });
       setDeleteTarget(null);
     }
   }, [deleteTarget]);
+
+  // On Completed Delete address Mutation
+  function onCompleted() {
+    showToast({
+      type: 'success',
+      title: 'Address',
+      message: 'Address Deleted Successfully',
+      duration: 3000,
+    });
+    setDeleteTarget(null);
+  }
 
   // Close delete dialog
   const handleCancelDelete = useCallback(() => {
@@ -139,11 +94,13 @@ export default function AddressesMain() {
     };
   }, []);
 
+  //UseEffects
+
   // Outside click handler for dropdowns
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      const isOutside = addresses.every(address => {
-        const ref = dropdownRefs.current[address._id];
+      const isOutside = addresses.every((address: ISingleAddress) => {
+        const ref = dropdownRefs.current[address?._id];
         return !ref || !ref.contains(event.target as Node);
       });
 
@@ -156,13 +113,7 @@ export default function AddressesMain() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [addresses]);
 
-  // Simulate loading (remove after data fetching implementation)
-  useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 2000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (loading) return <AddressesSkeleton />;
+  if (profileLoading) return <AddressesSkeleton />;
 
   return (
     <div className="w-full mx-auto">
@@ -170,10 +121,11 @@ export default function AddressesMain() {
         onConfirm={handleConfirmDelete} 
         onHide={handleCancelDelete} 
         visible={!!deleteTarget}
+        loading={loadingAddressMutation}
       />
-      {addresses.map((address) => (
+      {addresses?.map((address: ISingleAddress) => (
         <div
-          key={address._id}
+          key={address?._id}
           className="flex items-center justify-between p-4 border-b relative"
         >
           <div className="flex items-center">
@@ -182,27 +134,27 @@ export default function AddressesMain() {
             </div>
             <div>
               <TextComponent
-                text={address.label}
+                text={address?.label}
                 className="font-medium md:text-[24px]"
               />
               <TextComponent
-                text={address.details}
+                text={address?.details}
                 className="md:text-[20px]"
               />
             </div>
           </div>
           <div 
             className="relative" 
-            ref={setDropdownRef(address._id)}
+            ref={setDropdownRef(address?._id)}
           >
             <span
               className="cursor-pointer"
-              onClick={() => toggleDropdown(address._id)}
+              onClick={() => toggleDropdown(address?._id)}
             >
               <MenuSvg width={28} height={28} />
             </span>
             
-            {activeDropdown === address._id && (
+            {activeDropdown === address?._id && (
               <div className="absolute right-0 top-full mt-2 w-40 bg-white border rounded shadow-lg z-10">
                 <div 
                   className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
@@ -212,7 +164,7 @@ export default function AddressesMain() {
                 </div>
                 <div 
                   className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-red-600"
-                  onClick={() => handleDeleteAddress(address._id)}
+                  onClick={() => handleDeleteAddress(address?._id)}
                 >
                   Delete
                 </div>

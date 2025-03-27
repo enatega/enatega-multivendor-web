@@ -12,13 +12,12 @@ const PROFILE = gql`
 export default function PersonalInfoMain() {
 
   // Get profile data by using the query
-    const { data,loading:profileLoading } = useQuery(PROFILE, {
+    const { data:profileData,loading:profileLoading } = useQuery(PROFILE, {
       fetchPolicy: "network-only",
     });
 
   // Get initials from the name
-  const initials = getInitials(data?.profile?.name);
-  
+  const initials = getInitials(profileData?.profile?.name);
   
   if (!profileLoading) {
     return (
@@ -30,13 +29,13 @@ export default function PersonalInfoMain() {
               {initials}
             </div>
           </div>
-          <TextComponent text={data?.profile?.name || "N/A"} className="text-2xl font-bold text-gray-900" />
+          <TextComponent text={profileData?.profile?.name || "N/A"} className="text-2xl font-bold text-gray-900" />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
           <div>
             <TextComponent text="Email" className="text-black font-semibold" />
             <TextComponent
-              text={data?.profile?.email || "N/A"}
+              text={profileData?.profile?.email || "N/A"}
               className=""
             />
           </div>
@@ -46,7 +45,7 @@ export default function PersonalInfoMain() {
               className="text-black font-semibold"
             />
             <TextComponent
-              text={data?.profile?.phone || "N/A"}
+              text={profileData?.profile?.phone || "N/A"}
               className=""
             />
           </div>
