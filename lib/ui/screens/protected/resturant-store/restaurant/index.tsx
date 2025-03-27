@@ -172,8 +172,6 @@ export default function RestaurantDetailsScreen() {
       const elementPosition = element.offsetTop;
       const offsetPosition = elementPosition - headerOffset;
 
-      console.log("Scrolling container to:", offsetPosition); // Debugging
-
       console.log({ offsetPosition });
       container.scrollTo({
         top: offsetPosition,
