@@ -1,41 +1,35 @@
-import Image from "next/image";
-
 import { Carousel } from "primereact/carousel";
-
-// DUmmy Data
-import { DUMMY_BANNER_IMAGES_URL } from "@/lib/utils/dummy";
-
+// query
+import { GET_BANNERS } from "@/lib/api/graphql/queries";
+// gql
+import { useQuery } from "@apollo/client";
+// loading skeleton
+import DiscoveryBannerSkeleton from "./banner-loading-skeleton";
 // Interface
-import { IBannerItem } from "@/lib/utils/interfaces";
+import { IGetBannersResponse } from "@/lib/utils/interfaces";
+// banner card
+import BannerCard from "./banner-card";
 
 export default function DiscoveryBannerSection() {
-  // Tempaltes
-  const itemTemplate = (item: IBannerItem) => {
-    return (
-      <div className="carousel-item md:mr-[12px]">
-        <Image
-          src={item.url}
-          width={890}
-          height={300}
-          alt={item.alt}
-          objectFit="contain"
-          style={{ borderRadius: 12 }}
-          className="carousel-image"
-        />
-      </div>
-    );
-  };
+  const { data, loading, error } = useQuery<IGetBannersResponse>(GET_BANNERS);
+
+  if (loading) {
+    return <DiscoveryBannerSkeleton />;
+  }
+  if (error) {
+    return;
+  }
 
   return (
     <Carousel
       className="discovery-carousel"
-      value={DUMMY_BANNER_IMAGES_URL}
+      value={data?.banners}
       numVisible={2}
       numScroll={1}
       circular
       style={{ width: "100%" }}
       showNavigators
-      itemTemplate={itemTemplate}
+      itemTemplate={(item) => <BannerCard item={item} />}
       autoplayInterval={5000}
       responsiveOptions={[
         { breakpoint: "768px", numVisible: 1, numScroll: 1 }, // Mobile

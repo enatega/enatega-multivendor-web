@@ -594,28 +594,28 @@ Discovery Caurousal
 }
 
 /* Responsive Image Styling */
-.carousel-image {
+.carousel-banner {
   width: 100%;
-  height: 400px; /* Default height */
+  height: 340px; /* Default height */
   object-fit: cover;
   border-radius: 12px;
 }
 
 /* Adjust image height for smaller screens */
 @media (max-width: 1024px) {
-  .carousel-image {
+  .carousel-banner {
     height: 300px;
   }
 }
 
 @media (max-width: 768px) {
-  .carousel-image {
+  .carousel-banner {
     height: 250px;
   }
 }
 
 @media (max-width: 480px) {
-  .carousel-image {
+  .carousel-banner {
     height: 200px;
   }
 }

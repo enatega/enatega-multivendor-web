@@ -105,9 +105,9 @@ export default function Cart() {
       </div>
 
       <div className="p-2 sm:p-4">
-        <button className="flex justify-between items-center w-full bg-[#5AC12F] text-white rounded-full px-4 py-3 sm:py-4">
+        <button className="flex justify-between items-center w-full bg-[#5AC12F] text-white rounded-full px-4 py-2 sm:py-3">
           <div className="flex items-center">
-            <span className="bg-black text-[#5AC12F] rounded-full w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center mr-2 text-xs sm:text-sm font-medium">
+            <span className="bg-black text-[#5AC12F] rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center mr-2 text-xs sm:text-sm font-medium">
               2
             </span>
             <span className="text-black text-sm sm:text-base font-medium">
