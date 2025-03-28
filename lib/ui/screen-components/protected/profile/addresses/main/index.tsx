@@ -15,10 +15,12 @@ const PROFILE = gql`${profile}`;
 const DELETE_ADDRESS = gql`${deleteAddress}`;
 
 export default function AddressesMain() {
+  // states
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const { showToast } = useToast();
 
+  //Queries and Mutations
   const { data: profileData, loading: profileLoading } = useQuery(PROFILE, {
     fetchPolicy: "cache-and-network",
   });
@@ -27,6 +29,7 @@ export default function AddressesMain() {
     onCompleted,
   });
 
+// variables
   const addresses = profileData?.profile?.addresses || [];
   const dropdownRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
@@ -34,6 +37,7 @@ export default function AddressesMain() {
     setActiveDropdown(prev => prev === addressId ? null : addressId);
   }, []);
 
+  //Handlers
   const handleDeleteAddress = useCallback((addressId: string) => {
     setDeleteTarget(addressId);
   }, []);
@@ -50,6 +54,7 @@ export default function AddressesMain() {
     setDeleteTarget(null);
   }
 
+  // UseEffects
   useEffect(() => {
     if (deleteAddressError) {
       showToast({ type: 'error', title: 'Address', message: 'Failed to delete', duration: 3000 });
@@ -67,11 +72,12 @@ export default function AddressesMain() {
         setActiveDropdown(null);
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [addresses]);
 
+
+// Return Skelton on Loading state
   if (profileLoading) return <AddressesSkeleton />;
 
   return (

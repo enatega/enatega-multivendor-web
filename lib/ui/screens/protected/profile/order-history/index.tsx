@@ -1,12 +1,35 @@
+
+import { myOrders } from "@/lib/api/graphql/queries/orders";
 import { ActiveOrders, PastOrders } from "@/lib/ui/screen-components/protected/profile";
+import { ACTIVE_STATUS, INACTIVE_STATUS } from "@/lib/utils/constants/orders";
+import { IOrder } from "@/lib/utils/interfaces/orders.interface";
+import { gql, useQuery } from "@apollo/client";
+
+
+const MYORDERS = gql`${myOrders}`;
 
   export default function OrderHistoryScreen() {
+
+      const { data: ordersData, loading: ordersLoading } = useQuery(MYORDERS, {
+        fetchPolicy: "cache-and-network",
+      });
+
+      const activeOrders = ordersData?.orders?.filter((o:IOrder) =>
+        ACTIVE_STATUS.includes(o.orderStatus)
+      );
+      const pastOrders = ordersData?.orders?.filter((o:IOrder) =>
+        INACTIVE_STATUS.includes(o.orderStatus)
+      );
+
+
+      console.log(ordersLoading, "Loading oriders on main orders history page")
+      console.log(ordersData, "my all orders from db on orders history page")
     return (
       <div className="flex flex-col space-y-10 my-10">
         {/* Active Orders */}
-        <ActiveOrders/>
+        <ActiveOrders activeOrders={activeOrders} ordersLoading={ordersLoading}/>
        {/* Past Orders  */}
-        <PastOrders/>
+        <PastOrders pastOrders={pastOrders} ordersLoading={ordersLoading}/>
       </div>
     );
   }

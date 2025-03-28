@@ -111,3 +111,4 @@ export const FavouriteRestaurant = `query UserFavourite ($latitude:Float,$longit
             }
            }
         }`;
+
