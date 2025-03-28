@@ -19,32 +19,34 @@ interface IOrderCardProps {
   type: "active" | "past";
   className?: string;
   handleTrackOrderClicked?: (id:string|undefined) => void
-  handleReorderOrderClicked?: (id:string|undefined)=> void
+  handleReOrderClicked?: (id:string|undefined)=> void
+  handleRateOrderClicked?: (id:string|undefined,value:number)=> void
+  
 }
 
-const OrderCard: FC<IOrderCardProps> = ({ order, type, className,handleTrackOrderClicked,handleReorderOrderClicked }) => {
+const OrderCard: FC<IOrderCardProps> = ({ order, type, className,handleTrackOrderClicked,handleReOrderClicked,handleRateOrderClicked }) => {
 
   const handleTrackOrder = (order:IOrder) => {
     // Implement tracking functionality
     console.log("Track order:", order._id);
-
     // The ?. (optional chaining) operator is used to safely call the function handleTrackOrderClicked only if it is defined.
     handleTrackOrderClicked?.(order?._id)
   };
 
-  // Memoize this function
   const handleReorder = useCallback((order: IOrder) => {
   // Implement reorder functionality
   console.log("order id :", order?._id);
 
   console.log("restaurant id :", order?.restaurant?._id);
   // pass restaurant id of that order
-  handleReorderOrderClicked?.(order?.restaurant?._id)
+  handleReOrderClicked?.(order?.restaurant?._id)
+  
 }, []);
 
   const handleRateOrder = (value: number) => {
     // Implement rating functionality
     console.log("Rate order:", order._id, "with", value, "stars");
+    handleRateOrderClicked?.(order?._id, value)
   };
 
   return (

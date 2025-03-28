@@ -23,18 +23,6 @@ export const profile = `
           }
         }`;
 
-export const deleteAddress = `mutation DeleteAddress($id:ID!){
-            deleteAddress(id:$id){
-              _id
-              addresses{
-                _id
-                label
-                deliveryAddress
-                details
-                location{coordinates}
-              }
-            }
-        }`;
 
 export const FavouriteRestaurant = `query UserFavourite ($latitude:Float,$longitude:Float){
           userFavourite(latitude:$latitude,longitude:$longitude) {
