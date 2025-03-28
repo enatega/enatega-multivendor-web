@@ -32,7 +32,7 @@ export default function ProfileLayout({
           <ProfileHeader/>
           <ProfileTabs />
         </div>
-        <div className="flex-1 overflow-auto px-4 md:px-0  lg:px-28 xl:px-40 2xl:px-56">  
+        <div className="flex-1 overflow-auto px-4 md:px-0 lg:px-28 xl:px-40">  
           {/* Scrollable Content */}
          <PaddingContainer>
           {children}
