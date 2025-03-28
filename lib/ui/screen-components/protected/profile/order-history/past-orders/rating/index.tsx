@@ -7,7 +7,7 @@ import type { IOrder } from "@/lib/utils/interfaces/orders.interface"
 import useDebounceFunction from "@/lib/hooks/useDebounceForFunction"
 import { twMerge } from "tailwind-merge"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faCircleXmark, faXmark } from "@fortawesome/free-solid-svg-icons"
+import { faCircleXmark } from "@fortawesome/free-solid-svg-icons"
 
 interface IRatingModalProps {
   visible: boolean
@@ -75,20 +75,6 @@ export default function RatingModal({ visible, onHide, order, onSubmitRating }: 
     }
   }
 
-  // Custom header with close button using FontAwesome
-  const renderHeader = () => {
-    return (
-      <div className="absolute right-2 top-2">
-        <button
-          onClick={onHide}
-          className="w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:text-gray-700 focus:outline-none"
-        >
-          <i className="fa-solid fa-xmark"></i>
-        </button>
-      </div>
-    )
-  }
-
   return (
     <Dialog
       visible={visible}
@@ -137,7 +123,7 @@ export default function RatingModal({ visible, onHide, order, onSubmitRating }: 
         <h2 className="text-2xl font-bold mb-2">How was the delivery?</h2>
 
         {/* Subheading */}
-        <p className="text-gray-600 mb-6 text-center">Whether it's good or bad, let's talk about it</p>
+        <p className="text-gray-600 mb-6 text-center">Whether it&apos;s good or bad, let&apos;s talk about it</p>
 
         {/* Step 1: Rating Selection */}
         {step === 1 && (

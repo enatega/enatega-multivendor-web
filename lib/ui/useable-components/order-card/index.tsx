@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, type FC } from "react";
-import { Badge } from "primereact/badge";
 import { Rating } from "primereact/rating";
 import Image from "next/image";
 import { twMerge } from "tailwind-merge";

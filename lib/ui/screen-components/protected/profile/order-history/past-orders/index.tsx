@@ -35,6 +35,9 @@ export default function PastOrders({pastOrders,ordersLoading}:IPastOrdersProps) 
         onCompleted,
       });
 
+      console.log(loadingReviewOrder, "loadingReviewOrder")
+      console.log(ErrorReviewOrder, "ErrorReviewOrder")
+
       function onCompleted() {
         showToast({ type: 'success', title: 'Rating', message: 'Rating submitted successfully', duration: 3000 });
         setSelectedOrder(null);

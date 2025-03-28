@@ -1,18 +1,17 @@
-import { useRef } from "react";
+import { useRef, useCallback } from "react";
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+const useDebounceFunction = <T extends (...args: any[]) => void>(callback: T, delay: number) => {
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-//  debouncing function calls
-const useDebounceFunction = (callback: (...args: any[]) => void, delay: number) => {
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
-
-  return (...args: any[]) => {
+  return useCallback((...args: Parameters<T>) => {
     if (timerRef.current) {
       clearTimeout(timerRef.current);
     }
     timerRef.current = setTimeout(() => {
       callback(...args);
     }, delay);
-  };
+  }, [callback, delay]);
 };
 
 export default useDebounceFunction;
