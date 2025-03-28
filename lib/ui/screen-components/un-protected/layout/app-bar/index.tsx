@@ -42,14 +42,16 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                     onClick={() => setIsCartOpen(true)}
                   >
                     <div className="flex items-center">
-                      <div className="bg-black text-[#5AC12F] rounded-full w-6 h-6 flex items-center justify-center text-xs sm:text-sm">
+                      <div className="bg-black text-[#5AC12F] rounded-full w-6 h-6 flex items-center justify-center text-[12px] sm:text-[14px]">
                         2
                       </div>
-                      <span className="ml-2 text-black text-sm sm:text-base">
+                      <span className="ml-2 text-black text-[12px] sm:text-[14px]">
                         View Order
                       </span>
                     </div>
-                    <span className="text-black text-sm sm:text-base">$8</span>
+                    <span className="text-black text-[12px] sm:text-[14px]">
+                      $8
+                    </span>
                   </div>
 
                   {/* Cart icon with badge for small screens */}
