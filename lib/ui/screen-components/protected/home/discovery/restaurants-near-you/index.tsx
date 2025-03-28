@@ -8,13 +8,11 @@ function RestaurantsNearYou() {
   const { data, error, loading } = useNearByRestaurantsPreview();
 
   if (loading) {
-    return <SliderSkeleton title="Restaurants near you" />;
+    return <SliderSkeleton/>;
   }
 
   if (error) {
-    return (
-      <p>try again</p>
-    );
+    return;
   }
   return (
     <SliderCard
