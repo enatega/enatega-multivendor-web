@@ -25,11 +25,14 @@ const FavouriteProducts = () => {
     fetchPolicy: "network-only",
   });
   
-  //Handlesrs
+  //Handlers
   // Handle See All Click
-  const handleSeeAllClick = () => {
+  const handleSeeAllClick = useDebounceFunction(() => {
     console.log("See all clicked");
-  };
+
+    // use route state to handle fetching all favourites Restaurants on that page
+    router.push("/restaurants/#favourites");
+  }, 500);
 
   // use debouncefunction if user click multiple times at once it will call function only 1 time
   const handleClickFavRestaurant = useDebounceFunction(
