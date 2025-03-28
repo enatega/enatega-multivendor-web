@@ -6,6 +6,7 @@ export interface ISliderCardComponentProps<T> extends IGlobalComponentProps {
 }
 
 export interface ISliderCardItemProps {
+  _id: string;
   name: string;
   category: string;
   image: string;
