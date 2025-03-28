@@ -40,7 +40,7 @@ export default function PastOrders({pastOrders,ordersLoading}:IPastOrdersProps) 
         setSelectedOrder(null);
       }
     
-
+      
       //Handlesrs
       // use debouncefunction if user click multiple times at once it will call function only 1 time
     const handleReOrderClicked = useDebounceFunction(
