@@ -8,3 +8,5 @@ export { default as ClockSvg } from "./clock";
 export { default as CircleCrossSvg } from "./circle-cross";
 export { default as MenuSvg } from "./menu";
 export { default as CartSvg } from "./cart";
+export { default as CycleSvg } from './cycle';
+export { default as FaceSvg } from './face';
