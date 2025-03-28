@@ -14,7 +14,7 @@ const Card: React.FC<ICardProps> = ({ item }) => {
     <div
       className="max-w-[402px] max-h-[272px] md:w-[180px] lg:w-[180px] xl:w-[270px] 2xl:w-[380px] rounded-md shadow-md m-2 mb-6 cursor-pointer hover:scale-105 hover:opacity-95 hover:shadow-lg transition-transform duration-500"
       onClick={() => {
-        router.push(`/restaurant/${item?.name}/${item._id}`);
+        router.push(`/restaurant/${item?.name}/${item._id}`); // the root route may change based on store or grocery
       }}
     >
       {/* Image Container */}
