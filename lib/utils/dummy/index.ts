@@ -105,3 +105,5 @@ export const RECOMMENDATIONS: Recommendation[] = [
     price: 2.99,
   },
 ];
+
+export const TIPS = ["2", "4", "6", "8", "Other"];
