@@ -22,7 +22,7 @@ export default function AddressesSkeleton() {
       ))}
 
       {/* Skeleton for "Add New Address" Button */}
-      <div className="flex justify-center mt-8">
+      <div className="flex justify-center mt-16">
         <div className="h-10 w-48 bg-gray-300 rounded"></div>
       </div>
     </div>
