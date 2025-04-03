@@ -5,7 +5,7 @@ import React from 'react'
 export default function ProfileHeader() {
   return (
   <div className='w-full flex justify-between'>
-     <TextComponent text="Profile" className='heading-1'/>
+     <TextComponent text="Profile" className='font-extrabold text-3xl md:text-4xl lg:text-5xl'/>
      <CustomButton label='Get help' type='button' className='text-lg font-light bg-[#F3FFEE] px-[16px] py-[8px] text-[#63C43B]'/>
   </div>
   )

@@ -10,7 +10,7 @@ const MYORDERS = gql`${myOrders}`;
 
   export default function OrderHistoryScreen() {
 
-      const { data: ordersData, loading: ordersLoading } = useQuery(MYORDERS, {
+      const { data: ordersData, loading: isOrdersLoading } = useQuery(MYORDERS, {
         fetchPolicy: "cache-and-network",
       });
 
@@ -22,14 +22,14 @@ const MYORDERS = gql`${myOrders}`;
       );
 
 
-      console.log(ordersLoading, "Loading oriders on main orders history page")
+      console.log(isOrdersLoading, "Loading oriders on main orders history page")
       console.log(ordersData, "my all orders from db on orders history page")
     return (
       <div className="flex flex-col space-y-10 my-10">
         {/* Active Orders */}
-        <ActiveOrders activeOrders={activeOrders} ordersLoading={ordersLoading}/>
+        <ActiveOrders activeOrders={activeOrders} isOrdersLoading={isOrdersLoading}/>
        {/* Past Orders  */}
-        <PastOrders pastOrders={pastOrders} ordersLoading={ordersLoading}/>
+        <PastOrders pastOrders={pastOrders} isOrdersLoading={isOrdersLoading}/>
       </div>
     );
   }

@@ -7,3 +7,6 @@
     { value: 4, emoji: "🙂", label: "Good" },
     { value: 5, emoji: "😄", label: "Awesome" },
   ];
+
+  // Rating aspects for step 2
+  export const ratingAspects = ["Courier Professionalism", "Estimate", "Delivery on time"]

@@ -2,15 +2,12 @@
 import OrderCardSkeleton from "@/lib/ui/useable-components/custom-skeletons/order.card.skelton";
 import OrderCard from "@/lib/ui/useable-components/order-card";
 import EmptyState from "@/lib/ui/useable-components/orders-empty-state";
-import { IOrder } from "@/lib/utils/interfaces/orders.interface";
+import { IActiveOrdersProps, IOrder } from "@/lib/utils/interfaces/orders.interface";
 import { twMerge } from "tailwind-merge";
 import { useRouter } from "next/navigation";
 import useDebounceFunction from "@/lib/hooks/useDebounceForFunction";
+import TextComponent from "@/lib/ui/useable-components/text-field";
 
-interface IActiveOrdersProps {
-    activeOrders : IOrder[];
-    isOrdersLoading: boolean;
-}
 
 export default function ActiveOrders({activeOrders,isOrdersLoading}:IActiveOrdersProps) {  
     const router= useRouter()
@@ -49,7 +46,7 @@ export default function ActiveOrders({activeOrders,isOrdersLoading}:IActiveOrder
       //  (optional) we can use styling for order status- for example if order is pending then display the order card style in yellow color 
       return (
         <div className="space-y-4 py-4">
-          <h2 className="text-2xl font-bold mb-6">Active Orders</h2>
+          <TextComponent text="Active Orders" className="text-2xl md:text-3xl xl:text-4xl font-semibold mb-6"/>
           <div className="space-y-4">
             {activeOrders?.map((order:IOrder) => (
               <OrderCard

@@ -133,9 +133,13 @@ export interface IPoint {
   export interface IOrderItemsProps {
     order: IOrder;
   }
-  
+
+  export interface IActiveOrdersProps {
+    activeOrders : IOrder[];
+    isOrdersLoading: boolean;
+}
   export interface IPastOrdersProps {
       pastOrders : IOrder[];
-      ordersLoading: boolean;
+      isOrdersLoading: boolean;
   }
   

@@ -59,6 +59,8 @@ export const reviewOrder = `mutation ReviewOrder(
       }
       review{
         _id
+        rating
+        description
       }
       paymentMethod
       paidAmount

@@ -31,7 +31,7 @@ const FavouriteProducts = () => {
     console.log("See all clicked");
 
     // use route state to handle fetching all favourites Restaurants on that page
-    router.push("/restaurants/#favourites");
+    router.push("/restaurants?q=favourites");
   }, 500);
 
   // use debouncefunction if user click multiple times at once it will call function only 1 time

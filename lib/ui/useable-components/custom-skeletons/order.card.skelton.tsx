@@ -33,30 +33,9 @@ const OrderCardSkeleton: React.FC<OrderCardSkeletonProps> = ({
         </div>
 
         {/* Price Section */}
-        <div className="flex flex-col md:items-end justify-between gap-2">
+        <div className="flex md:flex-col md:items-end justify-between gap-2">
           <div className="h-6 bg-gray-300 rounded w-20"></div>
           <div className="h-8 bg-gray-300 rounded w-24"></div>
-        </div>
-      </div>
-
-      {/* Order Items Section */}
-      <div className="mt-4 pt-4">
-        <div className="h-4 bg-gray-300 rounded w-1/4 mb-2"></div>
-        <div className="space-y-3">
-          {[1, 2].map((item) => (
-            <div 
-              key={item} 
-              className="flex justify-between items-center"
-            >
-              <div className="flex items-center gap-3">
-                {/* <div className="w-12 h-12 bg-gray-300 rounded-md"></div> */}
-                <div className="space-y-2">
-                  {/* <div className="h-5 bg-gray-300 rounded w-40"></div> */}
-                  <div className="h-4 bg-gray-300 rounded w-24"></div>
-                </div>
-              </div>
-            </div>
-          ))}
         </div>
       </div>
 

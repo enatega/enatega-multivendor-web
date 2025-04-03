@@ -102,3 +102,9 @@ export interface IUserReviewAuthor {
   export interface IUserFavouriteQueryResponse {
     userFavourite?: IFavouriteRestaurantItem[];
   }
+
+  export interface IHeaderFavourite {
+    title: string
+    showSeeAll?: boolean
+    onSeeAllClick?: () => void
+  }
