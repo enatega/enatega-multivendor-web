@@ -9,10 +9,10 @@ import useDebounceFunction from "@/lib/hooks/useDebounceForFunction";
 
 interface IActiveOrdersProps {
     activeOrders : IOrder[];
-    ordersLoading: boolean;
+    isOrdersLoading: boolean;
 }
 
-export default function ActiveOrders({activeOrders,ordersLoading}:IActiveOrdersProps) {  
+export default function ActiveOrders({activeOrders,isOrdersLoading}:IActiveOrdersProps) {  
     const router= useRouter()
 
     //Handlers
@@ -23,7 +23,7 @@ export default function ActiveOrders({activeOrders,ordersLoading}:IActiveOrdersP
     }, 500);
 
     // if orders are loading dislay custom skelton of orderCardSkelton and optionally pass props of how many cards skeltons to display
-    if (ordersLoading) {
+    if (isOrdersLoading) {
         return (
           <OrderCardSkeleton count={2}/>
         )
@@ -41,6 +41,12 @@ export default function ActiveOrders({activeOrders,ordersLoading}:IActiveOrdersP
         )
       }
 
+      //   If there are active orders then display them in order card and pass props
+      //   and also pass the order object to display the order details in the order card
+      //   and also pass the handleTrackOrderClicked function to handle the click event of the order card
+      //   and also pass the type of order to display the order card in different style
+      //   and also pass the className to style the order card
+      //  (optional) we can use styling for order status- for example if order is pending then display the order card style in yellow color 
       return (
         <div className="space-y-4 py-4">
           <h2 className="text-2xl font-bold mb-6">Active Orders</h2>

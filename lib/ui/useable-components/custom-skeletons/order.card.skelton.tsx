@@ -14,7 +14,7 @@ const OrderCardSkeleton: React.FC<OrderCardSkeletonProps> = ({
     <div 
       key={index} 
       className={twMerge(
-        "p-4 bg-white rounded-lg shadow-md animate-pulse", 
+        "p-6 bg-white rounded-lg shadow-md animate-pulse", 
         className
       )}
     >
@@ -40,7 +40,7 @@ const OrderCardSkeleton: React.FC<OrderCardSkeletonProps> = ({
       </div>
 
       {/* Order Items Section */}
-      <div className="mt-4 border-t pt-4">
+      <div className="mt-4 pt-4">
         <div className="h-4 bg-gray-300 rounded w-1/4 mb-2"></div>
         <div className="space-y-3">
           {[1, 2].map((item) => (

@@ -54,7 +54,7 @@ export interface IPoint {
     description?: string;
     quantity?: number;
     image?: string;
-    variation?: IVariation[];
+    variation?: IVariation;
     addons?: IAddon[];
   }
   
@@ -118,5 +118,24 @@ export interface IPoint {
   
   export interface IOrdersVariables {
     offset?: number;
+  }
+  
+  export interface IOrderCardProps {
+    order: IOrder;
+    type: "active" | "past";
+    className?: string;
+    handleTrackOrderClicked?: (id:string|undefined) => void
+    handleReOrderClicked?: (id:string|undefined)=> void
+    handleRateOrderClicked?: (id:string|undefined,value:number)=> void
+    
+  }
+
+  export interface IOrderItemsProps {
+    order: IOrder;
+  }
+  
+  export interface IPastOrdersProps {
+      pastOrders : IOrder[];
+      ordersLoading: boolean;
   }
   

@@ -4,7 +4,7 @@ import { useCallback, type FC } from "react";
 import { Rating } from "primereact/rating";
 import Image from "next/image";
 import { twMerge } from "tailwind-merge";
-import { IOrder } from "@/lib/utils/interfaces/orders.interface";
+import { IOrder, IOrderCardProps } from "@/lib/utils/interfaces/orders.interface";
 import {
   formatDate,
   formatDateAndTime,
@@ -12,16 +12,10 @@ import {
   // getStatusLabel,
 } from "@/lib/utils/methods/helpers";
 import CustomIconButton from "../custom-icon-button";
+// import OrderItemsWithImages from "../order-items-with-images";
+import OrderItems from "../order-items";
 
-interface IOrderCardProps {
-  order: IOrder;
-  type: "active" | "past";
-  className?: string;
-  handleTrackOrderClicked?: (id:string|undefined) => void
-  handleReOrderClicked?: (id:string|undefined)=> void
-  handleRateOrderClicked?: (id:string|undefined,value:number)=> void
-  
-}
+
 
 const OrderCard: FC<IOrderCardProps> = ({ order, type, className,handleTrackOrderClicked,handleReOrderClicked,handleRateOrderClicked }) => {
 
@@ -49,7 +43,7 @@ const OrderCard: FC<IOrderCardProps> = ({ order, type, className,handleTrackOrde
   };
 
   return (
-    <div className={twMerge("p-4", className)}>
+    <div className={twMerge("p-6", className)}>
       <div className="flex flex-col md:flex-row gap-4">
         {/* Restaurant Info */}
         <div className="flex items-start gap-4 flex-1">
@@ -64,7 +58,11 @@ const OrderCard: FC<IOrderCardProps> = ({ order, type, className,handleTrackOrde
           </div>
           <div className="flex-1">
             <h3 className="font-semibold text-lg">{order?.restaurant?.name}</h3>
-            <h1>{(order?.items && order?.items[0]?.title) || ""}</h1>
+           {
+            type === "active" && (
+              <h1 className="text-gray-600 text-sm">{(order?.items && order?.items[0]?.title) || ""}</h1>
+            )
+           }
             {type === "active" ? (
               <>
                 <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
@@ -91,13 +89,15 @@ const OrderCard: FC<IOrderCardProps> = ({ order, type, className,handleTrackOrde
                 <div className="text-sm text-gray-600 mt-1">
                   Order #{order.orderId?.substring(0, 8)}
                 </div>
+                {/* order list without images */}
+                <OrderItems order={order}/>
               </>
             )}
           </div>
         </div>
 
         {/* Price and Action */}
-        <div className="flex flex-col md:items-end justify-between gap-2">
+        <div className="flex md:flex-col md:items-end justify-between gap-2">
           <div className="font-semibold text-lg">
             ${order.orderAmount?.toFixed(2)}
           </div>
@@ -106,7 +106,7 @@ const OrderCard: FC<IOrderCardProps> = ({ order, type, className,handleTrackOrde
             <CustomIconButton
               title={type=== "active" ? "Track your order" : "Select item to reorder"}
               iconColor="black"
-              classNames="bg-[#5AC12F] w-[content] px-4 gap-x-0 text-[12px] font-medium"
+              classNames="bg-[#5AC12F] w-[content] px-4 gap-x-0 text-[12px] font-medium m-0"
               handleClick={
                 type === "active"
                   ? ()=> handleTrackOrder(order)
@@ -117,42 +117,14 @@ const OrderCard: FC<IOrderCardProps> = ({ order, type, className,handleTrackOrde
         </div>
       </div>
 
-      {/* Order Items */}
-      <div className="mt-4 border-t pt-4">
-        <div className="text-sm text-gray-600 mb-2">
-          {order.items?.length} {order.items?.length === 1 ? "item" : "items"}
-        </div>
-        <div className="space-y-3">
-          {order.items?.map((item, index) => (
-            <div
-              key={item._id || index}
-              className="flex justify-between items-center"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 relative flex-shrink-0">
-                  <Image
-                    src={item.image || "/placeholder.svg?height=48&width=48"}
-                    alt={item.title || "Food item"}
-                    width={48}
-                    height={48}
-                    className="rounded-md object-cover"
-                  />
-                </div>
-                <div>
-                  <div className="font-medium">{item.title}</div>
-                  <div className="text-sm text-gray-600">
-                    {item.quantity}x {item.variation?.[0]?.title}
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+
+     {/* Another variant for order items list with images */}
+      {/* Order Items with images */}
+      {/* <OrderItemsWithImages order={order} /> */}
 
       {/* Rating for past orders */}
       {type === "past" && order.orderStatus === "DELIVERED" && (
-        <div className="mt-4 border-t pt-4">
+        <div className="mt-4 pt-4">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium">Rate the Order</span>
             <Rating
