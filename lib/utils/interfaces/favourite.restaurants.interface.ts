@@ -82,7 +82,7 @@ export interface IUserReviewAuthor {
     };
     deliveryTime?: string;
     minimumOrder?: number;
-    tax?: number;
+    tax: number | string;
     isAvailable?: boolean;
     reviewCount?: number;
     reviewAverage?: number;
@@ -107,4 +107,8 @@ export interface IUserReviewAuthor {
     title: string
     showSeeAll?: boolean
     onSeeAllClick?: () => void
+  }
+
+  export interface IFavoriteCardProps {
+    item: IFavouriteRestaurantItem;
   }

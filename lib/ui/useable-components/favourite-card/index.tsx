@@ -1,13 +1,12 @@
 import type React from "react";
-import { faStar, faBicycle } from "@fortawesome/free-solid-svg-icons";
 import TextComponent from "../text-field";
 import ImageComponent from "../card-image-component";
-import IconText from "../icon-text";
-import { IFavouriteRestaurantItem } from "@/lib/utils/interfaces/favourite.restaurants.interface";
+// import IconText from "../icon-text";
+import { IFavoriteCardProps } from "@/lib/utils/interfaces/favourite.restaurants.interface";
+import IconWithTitle from "../icon-with-title";
+import { CycleSvg, FaceSvg } from "@/lib/utils/assets/svg";
 
-interface IFavoriteCardProps {
-  item: IFavouriteRestaurantItem;
-}
+
 
 const FavoriteCard: React.FC<IFavoriteCardProps> = ({ item }) => {
   return (
@@ -20,9 +19,10 @@ const FavoriteCard: React.FC<IFavoriteCardProps> = ({ item }) => {
         <div className="p-4 flex flex-col flex-grow">
           <TextComponent text={item?.name || "N/A"} className="text-lg font-medium text-gray-800 mb-1" />
           <TextComponent text={item?.categories?.[0]?.title || "N/A"} className="text-sm text-gray-600 mb-6" />
-          <div className="flex items-center justify-start mt-auto">
-            <IconText icon={faBicycle} text="$2" className="mr-3 text-gray-500" />
-            <IconText icon={faStar} text={String(item?.reviewAverage) || "9.2"} iconClassName="text-yellow-500" />
+          <div className="flex items-center justify-start mt-auto gap-4">
+            {/* <IconText icon={faBicycle} text="$2" className="mr-3 text-gray-500" /> */}
+            <IconWithTitle logo={CycleSvg} title={`$ ${item?.tax ?? "0"}`} />
+            <IconWithTitle logo={FaceSvg} title={String(item?.reviewAverage) || "9.2"} />
           </div>
         </div>
       </div>
