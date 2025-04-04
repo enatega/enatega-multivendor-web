@@ -1,15 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Dialog } from "primereact/dialog";
 import Image from "next/image";
 import useDebounceFunction from "@/lib/hooks/useDebounceForFunction";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 import RenderStepTwo from "../step-two";
 import RenderStepOne from "../step-one";
 import RenderStepThree from "../step-three";
 import { IRatingModalProps } from "@/lib/utils/interfaces/ratings.interface";
+import CustomDialog from "@/lib/ui/useable-components/custom-dialog";
 
 export default function RatingModal({
   visible,
@@ -18,20 +16,20 @@ export default function RatingModal({
   onSubmitRating,
 }: IRatingModalProps) {
   // State management
-  const [step, setStep] = useState<1 | 2 | 3>(1); // Current step in the rating flow (1=rating, 2=aspects, 3=comment)
-  const [rating, setRating] = useState<number | null>(null); // Selected rating value
-  const [comment, setComment] = useState<string>(""); // User's comment
-  const [selectedAspects, setSelectedAspects] = useState<string[]>([]); // Selected aspects of the order
+  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [rating, setRating] = useState<number | null>(null);
+  const [comment, setComment] = useState<string>("");
+  const [selectedAspects, setSelectedAspects] = useState<string[]>([]);
 
   // Debounced submit function to prevent multiple submissions
   const handleSubmitDebounced = useDebounceFunction(
     () => {
       if (order && rating !== null) {
         onSubmitRating(order._id, rating, comment, selectedAspects);
-        onHide(); // Close the modal after submission
+        onHide();
       }
     },
-    500 // Debounce time in milliseconds
+    500
   );
 
   // Reset all states when modal is opened or closed
@@ -49,7 +47,7 @@ export default function RatingModal({
     setRating(value);
   };
 
-  // Handle aspect selection/deselection (toggle behavior)
+  // Handle aspect selection/deselection
   const handleAspectToggle = (aspect: string) => {
     setSelectedAspects((prev) =>
       prev.includes(aspect)
@@ -61,40 +59,23 @@ export default function RatingModal({
   // Handle navigation to next step
   const handleNext = () => {
     if (step === 1 && rating !== null) {
-      setStep(2); // Move to aspects selection
+      setStep(2);
     } else if (step === 2) {
-      setStep(3); // Move to comment input
+      setStep(3);
     }
   };
 
-  // Main render function for the modal
   return (
-    <Dialog
-      visible={visible}
-      onHide={onHide}
-      dismissableMask // Allows clicking outside to dismiss
-      showHeader={false} // Hide default header
-      className="w-full max-w-md mx-auto "
-      contentClassName="p-0 rounded-xl"
-      style={{ maxWidth: "450px", borderRadius: "0.75rem" }}
-    >
-      <div className="flex flex-col items-center p-6 rounded-xl">
-        {/* Close button */}
-        <span
-          onClick={onHide}
-          className="absolute cursor-pointer right-4 top-4 w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:text-gray-700 focus:outline-none"
-        >
-          <FontAwesomeIcon icon={faCircleXmark} />
-        </span>
-
+    <CustomDialog visible={visible} onHide={onHide} className="m-0" width="594px">
+      <div className="flex flex-col items-center p-8 pt-16 rounded-xl gap-4">
         {/* Restaurant Image */}
-        <div className="w-24 h-24 rounded-full overflow-hidden mb-4">
+        <div className="w-[162px] h-[162px] rounded-full overflow-hidden mb-4">
           {order?.restaurant?.image ? (
             <Image
               src={order.restaurant.image || "/placeholder.svg"}
               alt={order.restaurant.name || "Restaurant"}
-              width={96}
-              height={96}
+              width={162}
+              height={162}
               className="w-full h-full object-cover"
             />
           ) : (
@@ -109,15 +90,15 @@ export default function RatingModal({
         </div>
 
         {/* Restaurant Name */}
-        <p className="text-gray-600 mb-2">
+        <p className="text-gray-600 ">
           {order?.restaurant?.name || "Restaurant name"}
         </p>
 
         {/* Heading */}
-        <h2 className="text-2xl font-bold mb-2">How was the delivery?</h2>
+        <h2 className="text-2xl font-bold  text-black">How was the delivery?</h2>
 
         {/* Subheading */}
-        <p className="text-gray-600 mb-6 text-center">
+        <p className="text-gray-600  text-center text-lg">
           Whether it&apos;s good or bad, let&apos;s talk about it
         </p>
 
@@ -147,6 +128,6 @@ export default function RatingModal({
           />
         )}
       </div>
-    </Dialog>
+    </CustomDialog>
   );
 }

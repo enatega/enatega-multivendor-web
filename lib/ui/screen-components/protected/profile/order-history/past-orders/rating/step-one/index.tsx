@@ -24,7 +24,7 @@ const RatingOption = ({ value, emoji, label, selected, onSelect }: IRatingOption
   function RenderStepOne({rating,handleRatingSelect,handleNext}: {rating: number | null,handleRatingSelect: (value: number) => void,handleNext: () => void}) {
     return (
         <div className="w-full">
-          <div className="flex justify-between items-center mb-8">
+          <div className="flex justify-around items-center mb-8 md:px-20">
             {ratingOptions.map((option) => (
               <RatingOption
                 key={option.value}

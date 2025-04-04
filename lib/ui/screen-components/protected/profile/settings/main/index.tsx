@@ -8,7 +8,7 @@ import { profile } from "@/lib/api/graphql/queries/profile";
 import ProfileSettingsSkeleton from "@/lib/ui/useable-components/custom-skeletons/profile.settings.skelton";
 import TextComponent from "@/lib/ui/useable-components/text-field";
 import CustomButton from "@/lib/ui/useable-components/button";
-import CustomDialog from "@/lib/ui/useable-components/delete-dialog";
+import DeleteAccountDialog from "./delete-account";
 // Query
 const PROFILE = gql`
   ${profile}
@@ -17,7 +17,9 @@ const PROFILE = gql`
 export default function SettingsMain() {
   // States for current values
   const [sendReceipts, setSendReceipts] = useState<boolean>(false);
- const [deleteAccount, setDeleteAccount] = useState<boolean>(false)
+  const [deleteAccount, setDeleteAccount] = useState<boolean>(false)
+  const [isDeleting, setIsDeleting] = useState<boolean>(false)
+  const [deleteReason, setDeleteReason] = useState<string>("")
   // Get profile data by using the query
   const { data: profileData, loading: isProfileLoading } = useQuery(PROFILE, {
     fetchPolicy: "cache-and-network",
@@ -28,6 +30,7 @@ export default function SettingsMain() {
     const newValue = e.target.checked;
     console.log(newValue, "new value");
     setSendReceipts(newValue);
+    // You can use a mutation to update the user's settings
   };
   //  handle Logout
   const handleLogout = () => {
@@ -42,10 +45,17 @@ export default function SettingsMain() {
     setDeleteAccount(true)
   }
 
-  const handleConfirmDelete = ()=>{
-    console.log("Deleting account...");
-    //Actuall Mutation Delete Logic implement here
-    setDeleteAccount(false)
+  const handleConfirmDelete = () => {
+    console.log("Deleting account...")
+    setIsDeleting(true)
+
+    // Simulate API call
+    setTimeout(() => {
+      // Actual Mutation Delete Logic implement here
+      setIsDeleting(false)
+      setDeleteAccount(false)
+      // Show success message or redirect
+    }, 1500)
   }
 
     // Close delete dialog
@@ -59,11 +69,14 @@ export default function SettingsMain() {
 
   return (
     <div className="w-full mx-auto bg-white">
-       <CustomDialog 
-        onConfirm={handleConfirmDelete} 
-        onHide={handleCancelDelete} 
-        visible={!!deleteAccount}
-        loading={false}
+       <DeleteAccountDialog
+        visible={deleteAccount}
+        onHide={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+        userName={profileData?.profile?.name}
+        deleteReason={deleteReason}
+        setDeleteReason={setDeleteReason}
+        loading={isDeleting}
       />
       {/* Email */}
       <div className="py-4 border-b">

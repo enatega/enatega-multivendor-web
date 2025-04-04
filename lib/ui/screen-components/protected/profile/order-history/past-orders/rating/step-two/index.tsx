@@ -7,12 +7,12 @@ import { IRenderStepTwoProps } from "@/lib/utils/interfaces/ratings.interface";
 
 // Render the second step - Aspects selection with option to add comment
 const RenderStepTwo = ({selectedAspects, handleAspectToggle, handleNext, handleSubmitDebounced}: IRenderStepTwoProps) => (
-    <div className="w-full">
+    <div className="w-full flex flex-col justify-center items-center">
         <RenderAspects selectedAspects={selectedAspects} handleAspectToggle={handleAspectToggle} />
         <CustomButton
             label="+ Add a comment"
             onClick={handleNext} // Go to comment step
-            className="!font-thin w-full py-2 rounded-full bg-[#F3FFEE] text-gray-600 mb-4 flex items-center justify-center gap-2 transition-colors"
+            className="!font-thin border border-gray-400  py-2 px-10 rounded-full bg-[#F3FFEE] text-gray-600 mb-4 flex items-center justify-center gap-2 transition-colors"
         />
       
         <ActionButton onClick={handleSubmitDebounced} primary>

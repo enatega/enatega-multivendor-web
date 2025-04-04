@@ -10,3 +10,4 @@ export { default as MenuSvg } from "./menu";
 export { default as CartSvg } from "./cart";
 export { default as CycleSvg } from './cycle';
 export { default as FaceSvg } from './face';
+export {default as LaptopSvg} from './laptop';

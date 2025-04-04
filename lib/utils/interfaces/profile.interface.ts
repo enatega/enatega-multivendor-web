@@ -38,3 +38,15 @@ export interface IAddressItemProps {
   handleDelete: (id: string) => void;
   setDropdownRef: (id: string) => (el: HTMLDivElement | null) => void;
 }
+
+
+export interface IDeleteAccountDialogProps {
+    visible: boolean
+    onHide: () => void
+    onConfirm: () => void
+    userName?: string
+    deleteReason?: string
+    setDeleteReason?: (reason: string) => void
+    loading?: boolean
+  }
+  
