@@ -23,3 +23,5 @@ export * from "./banner.interface";
 export * from "./slider-card.interface";
 export * from "./food-item-detail.interface";
 export * from "./cart.interface";
+export * from "./icon-with-title.interface";
+export * from "./restaurants.interface";

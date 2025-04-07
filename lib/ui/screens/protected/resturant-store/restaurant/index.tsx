@@ -1,9 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useSearchParams } from "next/navigation";
+import { useParams } from "next/navigation";
 
 // Icons
 import { ClockSvg, HeartSvg, InfoSvg, RatingSvg } from "@/lib/utils/assets/svg";
@@ -19,153 +19,80 @@ import CustomIconTextField from "@/lib/ui/useable-components/input-icon-field";
 import FoodItemDetail from "@/lib/ui/useable-components/item-detail";
 import { Dialog } from "primereact/dialog";
 
-const menuData = [
-  {
-    category: "For greater hunger",
-    href: "#for-greater-hunger",
-    items: [
-      {
-        id: 1,
-        name: "Big Share",
-        description:
-          "8 pieces of Chicken McNuggets®, 6 pieces of Spicy Chicken McNuggets and two optional dips.",
-        price: "4",
-        image:
-          "https://storage.googleapis.com/a1aa/image/7yUGCRRKkYPCmODTfTMtYsOhXbggDPaEj6Lwa1Ts52Q.jpg",
-      },
-      {
-        id: 2,
-        name: "All in-ateria ja McFlurry",
-        description:
-          "Big Mac™ Plus meal, 4 pieces of Chicken McNuggets® + a dip and a McFlurry® of your choice.",
-        price: "4",
-        image:
-          "https://storage.googleapis.com/a1aa/image/ZdIquUk6dWp8Ny79PgiPtpwOiPmZnIAVsYjdsxx0RNI.jpg",
-      },
-      {
-        id: 3,
-        name: "Big Mac™ Big Mac™ -ateria",
-        description:
-          "Two Big Mac™ burgers, regular fries, 0.4 l soft drink, Tropicana® juice or Valio Organic™ skimmed milk.",
-        price: "4",
-        image:
-          "https://storage.googleapis.com/a1aa/image/CkgvD4Em_kJdQwQQdfT4M8-rmG6LFlJLYXOZuFGx0l4.jpg",
-      },
-    ],
-  },
-  {
-    category: "Burgers & Meals",
-    href: "#burgers-meals",
-    items: [
-      {
-        id: 4,
-        name: "Cheese Rice",
-        description:
-          "A classic cheeseburger with medium fries and a soft drink.",
-        price: "5",
-        image:
-          "https://storage.googleapis.com/a1aa/image/7yUGCRRKkYPCmODTfTMtYsOhXbggDPaEj6Lwa1Ts52Q.jpg",
-      },
-      {
-        id: 5,
-        name: "Double Quarter",
-        description:
-          "Two beef patties, cheese, pickles, and onions served with fries and a drink.",
-        price: "7",
-        image:
-          "https://storage.googleapis.com/a1aa/image/7yUGCRRKkYPCmODTfTMtYsOhXbggDPaEj6Lwa1Ts52Q.jpg",
-      },
-      {
-        id: 6,
-        name: "Double Biryani",
-        description:
-          "Two beef patties, cheese, pickles, and onions served with fries and a drink.",
-        price: "7",
-        image:
-          "https://storage.googleapis.com/a1aa/image/7yUGCRRKkYPCmODTfTMtYsOhXbggDPaEj6Lwa1Ts52Q.jpg",
-      },
-    ],
-  },
-  {
-    category: "Snacks & Sides",
-    href: "#snacks-sides",
-    items: [
-      {
-        id: 6,
-        name: "French Fries",
-        description:
-          "Crispy golden fries, available in medium and large sizes.",
-        price: "2",
-        image: "https://storage.googleapis.com/a1aa/image/example-fries.jpg",
-      },
-      {
-        id: 7,
-        name: "Mozzarella Sticks",
-        description: "Crispy mozzarella sticks with a side of marinara sauce.",
-        price: "3",
-        image:
-          "https://storage.googleapis.com/a1aa/image/example-mozzarella.jpg",
-      },
-    ],
-  },
-  {
-    category: "Drinks",
-    href: "#drinks",
-    items: [
-      {
-        id: 8,
-        name: "Coca-Cola",
-        description: "Chilled Coca-Cola, available in multiple sizes.",
-        price: "1.5",
-        image: "https://storage.googleapis.com/a1aa/image/example-coke.jpg",
-      },
-      {
-        id: 9,
-        name: "Iced Coffee",
-        description: "Refreshing iced coffee with vanilla or caramel flavors.",
-        price: "3",
-        image:
-          "https://storage.googleapis.com/a1aa/image/example-iced-coffee.jpg",
-      },
-    ],
-  },
-  {
-    category: "Desserts",
-    href: "#desserts",
-    items: [
-      {
-        id: 10,
-        name: "McFlurry",
-        description: "Soft-serve ice cream with your choice of toppings.",
-        price: "3",
-        image: "https://storage.googleapis.com/a1aa/image/example-mcflurry.jpg",
-      },
-      {
-        id: 11,
-        name: "Apple Pie",
-        description: "Warm and crispy apple-filled pie.",
-        price: "2",
-        image:
-          "https://storage.googleapis.com/a1aa/image/example-apple-pie.jpg",
-      },
-    ],
-  },
-];
-const categories = [
-  { name: "For greater hunger", href: "#for-greater-hunger" },
-  { name: "Burgers & Meals", href: "#burgers-meals" },
-  { name: "Snacks & Sides", href: "#snacks-sides" },
-  { name: "Drinks", href: "#drinks" },
-  { name: "Desserts", href: "#desserts" },
-];
+// Interface
+import { ICategory, IFood } from "@/lib/utils/interfaces";
+
+// Hook
+import useRestaurant from "@/lib/hooks/useRestaurant";
+
+// Methods
+import { toSlug } from "@/lib/utils/methods";
 
 export default function RestaurantDetailsScreen() {
-  const params = useSearchParams();
+  // Params
+  const { id, slug }: { id: string; slug: string } = useParams();
 
-  console.log({ params });
+  // State
+  const [filter, setFilter] = useState("");
 
   // Hooks
-  // const { data, loading, error } = useRestaurant(state?.id, query.slug);
+  const { data } = useRestaurant(id, decodeURIComponent(slug));
+
+  // Constants
+  const allDeals = data?.restaurant?.categories?.filter(
+    (cat: ICategory) => cat.foods.length
+  );
+
+  const deals = useMemo(() => {
+    return (
+      (allDeals || [])
+        .filter((c: ICategory) => {
+          // Only apply filter logic if `filter` is not an empty string
+          if (filter.trim() === "") return true; // If filter is empty, don't filter, just map
+
+          // Check if the category title or any food title contains the filter text
+          const categoryMatches = c.title
+            .toLowerCase()
+            .includes(filter.toLowerCase());
+          const foodsMatch = c.foods.some((food: IFood) =>
+            food.title.toLowerCase().includes(filter.toLowerCase())
+          );
+
+          return categoryMatches || foodsMatch; // Keep category if it matches or any of the foods
+        })
+        .map((c: ICategory, index: number) => ({
+          ...c,
+          index,
+          foods: c.foods.map((food: IFood) => ({
+            ...food,
+            title: food.title.toLowerCase(), // Modify food titles if needed
+          })),
+        })) || []
+    );
+  }, [allDeals, filter]);
+
+  const headerData = {
+    name: data?.restaurant?.name ?? "...",
+    averageReview: data?.restaurant?.reviewData?.ratings ?? "...",
+    averageTotal: data?.restaurant?.reviewData?.total ?? "...",
+    isAvailable: data?.restaurant?.isAvailable ?? true,
+    openingTimes: data?.restaurant?.openingTimes ?? [],
+    deals: deals,
+    deliveryTime: data?.restaurant?.deliveryTime,
+  };
+
+  const restaurantInfo = {
+    _id: data?.restaurant._id ?? "",
+    name: data?.restaurant?.name ?? "...",
+    image: data?.restaurant?.image ?? "",
+    deals: deals,
+    reviewData: data?.restaurant?.reviewData ?? {},
+    address: data?.restaurant?.address ?? "",
+    deliveryCharges: data?.restaurant?.deliveryCharges ?? "",
+    deliveryTime: data?.restaurant?.deliveryTime ?? "...",
+    isAvailable: data?.restaurant?.isAvailable ?? true,
+    openingTimes: data?.restaurant?.openingTimes ?? [],
+  };
 
   // States
   const [visibleItems, setVisibleItems] = useState(10); // Default visible items
@@ -224,6 +151,8 @@ export default function RestaurantDetailsScreen() {
     };
   }, []);
 
+  console.log(headerData);
+
   return (
     <>
       <div className="w-screen h-screen flex flex-col pb-20">
@@ -234,7 +163,8 @@ export default function RestaurantDetailsScreen() {
               alt="McDonald's banner with a burger and fries"
               className="w-full h-72 object-cover"
               height="300"
-              src="https://storage.googleapis.com/a1aa/image/l_S6V3o3Sf_fYnRuAefKySjq6q-HmTjiF37tvk6PiMU.jpg"
+              // src="https://storage.googleapis.com/a1aa/image/l_S6V3o3Sf_fYnRuAefKySjq6q-HmTjiF37tvk6PiMU.jpg"
+              src={restaurantInfo.image}
               width="1200"
             />
             <div className="absolute bottom-0 left-0 md:left-20 p-4">
@@ -243,16 +173,16 @@ export default function RestaurantDetailsScreen() {
                   alt="McDonald's logo"
                   className="w-12 h-12 mb-2"
                   height="50"
-                  src="https://storage.googleapis.com/a1aa/image/_a4rKBo9YwPTH-AHQzOLoIcNAirPNTI7alqAVAEqmOo.jpg"
+                  // src="https://storage.googleapis.com/a1aa/image/_a4rKBo9YwPTH-AHQzOLoIcNAirPNTI7alqAVAEqmOo.jpg"
+                  src={restaurantInfo.image}
                   width="50"
                 />
                 <div className="text-white">
                   <h1 className="font-inter font-extrabold text-[32px] leading-[100%] sm:text-[40px] md:text-[48px]">
-                    McDonald&apos;s Espoo
+                    {restaurantInfo.name}
                   </h1>
                   <p className="font-inter font-medium text-[18px] leading-[28px] sm:text-[20px] sm:leading-[30px] md:text-[24px] md:leading-[32px]">
-                    Preservation of the authentic taste of all traditional foods
-                    is upheld here.
+                    {restaurantInfo.address}
                   </p>
                 </div>
               </div>
@@ -270,13 +200,14 @@ export default function RestaurantDetailsScreen() {
                 {/* Time */}
                 <span className="flex items-center gap-2 text-gray-600 font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle">
                   <ClockSvg />
-                  10:30 AM - 8:30 PM
+                  {headerData.deliveryTime} mins
                 </span>
 
                 {/* Rating */}
                 <span className="flex items-center gap-2 text-gray-600 font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle">
                   <RatingSvg />
-                  Excellent, 4.2
+
+                  {headerData.averageReview}
                 </span>
 
                 {/* Info Link */}
@@ -312,19 +243,20 @@ export default function RestaurantDetailsScreen() {
                   [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
                 >
                   <ul className="flex space-x-4 items-center w-max flex-nowrap">
-                    {(showAll ? categories : categories.slice(0, visibleItems)
-                    ).map((category, index) => (
-                      <li key={index} className="shrink-0">
-                        <button
-                          className="bg-gray-100 text-gray-600 rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap"
-                          onClick={() => handleScroll(category.href)}
-                        >
-                          {category.name}
-                        </button>
-                      </li>
-                    ))}
+                    {(showAll ? deals : deals.slice(0, visibleItems)).map(
+                      (category: ICategory, index: number) => (
+                        <li key={index} className="shrink-0">
+                          <button
+                            className="bg-gray-100 text-gray-600 rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap"
+                            onClick={() => handleScroll(toSlug(category.title))}
+                          >
+                            {category.title}
+                          </button>
+                        </li>
+                      )
+                    )}
 
-                    {!showAll && categories.length > visibleItems && (
+                    {!showAll && deals.length > visibleItems && (
                       <li className="shrink-0">
                         <span
                           className="bg-blue-500 text-white rounded-full px-4 py-2 font-medium text-[14px] cursor-pointer"
@@ -341,6 +273,7 @@ export default function RestaurantDetailsScreen() {
               {/* Search Input - 20% Width on Large Screens, Full Width on Small Screens */}
               <div className="h-full w-full md:w-[20%]">
                 <CustomIconTextField
+                  value={filter}
                   className="w-full md:h-10 h-9 rounded-full pl-10"
                   iconProperties={{
                     icon: faSearch,
@@ -351,6 +284,7 @@ export default function RestaurantDetailsScreen() {
                   type="text"
                   name="search"
                   showLabel={false}
+                  onChange={(e) => setFilter(e.target.value)}
                 />
               </div>
             </div>
@@ -361,22 +295,26 @@ export default function RestaurantDetailsScreen() {
           {/* Main Section */}
 
           <PaddingContainer>
-            {menuData.map((category, index) => (
-              <div key={index} className="mb-4 p-3" id={category.href}>
+            {deals.map((category: ICategory, catIndex: number) => (
+              <div
+                key={catIndex}
+                className="mb-4 p-3"
+                id={toSlug(category.title)}
+              >
                 <h2 className="mb-4 font-inter text-gray-900 font-bold text-2xl sm:text-xl leading-snug tracking-tight">
-                  {category.category}
+                  {category.title}
                 </h2>
 
                 <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                  {category.items.map((meal, index) => (
+                  {category.foods.map((meal: IFood, mealIndex) => (
                     <div
-                      key={index}
+                      key={mealIndex}
                       className="flex items-center gap-4 rounded-lg border border-gray-300 shadow-sm bg-white p-3 relative"
                     >
                       {/* Text Content */}
                       <div className="flex-grow text-left md:text-left space-y-2">
                         <h3 className="text-gray-900 text-lg font-semibold font-inter">
-                          {meal.name}
+                          {meal.title}
                         </h3>
 
                         <p className="text-gray-500 text-sm">
@@ -385,7 +323,7 @@ export default function RestaurantDetailsScreen() {
 
                         <div className="flex items-center gap-2">
                           <span className="text-[#0EA5E9] text-lg font-semibold">
-                            Rs. {meal.price}
+                            Rs. {meal.variations[0].price}
                           </span>
                         </div>
                       </div>
@@ -393,7 +331,7 @@ export default function RestaurantDetailsScreen() {
                       {/* Image */}
                       <div className="flex-shrink-0 w-24 h-24 md:w-28 md:h-28">
                         <img
-                          alt={meal.name}
+                          alt={meal.title}
                           className="w-full h-full object-contain mx-auto md:mx-0"
                           src={meal.image}
                         />
