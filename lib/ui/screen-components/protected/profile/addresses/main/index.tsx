@@ -10,6 +10,7 @@ import AddressItem from  "../main/address-listings"
 import CustomDialog from "@/lib/ui/useable-components/delete-dialog";
 import { ISingleAddress } from "@/lib/utils/interfaces/profile.interface";
 import { profile } from "@/lib/api/graphql/queries/profile";
+import EmptyAddress from "@/lib/ui/useable-components/empty-address";
 
 // Queries & Mutations
 const PROFILE = gql`${profile}`;
@@ -80,6 +81,7 @@ export default function AddressesMain() {
 
 // Return Skelton on Loading state
   if (profileLoading) return <AddressesSkeleton />;
+  
 
   return (
     <div className="w-full mx-auto">
@@ -90,7 +92,7 @@ export default function AddressesMain() {
         loading={loadingAddressMutation}
       />
       
-      {addresses.map((address:ISingleAddress) => (
+      {addresses?.map((address:ISingleAddress) => (
         <AddressItem 
           key={address?._id} 
           address={address} 
@@ -100,6 +102,10 @@ export default function AddressesMain() {
           setDropdownRef={(id) => (el) => dropdownRefs.current[id] = el} 
         />
       ))}
+      {
+        !addresses.length && (
+         <EmptyAddress/>
+        )}
 
       <div className="flex justify-center mt-16">
         <CustomIconButton

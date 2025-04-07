@@ -9,6 +9,7 @@ import CardSkeletonGrid from "@/lib/ui/useable-components/card-skelton-grid";
 import FavouriteCardsGrid from "@/lib/ui/useable-components/favourite-cards-grid";
 import useDebounceFunction from "@/lib/hooks/useDebounceForFunction";
 import { useRouter } from "next/navigation";
+import FavoritesEmptyState from "@/lib/ui/useable-components/favorites-empty-state";
 // Query
 const FAVOURITERESTAURANT = gql`
   ${FavouriteRestaurant}
@@ -57,9 +58,7 @@ const FavouriteProducts = () => {
         handleClickFavRestaurant={handleClickFavRestaurant}
         />
       ) : (
-        <div className="text-center text-gray-500">
-          No favourite restaurants found
-        </div>
+        <FavoritesEmptyState/>
       )}
     </div>
   );

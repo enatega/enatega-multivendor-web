@@ -129,8 +129,8 @@ export default function PastOrders({
         // icon="fa-solid fa-receipt"
         title="No Past Orders"
         message="You haven't placed any orders yet."
-        actionLabel="Browse Restaurants"
-        actionLink="/restaurants"
+        actionLabel="Browse Store"
+        actionLink="/store"
       />
     );
   }

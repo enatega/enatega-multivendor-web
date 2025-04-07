@@ -32,8 +32,8 @@ export default function ActiveOrders({activeOrders,isOrdersLoading}:IActiveOrder
           <EmptyState
             title="No Active Orders"
             message="You don't have any active orders at the moment."
-            actionLabel="Browse Restaurants"
-            actionLink="/restaurants"
+            actionLabel="Browse Store"
+            actionLink="/store"
           />
         )
       }
