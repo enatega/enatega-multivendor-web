@@ -1,3 +1,4 @@
+"use client"
 import ProfileDetailsSkeleton from "@/lib/ui/useable-components/custom-skeletons/profile.details.skelton";
 import TextComponent from "@/lib/ui/useable-components/text-field";
 import { getInitials } from "@/lib/utils/methods";

@@ -1,3 +1,4 @@
+"use client";
 import type { FC } from "react";
 import { HomeSvg, MenuSvg } from "@/lib/utils/assets/svg";
 import TextComponent from "@/lib/ui/useable-components/text-field";

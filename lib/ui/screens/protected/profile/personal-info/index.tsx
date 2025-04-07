@@ -1,3 +1,5 @@
+"use client";
+
 import { FavouriteProducts, PersonalInfoMain } from "@/lib/ui/screen-components/protected/profile";
 
   export default function PersonalInfoScreen() {

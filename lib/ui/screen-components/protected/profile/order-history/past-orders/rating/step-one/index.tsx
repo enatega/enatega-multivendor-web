@@ -1,3 +1,4 @@
+"use client"
 import ActionButton from "@/lib/ui/useable-components/action-button";
 import { ratingOptions } from "@/lib/utils/constants";
 import { IRatingOption } from "@/lib/utils/interfaces/ratings.interface";

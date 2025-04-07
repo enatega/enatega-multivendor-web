@@ -1,4 +1,4 @@
-
+"use client";
 import { myOrders } from "@/lib/api/graphql/queries/orders";
 import { ActiveOrders, PastOrders } from "@/lib/ui/screen-components/protected/profile";
 import { ACTIVE_STATUS, INACTIVE_STATUS } from "@/lib/utils/constants/orders";

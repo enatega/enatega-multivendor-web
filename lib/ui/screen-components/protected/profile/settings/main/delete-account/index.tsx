@@ -1,3 +1,4 @@
+"use client"
 import CustomDialog from "@/lib/ui/useable-components/custom-dialog"
 import CustomButton from "@/lib/ui/useable-components/button"
 import { LaptopSvg } from "@/lib/utils/assets/svg"

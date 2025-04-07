@@ -1,3 +1,5 @@
+"use client";
+
 import { NotificationSection, SettingsMain } from "@/lib/ui/screen-components/protected/profile/settings";
 
   export default function SettingsScreen() {

@@ -1,3 +1,4 @@
+"use client"
 import React from "react";
 import ActionButton from "@/lib/ui/useable-components/action-button"
 import RenderAspects from "@/lib/ui/useable-components/render-aspects"

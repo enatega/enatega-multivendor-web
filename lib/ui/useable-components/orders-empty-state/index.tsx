@@ -1,3 +1,4 @@
+"use client"
 import { useEffect, useState, type FC } from "react"
 import Link from "next/link"
 import Lottie from "lottie-react"

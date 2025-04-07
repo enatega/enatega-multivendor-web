@@ -1,3 +1,4 @@
+"use client"
 import ActionButton from "@/lib/ui/useable-components/action-button";
 import CustomButton from "@/lib/ui/useable-components/button";
 import RenderAspects from "@/lib/ui/useable-components/render-aspects"

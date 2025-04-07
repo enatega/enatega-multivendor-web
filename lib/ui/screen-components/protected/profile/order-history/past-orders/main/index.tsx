@@ -1,3 +1,4 @@
+"use client"
 import useDebounceFunction from "@/lib/hooks/useDebounceForFunction";
 import OrderCardSkeleton from "@/lib/ui/useable-components/custom-skeletons/order.card.skelton";
 import OrderCard from "@/lib/ui/useable-components/order-card";
