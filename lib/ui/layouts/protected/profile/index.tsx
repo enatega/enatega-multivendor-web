@@ -5,9 +5,8 @@ import ProfileTabs from "@/lib/ui/screen-components/protected/layout/profile/pro
 import { PaddingContainer } from "@/lib/ui/useable-components/containers";
 import { IProtectedProfileLayoutComponent } from "@/lib/utils/interfaces";
 import { useRouter } from "next/navigation";
-import { useLayoutEffect, useState } from "react";
+import { useEffect, useState } from "react";
 // import { usePathname, useRouter } from "next/navigation";
-
 
 
 export default function ProfileLayout({
@@ -19,9 +18,12 @@ export default function ProfileLayout({
 
   //initially temporarily setting user in state -after login functionality use usercontext here
   
-  useLayoutEffect(() => {
-    if (!user) {
-      router.push("/discovery");
+  useEffect(() => {
+    // Only run on client-side
+    if (typeof window !== 'undefined') {
+      if (!user) {
+        router.push("/discovery");
+      }
     }
   }, [user, router]);
 
