@@ -1,3 +1,4 @@
+"use client"
 import CustomButton from '@/lib/ui/useable-components/button'
 import TextComponent from '@/lib/ui/useable-components/text-field'
 import React from 'react'
