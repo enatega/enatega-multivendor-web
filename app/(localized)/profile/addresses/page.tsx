@@ -7,7 +7,6 @@ const AddressesScreen = dynamic(
   () => import('@/lib/ui/screens/protected/profile').then(mod => mod.AddressesScreen),
   { ssr: false }
 );
-
 // import AddressesScreen from "@/lib/ui/screens/protected/profile/addresses";
 
 export default function Addresses() {
