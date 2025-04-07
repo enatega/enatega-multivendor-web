@@ -2,7 +2,7 @@
 
 import ProfileHeader from "@/lib/ui/screen-components/protected/layout/profile/profile-header";
 import ProfileTabs from "@/lib/ui/screen-components/protected/layout/profile/profile-tabs";
-import { PaddingContainer } from "@/lib/ui/useable-components/containers";
+// import { PaddingContainer } from "@/lib/ui/useable-components/containers";
 import { IProtectedProfileLayoutComponent } from "@/lib/utils/interfaces";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -26,6 +26,7 @@ export default function ProfileLayout({
       }
     }
   }, [user, router]);
+  console.log(children)
 
   if (user) {
     return (
@@ -36,9 +37,9 @@ export default function ProfileLayout({
         </div>
         <div className="flex-1 overflow-auto px-4 md:px-0 lg:px-28 xl:px-40">  
           {/* Scrollable Content */}
-         <PaddingContainer>
+         {/* <PaddingContainer>
           {children}
-         </PaddingContainer>
+         </PaddingContainer> */}
         
         </div>
         </div>
