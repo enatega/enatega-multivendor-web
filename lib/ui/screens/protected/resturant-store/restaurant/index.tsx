@@ -98,7 +98,7 @@ export default function RestaurantDetailsScreen() {
   const [visibleItems, setVisibleItems] = useState(10); // Default visible items
   const [showAll, setShowAll] = useState(false);
   const [headerHeight, setHeaderHeight] = useState("64px"); // Default for desktop
-  const [showDialog, setShowDialog] = useState(false);
+  const [showDialog, setShowDialog] = useState<IFood | null>(null);
 
   // Handlers
   const handleScroll = (id: string) => {
@@ -150,8 +150,6 @@ export default function RestaurantDetailsScreen() {
       window.removeEventListener("resize", updateHeight);
     };
   }, []);
-
-  console.log(headerData);
 
   return (
     <>
@@ -341,7 +339,7 @@ export default function RestaurantDetailsScreen() {
                       <div className="absolute top-2 right-2">
                         <button
                           className="bg-[#0EA5E9] rounded-full shadow-md w-6 h-6 flex items-center justify-center"
-                          onClick={() => setShowDialog(true)}
+                          onClick={() => setShowDialog(meal)}
                         >
                           <FontAwesomeIcon icon={faPlus} color="white" />
                         </button>
@@ -356,14 +354,18 @@ export default function RestaurantDetailsScreen() {
       </div>
 
       <Dialog
-        visible={showDialog}
+        visible={!!showDialog}
         className="mx-4 md:mx-0" // Adds margin on small screens
         onHide={() => {
           if (!showDialog) return;
-          setShowDialog(false);
+          setShowDialog(null);
         }}
       >
-        <FoodItemDetail />
+        <FoodItemDetail
+          foodItem={showDialog}
+          addons={data?.restaurant?.addons}
+          options={data?.restaurant?.options}
+        />
       </Dialog>
     </>
   );

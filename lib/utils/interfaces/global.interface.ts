@@ -75,3 +75,7 @@ export interface IGlobalTableHeaderProps {
   globalFilterValue: string;
   onGlobalFilterChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
+
+export type Optional<T> = {
+  [P in keyof T]?: T[P] | undefined;
+};

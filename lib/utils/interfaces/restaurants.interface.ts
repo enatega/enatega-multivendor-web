@@ -1,3 +1,5 @@
+import { Optional } from "./global.interface";
+
 // Define types for the GraphQL query response
 export interface IRestaurantLocation {
   coordinates: [number, number];
@@ -81,7 +83,28 @@ export interface IVariation {
   title: string;
   price: number;
   discounted: boolean;
-  addons: IAddon[];
+  addons: string[];
+}
+
+export interface ISelectedVariation {
+  _id: string;
+  title: string;
+  price: number;
+  discounted: boolean;
+  addons: {
+    _id: string;
+    options?: {
+      _id: string;
+      title: string;
+      description: string;
+      price: number;
+    }[];
+
+    title?: string;
+    description?: string;
+    quantityMinimum?: number;
+    quantityMaximum?: number;
+  }[];
 }
 
 export interface IOption {
@@ -93,7 +116,7 @@ export interface IOption {
 
 export interface IAddon {
   _id: string;
-  options: IOption[];
+  options: string[];
   title: string;
   description: string;
   quantityMinimum: number;

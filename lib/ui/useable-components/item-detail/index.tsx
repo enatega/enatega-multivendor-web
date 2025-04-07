@@ -1,16 +1,76 @@
+import Divider from "../custom-divider";
 // import { IFoodItemDetalComponentProps } from "@/lib/utils/interfaces";
 
 import { ITEM_SECTIONS } from "@/lib/utils/dummy";
-import { Option } from "@/lib/utils/interfaces";
-import { useState } from "react";
+import {
+  IAddon,
+  IFoodItemDetalComponentProps,
+  IOption,
+  ISelectedVariation,
+  Option,
+} from "@/lib/utils/interfaces";
+import { useEffect, useState } from "react";
 
 // Components
 import { ItemDetailSection } from "./item-section";
-import Divider from "../custom-divider";
+import { ItemDetailAddonSection } from "./item-addon-section";
 
-export default function FoodItemDetail(/* props: IFoodItemDetalComponentProps */) {
+export default function FoodItemDetail(props: IFoodItemDetalComponentProps) {
+  const { foodItem, addons, options } = props;
+
+  const [selectedVariation, setSelectedVariation] =
+    useState<ISelectedVariation | null>(null);
   const [selectedOption, setSelectedOption] = useState<Option | null>(null); // Single
-  //   const [selectedOptions, setSelectedOptions] = useState<Option[] | null>(null); // Multiple
+  const [selectedAddons, setSelectedAddons] = useState<IAddon[] | null>(null); // Multiple
+
+  // Use Effect
+  useEffect(() => {
+    setSelectedVariation({
+      ...foodItem?.variations[0],
+      addons:
+        foodItem?.variations[0]?.addons?.map((fa) => {
+          const addon = addons?.find((a) => a._id === fa);
+
+          if (!addon) {
+            return {
+              _id: "", // Default _id if not found
+              options: [], // Default empty options array
+              title: "", // Default title if missing
+              description: "", // Default description if missing
+              quantityMinimum: 0, // Default quantity minimum
+              quantityMaximum: 0, // Default quantity maximum
+            };
+          }
+
+          const addonOptionsMap = new Map(options?.map((o) => [o._id, o]));
+
+          const addonOptions =
+            addon?.options
+              ?.map((aoId) => addonOptionsMap.get(aoId))
+              .filter((option): option is IOption => option !== undefined) ||
+            [];
+
+          return {
+            _id: addon._id || "", // Ensure _id is set to a non-undefined value
+            title: addon.title || "", // Default title if missing
+            description: addon.description || "", // Default description if missing
+            quantityMinimum: addon.quantityMinimum || 0, // Default quantityMinimum if missing
+            quantityMaximum: addon.quantityMaximum || 0, // Default quantityMaximum if missing
+            options: addonOptions, // Mapped options, with no undefined values
+          };
+        }) || [],
+      // Ensure the top-level properties also have default values to avoid undefined
+      _id: foodItem?.variations[0]?._id || "", // Default empty string for _id if undefined
+      title: foodItem?.variations[0]?.title || "", // Default empty string for title if undefined
+      price: foodItem?.variations[0]?.price || 0, // Default 0 for price if undefined
+      discounted: foodItem?.variations[0]?.discounted || false, // Default false for discounted if undefined
+    });
+
+    // return () => {
+    //   setSelectedAddons([]);
+    //   setSelectedVariation(null);
+    // };
+  }, [foodItem, addons, options]);
 
   return (
     <div className="bg-white  max-w-md w-full">
@@ -20,26 +80,34 @@ export default function FoodItemDetail(/* props: IFoodItemDetalComponentProps */
       </div>
       <div className="text-center mb-4">
         <img
-          alt="A box of assorted McDonald's food items including Chicken McNuggets, Chili Cheese Tops, and Spicy Chicken McNuggets"
+          alt={foodItem?.title}
           className="w-full h-[150px] object-cover mx-auto"
-          src="https://storage.googleapis.com/a1aa/image/gAqgb-r0WwiptmpqIgbITBszVGh_k2Ll8UzXgz1-Eu0.jpg"
+          src={foodItem?.image}
         />
       </div>
 
       <h2 className="font-inter font-bold text-[#111827] text-[16px] md:text-[18px] lg:text-[19px] leading-[22px] md:leading-[24px]">
-        Big Share
+        {foodItem?.title}
       </h2>
       <p className="text-[#0EA5E9] font-[600] text-[14px] md:text-[15px] lg:text-[16px] mb-2">
         $4
       </p>
       <p className="font-inter font-normal text-gray-500 text-[12px] md:text-[13px] lg:text-[14px] leading-[18px] md:leading-[20px]">
-        6 pieces of Chicken McNuggets™, 6 pieces of Chili Cheese Tops and 6
-        pieces of Spicy Chicken McNuggets and two optional dips.
+        {foodItem?.description}
       </p>
 
       <Divider />
 
       <div id="dip-sections">
+        <ItemDetailSection
+          key={foodItem?.title}
+          title="Select Variation"
+          name={foodItem?._id ?? ""}
+          singleSelected={selectedOption}
+          onSingleSelect={setSelectedOption}
+          options={foodItem?.variations || []}
+        />
+
         <ItemDetailSection
           title="Dip 1/2"
           options={ITEM_SECTIONS}
