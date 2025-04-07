@@ -4,6 +4,7 @@ import CustomButton from "@/lib/ui/useable-components/button"
 import { LaptopSvg } from "@/lib/utils/assets/svg"
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown"
 import { IDeleteAccountDialogProps } from "@/lib/utils/interfaces"
+import { useEffect, useState } from "react"
 
 
 const reasonOptions = [
@@ -23,14 +24,28 @@ export default function DeleteAccountDialog({
   setDeleteReason,
   loading = false,
 }: IDeleteAccountDialogProps) {
-  
+  const [screenWidth, setScreenWidth] = useState(1024); // Default to desktop size
 
+  useEffect(() => {
+    // Only run in browser environment
+    if (typeof window !== 'undefined') {
+      setScreenWidth(window.innerWidth);
+      
+      const handleResize = () => {
+        setScreenWidth(window.innerWidth);
+      };
+      
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }
+  }, []);
+   
   return (
     <CustomDialog visible={visible} onHide={onHide} width="600px" className="delete-account-dialog md:h-[710px]">
       <div className="p-6 flex flex-col items-center">
         {/* Illustration */}
-        <div className="relative ">
-          <LaptopSvg height={window.innerWidth < 768 ? 300 : 380} width={window.innerWidth < 768 ? 300 : 380} color="#D5FEC4"/>
+        <div className="relative">
+          <LaptopSvg height={screenWidth < 768 ? 300 : 380} width={screenWidth < 768 ? 300 : 380} color="#D5FEC4"/>
         </div>
 
         {/* Title */}

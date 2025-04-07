@@ -64,6 +64,10 @@ export default function AddressesMain() {
   }, [deleteAddressError]);
 
   useEffect(() => {
+
+     // Only run on client side
+    if (typeof window === 'undefined') return;
+    
     const handleClickOutside = (event: MouseEvent) => {
       const isOutside = addresses.every((address:ISingleAddress) => {
         const ref = dropdownRefs.current[address?._id];
