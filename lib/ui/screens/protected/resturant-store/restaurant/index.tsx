@@ -1,11 +1,16 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useSearchParams } from "next/navigation";
 
 // Icons
 import { ClockSvg, HeartSvg, InfoSvg, RatingSvg } from "@/lib/utils/assets/svg";
 import { faPlus, faSearch } from "@fortawesome/free-solid-svg-icons";
+
+// Hook
+// import useRestaurant from "@/lib/hooks/useRestaurant";
 
 // Components
 import Spacer from "@/lib/ui/useable-components/spacer";
@@ -155,6 +160,13 @@ const categories = [
 ];
 
 export default function RestaurantDetailsScreen() {
+  const params = useSearchParams();
+
+  console.log({ params });
+
+  // Hooks
+  // const { data, loading, error } = useRestaurant(state?.id, query.slug);
+
   // States
   const [visibleItems, setVisibleItems] = useState(10); // Default visible items
   const [showAll, setShowAll] = useState(false);
@@ -162,7 +174,6 @@ export default function RestaurantDetailsScreen() {
   const [showDialog, setShowDialog] = useState(false);
 
   // Handlers
-
   const handleScroll = (id: string) => {
     const element = document.getElementById(id);
     const container = document.querySelector(".scrollable-container"); // Adjust selector
@@ -172,7 +183,6 @@ export default function RestaurantDetailsScreen() {
       const elementPosition = element.offsetTop;
       const offsetPosition = elementPosition - headerOffset;
 
-      console.log({ offsetPosition });
       container.scrollTo({
         top: offsetPosition,
         behavior: "smooth",
