@@ -44,6 +44,7 @@ const config = {
         'card-h2': '',
         'btn-h': '',
       },
+      
     },
   },
   plugins: [],
