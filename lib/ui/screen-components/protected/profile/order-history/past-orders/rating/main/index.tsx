@@ -72,7 +72,7 @@ export default function RatingModal({
         <div className="w-[162px] h-[162px] rounded-full overflow-hidden mb-4">
           {order?.restaurant?.image ? (
             <Image
-              src={order.restaurant.image || "/placeholder.svg"}
+              src={order.restaurant.image}
               alt={order.restaurant.name || "Restaurant"}
               width={162}
               height={162}

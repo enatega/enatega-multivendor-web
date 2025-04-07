@@ -1,7 +1,6 @@
-import type { FC } from "react"
+import { useEffect, useState, type FC } from "react"
 import Link from "next/link"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faFaceFrown } from "@fortawesome/free-solid-svg-icons"
+import Lottie from "lottie-react"
 
 interface EmptyStateProps {
   title: string
@@ -11,11 +10,19 @@ interface EmptyStateProps {
 }
 
 const EmptyState: FC<EmptyStateProps> = ({ title, message, actionLabel, actionLink }) => {
+        const [animationData, setAnimationData] = useState<null | object>(null);
+        
+        useEffect(() => {
+          fetch("/assets/lottie/orders.json")
+            .then((res) => res.json())
+            .then(setAnimationData)
+            .catch((err) => console.error("Failed to load Lottie JSON", err));
+        }, []);
+      
   return (
     <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-      <div className="w-16 h-16 flex items-center justify-center rounded-full bg-[#F3FFEE]  mb-4">
-      <FontAwesomeIcon icon={faFaceFrown} className="text-4xl" />
-      
+      <div className="w-32 h-32 md:w-60 md:h-60 flex items-center justify-center">
+      <Lottie animationData={animationData} loop={true} autoplay={true} />
       </div>
       <h3 className="text-xl font-semibold mb-2">{title}</h3>
       <p className="text-gray-600 mb-6 max-w-md">{message}</p>
