@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 // Interface
 import { SectionProps, Option } from "@/lib/utils/interfaces";
 
