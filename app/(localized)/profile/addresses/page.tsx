@@ -1,6 +1,14 @@
 "use client";
 
-import AddressesScreen from "@/lib/ui/screens/protected/profile/addresses";
+import dynamic from 'next/dynamic';
+
+// Dynamically import the component with SSR disabled
+const AddressesScreen = dynamic(
+  () => import('@/lib/ui/screens/protected/profile').then(mod => mod.AddressesScreen),
+  { ssr: false }
+);
+
+// import AddressesScreen from "@/lib/ui/screens/protected/profile/addresses";
 
 export default function Addresses() {
   return <AddressesScreen/>
