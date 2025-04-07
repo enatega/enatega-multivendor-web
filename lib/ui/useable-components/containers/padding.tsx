@@ -1,3 +1,4 @@
+"use client";
 import { IPaddingContainer } from "@/lib/utils/interfaces";
 import React from "react";
 
