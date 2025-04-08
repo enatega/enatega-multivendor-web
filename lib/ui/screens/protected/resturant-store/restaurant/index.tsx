@@ -4,6 +4,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useParams } from "next/navigation";
+import { Skeleton } from "primereact/skeleton";
+import { Dialog } from "primereact/dialog";
 
 // Icons
 import { ClockSvg, HeartSvg, InfoSvg, RatingSvg } from "@/lib/utils/assets/svg";
@@ -17,8 +19,8 @@ import Spacer from "@/lib/ui/useable-components/spacer";
 import { PaddingContainer } from "@/lib/ui/useable-components/containers";
 import CustomIconTextField from "@/lib/ui/useable-components/input-icon-field";
 import FoodItemDetail from "@/lib/ui/useable-components/item-detail";
-import { Dialog } from "primereact/dialog";
 
+import FoodCategorySkeleton from "@/lib/ui/useable-components/custom-skeletons/food-items.skeleton";
 // Interface
 import { ICategory, IFood } from "@/lib/utils/interfaces";
 
@@ -27,9 +29,6 @@ import useRestaurant from "@/lib/hooks/useRestaurant";
 
 // Methods
 import { toSlug } from "@/lib/utils/methods";
-import BannerSkeleton from "@/lib/ui/useable-components/custom-skeletons/food-items.skeleton";
-import { Skeleton } from "primereact/skeleton";
-import FoodCategorySkeleton from "@/lib/ui/useable-components/custom-skeletons/food-items.skeleton";
 
 export default function RestaurantDetailsScreen() {
   // Params
