@@ -80,5 +80,44 @@ export function getStatusColor(status: OrderStatus): "success" | "info" | "warni
   }
 }
 
+    // Format date from timestamp
+  export const formatDateForCreatedAt = (timestamp: string) => {
+      try {
+        const date = new Date(Number.parseInt(timestamp))
+        const now = new Date()
+        const diffTime = Math.abs(now.getTime() - date.getTime())
+        
+        // Calculate minutes and hours
+        const diffMinutes = Math.floor(diffTime / (1000 * 60))
+        const diffHours = Math.floor(diffTime / (1000 * 60 * 60))
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+        
+        // Minutes (if less than an hour)
+        if (diffMinutes < 1) return "Just now"
+        if (diffMinutes === 1) return "1 Minute ago"
+        if (diffMinutes < 60) return `${diffMinutes} Minutes ago`
+        
+        // Hours (if less than a day)
+        if (diffHours === 1) return "1 Hour ago"
+        if (diffHours < 24) return `${diffHours} Hours ago`
+        
+        // Days (if less than a month)
+        if (diffDays === 1) return "1 Day ago"
+        if (diffDays < 30) return `${diffDays} Days ago`
+    
+        // Months (if less than a year)
+        const diffMonths = Math.floor(diffDays / 30)
+        if (diffMonths === 1) return "1 Month ago"
+        if (diffMonths < 12) return `${diffMonths} Months ago`
+    
+        // Years
+        const diffYears = Math.floor(diffDays / 365)
+        if (diffYears === 1) return "1 Year ago"
+        return `${diffYears} Years ago`
+      } catch (error) {
+        return "Unknown date"
+      }
+    }
+
 
   

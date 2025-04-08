@@ -166,3 +166,32 @@ export const GET_RESTAURANT_BY_ID_SLUG = gql`
     }
   }
 `;
+
+export const GET_REVIEWS_BY_RESTAURANT = gql`
+  query GetReviewsByRestaurant($restaurant: String!) {
+    reviewsByRestaurant(restaurant: $restaurant) {
+      reviews {
+        _id
+        rating
+        description
+        isActive
+        createdAt
+        updatedAt
+        order {
+          _id
+          user {
+            _id
+            name
+            email
+          }
+        }
+        restaurant {
+          _id
+          name
+        }
+      }
+      ratings
+      total
+    }
+  }
+`;

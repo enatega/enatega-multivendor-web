@@ -32,6 +32,8 @@ export default function PastOrders({
   const router = useRouter();
   const { showToast } = useToast();
 
+  console.log(selectedOrder, "selectedOrder");
+
   //mutation
   const [mutate, { loading: isloadingReviewOrder, error: isErrorReviewOrder }] =
     useMutation(REVIEWORDER, {
@@ -155,7 +157,7 @@ export default function PastOrders({
       </div>
       {/* Rating Modal */}
       {/* conditionally render the modal based on the loading state of mutation for better user experience */} 
-      {!isloadingReviewOrder && (
+      {!isloadingReviewOrder && !(selectedOrder?.review?.rating) && (
         <RatingModal
           visible={showRatingModal}
           onHide={() => setShowRatingModal(false)}
