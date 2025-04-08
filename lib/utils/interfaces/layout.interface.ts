@@ -86,3 +86,28 @@ export interface AppMenuItemProps {
   root?: boolean;
   className?: string;
 }
+
+/* Containers */
+export interface IPaddingContainer extends IGlobalProps {
+  height?: string;
+  style?: React.CSSProperties;
+  paddingLeft?: string;
+  paddingRight?: string;
+  paddingTop?: string;
+  paddingBottom?: string;
+}
+
+/* Home Layout  */
+export interface IProtectedHomeLayoutComponent extends IGlobalProps {}
+
+/* Profile Layout  */
+export interface IProtectedProfileLayoutComponent extends IGlobalProps {}
+
+/* Profile Tabs  */
+export interface IProfileTabsProps {
+  className?: string
+}
+export interface ITabItem {
+  label: string;
+  path: string
+}

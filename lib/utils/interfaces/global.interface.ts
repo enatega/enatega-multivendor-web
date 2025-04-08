@@ -1,6 +1,7 @@
 import { ApolloError } from "@apollo/client";
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
-import { Dispatch, ReactNode, SetStateAction } from "react";
+import React from "react";
+import { ReactNode } from "react";
 
 export interface IGlobalProps {
   children?: React.ReactNode;
@@ -24,9 +25,12 @@ export interface QueryState {
 }
 
 export interface IGlobalButtonProps {
-  Icon: IconDefinition;
+  Icon?: IconDefinition;
   title: string;
-  setVisible: Dispatch<SetStateAction<boolean>>;
+  iconColor?: string;
+  classNames?: string;
+  handleClick: () => void;
+  SvgIcon?: (props: React.SVGProps<SVGSVGElement>) => React.JSX.Element;
 }
 
 export interface ILazyQueryResult<T, V> {
@@ -73,3 +77,7 @@ export interface IGlobalTableHeaderProps {
   globalFilterValue: string;
   onGlobalFilterChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
+
+export type Optional<T> = {
+  [P in keyof T]?: T[P] | undefined;
+};

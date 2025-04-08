@@ -1,4 +1,4 @@
-"use client";
+import React from "react";
 
 import Home from "@/lib/ui/screens/unprotected/index"
 export default function RootPage() {

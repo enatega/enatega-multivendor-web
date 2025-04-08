@@ -1,3 +1,7 @@
+// Environment
+import getEnv from "@/environment";
+
+// Apollo
 import {
   ApolloClient,
   ApolloLink,
@@ -9,16 +13,18 @@ import {
   Operation,
   split,
 } from "@apollo/client";
-import { SubscriptionClient } from "subscriptions-transport-ws";
-import { getMainDefinition } from "@apollo/client/utilities";
-import { WebSocketLink } from "@apollo/client/link/ws";
 import { onError } from "@apollo/client/link/error"; // Import onError utility
+import { WebSocketLink } from "@apollo/client/link/ws";
+import { getMainDefinition } from "@apollo/client/utilities";
+
+// GQL
+import { SubscriptionClient } from "subscriptions-transport-ws";
 
 // Utility imports
 import { Subscription } from "zen-observable-ts";
 
 export const useSetupApollo = (): ApolloClient<NormalizedCacheObject> => {
-  const { SERVER_URL, WS_SERVER_URL } = { SERVER_URL: "", WS_SERVER_URL: "" };
+  const { SERVER_URL, WS_SERVER_URL } = getEnv("PROD");
 
   const cache = new InMemoryCache();
 
@@ -50,7 +56,9 @@ export const useSetupApollo = (): ApolloClient<NormalizedCacheObject> => {
 
   const request = async (operation: Operation): Promise<void> => {
     // const data = localStorage.getItem(`user-${APP_NAME}`);
-    let token = "";
+    // Set This Token empty later...
+    let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzExNWE2YWFkYTFiMzAzNjc1MzlkMzUiLCJlbWFpbCI6ImRlbW8tY3VzdG9tZXJAZW5hdGVnYS5jb20iLCJpYXQiOjE3NDMwNTQ4NDl9.8fETYE_BfY-KftpbxC-9-iy5_jEkV0ZAPejiekfsCz4";
+    // let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2U2OThjZDFkNmFkNmZkMmMyZTk5NWQiLCJlbWFpbCI6ImR1bW15Y3VzdG9tZXIwNkBnbWFpbC5jb20iLCJpYXQiOjE3NDMxNjU2NDV9.XcOHtJtdb55PK6Bgwf2WZnWPHzkuH4vgFwq4yi8RWbA";
     // if (data) {
     //   token = JSON.parse(data).token;
     // }

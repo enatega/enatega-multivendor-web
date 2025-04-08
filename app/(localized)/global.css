@@ -1,7 +1,7 @@
 @layer tailwind-base, primereact, tailwind-utilities;
 
 /* IMPORTANT: In "styled" mode you must add the PrimeReact Theme here. Do NOT include in "unstyled" mode */
-@import 'primereact/resources/themes/lara-light-blue/theme.css'
+@import "primereact/resources/themes/lara-light-blue/theme.css"
   layer(primereact);
 @layer tailwind-base {
   @tailwind base;
@@ -27,6 +27,8 @@ body,
   padding: 0;
   height: 100%;
   width: 100%;
+
+  overflow: auto !important;
 }
 
 /* Optional: Set box-sizing to border-box globally for consistent sizing */
@@ -86,8 +88,8 @@ body {
 /* Text Component */
 .custom-text {
   font-feature-settings:
-    'liga' off,
-    'clig' off;
+    "liga" off,
+    "clig" off;
 }
 
 .heading-1 {

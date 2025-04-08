@@ -1,3 +1,3 @@
-namespace LocaleTypes {
-  type TLocale = "en";
+export namespace LocaleTypes {
+  export type TLocale = "en";
 }

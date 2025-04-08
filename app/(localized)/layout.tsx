@@ -18,7 +18,13 @@ import "primereact/resources/themes/lara-light-cyan/theme.css";
 import "./global.css";
 
 // Apollo
+import AuthProvider from "@/lib/context/auth/auth.context";
+import { ConfigurationProvider } from "@/lib/context/configuration/configuration.context";
 import { useSetupApollo } from "@/lib/hooks/useSetApollo";
+
+// Layout
+import AppLayout from "@/lib/ui/layouts/global";
+import { FontawesomeConfig } from "@/lib/config";
 
 export default function RootLayout({
   children,
@@ -37,17 +43,18 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        {/* <FontawesomeConfig /> */}
+        <FontawesomeConfig />
       </head>
       <body className={"flex flex-col flex-wrap"}>
         <PrimeReactProvider value={value}>
           <ApolloProvider client={client}>
-            {/* <ConfigurationProvider> */}
+            <ConfigurationProvider>
               <ToastProvider>
-                  {children}
-                {/* </AuthProvider> */}
+                <AuthProvider>
+                  <AppLayout>{children}</AppLayout>
+                </AuthProvider>
               </ToastProvider>
-            {/* </ConfigurationProvider> */}
+            </ConfigurationProvider>
           </ApolloProvider>
         </PrimeReactProvider>
       </body>

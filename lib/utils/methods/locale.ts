@@ -3,6 +3,7 @@
 import { cookies } from "next/headers";
 
 import { DEFAULT_LOCALE } from "../constants";
+import { LocaleTypes } from "../types/locale";
 
 const COOKIE_NAME = "NEXT_LOCALE";
 

@@ -1,4 +1,5 @@
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
+import { ToastTypes } from "../types/toast";
 import { IGlobalProps } from "./global.interface";
 import { IProvider } from "./layout.interface";
 

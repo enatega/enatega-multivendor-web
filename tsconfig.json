@@ -22,15 +22,6 @@
     },
     "target": "ES2017"
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts",
-    ".next/types/app/(unprotected)/layout.tss",
-    ".next/types/app/(protected)/layout.tss",
-    "lib/context/query-context.tsx",
-    "public/firebase-messaging-sw.js"
-  ],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["cypress.config.ts", "cypress", "node_modules"]
 }

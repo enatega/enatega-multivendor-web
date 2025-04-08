@@ -1,6 +1,7 @@
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import { CSSProperties, HTMLInputAutoCompleteAttribute } from "react";
 
+import { NumerTypes } from "../types/number";
 import { IGlobalComponentProps } from "./global.interface";
 
 // Global

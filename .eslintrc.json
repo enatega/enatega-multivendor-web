@@ -1,6 +1,7 @@
 {
   "extends": ["next", "next/core-web-vitals", "eslint:recommended"],
   "globals": {
+    "window": "readonly",
     "cy": "readonly",
     "it": "readonly",
     "React": "readonly",
