@@ -288,21 +288,23 @@ export default function RestaurantDetailsScreen() {
 
               {/* Search Input - 20% Width on Large Screens, Full Width on Small Screens */}
               <div className="h-full w-full md:w-[20%]">
-                <CustomIconTextField
-                  value={filter}
-                  className="w-full md:h-10 h-9 rounded-full pl-10"
-                  iconProperties={{
-                    icon: faSearch,
-                    position: "left",
-                    style: { marginTop: "-10px" },
-                  }}
-                  placeholder="Search for Restaurants"
-                  type="text"
-                  name="search"
-                  showLabel={false}
-                  isLoading={loading}
-                  onChange={(e) => setFilter(e.target.value)}
-                />
+                {
+                  <CustomIconTextField
+                    value={filter}
+                    className="w-full md:h-10 h-9 rounded-full pl-10"
+                    iconProperties={{
+                      icon: faSearch,
+                      position: "left",
+                      style: { marginTop: "-10px" },
+                    }}
+                    placeholder="Search for Restaurants"
+                    type="text"
+                    name="search"
+                    showLabel={false}
+                    isLoading={loading}
+                    onChange={(e) => setFilter(e.target.value)}
+                  />
+                }
               </div>
             </div>
           </PaddingContainer>
