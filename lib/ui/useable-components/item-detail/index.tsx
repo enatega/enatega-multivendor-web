@@ -1,16 +1,22 @@
-// import { IFoodItemDetalComponentProps } from "@/lib/utils/interfaces";
-
-import { ITEM_SECTIONS } from "@/lib/utils/dummy";
-import { Option } from "@/lib/utils/interfaces";
 import { useState } from "react";
 
-// Components
-import { ItemDetailSection } from "./item-section";
-import Divider from "../custom-divider";
+// Dummy
+import { ITEM_SECTIONS } from "@/lib/utils/dummy";
 
-export default function FoodItemDetail(/* props: IFoodItemDetalComponentProps */) {
+// Interface
+import { IFoodItemDetalComponentProps, Option } from "@/lib/utils/interfaces";
+// import { IFoodItemDetalComponentProps } from "@/lib/utils/interfaces";
+
+// Components
+import Divider from "../custom-divider";
+import { ItemDetailSection } from "./item-section";
+
+export default function FoodItemDetail(props: IFoodItemDetalComponentProps) {
+  const { foodItem /* , addons, options */ } = props;
+
+  // const [selectedVariation, setSelectedVariation] = useState<ISelectedVariation | null>(null);
   const [selectedOption, setSelectedOption] = useState<Option | null>(null); // Single
-  //   const [selectedOptions, setSelectedOptions] = useState<Option[] | null>(null); // Multiple
+  // const [selectedAddons, setSelectedAddons] = useState<IAddon[] | null>(null); // Multiple
 
   return (
     <div className="bg-white  max-w-md w-full">
@@ -20,26 +26,34 @@ export default function FoodItemDetail(/* props: IFoodItemDetalComponentProps */
       </div>
       <div className="text-center mb-4">
         <img
-          alt="A box of assorted McDonald's food items including Chicken McNuggets, Chili Cheese Tops, and Spicy Chicken McNuggets"
+          alt={foodItem?.title}
           className="w-full h-[150px] object-cover mx-auto"
-          src="https://storage.googleapis.com/a1aa/image/gAqgb-r0WwiptmpqIgbITBszVGh_k2Ll8UzXgz1-Eu0.jpg"
+          src={foodItem?.image}
         />
       </div>
 
       <h2 className="font-inter font-bold text-[#111827] text-[16px] md:text-[18px] lg:text-[19px] leading-[22px] md:leading-[24px]">
-        Big Share
+        {foodItem?.title}
       </h2>
       <p className="text-[#0EA5E9] font-[600] text-[14px] md:text-[15px] lg:text-[16px] mb-2">
         $4
       </p>
       <p className="font-inter font-normal text-gray-500 text-[12px] md:text-[13px] lg:text-[14px] leading-[18px] md:leading-[20px]">
-        6 pieces of Chicken McNuggets™, 6 pieces of Chili Cheese Tops and 6
-        pieces of Spicy Chicken McNuggets and two optional dips.
+        {foodItem?.description}
       </p>
 
       <Divider />
 
       <div id="dip-sections">
+        <ItemDetailSection
+          key={foodItem?.title}
+          title="Select Variation"
+          name={foodItem?._id ?? ""}
+          singleSelected={selectedOption}
+          onSingleSelect={setSelectedOption}
+          options={foodItem?.variations || []}
+        />
+
         <ItemDetailSection
           title="Dip 1/2"
           options={ITEM_SECTIONS}

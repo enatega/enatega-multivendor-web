@@ -10,6 +10,7 @@ export interface ISliderCardItemProps {
   name: string;
   category: string;
   image: string;
+  slug: string;
   deliveryTime: number;
   time: string;
   reviews: string;

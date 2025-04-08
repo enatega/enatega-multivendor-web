@@ -20,7 +20,7 @@ import { SectionProps, Option } from "@/lib/utils/interfaces";
  */
 
 export const ItemDetailSection = <
-  T extends { _id: string; title: string; price: number },
+  T extends { _id: string; title?: string | undefined; price: number },
 >({
   title,
   options,

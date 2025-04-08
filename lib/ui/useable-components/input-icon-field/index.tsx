@@ -51,5 +51,5 @@ export default function CustomIconTextField({
           />
         </div>
       </IconField>
-    : <InputSkeleton />;
+    : <InputSkeleton showLabel={showLabel} />;
 }
