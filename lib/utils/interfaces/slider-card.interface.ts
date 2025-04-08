@@ -11,6 +11,7 @@ export interface ISliderCardItemProps {
   category: string;
   image: string;
   slug: string;
+  shopType: string;
   deliveryTime: number;
   time: string;
   reviews: string;

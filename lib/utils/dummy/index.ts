@@ -107,3 +107,151 @@ export const RECOMMENDATIONS: Recommendation[] = [
 ];
 
 export const TIPS = ["2", "4", "6", "8", "Other"];
+
+export const SIDEBAR_CATEGORY = [
+  {
+    label: "Files",
+    icon: "pi pi-file",
+    items: [
+      {
+        label: "Documents",
+        icon: "pi pi-file",
+      },
+      {
+        label: "Images",
+        icon: "pi pi-image",
+      },
+    ],
+  },
+  {
+    label: "Cloud",
+    icon: "pi pi-cloud",
+    items: [
+      {
+        label: "Upload",
+        icon: "pi pi-cloud-upload",
+      },
+      {
+        label: "Download",
+        icon: "pi pi-cloud-download",
+      },
+      {
+        label: "Sync",
+        icon: "pi pi-refresh",
+      },
+    ],
+  },
+  {
+    label: "Devices",
+    icon: "pi pi-desktop",
+    items: [
+      {
+        label: "Phone",
+        icon: "pi pi-mobile",
+      },
+      {
+        label: "Desktop",
+        icon: "pi pi-desktop",
+      },
+      {
+        label: "Tablet",
+        icon: "pi pi-tablet",
+      },
+    ],
+  },
+
+  {
+    label: "Devices",
+    icon: "pi pi-desktop",
+    items: [
+      { label: "Phone", icon: "pi pi-mobile" },
+      { label: "Desktop", icon: "pi pi-desktop" },
+      { label: "Tablet", icon: "pi pi-tablet" },
+    ],
+  },
+  {
+    label: "Settings",
+    icon: "pi pi-cog",
+    items: [
+      { label: "General", icon: "pi pi-sliders-h" },
+      { label: "Privacy", icon: "pi pi-shield" },
+      { label: "Notifications", icon: "pi pi-bell" },
+    ],
+  },
+  {
+    label: "Users",
+    icon: "pi pi-users",
+    items: [
+      { label: "Admins", icon: "pi pi-user-edit" },
+      { label: "Customers", icon: "pi pi-user" },
+      { label: "Vendors", icon: "pi pi-briefcase" },
+    ],
+  },
+  {
+    label: "Reports",
+    icon: "pi pi-chart-line",
+    items: [
+      { label: "Sales", icon: "pi pi-dollar" },
+      { label: "Traffic", icon: "pi pi-chart-bar" },
+      { label: "Performance", icon: "pi pi-chart-pie" },
+    ],
+  },
+  {
+    label: "Orders",
+    icon: "pi pi-shopping-cart",
+    items: [
+      { label: "Pending", icon: "pi pi-clock" },
+      { label: "Completed", icon: "pi pi-check" },
+      { label: "Cancelled", icon: "pi pi-times" },
+    ],
+  },
+  {
+    label: "Inventory",
+    icon: "pi pi-box",
+    items: [
+      { label: "Products", icon: "pi pi-tags" },
+      { label: "Stock", icon: "pi pi-database" },
+      { label: "Suppliers", icon: "pi pi-truck" },
+    ],
+  },
+  {
+    label: "Messages",
+    icon: "pi pi-envelope",
+    items: [
+      { label: "Inbox", icon: "pi pi-inbox" },
+      { label: "Sent", icon: "pi pi-send" },
+      { label: "Archived", icon: "pi pi-archive" },
+    ],
+  },
+  {
+    label: "Analytics",
+    icon: "pi pi-chart-bar",
+    items: [
+      { label: "Real-Time", icon: "pi pi-clock" },
+      { label: "Audience", icon: "pi pi-users" },
+      { label: "Engagement", icon: "pi pi-thumbs-up" },
+    ],
+  },
+  {
+    label: "Billing",
+    icon: "pi pi-credit-card",
+    items: [
+      { label: "Invoices", icon: "pi pi-file" },
+      { label: "Payments", icon: "pi pi-money-bill" },
+      { label: "Subscriptions", icon: "pi pi-bookmark" },
+    ],
+  },
+  {
+    label: "Help",
+    icon: "pi pi-question-circle",
+    items: [
+      { label: "FAQ", icon: "pi pi-info-circle" },
+      { label: "Contact Support", icon: "pi pi-phone" },
+      { label: "Live Chat", icon: "pi pi-comments" },
+    ],
+  },
+  {
+    label: "Logout",
+    icon: "pi pi-sign-out",
+  },
+];

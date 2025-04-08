@@ -21,7 +21,9 @@ const Card: React.FC<ICardProps> = ({ item }) => {
         // const params = new URLSearchParams({ name: item?.name, id: item._id });
         // router.push(`/restaurant?${params.toString()}`);
 
-        router.push(`/restaurant/${item?.slug}/${item._id}`); // the root route may change based on store or grocery
+        router.push(
+          `/${item.shopType === "restaurant" ? "restaurant" : "store"}/${item?.slug}/${item._id}`
+        ); // the root route may change based on store or grocery
       }}
     >
       {/* Image Container */}
