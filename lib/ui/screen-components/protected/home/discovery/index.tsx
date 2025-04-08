@@ -1,2 +1,10 @@
 export { default as DiscoveryBannerSection } from "./banner-section";
 export { default as RestaurantsNearYou } from './restaurants-near-you'
+export { default as MostOrderedRestaurants } from './most-ordered-restaurants'
+export { default as GroceryList } from './grovery-list'
+export { default as TopGroceryPicks } from './top-grocery-picks'
+export { default as RestaurantCuisines } from './restaurant-cuisines'
+export { default as GroceryCuisines } from './grocery-cuisines'
+export { default as TopRatedVendors } from './top-rated-vendors'
+export { default as PopularRestaurants } from './popular-restaurants'
+export { default as PopularStores } from './popular-stores'

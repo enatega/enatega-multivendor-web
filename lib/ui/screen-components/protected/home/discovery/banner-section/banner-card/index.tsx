@@ -8,7 +8,7 @@ const BannerCard:React.FC<IBannerItemProps> = ({item}) => {
     const isVideo = item?.file.includes("video");
     return (
       <>
-        <div className="carousel-item md:mr-[12px] relative">
+        <div className="carousel-item md:mr-[12px] relative cursor-pointer">
           <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-transparent to-transparent rounded-xl opacity-70"></div>
           {isVideo ? (
             <video

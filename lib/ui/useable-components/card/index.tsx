@@ -16,7 +16,7 @@ const Card: React.FC<ICardProps> = ({ item }) => {
 
   return (
     <div
-      className="max-w-[402px] max-h-[272px] md:w-[180px] lg:w-[180px] xl:w-[270px] 2xl:w-[380px] rounded-md shadow-md m-2 mb-6 cursor-pointer hover:scale-105 hover:opacity-95 hover:shadow-lg transition-transform duration-500"
+      className="max-w-[402px] max-h-[272px] md:w-[185px] lg:w-[188px] xl:w-[276px] 2xl:w-[402px] rounded-md shadow-md m-2 mb-6 cursor-pointer hover:scale-105 hover:opacity-95 hover:shadow-lg transition-transform duration-500"
       onClick={() => {
         // const params = new URLSearchParams({ name: item?.name, id: item._id });
         // router.push(`/restaurant?${params.toString()}`);
@@ -58,7 +58,7 @@ const Card: React.FC<ICardProps> = ({ item }) => {
         {/* Icons Section */}
         <div className="flex flex-row justify-between w-[80%] sm:w-[100%] lg:w-[70%] pt-1">
           <IconWithTitle
-            logo={ClockSvg}
+            logo={()=> <ClockSvg isBlue={true} />}
             title={item?.deliveryTime + " mins"}
             isBlue={true}
           />

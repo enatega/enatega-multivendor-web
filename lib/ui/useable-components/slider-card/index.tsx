@@ -21,7 +21,7 @@ const responsiveOptions = [
   { breakpoint: "425px", numVisible: 1, numScroll: 1 }, // If screen width is ≤ 400px, show 1 item
 ];
 
-const SliderCard = <T,>({ title, data }: ISliderCardComponentProps<T>) => {
+const SliderCard = <T,>({ title, data, last }: ISliderCardComponentProps<T>) => {
   const [page, setPage] = useState(0);
   const [numVisible, setNumVisible] = useState(getNumVisible());
 
@@ -75,7 +75,8 @@ const SliderCard = <T,>({ title, data }: ISliderCardComponentProps<T>) => {
   const totalPages = Math.ceil((data?.length - (numVisible || 0)) / numScroll) + 1; // Total pages
 
   return (
-    <div className="ml-8 mr-10 md:ml-12 md:mr-14 mb-20">
+    data?.length > 0 && (
+    <div className={`ml-8 mr-10 md:ml-12 md:mr-14 ${last && 'mb-20'}`}>
       <div className="flex justify-between">
         <span className="font-inter font-bold text-2xl leading-8 tracking-normal text-gray-900">
           {title}
@@ -118,6 +119,7 @@ const SliderCard = <T,>({ title, data }: ISliderCardComponentProps<T>) => {
         page={page}
       />
     </div>
+    )
   );
 };
 
