@@ -1,4 +1,4 @@
-import { Optional } from "./global.interface";
+import { IAddon, IReview, IVariation } from "./orders.interface";
 
 // Define types for the GraphQL query response
 export interface IRestaurantLocation {
@@ -48,22 +48,6 @@ export interface IReviewData {
   reviews: IReview[];
 }
 
-export interface IReview {
-  _id: string;
-  order: {
-    user: IUser;
-  };
-  rating: number;
-  description: string;
-  createdAt: string;
-}
-
-export interface IUser {
-  _id: string;
-  name: string;
-  email: string;
-}
-
 export interface ICategory {
   _id: string;
   title: string;
@@ -76,14 +60,6 @@ export interface IFood {
   image: string;
   description: string;
   variations: IVariation[];
-}
-
-export interface IVariation {
-  _id: string;
-  title: string;
-  price: number;
-  discounted: boolean;
-  addons: string[];
 }
 
 export interface ISelectedVariation {
@@ -112,15 +88,6 @@ export interface IOption {
   title: string;
   description: string;
   price: number;
-}
-
-export interface IAddon {
-  _id: string;
-  options: string[];
-  title: string;
-  description: string;
-  quantityMinimum: number;
-  quantityMaximum: number;
 }
 
 export interface IZone {

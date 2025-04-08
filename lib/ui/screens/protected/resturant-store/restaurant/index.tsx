@@ -27,6 +27,9 @@ import useRestaurant from "@/lib/hooks/useRestaurant";
 
 // Methods
 import { toSlug } from "@/lib/utils/methods";
+import BannerSkeleton from "@/lib/ui/useable-components/custom-skeletons/food-items.skeleton";
+import { Skeleton } from "primereact/skeleton";
+import FoodCategorySkeleton from "@/lib/ui/useable-components/custom-skeletons/food-items.skeleton";
 
 export default function RestaurantDetailsScreen() {
   // Params
@@ -36,7 +39,7 @@ export default function RestaurantDetailsScreen() {
   const [filter, setFilter] = useState("");
 
   // Hooks
-  const { data } = useRestaurant(id, decodeURIComponent(slug));
+  const { data, loading } = useRestaurant(id, decodeURIComponent(slug));
 
   // Constants
   const allDeals = data?.restaurant?.categories?.filter(
@@ -156,35 +159,44 @@ export default function RestaurantDetailsScreen() {
       <div className="w-screen h-screen flex flex-col pb-20">
         <div className="scrollable-container flex-1 overflow-auto">
           {/* Banner */}
+
           <div className="relative">
-            <img
-              alt="McDonald's banner with a burger and fries"
-              className="w-full h-72 object-cover"
-              height="300"
-              // src="https://storage.googleapis.com/a1aa/image/l_S6V3o3Sf_fYnRuAefKySjq6q-HmTjiF37tvk6PiMU.jpg"
-              src={restaurantInfo.image}
-              width="1200"
-            />
-            <div className="absolute bottom-0 left-0 md:left-20 p-4">
-              <div className="flex flex-col items-start">
-                <img
-                  alt="McDonald's logo"
-                  className="w-12 h-12 mb-2"
-                  height="50"
-                  // src="https://storage.googleapis.com/a1aa/image/_a4rKBo9YwPTH-AHQzOLoIcNAirPNTI7alqAVAEqmOo.jpg"
-                  src={restaurantInfo.image}
-                  width="50"
-                />
-                <div className="text-white">
-                  <h1 className="font-inter font-extrabold text-[32px] leading-[100%] sm:text-[40px] md:text-[48px]">
-                    {restaurantInfo.name}
-                  </h1>
-                  <p className="font-inter font-medium text-[18px] leading-[28px] sm:text-[20px] sm:leading-[30px] md:text-[24px] md:leading-[32px]">
-                    {restaurantInfo.address}
-                  </p>
+            {loading ?
+              <Skeleton width="100%" height="20rem" borderRadius="0" />
+            : <img
+                alt="McDonald's banner with a burger and fries"
+                className="w-full h-72 object-cover"
+                height="300"
+                // src="https://storage.googleapis.com/a1aa/image/l_S6V3o3Sf_fYnRuAefKySjq6q-HmTjiF37tvk6PiMU.jpg"
+                src={restaurantInfo.image}
+                width="1200"
+              />
+            }
+
+            {!loading && (
+              <div className="absolute bottom-0 left-0 md:left-20 p-4">
+                <div className="flex flex-col items-start">
+                  <img
+                    alt="McDonald's logo"
+                    className="w-12 h-12 mb-2"
+                    height="50"
+                    // src="https://storage.googleapis.com/a1aa/image/_a4rKBo9YwPTH-AHQzOLoIcNAirPNTI7alqAVAEqmOo.jpg"
+                    src={restaurantInfo.image}
+                    width="50"
+                  />
+
+                  <div className="text-white space-y-2">
+                    <h1 className="font-inter font-extrabold text-[32px] leading-[100%] sm:text-[40px] md:text-[48px]">
+                      {restaurantInfo.name}
+                    </h1>
+                    <p className="font-inter font-medium text-[18px] leading-[28px] sm:text-[20px] sm:leading-[30px] md:text-[24px] md:leading-[32px]">
+                      {restaurantInfo.address}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
+
             <div className="absolute top-4 right-4 md:bottom-4 md:right-4 md:top-auto rounded-full bg-white h-8 w-8 flex justify-center items-center">
               {/* <FontAwesomeIcon icon={faHeart} className="  text-2xl" /> */}
               <HeartSvg />
@@ -198,14 +210,18 @@ export default function RestaurantDetailsScreen() {
                 {/* Time */}
                 <span className="flex items-center gap-2 text-gray-600 font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle">
                   <ClockSvg />
-                  {headerData.deliveryTime} mins
+                  {loading ?
+                    <Skeleton width="2rem" height="1.5rem" />
+                  : headerData.deliveryTime}
+                  mins
                 </span>
 
                 {/* Rating */}
                 <span className="flex items-center gap-2 text-gray-600 font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle">
                   <RatingSvg />
-
-                  {headerData.averageReview}
+                  {loading ?
+                    <Skeleton width="2rem" height="1.5rem" />
+                  : headerData.averageReview}
                 </span>
 
                 {/* Info Link */}
@@ -214,7 +230,9 @@ export default function RestaurantDetailsScreen() {
                   href="#"
                 >
                   <InfoSvg />
-                  See more information
+                  {loading ?
+                    <Skeleton width="10rem" height="1.5rem" />
+                  : "See more information"}
                 </a>
               </div>
             </PaddingContainer>
@@ -282,6 +300,7 @@ export default function RestaurantDetailsScreen() {
                   type="text"
                   name="search"
                   showLabel={false}
+                  isLoading={loading}
                   onChange={(e) => setFilter(e.target.value)}
                 />
               </div>
@@ -293,62 +312,65 @@ export default function RestaurantDetailsScreen() {
           {/* Main Section */}
 
           <PaddingContainer>
-            {deals.map((category: ICategory, catIndex: number) => (
-              <div
-                key={catIndex}
-                className="mb-4 p-3"
-                id={toSlug(category.title)}
-              >
-                <h2 className="mb-4 font-inter text-gray-900 font-bold text-2xl sm:text-xl leading-snug tracking-tight">
-                  {category.title}
-                </h2>
+            {loading ?
+              <FoodCategorySkeleton />
+            : deals.map((category: ICategory, catIndex: number) => (
+                <div
+                  key={catIndex}
+                  className="mb-4 p-3"
+                  id={toSlug(category.title)}
+                >
+                  <h2 className="mb-4 font-inter text-gray-900 font-bold text-2xl sm:text-xl leading-snug tracking-tight">
+                    {category.title}
+                  </h2>
 
-                <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                  {category.foods.map((meal: IFood, mealIndex) => (
-                    <div
-                      key={mealIndex}
-                      className="flex items-center gap-4 rounded-lg border border-gray-300 shadow-sm bg-white p-3 relative"
-                    >
-                      {/* Text Content */}
-                      <div className="flex-grow text-left md:text-left space-y-2">
-                        <h3 className="text-gray-900 text-lg font-semibold font-inter">
-                          {meal.title}
-                        </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                    {category.foods.map((meal: IFood, mealIndex) => (
+                      <div
+                        key={mealIndex}
+                        className="flex items-center gap-4 rounded-lg border border-gray-300 shadow-sm bg-white p-3 relative"
+                      >
+                        {/* Text Content */}
+                        <div className="flex-grow text-left md:text-left space-y-2">
+                          <h3 className="text-gray-900 text-lg font-semibold font-inter">
+                            {meal.title}
+                          </h3>
 
-                        <p className="text-gray-500 text-sm">
-                          {meal.description}
-                        </p>
+                          <p className="text-gray-500 text-sm">
+                            {meal.description}
+                          </p>
 
-                        <div className="flex items-center gap-2">
-                          <span className="text-[#0EA5E9] text-lg font-semibold">
-                            Rs. {meal.variations[0].price}
-                          </span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[#0EA5E9] text-lg font-semibold">
+                              Rs. {meal.variations[0].price}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Image */}
+                        <div className="flex-shrink-0 w-24 h-24 md:w-28 md:h-28">
+                          <img
+                            alt={meal.title}
+                            className="w-full h-full object-contain mx-auto md:mx-0"
+                            src={meal.image}
+                          />
+                        </div>
+
+                        {/* Image Section */}
+                        <div className="absolute top-2 right-2">
+                          <button
+                            className="bg-[#0EA5E9] rounded-full shadow-md w-6 h-6 flex items-center justify-center"
+                            onClick={() => setShowDialog(meal)}
+                          >
+                            <FontAwesomeIcon icon={faPlus} color="white" />
+                          </button>
                         </div>
                       </div>
-
-                      {/* Image */}
-                      <div className="flex-shrink-0 w-24 h-24 md:w-28 md:h-28">
-                        <img
-                          alt={meal.title}
-                          className="w-full h-full object-contain mx-auto md:mx-0"
-                          src={meal.image}
-                        />
-                      </div>
-
-                      {/* Image Section */}
-                      <div className="absolute top-2 right-2">
-                        <button
-                          className="bg-[#0EA5E9] rounded-full shadow-md w-6 h-6 flex items-center justify-center"
-                          onClick={() => setShowDialog(meal)}
-                        >
-                          <FontAwesomeIcon icon={faPlus} color="white" />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            }
           </PaddingContainer>
         </div>
       </div>

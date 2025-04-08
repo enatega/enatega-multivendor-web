@@ -25,3 +25,10 @@ export interface TextIconClickableProps extends IGlobalComponentProps {
   route?: string;
   loading?: boolean;
 }
+
+export interface IActionButtonProps {
+  onClick: () => void;
+  disabled?: boolean;
+  primary?: boolean;
+  children: React.ReactNode;
+}

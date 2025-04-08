@@ -1,3 +1,4 @@
+import { ReactNode } from 'react';
 import { IGlobalComponentProps } from './global.interface';
 
 interface IDialogButton {
@@ -20,4 +21,14 @@ export interface IDialogComponentProps extends IGlobalComponentProps {
   onConfirm: () => void;
   message?: string;
   loading?: boolean;
+}
+
+export interface ICustomDialogProps {
+  visible: boolean;
+  onHide: () => void;
+  children: ReactNode;
+  width?: string;
+  height?: string;
+  showCloseButton?: boolean;
+  className?: string;
 }

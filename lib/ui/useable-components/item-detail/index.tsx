@@ -1,76 +1,22 @@
-import Divider from "../custom-divider";
+import { useState } from "react";
+
+// Dummy
+import { ITEM_SECTIONS } from "@/lib/utils/dummy";
+
+// Interface
+import { IFoodItemDetalComponentProps, Option } from "@/lib/utils/interfaces";
 // import { IFoodItemDetalComponentProps } from "@/lib/utils/interfaces";
 
-import { ITEM_SECTIONS } from "@/lib/utils/dummy";
-import {
-  IAddon,
-  IFoodItemDetalComponentProps,
-  IOption,
-  ISelectedVariation,
-  Option,
-} from "@/lib/utils/interfaces";
-import { useEffect, useState } from "react";
-
 // Components
+import Divider from "../custom-divider";
 import { ItemDetailSection } from "./item-section";
-import { ItemDetailAddonSection } from "./item-addon-section";
 
 export default function FoodItemDetail(props: IFoodItemDetalComponentProps) {
-  const { foodItem, addons, options } = props;
+  const { foodItem /* , addons, options */ } = props;
 
-  const [selectedVariation, setSelectedVariation] =
-    useState<ISelectedVariation | null>(null);
+  // const [selectedVariation, setSelectedVariation] = useState<ISelectedVariation | null>(null);
   const [selectedOption, setSelectedOption] = useState<Option | null>(null); // Single
-  const [selectedAddons, setSelectedAddons] = useState<IAddon[] | null>(null); // Multiple
-
-  // Use Effect
-  useEffect(() => {
-    setSelectedVariation({
-      ...foodItem?.variations[0],
-      addons:
-        foodItem?.variations[0]?.addons?.map((fa) => {
-          const addon = addons?.find((a) => a._id === fa);
-
-          if (!addon) {
-            return {
-              _id: "", // Default _id if not found
-              options: [], // Default empty options array
-              title: "", // Default title if missing
-              description: "", // Default description if missing
-              quantityMinimum: 0, // Default quantity minimum
-              quantityMaximum: 0, // Default quantity maximum
-            };
-          }
-
-          const addonOptionsMap = new Map(options?.map((o) => [o._id, o]));
-
-          const addonOptions =
-            addon?.options
-              ?.map((aoId) => addonOptionsMap.get(aoId))
-              .filter((option): option is IOption => option !== undefined) ||
-            [];
-
-          return {
-            _id: addon._id || "", // Ensure _id is set to a non-undefined value
-            title: addon.title || "", // Default title if missing
-            description: addon.description || "", // Default description if missing
-            quantityMinimum: addon.quantityMinimum || 0, // Default quantityMinimum if missing
-            quantityMaximum: addon.quantityMaximum || 0, // Default quantityMaximum if missing
-            options: addonOptions, // Mapped options, with no undefined values
-          };
-        }) || [],
-      // Ensure the top-level properties also have default values to avoid undefined
-      _id: foodItem?.variations[0]?._id || "", // Default empty string for _id if undefined
-      title: foodItem?.variations[0]?.title || "", // Default empty string for title if undefined
-      price: foodItem?.variations[0]?.price || 0, // Default 0 for price if undefined
-      discounted: foodItem?.variations[0]?.discounted || false, // Default false for discounted if undefined
-    });
-
-    // return () => {
-    //   setSelectedAddons([]);
-    //   setSelectedVariation(null);
-    // };
-  }, [foodItem, addons, options]);
+  // const [selectedAddons, setSelectedAddons] = useState<IAddon[] | null>(null); // Multiple
 
   return (
     <div className="bg-white  max-w-md w-full">

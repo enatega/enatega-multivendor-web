@@ -1,9 +1,5 @@
 // Interface
-import {
-  SectionProps,
-  Option,
-  AddonSectionProps,
-} from "@/lib/utils/interfaces";
+import { AddonSectionProps } from "@/lib/utils/interfaces";
 
 /**
  * `ItemDetailSection` is a generic component that renders either radio buttons or checkboxes
@@ -41,10 +37,10 @@ export const ItemDetailAddonSection = <
   title,
   addonOptions,
   name,
-  multiple = false,
-  multiSelected,
-  onMultiSelect,
-}: AddonSectionProps<T>): JSX.Element => {
+  // multiple = false,
+  // multiSelected,
+  // onMultiSelect,
+}: AddonSectionProps<T>): React.JSX.Element => {
   return (
     <div className="mb-4">
       <h3 className="font-inter font-bold text-[14px] md:text-[16px] lg:text-[18px] leading-[20px] md:leading-[22px]">

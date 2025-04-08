@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction } from "react";
 import { IGlobalComponentProps } from "./global.interface";
-import { IAddon, IFood, IOption } from "./restaurants.interface";
+import { IFood, IOption } from "./restaurants.interface";
+import { IAddon } from "./orders.interface";
 
 export interface IFoodItemDetalComponentProps extends IGlobalComponentProps {
   foodItem: IFood | null;
@@ -15,7 +16,7 @@ export interface Option {
 }
 
 export interface SectionProps<T extends { _id: string }> {
-  title: string;
+  title?: string | undefined;
   options: T[];
   name: string;
 
