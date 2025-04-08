@@ -48,3 +48,4 @@ export const SEVERITY_STYLES: ISeverityStyles = {
     iconBg: "#F7DC6F",
   },
 };
+
