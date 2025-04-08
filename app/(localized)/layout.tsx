@@ -42,14 +42,12 @@ export default function RootLayout({
       <body className={"flex flex-col flex-wrap"}>
         <PrimeReactProvider value={value}>
           <ApolloProvider client={client}>
-            <ConfigurationProvider>
+            {/* <ConfigurationProvider> */}
               <ToastProvider>
-                <AuthProvider>
-                  {/* <AppLayout>{children}</AppLayout> */}
                   {children}
-                </AuthProvider>
+                {/* </AuthProvider> */}
               </ToastProvider>
-            </ConfigurationProvider>
+            {/* </ConfigurationProvider> */}
           </ApolloProvider>
         </PrimeReactProvider>
       </body>

@@ -1,15 +1,17 @@
 import Image from "next/image";
 import React from "react";
 import styles from './Movable.module.css'; // Ensure this path is correct
+import { divide } from "lodash";
 
 interface MoveableProps{
 heading:string,
-subtext:string,
+subText:string,
 button:React.ReactNode,
-image:string
+image:string,
+middle:boolean
 }
 
-const MoveableCard: React.FC<MoveableProps> = ({heading,subText,button,image}) => {
+const MoveableCard: React.FC<MoveableProps> = ({heading,subText,button,image,middle=false}) => {
   return (
     <div className={`${styles.cardContainer} bg-green-300 rounded-3xl`}>
       {/* Image container */}
@@ -21,15 +23,33 @@ const MoveableCard: React.FC<MoveableProps> = ({heading,subText,button,image}) =
         />
       
       {/* Text container */}
-      <div className={`absolute inset-0 flex items-start justify-between  flex-col p-5  ${styles.textContainer}`}>
+
+      {middle == false ? (<div className={`absolute inset-0 flex items-start justify-between  flex-col p-5  ${styles.textContainer}`}>
         <div>
-        <h1 className="text-white text-4xl font-extrabold mb-3">Become a Courier Partner</h1>
-        <p className="text-white text-md text-lg ">Earn by delieviring to local customers. Set your own schedule,deliver when and where you want</p>
+        <h1 className="text-white text-4xl font-extrabold mb-3">{heading}</h1>
+        <p className="text-white text-md text-lg ">{subText}</p>
+        </div>
+        <div>
+          {button && button}
+        </div>
+      </div>)
+   : (
+<div>
+<div className={`absolute inset-0 flex items-center justify-center  flex-col p-5  ${styles.textContainer}`}>
+        <div className="w-[30%]  ">
+        <h1 className="text-white text-3xl font-extrabold mb-3 text-center" >{heading}</h1>
+        <p className="text-white text-6xl font-extrabold text-center">{subText}</p>
         </div>
         <div>
           {button && button}
         </div>
       </div>
+
+</div>
+
+   )
+    } 
+
     </div>
   );
 };

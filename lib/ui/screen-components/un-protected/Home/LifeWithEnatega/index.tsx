@@ -11,8 +11,18 @@ const EnategaInfo = () => {
       </div>
 
       <div className='grid grid-cols-1 sm:grid-cols-2 gap-6 '>
-        <MoveableCard image={"https://images.ctfassets.net/23u853certza/5926qGJB2hSNE15qHWNLZn/388c6afaf9c273c328d6ec824f10b0e1/photocard_woltplus.jpg?w=1600&q=90&fm=webp"}/>
-        <MoveableCard image={"https://images.ctfassets.net/23u853certza/5926qGJB2hSNE15qHWNLZn/388c6afaf9c273c328d6ec824f10b0e1/photocard_woltplus.jpg?w=1600&q=90&fm=webp"}/>
+        <MoveableCard
+        image={"https://images.ctfassets.net/23u853certza/5926qGJB2hSNE15qHWNLZn/388c6afaf9c273c328d6ec824f10b0e1/photocard_woltplus.jpg?w=1600&q=90&fm=webp"}
+        heading={"Real support from real people"}
+        subText={"Our world-class support team has your back, with friendly assistance and fast response times. "}
+        
+        
+        />
+        <MoveableCard image={"https://images.ctfassets.net/23u853certza/5926qGJB2hSNE15qHWNLZn/388c6afaf9c273c328d6ec824f10b0e1/photocard_woltplus.jpg?w=1600&q=90&fm=webp"}
+        heading={"0 € delivery fees with Enatega"}
+        subText={"Enjoy zero delivery fees from the best restaurants and stores  in your city."}
+        
+        />
       </div>
       
       <div className='grid grid-cols-1 sm:grid-cols-3 gap-4 mt-[30px] mb-[30px]'>
