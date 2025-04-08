@@ -11,7 +11,9 @@ import { IGetBannersResponse } from "@/lib/utils/interfaces";
 import BannerCard from "./banner-card";
 
 export default function DiscoveryBannerSection() {
-  const { data, loading, error } = useQuery<IGetBannersResponse>(GET_BANNERS);
+  const { data, loading, error } = useQuery<IGetBannersResponse>(GET_BANNERS, {
+    fetchPolicy: "cache-and-network",
+  });
 
   if (loading) {
     return <DiscoveryBannerSkeleton />;

@@ -3,6 +3,6 @@ export interface ISvgComponentProps {
   width?: number;
   height?: number;
   viewBox?: string;
-
   color?: string;
+  isBlue?: boolean;
 }
