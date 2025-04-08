@@ -9,6 +9,7 @@ export interface IRestaurant {
   _id: string;
   name: string;
   image: string;
+  logo: string;
   address: string;
   deliveryTime: number;
   minimumOrder: number;
@@ -39,8 +40,18 @@ export interface IRestaurant {
 export interface INearByRestaurantsPreviewData {
   nearByRestaurantsPreview: {
     restaurants: IRestaurant[];
-  };
-}
+  };}
+
+  export interface ITopRatedVendorData {
+    topRatedVendorsPreview: IRestaurant[];
+  }
+  export interface IMostOrderedRestaurantsData {
+    mostOrderedRestaurantsPreview: IRestaurant[];
+  }
+
+  export interface IRecentOrderedRestaurantsData {
+    recentOrderRestaurantsPreview: IRestaurant[];
+  }
 
 export interface IReviewData {
   total: number;

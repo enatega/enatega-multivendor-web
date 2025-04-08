@@ -3,6 +3,7 @@ import { IGlobalComponentProps } from "./global.interface";
 export interface ISliderCardComponentProps<T> extends IGlobalComponentProps {
   title: string;
   data: T[];
+  last?: boolean;
 }
 
 export interface ISliderCardItemProps {

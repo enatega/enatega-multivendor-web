@@ -5,6 +5,7 @@ export const RESTAURANTS_FRAGMENT = gql`
     _id
     name
     image
+    logo
     address
     deliveryTime
     minimumOrder
@@ -36,15 +37,6 @@ export const MOST_ORDER_RESTAURANTS = gql`
   ${RESTAURANTS_FRAGMENT}
   query GetMostOrderedRestaurants($latitude: Float!, $longitude: Float!) {
     mostOrderedRestaurantsPreview(latitude: $latitude, longitude: $longitude) {
-      ...RestaurantPreviewFields
-    }
-  }
-`;
-
-export const TOP_RATED_VENDORS = gql`
-  ${RESTAURANTS_FRAGMENT}
-  query TopRatedVendors($latitude: Float!, $longitude: Float!) {
-    topRatedVendorsPreview(latitude: $latitude, longitude: $longitude) {
       ...RestaurantPreviewFields
     }
   }
