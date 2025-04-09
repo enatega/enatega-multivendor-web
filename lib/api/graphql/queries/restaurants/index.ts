@@ -9,6 +9,7 @@ export const RESTAURANTS_FRAGMENT = gql`
     deliveryTime
     minimumOrder
     rating
+    slug
     isActive
     isAvailable
     commissionRate
