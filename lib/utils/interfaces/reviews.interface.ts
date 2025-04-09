@@ -25,8 +25,8 @@ export interface IRestaurant {
 export interface IReview {
     _id: string;
     rating: number;
-    description: string;
-    isActive: boolean;
+    description?: string;
+    isActive?: boolean;
     createdAt: string;
     updatedAt: string;
     order: IOrder;
@@ -36,9 +36,9 @@ export interface IReview {
 
 // Container for multiple reviews
 export interface IReviewsResult {
-    reviews: IReview[];
+    reviews?: IReview[];
     ratings?: number;
-    total: number;
+    total?: number;
 }
 
 
