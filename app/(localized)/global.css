@@ -725,3 +725,17 @@ Discovery Caurousal
   object-fit: cover;
   border-radius: 8px;
 }
+
+/* Panel Menu */
+
+.p-panelmenu .p-panelmenu-header.p-highlight .p-menuitem-text,
+.p-panelmenu .p-panelmenu-header.p-highlight .p-panelmenu-header-link {
+  color: #5ac12f !important;
+}
+
+/* Remove background color on hover for menu items */
+.p-panelmenu .p-menuitem-link:hover {
+  background: transparent !important;
+  color: inherit !important;
+  box-shadow: none !important;
+}

@@ -10,6 +10,7 @@ export const RESTAURANTS_FRAGMENT = gql`
     deliveryTime
     minimumOrder
     rating
+    slug
     isActive
     isAvailable
     commissionRate
@@ -86,6 +87,7 @@ export const GET_RESTAURANT_BY_ID_SLUG = gql`
       name
       image
       slug
+      shopType
       address
       location {
         coordinates
@@ -118,6 +120,7 @@ export const GET_RESTAURANT_BY_ID_SLUG = gql`
           title
           image
           description
+          subCategory
           variations {
             _id
             title
@@ -159,6 +162,7 @@ export const GET_RESTAURANT_BY_ID_SLUG = gql`
   }
 `;
 
+
 export const GET_REVIEWS_BY_RESTAURANT = gql`
   query GetReviewsByRestaurant($restaurant: String!) {
     reviewsByRestaurant(restaurant: $restaurant) {
@@ -187,3 +191,31 @@ export const GET_REVIEWS_BY_RESTAURANT = gql`
     }
   }
 `;
+
+export const GET_CATEGORIES_SUB_CATEGORIES_LIST = gql`
+  query FetchCategoryDetailsByStoreId($storeId: String!) {
+    fetchCategoryDetailsByStoreId(storeId: $storeId) {
+      # id
+      label
+      # slug
+      url
+      items {
+        # id
+        label
+        url
+        # slug
+      }
+    }
+  }
+`;
+
+export const GET_SUB_CATEGORIES = gql`
+  query subCategories {
+    subCategories {
+      _id
+      title
+      parentCategoryId
+    }
+  }
+`;
+
