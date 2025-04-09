@@ -119,5 +119,24 @@ export function getStatusColor(status: OrderStatus): "success" | "info" | "warni
       }
     }
 
-
+      // Format time from [hours, minutes] to HH:MM format
+    export const formatTimeForHoursMins = (time: [string, string]) => {
+        return `${time[0].padStart(2, "0")}:${time[1].padStart(2, "0")}`;
+    };
+    
+ 
+  // Get the current day in a readable format
+  //Example "MON" => "Monday"
+  export const getCurrentDay = (day: string) => {
+    switch (day) {
+      case "MON": return "Monday";
+      case "TUE": return "Tuesday";
+      case "WED": return "Wednesday";
+      case "THU": return "Thursday";
+      case "FRI": return "Friday";
+      case "SAT": return "Saturday";
+      case "SUN": return "Sunday";
+      default: return "";
+    }
+  };
   

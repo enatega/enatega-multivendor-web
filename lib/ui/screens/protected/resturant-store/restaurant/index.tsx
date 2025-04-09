@@ -31,6 +31,7 @@ import useRestaurant from "@/lib/hooks/useRestaurant";
 import { toSlug } from "@/lib/utils/methods";
 import ChatSvg from "@/lib/utils/assets/svg/chat";
 import ReviewsModal from "@/lib/ui/useable-components/reviews-modal";
+import InfoModal from "@/lib/ui/useable-components/info-modal";
 
 export default function RestaurantDetailsScreen() {
   // Params
@@ -95,11 +96,22 @@ export default function RestaurantDetailsScreen() {
     deals: deals,
     reviewData: data?.restaurant?.reviewData ?? {},
     address: data?.restaurant?.address ?? "",
+    location: data?.restaurant?.location ?? "",
     deliveryCharges: data?.restaurant?.deliveryCharges ?? "",
     deliveryTime: data?.restaurant?.deliveryTime ?? "...",
     isAvailable: data?.restaurant?.isAvailable ?? true,
     openingTimes: data?.restaurant?.openingTimes ?? [],
   };
+
+  const restaurantInfoProps={
+    _id: restaurantInfo._id,
+    name: restaurantInfo.name,
+    address: restaurantInfo.address,
+    location: restaurantInfo.location,
+    isAvailable: restaurantInfo.isAvailable,
+    openingTimes: restaurantInfo.openingTimes,
+    description: data?.restaurant?.description ?? "Preservation of the authentic taste of all traditional foods is upheld here.",
+  }
 
   // States
   const [visibleItems, setVisibleItems] = useState(10); // Default visible items
@@ -107,6 +119,7 @@ export default function RestaurantDetailsScreen() {
   const [headerHeight, setHeaderHeight] = useState("64px"); // Default for desktop
   const [showDialog, setShowDialog] = useState<IFood | null>(null);
   const [showReviews, setShowReviews] = useState<boolean>(false);
+  const [showMoreInfo, setShowMoreInfo] = useState<boolean>(false);
 
   // Handlers
   const handleScroll = (id: string) => {
@@ -128,6 +141,11 @@ export default function RestaurantDetailsScreen() {
   // Function to handle the logic for seeing reviews
   const handleSeeReviews = () => {
     setShowReviews(true);
+  }
+
+  // Function to handle the logic for seeing more information
+  const handleSeeMoreInfo = () => {
+    setShowMoreInfo(true);
   }
 
 
@@ -167,10 +185,17 @@ export default function RestaurantDetailsScreen() {
 
   return (
     <>
+           {/* Reviews Modal  */}
             <ReviewsModal
               restaurantId={id}
               visible={showReviews}
               onHide={() => setShowReviews(false)}
+            />
+            {/* See More  Info Modal */}
+            <InfoModal
+             restaurantInfo={restaurantInfoProps}
+             visible={showMoreInfo}
+             onHide={() => setShowMoreInfo(false)}
             />
       <div className="w-screen h-screen flex flex-col pb-20">
         <div className="scrollable-container flex-1 overflow-auto">
@@ -244,6 +269,7 @@ export default function RestaurantDetailsScreen() {
                 <a
                   className="flex items-center gap-2 text-[#0EA5E9] font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle"
                   href="#"
+                  onClick={handleSeeMoreInfo}
                 >
                   <InfoSvg />
                   {loading ?
