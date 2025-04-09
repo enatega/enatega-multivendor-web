@@ -40,3 +40,10 @@ export interface IReviewsResult {
     ratings?: number;
     total: number;
 }
+
+
+export interface IReviewsModalProps {
+    restaurantId: string
+    visible: boolean
+    onHide: () => void
+  }

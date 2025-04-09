@@ -5,33 +5,11 @@ import useReviews from "@/lib/hooks/useReviews"
 import { useMemo } from "react"
 import CustomReviewModal from "../custom-skeletons/reviews.card"
 import { formatDateForCreatedAt } from "@/lib/utils/methods"
-import { IReview } from "@/lib/utils/interfaces/reviews.interface"
+import { IReview, IReviewsModalProps } from "@/lib/utils/interfaces/reviews.interface"
 
-// interface Review {
-//   name: string
-//   rating: number
-//   date: string
-//   comment: string
-// }
 
-// interface RatingBreakdown {
-//   stars: number
-//   percentage: number
-// }
 
-interface IReviewsModalProps {
-  restaurantId: string
-  visible: boolean
-  onHide: () => void
-//   reviewData: {
-//     averageRating: number
-//     totalReviews: number
-//     ratingBreakdown: RatingBreakdown[]
-//     reviews: Review[]
-//   }
-}
-
-const ReviewsModal = ({ visible, onHide,restaurantId }: IReviewsModalProps) => {
+const ReviewsModal = ({ visible, onHide, restaurantId }: IReviewsModalProps) => {
 
     // Hooks
     const { data, loading } = useReviews(restaurantId);
@@ -167,8 +145,8 @@ const ratingBreakdown = useMemo(() => {
           {/* Overall Rating */}
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 border p-4 rounded-md shadow-sm">
             <div className="mb-4 md:mb-0">
-              <h1 className="text-5xl font-bold text-gray-800">{averageRating?.toFixed(1)}</h1>
-              <p className="text-gray-600 mt-1">({reviewResult?.total?.toLocaleString()})</p>
+              <h1 className="text-3xl md:text-5xl font-semibold text-gray-700">{averageRating?.toFixed(1)}</h1>
+              <p className="text-gray-500 mt-1 font-normal text-xl md:text-2xl">({reviewResult?.total?.toLocaleString()})</p>
               <div className="flex items-center mt-2">{renderStars(Math.round(averageRating))}</div>
             </div>
 
@@ -193,12 +171,12 @@ const ratingBreakdown = useMemo(() => {
           <div className="space-y-6">
             {reviewResult?.reviews?.map((review:IReview) => (
               <div key={review?._id} className=" border p-4 rounded-md shadow-sm">
-                <h3 className="font-semibold text-lg mb-1">{review?.order?.user?.name}</h3>
+                <h3 className="text-gray-700 font-medium text-lg md:text-2xl mb-1">{review?.order?.user?.name}</h3>
                 <div className="flex items-center mb-2">
                   {renderStars(review?.rating)}
-                  <span className="ml-2 text-gray-500">{formatDateForCreatedAt(review?.createdAt)}</span>
+                  <span className="ml-2 text-gray-500 font-normal text-[16px]">{formatDateForCreatedAt(review?.createdAt)}</span>
                 </div>
-                <p className="text-gray-700">{review?.description}</p>
+                <p className="text-gray-500 font-normal text-lg">{review?.description}</p>
               </div>
             ))}
           </div>
