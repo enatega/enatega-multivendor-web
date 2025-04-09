@@ -122,3 +122,11 @@ export interface ICategoryV2 {
   title: string;
   subCategories: ISubCategoryV2[];
 }
+
+export interface ICategoryDetailsResponse {
+  label: string;
+  url: string;
+  icon?: string;
+  items?: ICategoryDetailsResponse[];
+  __typename: string;
+}
