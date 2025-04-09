@@ -41,31 +41,6 @@ const ReviewsModal = ({ visible, onHide, restaurantId }: IReviewsModalProps) => 
 
  // Generate rating breakdown (5 to 1 stars)
 
-//  const ratingBreakdown = useMemo(() => {
-//     if (!hasReviews) return []
-
-//     // Initialize counts for each star rating
-//     const counts = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 }
-
-//     // Count reviews for each star rating
-//     //@ts-ignore
-//     reviewResult.reviews.forEach((review) => {
-//       if (counts[review.rating as keyof typeof counts] !== undefined) {
-//         counts[review.rating as keyof typeof counts]++
-//       }
-//     })
-
-//     // Calculate percentages
-//     const total = reviewResult.reviews.length
-//     return Object.entries(counts)
-//       .map(([stars, count]) => ({
-//         stars: Number.parseInt(stars),
-//         count,
-//         percentage: total > 0 ? Math.round((count / total) * 100) : 0,
-//       }))
-//       .sort((a, b) => b.stars - a.stars) // Sort from 5 to 1 stars
-//   }, [reviewResult, hasReviews])
-
 // Calculate how many reviews we have for each star rating (5-star, 4-star, etc.)
 const ratingBreakdown = useMemo(() => {
     // If we don't have any reviews, just return an empty array
