@@ -376,7 +376,7 @@ export default function StoreDetailsScreen() {
                         <li key={index} className="shrink-0">
                           <button
                             className={`bg-${selectedCategory === _slug ? "[#F3FFEE]" : "gray-100"} text-${selectedCategory === _slug ? "[#5AC12F]" : "gray-600"} rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap`}
-                            onClick={() => handleScroll(_slug, true, 120)}
+                            onClick={() => handleScroll(_slug, true, 130)}
                           >
                             {category.label}
                           </button>
@@ -405,7 +405,7 @@ export default function StoreDetailsScreen() {
                           <li key={index} className="shrink-0">
                             <button
                               className={`bg-${selectedSubCategory === _slug ? "[#F3FFEE]" : "gray-100"} text-${selectedSubCategory === _slug ? "[#5AC12F]" : "gray-600"} rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap`}
-                              onClick={() => handleScroll(_slug, false, 160)}
+                              onClick={() => handleScroll(_slug, false, 170)}
                             >
                               {sub_category.label}
                             </button>
