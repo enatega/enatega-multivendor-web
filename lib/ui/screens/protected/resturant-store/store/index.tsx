@@ -8,6 +8,7 @@ import { Skeleton } from "primereact/skeleton";
 import { Dialog } from "primereact/dialog";
 import { useQuery } from "@apollo/client";
 import { PanelMenu } from "primereact/panelmenu";
+import { MenuItem } from "primereact/menuitem";
 
 // Icons
 import { ClockSvg, HeartSvg, InfoSvg, RatingSvg } from "@/lib/utils/assets/svg";
@@ -26,6 +27,7 @@ import FoodCategorySkeleton from "@/lib/ui/useable-components/custom-skeletons/f
 // Interface
 import {
   ICategory,
+  ICategoryDetailsResponse,
   ICategoryV2,
   IFood,
   ISubCategory,
@@ -59,6 +61,7 @@ export default function StoreDetailsScreen() {
   const [isScrolling, setIsScrolling] = useState(false);
 
   // Hooks
+
   const { data, loading } = useRestaurant(id, decodeURIComponent(slug));
   const {
     data: categoriesSubCategoriesList,
@@ -75,6 +78,24 @@ export default function StoreDetailsScreen() {
   const allDeals = data?.restaurant?.categories?.filter(
     (cat: ICategory) => cat.foods.length
   );
+
+  // Templates
+  const itemRenderer = (item: MenuItem) => {
+    const isClicked = item.url === window.location.hash;
+    return (
+      <a
+        className={`flex align-items-center px-3 py-2 cursor-pointer bg-${isClicked ? "[#F3FFEE]" : ""}`}
+        // href={item.url}
+        onClick={() => handleScroll(item.url?.slice(1) ?? "", 80)}
+      >
+        <span
+          className={`mx-2 ${item.items && "font-semibold"} text-${isClicked ? "[#5AC12F]" : "gray-600"}`}
+        >
+          {item.label}
+        </span>
+      </a>
+    );
+  };
 
   // Memo
   const deals = useMemo(() => {
@@ -104,68 +125,6 @@ export default function StoreDetailsScreen() {
         })) || []
     );
   }, [allDeals, filter]);
-
-  // const deals2 = useMemo(() => {
-  //   const subCategories = subcategoriesData?.subCategories;
-  //   if (!allDeals || !subCategories) return [];
-
-  //   return allDeals
-  //     .filter((category: ICategory) => {
-  //       if (filter.trim() === "") return true;
-
-  //       const categoryMatches = category.title
-  //         .toLowerCase()
-  //         .includes(filter.toLowerCase());
-
-  //       const foodMatches = category.foods.some((food: IFood) =>
-  //         food.title.toLowerCase().includes(filter.toLowerCase())
-  //       );
-
-  //       return categoryMatches || foodMatches;
-  //     })
-  //     .map((category: ICategory, index: number) => {
-  //       // Get relevant subCategories for this category
-  //       const subCats = subCategories.filter(
-  //         (sc: ISubCategory) => sc.parentCategoryId === category._id
-  //       );
-
-  //       // Group foods by subCategoryId
-  //       const groupedFoods: {
-  //         [key: string]: IFood[];
-  //       } = {};
-
-  //       category.foods.forEach((food) => {
-  //         const subCatId = food.subCategory?.toString() || "uncategorized";
-  //         if (!groupedFoods[subCatId]) groupedFoods[subCatId] = [];
-  //         groupedFoods[subCatId].push({
-  //           ...food,
-  //           title: food.title.toLowerCase(),
-  //         });
-  //       });
-
-  //       // Structure sub-categories with their foods
-  //       const subCategoryGroups = subCats.map((subCat: ISubCategory) => ({
-  //         _id: subCat._id,
-  //         title: subCat.title,
-  //         foods: groupedFoods[subCat._id] || [],
-  //       }));
-
-  //       // Add uncategorized foods if any
-  //       if (groupedFoods["uncategorized"]) {
-  //         subCategoryGroups.push({
-  //           _id: "uncategorized",
-  //           title: "Uncategorized",
-  //           foods: groupedFoods["uncategorized"],
-  //         });
-  //       }
-
-  //       return {
-  //         ...category,
-  //         index,
-  //         subCategories: subCategoryGroups,
-  //       };
-  //     });
-  // }, [allDeals, filter, subcategoriesData?.subCategories]);
 
   const deals2 = useMemo(() => {
     const subCategories = subcategoriesData?.subCategories;
@@ -231,6 +190,23 @@ export default function StoreDetailsScreen() {
     );
   }, [allDeals, filter, subcategoriesData?.subCategories]);
 
+  const panelMenuItems = useMemo(() => {
+    return categoriesSubCategoriesList?.fetchCategoryDetailsByStoreId.map(
+      (item: ICategoryDetailsResponse) => ({
+        label: item.label,
+        url: item.url,
+
+        items:
+          item.items?.map((subItem) => ({
+            label: subItem.label,
+            url: subItem.url,
+
+            template: itemRenderer,
+          })) || [],
+      })
+    );
+  }, [categoriesSubCategoriesList?.fetchCategoryDetailsByStoreId]);
+
   // Constants
   const headerData = {
     name: data?.restaurant?.name ?? "...",
@@ -256,13 +232,13 @@ export default function StoreDetailsScreen() {
   };
 
   // Handlers
-  const handleScroll = (id: string) => {
+  const handleScroll = (id: string, offset: number = 120) => {
     setSelectedCategory(id);
     const element = document.getElementById(id);
     const container = document.querySelector(".scrollable-container"); // Adjust selector
 
     if (element && container) {
-      const headerOffset = 120;
+      const headerOffset = offset;
       const elementPosition = element.offsetTop;
       const offsetPosition = elementPosition - headerOffset;
 
@@ -483,7 +459,8 @@ export default function StoreDetailsScreen() {
                     >
                       <PanelMenu
                         model={
-                          categoriesSubCategoriesList?.fetchCategoryDetailsByStoreId
+                          panelMenuItems
+                          // SIDEBAR_CATEGORY
                         }
                         className="w-full"
                         expandIcon={<span></span>}
