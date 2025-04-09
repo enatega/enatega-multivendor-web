@@ -58,7 +58,7 @@ export default function StoreDetailsScreen() {
   const [showDialog, setShowDialog] = useState<IFood | null>(null);
   const [filter, setFilter] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
-  const [selectedSubCategory, setSelectedSubCategory] = useState("");
+  const [, setSelectedSubCategory] = useState("");
   const [isScrolling, setIsScrolling] = useState(false);
 
   // Ref
