@@ -126,12 +126,8 @@ export default function RestaurantDetailsScreen() {
   };
 
   // Function to handle the logic for seeing reviews
-  const handleSeeReviews = ()=> {
-    // Handle the logic for seeing reviews here
-    // For example, you might want to navigate to a reviews page or open a modal
-    console.log("See reviews clicked");
+  const handleSeeReviews = () => {
     setShowReviews(true);
-    console.log("🚀 ~ handleSeeReviews ~ showReviews:", showReviews)
   }
 
 
