@@ -10,6 +10,7 @@ export const RESTAURANTS_FRAGMENT = gql`
     deliveryTime
     minimumOrder
     rating
+    slug
     isActive
     isAvailable
     commissionRate
@@ -86,6 +87,7 @@ export const GET_RESTAURANT_BY_ID_SLUG = gql`
       name
       image
       slug
+      shopType
       address
       location {
         coordinates
