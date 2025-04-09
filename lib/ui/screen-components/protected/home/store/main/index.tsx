@@ -34,7 +34,7 @@ function StoreMainSection() {
           {restaurantsData?.map((item) => {
             return (
               <>
-                <Card item={item} isDiscovery={false} />
+                <Card key={item._id} item={item} isDiscovery={false} />
               </>
             );
           })}
