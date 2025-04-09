@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useParams } from "next/navigation";
 import { Skeleton } from "primereact/skeleton";
@@ -58,10 +58,13 @@ export default function StoreDetailsScreen() {
   const [showDialog, setShowDialog] = useState<IFood | null>(null);
   const [filter, setFilter] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedSubCategory, setSelectedSubCategory] = useState("");
   const [isScrolling, setIsScrolling] = useState(false);
 
-  // Hooks
+  // Ref
+  const selectedSubCategoryRefs = useRef<string>("");
 
+  // Hooks
   const { data, loading } = useRestaurant(id, decodeURIComponent(slug));
   const {
     data: categoriesSubCategoriesList,
@@ -81,12 +84,13 @@ export default function StoreDetailsScreen() {
 
   // Templates
   const itemRenderer = (item: MenuItem) => {
-    const isClicked = item.url === window.location.hash;
+    const _url = item.url?.slice(1);
+    const isClicked = _url === selectedSubCategoryRefs.current;
+
     return (
       <a
         className={`flex align-items-center px-3 py-2 cursor-pointer bg-${isClicked ? "[#F3FFEE]" : ""}`}
-        // href={item.url}
-        onClick={() => handleScroll(item.url?.slice(1) ?? "", 80)}
+        onClick={() => handleScroll(_url ?? "", 80, false)}
       >
         <span
           className={`mx-2 ${item.items && "font-semibold"} text-${isClicked ? "[#5AC12F]" : "gray-600"}`}
@@ -232,8 +236,13 @@ export default function StoreDetailsScreen() {
   };
 
   // Handlers
-  const handleScroll = (id: string, offset: number = 120) => {
-    setSelectedCategory(id);
+  const handleScroll = (id: string, offset: number = 120, isParent = true) => {
+    if (isParent) {
+      setSelectedCategory(id);
+    } else {
+      selectedSubCategoryRefs.current = id || "";
+      setSelectedSubCategory(id);
+    }
     const element = document.getElementById(id);
     const container = document.querySelector(".scrollable-container"); // Adjust selector
 
