@@ -160,6 +160,36 @@ export const GET_RESTAURANT_BY_ID_SLUG = gql`
   }
 `;
 
+
+export const GET_REVIEWS_BY_RESTAURANT = gql`
+  query GetReviewsByRestaurant($restaurant: String!) {
+    reviewsByRestaurant(restaurant: $restaurant) {
+      reviews {
+        _id
+        rating
+        description
+        isActive
+        createdAt
+        updatedAt
+        order {
+          _id
+          user {
+            _id
+            name
+            email
+          }
+        }
+        restaurant {
+          _id
+          name
+        }
+      }
+      ratings
+      total
+    }
+  }
+`;
+
 export const GET_CATEGORIES_SUB_CATEGORIES_LIST = gql`
   query FetchCategoryDetailsByStoreId($storeId: String!) {
     fetchCategoryDetailsByStoreId(storeId: $storeId) {
@@ -186,3 +216,4 @@ export const GET_SUB_CATEGORIES = gql`
     }
   }
 `;
+
