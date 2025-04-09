@@ -124,6 +124,7 @@ export interface ICategoryV2 {
 }
 
 export interface ICategoryDetailsResponse {
+  id: string;
   label: string;
   url: string;
   icon?: string;

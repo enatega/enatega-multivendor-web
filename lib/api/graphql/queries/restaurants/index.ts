@@ -173,12 +173,12 @@ export const GET_RESTAURANT_BY_ID_SLUG = gql`
 export const GET_CATEGORIES_SUB_CATEGORIES_LIST = gql`
   query FetchCategoryDetailsByStoreId($storeId: String!) {
     fetchCategoryDetailsByStoreId(storeId: $storeId) {
-      # id
+      id
       label
       # slug
       url
       items {
-        # id
+        id
         label
         url
         # slug
