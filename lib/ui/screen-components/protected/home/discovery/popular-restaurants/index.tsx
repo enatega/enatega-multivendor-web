@@ -2,7 +2,7 @@ import CuisinesSliderCard from "@/lib/ui/useable-components/cuisines-slider-card
 // hook
 import useMostOrderedRestaurants from "@/lib/hooks/useMostOrderedRestaurants";
 // loading skeleton
-import CuisinesSliderSkeleton from "@/lib/ui/useable-components/cuisines-slider-loading-skeleton";
+import CuisinesSliderSkeleton from "@/lib/ui/useable-components/custom-skeletons/cuisines.slider.skeleton";
 // interfaces
 import { IRestaurant } from "@/lib/utils/interfaces";
 
