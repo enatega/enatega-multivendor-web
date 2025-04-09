@@ -24,13 +24,22 @@ import FoodItemDetail from "@/lib/ui/useable-components/item-detail";
 import FoodCategorySkeleton from "@/lib/ui/useable-components/custom-skeletons/food-items.skeleton";
 
 // Interface
-import { ICategory, IFood } from "@/lib/utils/interfaces";
+import {
+  ICategory,
+  ICategoryV2,
+  IFood,
+  ISubCategory,
+  ISubCategoryV2,
+} from "@/lib/utils/interfaces";
 
 // Hook
 import useRestaurant from "@/lib/hooks/useRestaurant";
 
 // API
-import { GET_CATEGORIES_SUB_CATEGORIES_LIST } from "@/lib/api/graphql";
+import {
+  GET_CATEGORIES_SUB_CATEGORIES_LIST,
+  GET_SUB_CATEGORIES,
+} from "@/lib/api/graphql";
 
 // Methods
 import { toSlug } from "@/lib/utils/methods";
@@ -59,14 +68,15 @@ export default function StoreDetailsScreen() {
       storeId: id,
     },
   });
-
-  console.log({ categoriesSubCategoriesList });
+  const { data: subcategoriesData, loading: subcategoriesLoading } =
+    useQuery(GET_SUB_CATEGORIES);
 
   // Constants
   const allDeals = data?.restaurant?.categories?.filter(
     (cat: ICategory) => cat.foods.length
   );
 
+  // Memo
   const deals = useMemo(() => {
     return (
       (allDeals || [])
@@ -95,6 +105,133 @@ export default function StoreDetailsScreen() {
     );
   }, [allDeals, filter]);
 
+  // const deals2 = useMemo(() => {
+  //   const subCategories = subcategoriesData?.subCategories;
+  //   if (!allDeals || !subCategories) return [];
+
+  //   return allDeals
+  //     .filter((category: ICategory) => {
+  //       if (filter.trim() === "") return true;
+
+  //       const categoryMatches = category.title
+  //         .toLowerCase()
+  //         .includes(filter.toLowerCase());
+
+  //       const foodMatches = category.foods.some((food: IFood) =>
+  //         food.title.toLowerCase().includes(filter.toLowerCase())
+  //       );
+
+  //       return categoryMatches || foodMatches;
+  //     })
+  //     .map((category: ICategory, index: number) => {
+  //       // Get relevant subCategories for this category
+  //       const subCats = subCategories.filter(
+  //         (sc: ISubCategory) => sc.parentCategoryId === category._id
+  //       );
+
+  //       // Group foods by subCategoryId
+  //       const groupedFoods: {
+  //         [key: string]: IFood[];
+  //       } = {};
+
+  //       category.foods.forEach((food) => {
+  //         const subCatId = food.subCategory?.toString() || "uncategorized";
+  //         if (!groupedFoods[subCatId]) groupedFoods[subCatId] = [];
+  //         groupedFoods[subCatId].push({
+  //           ...food,
+  //           title: food.title.toLowerCase(),
+  //         });
+  //       });
+
+  //       // Structure sub-categories with their foods
+  //       const subCategoryGroups = subCats.map((subCat: ISubCategory) => ({
+  //         _id: subCat._id,
+  //         title: subCat.title,
+  //         foods: groupedFoods[subCat._id] || [],
+  //       }));
+
+  //       // Add uncategorized foods if any
+  //       if (groupedFoods["uncategorized"]) {
+  //         subCategoryGroups.push({
+  //           _id: "uncategorized",
+  //           title: "Uncategorized",
+  //           foods: groupedFoods["uncategorized"],
+  //         });
+  //       }
+
+  //       return {
+  //         ...category,
+  //         index,
+  //         subCategories: subCategoryGroups,
+  //       };
+  //     });
+  // }, [allDeals, filter, subcategoriesData?.subCategories]);
+
+  const deals2 = useMemo(() => {
+    const subCategories = subcategoriesData?.subCategories;
+    if (!allDeals || !subCategories) return [];
+
+    return (
+      allDeals
+        .map((category: ICategory, index: number) => {
+          // Get subCategories for this category
+          const subCats = subCategories.filter(
+            (sc: ISubCategory) => sc.parentCategoryId === category._id
+          );
+
+          // Group foods by subCategoryId
+          const groupedFoods: Record<string, IFood[]> = {};
+
+          category.foods.forEach((food) => {
+            const subCatId = food.subCategory || "uncategorized";
+            if (!groupedFoods[subCatId]) groupedFoods[subCatId] = [];
+            groupedFoods[subCatId].push({
+              ...food,
+              title: food.title.toLowerCase(),
+            });
+          });
+
+          // Build sub-category groups with foods
+          const subCategoryGroups = subCats
+            .map((subCat: ISubCategory) => {
+              const foods = groupedFoods[subCat._id] || [];
+              return foods.length > 0 ?
+                  {
+                    _id: subCat._id,
+                    title: subCat.title,
+                    foods,
+                  }
+                : null;
+            })
+            .filter(Boolean) as {
+            _id: string;
+            title: string;
+            foods: IFood[];
+          }[];
+
+          // Add uncategorized group if it has foods
+          if (groupedFoods["uncategorized"]?.length > 0) {
+            subCategoryGroups.push({
+              _id: "uncategorized",
+              title: "Uncategorized",
+              foods: groupedFoods["uncategorized"],
+            });
+          }
+
+          // Only return category if it has at least one sub-category with foods
+          if (subCategoryGroups.length === 0) return null;
+
+          return {
+            ...category,
+            index,
+            subCategories: subCategoryGroups,
+          };
+        })
+        .filter(Boolean) || []
+    );
+  }, [allDeals, filter, subcategoriesData?.subCategories]);
+
+  // Constants
   const headerData = {
     name: data?.restaurant?.name ?? "...",
     averageReview: data?.restaurant?.reviewData?.ratings ?? "...",
@@ -331,7 +468,7 @@ export default function StoreDetailsScreen() {
 
           {/* Main Section */}
           <PaddingContainer>
-            {loading || categoriesSubCategoriesLoading ?
+            {loading || categoriesSubCategoriesLoading || subcategoriesLoading ?
               <FoodCategorySkeleton />
             : <div className="flex flex-col md:flex-row w-full">
                 <div className="hidden md:block md:w-1/5 p-3 h-screen z-10  sticky top-0 left-0">
@@ -348,7 +485,7 @@ export default function StoreDetailsScreen() {
                         model={
                           categoriesSubCategoriesList?.fetchCategoryDetailsByStoreId
                         }
-                        className="store-category-sidebar w-full"
+                        className="w-full"
                         expandIcon={<span></span>}
                         collapseIcon={<span></span>}
                       />
@@ -357,7 +494,7 @@ export default function StoreDetailsScreen() {
                 </div>
 
                 <div className="w-full md:w-4/5 p-3 h-full overflow-y-auto">
-                  {deals.map((category: ICategory, catIndex: number) => (
+                  {/* {deals.map((category: ICategory, catIndex: number) => (
                     <div
                       key={catIndex}
                       className="mb-4 p-3"
@@ -373,7 +510,7 @@ export default function StoreDetailsScreen() {
                             key={mealIndex}
                             className="flex items-center gap-4 rounded-lg border border-gray-300 shadow-sm bg-white p-3 relative"
                           >
-                            {/* Text Content */}
+                       
                             <div className="flex-grow text-left md:text-left space-y-2">
                               <h3 className="text-gray-900 text-lg font-semibold font-inter">
                                 {meal.title}
@@ -390,7 +527,7 @@ export default function StoreDetailsScreen() {
                               </div>
                             </div>
 
-                            {/* Image */}
+                      
                             <div className="flex-shrink-0 w-24 h-24 md:w-28 md:h-28">
                               <img
                                 alt={meal.title}
@@ -399,7 +536,7 @@ export default function StoreDetailsScreen() {
                               />
                             </div>
 
-                            {/* Image Section */}
+                  
                             <div className="absolute top-2 right-2">
                               <button
                                 className="bg-[#0EA5E9] rounded-full shadow-md w-6 h-6 flex items-center justify-center"
@@ -411,6 +548,81 @@ export default function StoreDetailsScreen() {
                           </div>
                         ))}
                       </div>
+                    </div>
+                  ))} */}
+                  {deals2.map((category: ICategoryV2, catIndex: number) => (
+                    <div
+                      key={catIndex}
+                      className="mb-4 p-3"
+                      id={toSlug(category.title)}
+                    >
+                      <h2 className="mb-4 font-inter text-gray-900 font-bold text-2xl sm:text-xl leading-snug tracking-tight">
+                        {category.title}
+                      </h2>
+
+                      {category.subCategories.map(
+                        (subCategory: ISubCategoryV2, subCatIndex: number) => (
+                          <div
+                            key={subCatIndex}
+                            className="mb-4"
+                            id={toSlug(subCategory.title)}
+                          >
+                            <h3 className="mb-2 font-inter text-gray-600 font-semibold text-lg sm:text-base leading-snug tracking-normal">
+                              {subCategory.title}
+                            </h3>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                              {subCategory.foods.map(
+                                (meal: IFood, mealIndex) => (
+                                  <div
+                                    key={mealIndex}
+                                    className="flex items-center gap-4 rounded-lg border border-gray-300 shadow-sm bg-white p-3 relative"
+                                  >
+                                    {/* Text Content */}
+                                    <div className="flex-grow text-left md:text-left space-y-2">
+                                      <h3 className="text-gray-900 text-lg font-semibold font-inter">
+                                        {meal.title}
+                                      </h3>
+
+                                      <p className="text-gray-500 text-sm">
+                                        {meal.description}
+                                      </p>
+
+                                      <div className="flex items-center gap-2">
+                                        <span className="text-[#0EA5E9] text-lg font-semibold">
+                                          Rs. {meal.variations[0].price}
+                                        </span>
+                                      </div>
+                                    </div>
+
+                                    {/* Image */}
+                                    <div className="flex-shrink-0 w-24 h-24 md:w-28 md:h-28">
+                                      <img
+                                        alt={meal.title}
+                                        className="w-full h-full object-contain mx-auto md:mx-0"
+                                        src={meal.image}
+                                      />
+                                    </div>
+
+                                    {/* Image Section */}
+                                    <div className="absolute top-2 right-2">
+                                      <button
+                                        className="bg-[#0EA5E9] rounded-full shadow-md w-6 h-6 flex items-center justify-center"
+                                        onClick={() => setShowDialog(meal)}
+                                      >
+                                        <FontAwesomeIcon
+                                          icon={faPlus}
+                                          color="white"
+                                        />
+                                      </button>
+                                    </div>
+                                  </div>
+                                )
+                              )}
+                            </div>
+                          </div>
+                        )
+                      )}
                     </div>
                   ))}
                 </div>

@@ -126,6 +126,7 @@ export const GET_RESTAURANT_BY_ID_SLUG = gql`
           title
           image
           description
+          subCategory
           variations {
             _id
             title
@@ -180,6 +181,16 @@ export const GET_CATEGORIES_SUB_CATEGORIES_LIST = gql`
         url
         slug
       }
+    }
+  }
+`;
+
+export const GET_SUB_CATEGORIES = gql`
+  query subCategories {
+    subCategories {
+      _id
+      title
+      parentCategoryId
     }
   }
 `;

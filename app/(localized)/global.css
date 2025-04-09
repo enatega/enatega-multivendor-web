@@ -725,3 +725,25 @@ Discovery Caurousal
   object-fit: cover;
   border-radius: 8px;
 }
+
+/* Panel Menu */
+/* Highlight expanded parent item */
+/* Highlight expanded parent item */
+/* ✅ Expanded parent item (e.g., "Laptops") */
+.p-panelmenu .p-panelmenu-header .p-highlight {
+  background-color: white !important;
+  font-weight: 600 !important;
+  color: red !important;
+}
+
+/* ✅ Menu label inside the expanded header */
+.p-panelmenu .p-panelmenu-header .p-highlight .p-menuitem-text {
+  color: yellow !important;
+}
+
+/* ✅ Child item (active state — assuming typical structure) */
+.p-panelmenu .p-menuitem-link .p-menuitem-active {
+  background-color: #e0f2fe !important;
+  color: #0369a1 !important;
+  font-weight: 600 !important;
+}
