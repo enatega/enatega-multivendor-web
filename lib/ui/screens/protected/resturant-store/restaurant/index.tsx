@@ -36,6 +36,7 @@ export default function RestaurantDetailsScreen() {
 
   // State
   const [filter, setFilter] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
 
   // Hooks
   const { data, loading } = useRestaurant(id, decodeURIComponent(slug));
@@ -104,6 +105,7 @@ export default function RestaurantDetailsScreen() {
 
   // Handlers
   const handleScroll = (id: string) => {
+    setSelectedCategory(id);
     const element = document.getElementById(id);
     const container = document.querySelector(".scrollable-container"); // Adjust selector
 
@@ -237,8 +239,6 @@ export default function RestaurantDetailsScreen() {
             </PaddingContainer>
           </div>
 
-          <Spacer height="20px" />
-
           {/* Category Section */}
           <PaddingContainer
             height={headerHeight}
@@ -259,16 +259,21 @@ export default function RestaurantDetailsScreen() {
                 >
                   <ul className="flex space-x-4 items-center w-max flex-nowrap">
                     {(showAll ? deals : deals.slice(0, visibleItems)).map(
-                      (category: ICategory, index: number) => (
-                        <li key={index} className="shrink-0">
-                          <button
-                            className="bg-gray-100 text-gray-600 rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap"
-                            onClick={() => handleScroll(toSlug(category.title))}
-                          >
-                            {category.title}
-                          </button>
-                        </li>
-                      )
+                      (category: ICategory, index: number) => {
+                        const _slug = toSlug(category.title);
+                        return (
+                          <li key={index} className="shrink-0">
+                            <button
+                              className={`bg-${selectedCategory === _slug ? "[#F3FFEE]" : "gray-100"} text-${selectedCategory === _slug ? "[#5AC12F]" : "gray-600"} rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap`}
+                              onClick={() =>
+                                handleScroll(toSlug(category.title))
+                              }
+                            >
+                              {category.title}
+                            </button>
+                          </li>
+                        );
+                      }
                     )}
 
                     {!showAll && deals.length > visibleItems && (

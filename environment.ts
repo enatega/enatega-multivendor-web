@@ -6,8 +6,8 @@ export default function getEnv(env: "DEV" | "PROD") {
     };
   } else {
     return {
-      SERVER_URL: "http://localhost:8000/",
-      WS_SERVER_URL: "ws://localhost:8000/",
+      SERVER_URL: "http://localhost:8001/",
+      WS_SERVER_URL: "ws://localhost:8001/",
     };
   }
 }

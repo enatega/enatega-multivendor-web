@@ -65,11 +65,18 @@ export interface ICategory {
   foods: IFood[];
 }
 
+export interface ISubCategory {
+  _id: string;
+  title: string;
+  parentCategoryId: string;
+}
+
 export interface IFood {
   _id: string;
   title: string;
   image: string;
   description: string;
+  subCategory: string;
   variations: IVariation[];
 }
 
@@ -115,4 +122,14 @@ export interface IOpeningTime {
 export interface ITimeSlot {
   startTime: string;
   endTime: string;
+}
+
+// Double Category
+export interface ISubCategoryV2 extends ISubCategory {
+  foods: IFood[];
+}
+export interface ICategoryV2 {
+  _id: string;
+  title: string;
+  subCategories: ISubCategoryV2[];
 }
