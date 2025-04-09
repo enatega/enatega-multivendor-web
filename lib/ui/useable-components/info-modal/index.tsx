@@ -66,7 +66,8 @@ const InfoModal = ({ visible, onHide, restaurantInfo }: IInfoModalProps) => {
       .join(", ");
   };
 
-  // Get current day's hours for the header
+  // Get current day's hours for the header only- Dynamically displaying the current day and hours
+  // Example: "10:00-22:00" or "Closed" 
   const getCurrentDayHours = () => {
     const dayInfo = restaurantInfo?.openingTimes?.find(
       (day) => day.day === currentDay
@@ -96,7 +97,7 @@ const InfoModal = ({ visible, onHide, restaurantInfo }: IInfoModalProps) => {
           <GoogleMapComponent
             apiKey={GOOGLE_MAPS_KEY || ""}
             center={mapCenter}
-            circleRadius={400}
+            circleRadius={300}
             visible={visible}
           />
         </div>
@@ -110,7 +111,7 @@ const InfoModal = ({ visible, onHide, restaurantInfo }: IInfoModalProps) => {
           <div className="flex items-center mb-4">
             <FontAwesomeIcon
               icon={faCircle}
-            className={`text-xs mr-2 ${restaurantInfo.isAvailable ? "text-green-500" : "text-red-500"}`}
+            className={`text-xs mr-2 ${(restaurantInfo.isAvailable && getCurrentDayHours() !== "Closed") ? "text-green-500" : "text-red-500"}`}
             />
             <span>
               {getCurrentDay(currentDay)  }{" "}
@@ -141,7 +142,7 @@ const InfoModal = ({ visible, onHide, restaurantInfo }: IInfoModalProps) => {
             <div className="grid grid-cols-1 gap-2">
               {restaurantInfo.openingTimes.map((day) => (
                 <div key={day.day} className="flex justify-between">
-                  <span>{day.day}</span>
+                  <span>{getCurrentDay(day.day)}</span>
                   <span>{getFormattedHours(day)}</span>
                 </div>
               ))}
@@ -157,7 +158,7 @@ const InfoModal = ({ visible, onHide, restaurantInfo }: IInfoModalProps) => {
                   key={`delivery-${day.day}`}
                   className="flex justify-between"
                 >
-                  <span>{day.day}</span>
+                  <span>{getCurrentDay(day.day)}</span>
                   <span>{getFormattedHours(day)}</span>
                 </div>
               ))}
