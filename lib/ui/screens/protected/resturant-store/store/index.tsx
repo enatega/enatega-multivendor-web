@@ -196,7 +196,6 @@ export default function StoreDetailsScreen() {
 
       setSubCategoriesForCategories(sliderSubCategories);
     } else {
-      console.log("sub.....", id);
       selectedSubCategoryRefs.current = id || "";
       setSelectedSubCategory(id);
     }
@@ -221,7 +220,6 @@ export default function StoreDetailsScreen() {
     }
   };
 
-  console.log({ subCategoriesForCategories });
   // Constants
   const headerData = {
     name: data?.restaurant?.name ?? "...",
