@@ -95,6 +95,7 @@ export const GET_RESTAURANT_BY_ID_SLUG = gql`
       name
       image
       slug
+      shopType
       address
       location {
         coordinates
