@@ -88,7 +88,7 @@ export default function StoreDetailsScreen() {
 
     return (
       <div
-        className={`flex align-items-center px-3 py-2 cursor-pointer bg-${isClicked ? "[#F3FFEE]" : ""}`}
+        className="flex align-items-center px-3 py-2 cursor-pointer"
         onClick={() => handleScroll(_url ?? "", true)}
       >
         <span
