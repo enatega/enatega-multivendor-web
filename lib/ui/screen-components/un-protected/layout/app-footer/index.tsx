@@ -4,8 +4,8 @@
 import AppLinks from "@/lib/ui/useable-components/Footer/AppLinks";
 import FooterLinks from "@/lib/ui/useable-components/Footer/FooterLinks";
 
-const partnerWithWolt = {
-  title: "Partner with Wolt",
+const partnerWithEnatega = {
+  title: "Partner with Enatega",
   links: [
     { label: "For couriers", href: "#" },
     { label: "For merchants", href: "#" },
@@ -28,11 +28,11 @@ const company = {
 const products = {
   title: "Products",
   links: [
-    { label: "Wolt Drive", href: "#" },
-    { label: "Wolt Market", href: "#" },
-    { label: "Wolt+", href: "#" },
-    { label: "Wolt for Work", href: "#" },
-    { label: "Wolt Ads", href: "#" },
+    { label: "Enatega Drive", href: "#" },
+    { label: "Enatega Market", href: "#" },
+    { label: "Enatega+", href: "#" },
+    { label: "Enatega for Work", href: "#" },
+    { label: "Enatega Ads", href: "#" },
   ],
 };
 
@@ -58,7 +58,7 @@ const followUs = {
     { label: "Facebook", href: "#" },
     { label: "X", href: "#" },
     { label: "LinkedIn", href: "#" },
-    { label: "Wolt Life", href: "#" },
+    { label: "Enatega Life", href: "#" },
   ],
 };
 
@@ -66,12 +66,12 @@ const AppFooter = () => {
   return (
     <div className="w-full h-auto bg-[#141414] flex items-center justify-center">
       <div className=" mx-auto mt-[60px] mb-[60px] p-4 flex md:items-center md:justify-center flex-col ">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 w-screen">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 w-full">
           <div className="p-2">
             <AppLinks/>
           </div>
           <div className="p-2">
-            <FooterLinks section={partnerWithWolt} />
+            <FooterLinks section={partnerWithEnatega} />
           </div>
           <div className="p-2">
             <FooterLinks section={company} />

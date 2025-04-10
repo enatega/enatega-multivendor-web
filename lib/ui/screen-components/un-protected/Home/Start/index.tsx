@@ -1,26 +1,59 @@
-import React from 'react'
-import HomeSearch from '@/lib/ui/useable-components/Home-search';
-import styles from './Start.module.css'
+"use client"
 
-const Start = () => {
+import React from 'react';
+import HomeSearch from '@/lib/ui/useable-components/Home-search';
+import styles from './Start.module.css';
+import { useLocation } from '@/lib/context/Location/Location.context';  // Import useLocation context
+import { useRouter } from 'next/navigation';  // Import useRouter for navigation
+
+const Start: React.FC = () => {
+  const { setLocation } = useLocation();  // Destructure setLocation to update location in context
+  const router = useRouter();  // Initialize useRouter for navigation
+
+  const handleShareLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          const { latitude, longitude } = position.coords;
+          console.log("Latitude:", latitude, "Longitude:", longitude);
+
+          setLocation({
+            name: "Current Location",  
+            lat: latitude,
+            lng: longitude,
+          });
+
+          
+          router.push('/restaurants');  
+        },
+        error => {
+          console.error("Error getting location:", error.message);
+        }
+      );
+    } else {
+      alert("Geolocation is not supported by your browser.");
+    }
+  }
 
   return (
-    <div
-    className={`h-screen ps-[60px] w-screen bg-cover bg-center flex items-center `}
-    style={{ backgroundImage: "url('/assets/images/png/main-image.svg')" }} 
-  >
-    <div>
-      <div className='h-[70px] overflow-hidden'>
-        <h1 className={`font-extrabold text-[50px] w-[70%] h-[100px] ${styles.anim}`}>Time</h1>
+    <div className={`h-screen bg-cover bg-center flex items-center justify-center bg-[#94e469]`}>
+      <div>
+        <div>
+          <h1 className={`font-extrabold text-[40px] text-white text my-6 md:text-[80px] ${styles.anim}`}>Burgers Delivered</h1>
         </div>
-        <HomeSearch/>
-        <div className='my-2'>
-            <button className='me-2'>Share Location</button>
-            <button>Login for saved address</button>
+        <HomeSearch />
+        <div className='my-6 text-white items-center justify-center flex'>
+          <div className='flex items-center gap-2'>
+            <i className="pi pi-map-marker" style={{ fontSize: '1rem', color: "white" }}></i>
+            <button className='me-2 underline' onClick={handleShareLocation}>
+              Share Location
+            </button>
+          </div>
+          <button className='underline'>Login for saved address</button>
         </div>
+      </div>
     </div>
-  </div>
   )
 }
 
-export default Start
+export default Start;

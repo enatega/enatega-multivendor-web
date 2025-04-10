@@ -26,6 +26,9 @@ import { useSetupApollo } from "@/lib/hooks/useSetApollo";
 import AppLayout from "@/lib/ui/layouts/global";
 import { FontawesomeConfig } from "@/lib/config";
 
+import { LocationProvider } from "@/lib/context/Location/Location.context";
+import { GoogleMapsProvider } from "@/lib/context/global/google-maps.context";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -51,7 +54,11 @@ export default function RootLayout({
             <ConfigurationProvider>
               <ToastProvider>
                 <AuthProvider>
+                <GoogleMapsProvider>
+                  <LocationProvider>
                   <AppLayout>{children}</AppLayout>
+                  </LocationProvider>
+                  </GoogleMapsProvider>
                 </AuthProvider>
               </ToastProvider>
             </ConfigurationProvider>

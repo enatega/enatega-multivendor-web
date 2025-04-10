@@ -1,15 +1,105 @@
-import React from 'react'
-import { InputText } from 'primereact/inputtext';
+import React, { useRef, useState, useEffect, useContext } from 'react';
+import { GoogleMapsContext } from '@/lib/context/global/google-maps.context';
+import { useLocation } from '@/lib/context/Location/Location.context';
+import useDebounce from '@/lib/hooks/useDebounce';
+import { useRouter } from 'next/navigation'; 
 
-const HomeSearch = () => {
+const CitySearch: React.FC = () => {
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const { setLocation } = useLocation();
+  const { isLoaded } = useContext(GoogleMapsContext);
+  const router = useRouter(); 
+
+  const [cityName, setCityName] = useState<string>('');
+  const [suggestions, setSuggestions] = useState<google.maps.places.AutocompletePrediction[]>([]);
+
+  // Use the debounced cityName
+  const debouncedCityName = useDebounce(cityName, 500);
+
+  useEffect(() => {
+    if (!isLoaded || !window.google || !debouncedCityName) return;
+
+    const autocompleteService = new window.google.maps.places.AutocompleteService();
+
+    autocompleteService.getPlacePredictions(
+      { input: debouncedCityName, types: ['(cities)'] },
+      (
+        predictions: google.maps.places.AutocompletePrediction[] | null,
+        status: google.maps.places.PlacesServiceStatus
+      ) => {
+        if (status === window.google.maps.places.PlacesServiceStatus.OK && predictions) {
+          setSuggestions(predictions);
+        } else {
+          setSuggestions([]);
+        }
+      }
+    );
+  }, [debouncedCityName, isLoaded]);
+
+  const handleSelect = (placeId: string, description: string) => {
+    if (!window.google || !isLoaded) return;
+
+    const service = new window.google.maps.places.PlacesService(document.createElement('div'));
+
+    service.getDetails(
+      { placeId },
+      (
+        place: google.maps.places.PlaceResult | null,
+        status: google.maps.places.PlacesServiceStatus
+      ) => {
+        if (status === window.google.maps.places.PlacesServiceStatus.OK && place?.geometry?.location) {
+          const lat = place.geometry.location.lat();
+          const lng = place.geometry.location.lng();
+
+          setLocation({
+            name: description,
+            lat,
+            lng,
+          });
+          
+          router.push('/restaurants');
+
+          setCityName('');
+          setSuggestions([]);
+        }
+      }
+    );
+  };
+
   return (
-    <div>
-        <div className='bg-white flex p-2 rounded'>
-           <div className='me-2'>Icon</div>
-           <InputText placeholder='Enter Delivery Address' className='w-full'/>
-        </div>
+    <div className="w-full max-w-md mx-auto p-2 rounded-md relative">
+      <div className='flex justify-center items-center gap-4 rounded-full bg-white p-4'>
+        <i className="pi pi-map-marker" style={{ fontSize: '1.5rem', color: "black" }}></i>
+        <input
+          ref={inputRef}
+          type="text"
+          placeholder="Search for a city..."
+          value={cityName}
+          onChange={(e) => setCityName(e.target.value)}
+          className="w-full border rounded-md focus:outline-none focus:ring-0 hover:outline-none hover:ring-0 border-none"
+        />
+      </div>
+      {suggestions.length > 0 && (
+        <ul className="absolute top-full left-0 right-0 z-10 bg-white border rounded-md shadow-md">
+          {suggestions.map((suggestion) => (
+            <div className='flex gap-2 p-2 items-center' key={suggestion.place_id}>
+              <i className="pi pi-map-marker" style={{ fontSize: '1.3rem', color: "black", backgroundColor: "#ededee", padding: "10px", borderRadius: "50%" }}></i>
+              <div className='w-full'>
+                <li
+                  key={suggestion.place_id}
+                  onClick={() => handleSelect(suggestion.place_id, suggestion.description)}
+                  className="p-2 hover:text-red-300 cursor-pointer"
+                >
+                  {suggestion.description}
+                </li>
+                <hr />
+              </div>
+            </div>
+          ))}
+        </ul>
+      )}
     </div>
-  )
-}
+  );
+};
 
-export default HomeSearch
+export default CitySearch;

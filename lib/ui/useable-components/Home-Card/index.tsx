@@ -11,10 +11,10 @@ subText:string
 const HomeCard:React.FC<HomeCardProps> = ({image}) => {
   return (
     <div>
-      <MoveableCard image={image}/>
-      <div>
-        <h1>Fresh Groceries ,delievered</h1>
-        <button>Chech out Enatega Restaurant</button>
+      <MoveableCard image={image} height={"320px"}/>
+      <div className='my-4'>
+        <h1 className='font-extrabold text-[22px]'>Fresh Groceries ,delievered</h1>
+        <button className='text-[#03c3e8]'>Chech out Enatega Restaurant</button>
       </div>
     </div>
   )

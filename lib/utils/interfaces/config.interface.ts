@@ -9,4 +9,5 @@ export interface IConfigProps {
     SENTRY_DSN:string,
     SKIP_EMAIL_VERIFICATION:string,
     SKIP_MOBILE_VERIFICATION:string,
+    GOOGLE_PLACES_API_BASE_URL:string
 }

@@ -30,6 +30,7 @@ export const ConfigurationProvider = ({
   const PAYPAL_KEY = configuration.clientId;
   const GOOGLE_MAPS_KEY = configuration.googleApiKey;
   const AMPLITUDE_API_KEY = configuration.webAmplitudeApiKey;
+  const GOOGLE_PLACES_API_BASE_URL= configuration.googlePlacesApiBaseUrl
   const LIBRARIES = "places,drawing,geometry,localContext,visualization".split(
     ",",
   );
@@ -53,6 +54,8 @@ export const ConfigurationProvider = ({
         SENTRY_DSN,
         SKIP_EMAIL_VERIFICATION,
         SKIP_MOBILE_VERIFICATION,
+        GOOGLE_PLACES_API_BASE_URL
+
       }}
     >
       {children}

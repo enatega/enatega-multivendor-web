@@ -1,55 +1,63 @@
 import Image from "next/image";
 import React from "react";
-import styles from './Movable.module.css'; // Ensure this path is correct
-import { divide } from "lodash";
+import styles from "./Movable.module.css"; // Ensure this path is correct
+import { MoveableProps } from "@/lib/utils/interfaces/Home-interfaces";
 
-interface MoveableProps{
-heading:string,
-subText:string,
-button:React.ReactNode,
-image:string,
-middle:boolean
-}
-
-const MoveableCard: React.FC<MoveableProps> = ({heading,subText,button,image,middle=false}) => {
+const MoveableCard: React.FC<MoveableProps> = ({
+  heading,
+  subText,
+  button,
+  image,
+  middle = false,
+  height = "600px",
+}) => {
   return (
-    <div className={`${styles.cardContainer} bg-green-300 rounded-3xl`}>
+    <div
+      className={`${styles.cardContainer} bg-green-300 rounded-3xl cursor-pointer`}
+      style={{ height: height }}
+    >
       {/* Image container */}
-        <Image
-          src={image || "https://images.ctfassets.net/23u853certza/0V5KYLmUImbVPRBerxy9b/78c9f84e09efbde9e124e74e6eef8fad/photocard_courier_v4.jpg?w=1200&q=90&fm=webp"}
-          alt="Main Image"
-          layout="fill"
-          className={`${styles.imageContainer} c`}
-        />
-      
+      <Image
+        src={
+          image ||
+          "https://images.ctfassets.net/23u853certza/0V5KYLmUImbVPRBerxy9b/78c9f84e09efbde9e124e74e6eef8fad/photocard_courier_v4.jpg?w=1200&q=90&fm=webp"
+        }
+        alt="Main Image"
+        layout="fill"
+        className={`${styles.imageContainer} c`}
+      />
+
       {/* Text container */}
 
-      {middle == false ? (<div className={`absolute inset-0 flex items-start justify-between  flex-col p-5  ${styles.textContainer}`}>
+      {middle == false ? (
+        <div
+          className={`absolute inset-0 flex items-start justify-between  flex-col p-5  ${styles.textContainer}`}
+        >
+          <div>
+            <h1 className="text-white text-4xl font-extrabold mb-3">
+              {heading}
+            </h1>
+            <p className="text-white text-md text-lg ">{subText}</p>
+          </div>
+          <div>{button && button}</div>
+        </div>
+      ) : (
         <div>
-        <h1 className="text-white text-4xl font-extrabold mb-3">{heading}</h1>
-        <p className="text-white text-md text-lg ">{subText}</p>
+          <div
+            className={`absolute inset-0 flex items-center justify-center  flex-col p-5  ${styles.textContainer}`}
+          >
+            <div className="w-[40%]  ">
+              <h1 className="text-white text-2xl font-bold mb-3 text-center">
+                {heading}
+              </h1>
+              <p className="text-white text-5xl font-extrabold text-center">
+                {subText}
+              </p>
+            </div>
+            <div className="my-3">{button && button}</div>
+          </div>
         </div>
-        <div>
-          {button && button}
-        </div>
-      </div>)
-   : (
-<div>
-<div className={`absolute inset-0 flex items-center justify-center  flex-col p-5  ${styles.textContainer}`}>
-        <div className="w-[30%]  ">
-        <h1 className="text-white text-3xl font-extrabold mb-3 text-center" >{heading}</h1>
-        <p className="text-white text-6xl font-extrabold text-center">{subText}</p>
-        </div>
-        <div>
-          {button && button}
-        </div>
-      </div>
-
-</div>
-
-   )
-    } 
-
+      )}
     </div>
   );
 };
