@@ -277,6 +277,7 @@ export default function StoreDetailsScreen() {
       "Preservation of the authentic taste of all traditional foods is upheld here.",
   };
 
+  // Handlers
   // Function to handle the logic for seeing reviews
   const handleSeeReviews = () => {
     setShowReviews(true);

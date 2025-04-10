@@ -1,10 +1,14 @@
 "use client";
 import { useEffect, useState } from "react";
-import CustomDialog from "../custom-dialog";
+//Icons
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircle } from "@fortawesome/free-solid-svg-icons";
+//Hooks
 import { useConfig } from "@/lib/context/configuration/configuration.context";
+//useable components
 import GoogleMapComponent from "@/lib/ui/useable-components/google-map-component";
+import CustomDialog from "../custom-dialog";
+//Methods
 import {
   IInfoModalProps,
   IOpeningTime,
