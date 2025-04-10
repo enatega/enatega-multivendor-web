@@ -6,7 +6,8 @@ import { useQuery } from "@apollo/client";
 import { ITopRatedVendorData } from "@/lib/utils/interfaces";
 // card
 import CuisinesSliderCard from "@/lib/ui/useable-components/cuisines-slider-card";
-import CuisinesSliderSkeleton from "@/lib/ui/useable-components/cuisines-slider-loading-skeleton";
+// loading skeleton
+import CuisinesSliderSkeleton from "@/lib/ui/useable-components/custom-skeletons/cuisines.slider.skeleton";
 
 function TopRatedVendors() {
   const { loading, error, data } = useQuery<ITopRatedVendorData>(

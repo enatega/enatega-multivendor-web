@@ -3,7 +3,7 @@ import { RECENT_ORDER_RESTAURANTS } from "@/lib/api/graphql";
 // slider card
 import SliderCard from "@/lib/ui/useable-components/slider-card";
 // loading skeleton
-import SliderSkeleton from "@/lib/ui/useable-components/slider-loading-skeleton";
+import SliderSkeleton from "@/lib/ui/useable-components/custom-skeletons/slider.loading.skeleton";
 // interfaces
 import { IRecentOrderedRestaurantsData, IRestaurant } from "@/lib/utils/interfaces";
 // useQuery

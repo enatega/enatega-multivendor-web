@@ -6,7 +6,7 @@ import { useQuery } from "@apollo/client";
 import { ICuisinesData } from "../utils/interfaces/cuisines.interface";
 
 const useGetCuisines = () => {
-    const {data, loading, error, networkStatus} = useQuery<ICuisinesData>(GET_CUISINES)
+    const {data, loading, error, networkStatus} = useQuery<ICuisinesData>(GET_CUISINES, {fetchPolicy: 'cache-and-network'})
     return {
         data, loading, error, networkStatus
     }

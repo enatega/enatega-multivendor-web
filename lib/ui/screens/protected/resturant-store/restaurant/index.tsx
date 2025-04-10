@@ -26,6 +26,8 @@ import { ICategory, IFood } from "@/lib/utils/interfaces";
 
 // Methods
 import { toSlug } from "@/lib/utils/methods";
+import ChatSvg from "@/lib/utils/assets/svg/chat";
+import ReviewsModal from "@/lib/ui/useable-components/reviews-modal";
 
 export default function RestaurantDetailsScreen() {
   // Access the UserContext via our custom hook
@@ -33,6 +35,8 @@ export default function RestaurantDetailsScreen() {
 
   // Params from route
   const { id, slug }: { id: string; slug: string } = useParams();
+
+
 
   // State
   const [filter, setFilter] = useState("");
@@ -121,6 +125,7 @@ export default function RestaurantDetailsScreen() {
   const [visibleItems, setVisibleItems] = useState(10); // Default visible items
   const [showAll, setShowAll] = useState(false);
   const [headerHeight, setHeaderHeight] = useState("64px"); // Default for desktop
+  const [showReviews, setShowReviews] = useState<boolean>(false);
 
   // Function to handle opening the food item modal
   const handleOpenFoodModal = (food: IFood) => {
@@ -157,6 +162,13 @@ export default function RestaurantDetailsScreen() {
   };
 
   // Adjust UI based on screen size
+  // Function to handle the logic for seeing reviews
+  const handleSeeReviews = () => {
+    setShowReviews(true);
+  }
+
+
+  // Function to show all categories
   useEffect(() => {
     // Adjust visible items based on screen width
     const updateVisibleItems = () => {
@@ -193,6 +205,11 @@ export default function RestaurantDetailsScreen() {
 
   return (
     <>
+            <ReviewsModal
+              restaurantId={id}
+              visible={showReviews}
+              onHide={() => setShowReviews(false)}
+            />
       <div className="w-screen h-screen flex flex-col pb-20">
         <div className="scrollable-container flex-1 overflow-auto">
           {/* Banner */}
@@ -272,6 +289,17 @@ export default function RestaurantDetailsScreen() {
                   ) : (
                     "See more information"
                   )}
+                </a>
+                 {/* Review Link */}
+                 <a
+                  className="flex items-center gap-2 text-[#0EA5E9] font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle"
+                  href="#"
+                  onClick={handleSeeReviews}
+                >
+                  <ChatSvg />
+                  {loading ?
+                    <Skeleton width="10rem" height="1.5rem" />
+                  : "See reviews"}
                 </a>
               </div>
             </PaddingContainer>
