@@ -1,121 +1,213 @@
+"use client";
+
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus, faMinus, faTrash } from "@fortawesome/free-solid-svg-icons";
 
-// Icons
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { ORDER_ITEMS, RECOMMENDATIONS } from "@/lib/utils/dummy";
+// Hooks
+import useUser from "@/lib/hooks/useUser";
 
-export default function Cart() {
-  return (
-    <div className="max-w-md mx-auto bg-white rounded-lg">
-      <div className="flex justify-between items-center">
-        <h2 className="font-inter font-semibold text-base md:text-[18px] lg:text-xl text-gray-900 leading-snug">
-          Your order
-        </h2>
+// Components
+import { RECOMMENDATIONS } from "@/lib/utils/dummy";
+
+interface CartProps {
+  onClose?: () => void;
+}
+
+export default function Cart({ onClose }: CartProps) {
+  // Access user context for cart functionality
+  const { 
+    cart, 
+    cartCount, 
+    updateItemQuantity,
+    removeItem, 
+    calculateSubtotal 
+  } = useUser();
+  
+  // Format subtotal for display
+  const formattedSubtotal = cartCount > 0 ? `$${calculateSubtotal()}` : "$0";
+
+  // Empty cart state
+  if (cart.length === 0) {
+    return (
+      <div className="h-full flex flex-col items-center justify-center p-6">
+        <div className="text-center">
+          <h2 className="font-inter font-semibold text-xl text-gray-900 mb-2">
+            Your cart is empty
+          </h2>
+          <p className="text-gray-500 mb-6">
+            Add items to your cart to continue
+          </p>
+          <button
+            onClick={onClose}
+            className="bg-[#5AC12F] text-black px-6 py-2 rounded-full font-medium"
+            type="button"
+          >
+            Browse Restaurant
+          </button>
+        </div>
       </div>
-      {/* Order Items */}
-      <div id="order-list" className="pt-4">
-        <div>
-          {ORDER_ITEMS.map((item) => (
+    );
+  }
+
+  return (
+    <div className="h-full flex flex-col bg-white">
+      {/* Header */}
+      <div className="p-4 border-b">
+        <div className="flex justify-between items-center">
+          <h2 className="font-inter font-semibold text-xl text-gray-900">
+            Your order
+          </h2>
+          <span className="text-gray-500 text-sm">
+            {cartCount} {cartCount === 1 ? 'item' : 'items'}
+          </span>
+        </div>
+      </div>
+
+      {/* Order Items - Scrollable */}
+      <div id="order-list" className="flex-1 overflow-y-auto p-4">
+        {cart.map((item) => (
+          <div
+            key={item.key}
+            className="flex flex-wrap md:flex-nowrap items-center mb-4 gap-4 p-3 border-b"
+          >
+            {/* Content */}
+            <div className="flex-1 min-w-0">
+              <h3 className="font-inter font-semibold text-[14px] md:text-[16px] text-gray-700 leading-snug">
+                {item.foodTitle || item.title || 'Food Item'}
+              </h3>
+              
+              {/* Variation */}
+              <p className="font-inter font-normal text-[12px] md:text-[14px] text-gray-500 leading-snug">
+                {item.variationTitle && `${item.variationTitle}`}
+              </p>
+              
+              {/* Add-ons */}
+              {item.addons && item.addons.length > 0 && (
+                <div className="mt-1">
+                  <p className="text-xs text-gray-500">
+                    {item.addons.map((addon, index) => (
+                      <span key={addon._id}>
+                        {addon.options.map((option, optIndex) => (
+                          <span key={option._id}>
+                            {option.title || ''}
+                            {optIndex < addon.options.length - 1 && ', '}
+                          </span>
+                        ))}
+                        {index < (item.addons?.length ?? 0) - 1 && ', '}
+                      </span>
+                    ))}
+                  </p>
+                </div>
+              )}
+              
+              {/* Special Instructions */}
+              {item.specialInstructions && (
+                <p className="text-xs italic text-gray-500 mt-1">
+                  {item.specialInstructions}
+                </p>
+              )}
+              
+              {/* Price */}
+              <p className="text-[#0EA5E9] font-semibold text-sm md:text-base mt-1">
+                ${(item.price || 0)}
+              </p>
+            </div>
+
+            {/* Quantity Controls */}
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => updateItemQuantity(item.key, -1)}
+                className="bg-gray-200 text-gray-600 rounded-full w-6 h-6 flex items-center justify-center"
+                type="button"
+              >
+                {item.quantity === 1 ? (
+                  <FontAwesomeIcon icon={faTrash} size="xs" />
+                ) : (
+                  <FontAwesomeIcon icon={faMinus} size="xs" />
+                )}
+              </button>
+              
+              <span className="text-gray-900 w-6 text-center">
+                {item.quantity}
+              </span>
+              
+              <button
+                onClick={() => updateItemQuantity(item.key, 1)}
+                className="bg-[#0EA5E9] text-white rounded-full w-6 h-6 flex items-center justify-center"
+                type="button"
+              >
+                <FontAwesomeIcon icon={faPlus} size="xs" />
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Recommendation Section */}
+      <div className="border-t p-4 bg-gray-50">
+        <h2 className="font-inter font-semibold text-base md:text-lg text-gray-900 mb-3">
+          Recommendations
+        </h2>
+        
+        <div className="flex space-x-4 overflow-x-auto pb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          {RECOMMENDATIONS.map((item) => (
             <div
               key={item.id}
-              className="flex flex-wrap md:flex-nowrap items-center mb-4 gap-4 p-2 rounded-lg"
+              className="flex-shrink-0 h-[200px] w-[170px] flex flex-col justify-between bg-white rounded-lg shadow-sm"
             >
-              {/* Image */}
-              <img
-                src={item.imageUrl}
-                alt={item.name}
-                className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-lg"
-              />
-
-              {/* Content */}
-              <div className="flex-1 min-w-0">
-                <h3 className="font-inter font-semibold text-[14px] md:text-[18px]  text-gray-700 leading-snug">
-                  {item.name}
-                </h3>
-                <p
-                  className="font-inter font-normal text-[12px] md:text-[14px]  text-gray-500 leading-snug"
-                  dangerouslySetInnerHTML={{
-                    __html: item.description.replace("\n", "<br>"),
-                  }}
+              <div className="relative">
+                <img
+                  src={item.imageUrl}
+                  alt={item.name}
+                  className="w-full h-24 object-cover rounded-t-lg"
                 />
-                <p className="text-blue-500 font-semibold text-sm md:text-base">
-                  ${item.price}
-                </p>
+                <div className="absolute top-2 right-2">
+                  <button
+                    className="bg-[#0EA5E9] rounded-full shadow-md w-6 h-6 flex items-center justify-center"
+                    type="button"
+                  >
+                    <FontAwesomeIcon icon={faPlus} color="white" size="xs" />
+                  </button>
+                </div>
               </div>
 
-              {/* Quantity */}
-              <div className="ml-auto flex items-center border rounded-lg px-2 md:px-3 py-1 md:py-1">
-                <span className="text-[#0EA5E9] text-[14[x] md:text-[18px]">
-                  {item.quantity}
-                </span>
+              <div className="flex justify-start p-3">
+                <div className="text-left">
+                  <p className="text-[#0EA5E9] font-semibold text-sm">
+                    ${item.price}
+                  </p>
+                  <p className="text-gray-700 text-sm truncate max-w-[150px]">
+                    {item.name}
+                  </p>
+                </div>
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Recommendeation */}
-      <div className="border-t p-4">
-        <h2 className="font-inter font-semibold text-base md:text-[18px] lg:text-xl text-gray-900 leading-snug">
-          Recommendations
-        </h2>
-        <div
-          id="recommendations-list"
-          className="flex space-x-4 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+      {/* Checkout Button */}
+      <div className="p-4 border-t">
+        <button 
+          className="flex justify-between items-center w-full bg-[#5AC12F] text-black rounded-full px-4 py-3"
+          onClick={() => {
+            // Handle checkout logic here
+            alert("Proceeding to checkout!");
+            if (onClose) onClose();
+          }}
+          type="button"
         >
-          <div className="mt-6">
-            <div className="flex space-x-4 overflow-x-auto pb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-              {RECOMMENDATIONS.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex-shrink-0 h-[200px] w-[170px] flex flex-col justify-between  bg-white rounded-lg shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)]"
-                >
-                  <div className="relative">
-                    <img
-                      src={item.imageUrl}
-                      alt={item.name}
-                      className="w-full h-24 object-cover rounded-lg"
-                    />
-                    {/* <button className="absolute top-2 right-2 bg-blue-500 text-white rounded-full p-1">
-                      <i className="fas fa-plus"></i>
-                      <FontAwesomeIcon icon={faPlus} />
-                    </button> */}
-
-                    <div className="absolute top-2 right-2">
-                      <button className="bg-[#0EA5E9] rounded-full shadow-md w-6 h-6 flex items-center justify-center">
-                        <FontAwesomeIcon icon={faPlus} color="white" />
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="flex justify-start m-2">
-                    <div className="mt-2 text-left">
-                      <p className="text-[#0EA5E9] font-semibold text-sm md:text-base">
-                        ${item.price}
-                      </p>
-                      <p className="text-gray-700">{item.name}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="p-2 sm:p-4">
-        <button className="flex justify-between items-center w-full bg-[#5AC12F] text-white rounded-full px-4 py-2 sm:py-3">
           <div className="flex items-center">
-            <span className="bg-black text-[#5AC12F] rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center mr-2 text-xs sm:text-sm font-medium">
-              2
+            <span className="bg-black text-[#5AC12F] rounded-full w-6 h-6 flex items-center justify-center mr-2 text-sm font-medium">
+              {cartCount}
             </span>
-            <span className="text-black text-sm sm:text-base font-medium">
+            <span className="text-black text-base font-medium">
               Go to Checkout
             </span>
           </div>
-          <span className="text-black text-sm sm:text-base font-medium">
-            $8
+          <span className="text-black text-base font-medium">
+            {formattedSubtotal}
           </span>
         </button>
       </div>
