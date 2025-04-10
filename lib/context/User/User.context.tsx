@@ -1,7 +1,9 @@
 "use client";
 
 import {
+    ApolloError,
   gql,
+  LazyQueryResultTuple,
   useApolloClient,
   useLazyQuery,
   useMutation,
@@ -12,6 +14,7 @@ import { orderStatusChanged } from "@/lib/api/graphql/subscription";
 import { profile } from "@/lib/api/graphql";
 import { saveNotificationTokenWeb } from "@/lib/api/graphql/mutations";
 import { myOrders } from "@/lib/api/graphql";
+import { IAddon, ICategory, IFood, IOption, IOrder, IOrdersResponse, IProfileResponse, IRestaurant, IUser, IVariation } from "@/lib/utils/interfaces";
 
 // GraphQL Queries
 const PROFILE = gql`${profile}`;
@@ -120,12 +123,12 @@ export interface OrderType {
 export interface UserContextType {
   isLoggedIn: boolean;
   loadingProfile: boolean;
-  errorProfile: any;
+  errorProfile: ApolloError | undefined;
   profile: ProfileType | null;
   setTokenAsync: (token: string, cb?: () => void) => Promise<void>;
   logout: () => Promise<void>;
   loadingOrders: boolean;
-  errorOrders: any;
+  errorOrders: ApolloError | undefined;
   orders: OrderType[];
   fetchOrders: () => void;
   fetchMoreOrdersFunc: () => void;
@@ -163,7 +166,7 @@ export interface UserContextType {
   calculateSubtotal: () => string;
   transformCartWithFoodInfo: (
     cartItems: CartItem[], 
-    foodsData: any
+    foodsData: IRestaurant
   ) => CartItem[];
 }
 
@@ -179,7 +182,6 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
   const [restaurant, setRestaurant] = useState<string | null>(null);
   
   const [saveNotificationToken] = useMutation(SAVE_NOTIFICATION_TOKEN_WEB, {
-    onCompleted,
     onError,
   });
   
@@ -193,7 +195,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
     },
   ] = useLazyQuery(PROFILE, {
     fetchPolicy: "network-only",
-    onCompleted,
+    onCompleted : onProfileCompleted,
     onError,
   });
 
@@ -210,17 +212,16 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
     },
   ] = useLazyQuery(ORDERS, {
     fetchPolicy: "network-only",
-    onCompleted,
     onError,
-  });
+  })
 
   // Universal cart transformation function that can be used anywhere
-  const transformCartWithFoodInfo = useCallback((cartItems: CartItem[], foodsData: any): CartItem[] => {
+  const transformCartWithFoodInfo = useCallback((cartItems: CartItem[], foodsData: IRestaurant): CartItem[] => {
     if (!foodsData || !cartItems.length) return cartItems;
     
     // Extract all foods from categories
     const foods = foodsData.categories 
-      ? foodsData.categories.flatMap((c: any) => c.foods) 
+      ? foodsData.categories.flatMap((c: ICategory) => c.foods) 
       : [];
     
     // Get addons and options data
@@ -231,12 +232,12 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
     // Transform each cart item with display info
     return cartItems.map(cartItem => {
       // Find the food item
-      const foodItem = foods.find((food: any) => food._id === cartItem._id);
+      const foodItem = foods.find((food: IFood) => food._id === cartItem._id);
       if (!foodItem) return cartItem;
       
       // Find the variation
       const variationItem = foodItem.variations.find(
-        (v: any) => v._id === cartItem.variation._id
+        (v: IVariation) => v._id === cartItem.variation._id
       );
       if (!variationItem) return cartItem;
       
@@ -253,11 +254,11 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
       
       if (cartItem.addons && cartItem.addons.length > 0) {
         cartItem.addons.forEach((addon) => {
-          const addonItem = addons.find((a: any) => a._id === addon._id);
+          const addonItem = addons.find((a: IAddon) => a._id === addon._id);
           if (!addonItem) return;
           
           addon.options.forEach((opt) => {
-            const optionItem = options.find((o: any) => o._id === opt._id);
+            const optionItem = options.find((o: IOption) => o._id === opt._id);
             if (!optionItem) return;
             
             totalPrice += optionItem.price;
@@ -337,13 +338,13 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
     subscribeOrders();
   }, [dataProfile]);
 
-  function onCompleted(data: any) {
+  function onProfileCompleted(data : IProfileResponse) {
     if (data.profile) {
       updateNotificationToken();
     }
   }
 
-  function onError(error: any) {
+  function onError(error: ApolloError) {
     console.log("error", error.message);
   }
 
@@ -374,21 +375,21 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
       const unsubscribeOrders = subscribeToMoreOrders({
         document: SUBSCRIPTION_ORDERS,
         variables: { userId: dataProfile.profile._id },
-        updateQuery: (prev: any, { subscriptionData }: any) => {
+        updateQuery: (prev, { subscriptionData }) => {
           if (!subscriptionData.data) return prev;
-          const { _id } = subscriptionData.data.orderStatusChanged.order;
+          const { _id } = subscriptionData.data.orderStatusChanged.order as IOrder;
           if (subscriptionData.data.orderStatusChanged.origin === "new") {
-            if (prev?.orders?.findIndex((o: OrderType) => o._id === _id) > -1) return prev;
+            if ((prev?.orders as IOrder[] || [] as IOrder[])?.findIndex((o: IOrder) => o._id === _id) > -1) return prev;
             return {
               orders: [
                 subscriptionData.data.orderStatusChanged.order,
-                ...prev.orders,
+                ...(prev.orders||[] as IOrder[]),
               ],
             };
           } else {
             const { orders } = prev;
-            let newList = [...orders];
-            const orderIndex = newList.findIndex((o: OrderType) => o._id === _id);
+            let newList = [...(orders as IOrder[] || [] as IOrder[])];
+            const orderIndex = newList.findIndex((o: IOrder) => o._id === _id);
             if (orderIndex > -1) {
               newList[orderIndex] =
                 subscriptionData.data.orderStatusChanged.order;
@@ -407,8 +408,9 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
       };
       
       client.onResetStore(unsubscribeAsPromise);
-    } catch (error: any) {
-      console.log("error subscribing order", error.message);
+    } catch (error: unknown ) {
+        const err = error as ApolloError
+      console.log("error subscribing order", err.message);
     }
   }, [client, dataProfile, subscribeToMoreOrders]);
 
@@ -416,7 +418,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
     if (networkStatusOrders === 7 && fetchMoreOrders) {
       fetchMoreOrders({
         variables: { offset: dataOrders?.orders?.length + 1 || 0 },
-        updateQuery: (previousResult: any, { fetchMoreResult }: any) => {
+        updateQuery: (previousResult, { fetchMoreResult }) => {
           // Don't do anything if there weren't any new items
           if (!fetchMoreResult || fetchMoreResult.orders.length === 0) {
             return previousResult;
