@@ -1,112 +1,133 @@
 "use client"
-import { Rating } from "primereact/rating"
-import CustomDialog from "../custom-dialog"
-import useReviews from "@/lib/hooks/useReviews"
-import { useMemo } from "react"
-import CustomReviewModal from "../custom-skeletons/reviews.card"
-import { formatDateForCreatedAt } from "@/lib/utils/methods"
-import { IReview, IReviewsModalProps } from "@/lib/utils/interfaces/reviews.interface"
+// Import necessary dependencies
+import { Rating } from "primereact/rating"  // UI component for star ratings
+import useReviews from "@/lib/hooks/useReviews"  // Custom hook to fetch restaurant reviews
+import { useMemo } from "react"  // React hook for memoizing expensive calculations
+// Skeleton Components
+import CustomReviewModal from "../custom-skeletons/reviews.card"  // Loading skeleton for reviews
+// Helper Functions
+import { formatDateForCreatedAt } from "@/lib/utils/methods"  // Date formatting utility
+// Type Definitions
+import { IReview, IReviewsModalProps } from "@/lib/utils/interfaces/reviews.interface"  // TypeScript interfaces
+// Useable Components
+import CustomDialog from "../custom-dialog"  // Modal dialog component
 
 
+/**
+ * Modal component to display restaurant reviews
+ * @param visible - Controls whether the modal is shown
+ * @param onHide - Function to call when closing the modal
+ * @param restaurantId - ID of the restaurant to fetch reviews for
+ */
 
 const ReviewsModal = ({ visible, onHide, restaurantId }: IReviewsModalProps) => {
 
-    // Hooks
-    const { data, loading } = useReviews(restaurantId);
+  // Fetch reviews data for the specified restaurant
+  const { data, loading } = useReviews(restaurantId);
 
-    // Extract the review result from the nested data structure
-    const reviewResult = data?.reviewsByRestaurant || { reviews: [], ratings: 0, total: 0 }
+  // Extract the review result from the nested data structure
+  const reviewResult = data?.reviewsByRestaurant || { reviews: [], ratings: 0, total: 0 }
  
-    // Check if there are any reviews
-    const hasReviews = reviewResult.total > 0 && reviewResult.reviews.length > 0
+  // Check if there are any reviews to display
+  const hasReviews = reviewResult.total > 0 && reviewResult.reviews.length > 0
 
 
-    
-  // Calculate average rating
+   // Methods
+  
+  /**
+   * Calculate the average rating for the restaurant
+   * Uses the provided average if available, otherwise calculates from individual reviews
+   */
   const averageRating = useMemo(() => {
-    if (!hasReviews) return 0
+  if (!hasReviews) return 0
 
-    // If ratings is already the average, use it
-    if (reviewResult.ratings) return reviewResult.ratings
+  // If ratings is already the average, use it
+  
+  // This part is commented out because the API is sending incorrect total ratings
+  // if (reviewResult.ratings) return reviewResult.ratings
 
-    // Otherwise calculate from individual reviews
-    
-    const sum = reviewResult.reviews.reduce((acc:number, review:IReview) => acc + review.rating, 0)
-    return sum / reviewResult.reviews.length
+  // Otherwise calculate from individual reviews
+  
+  const sum = reviewResult.reviews.reduce((acc:number, review:IReview) => acc + review.rating, 0)
+  return sum / reviewResult.reviews.length
   }, [reviewResult, hasReviews])
   
 
  // Generate rating breakdown (5 to 1 stars)
 
-// Calculate how many reviews we have for each star rating (5-star, 4-star, etc.)
+/**
+ * Calculate the distribution of ratings (how many 5-star, 4-star, etc. reviews)
+ * Returns an array with the count and percentage for each star rating
+ */
 const ratingBreakdown = useMemo(() => {
-    // If we don't have any reviews, just return an empty array
-    if (!hasReviews) return [];
+  // If we don't have any reviews, just return an empty array
+  if (!hasReviews) return [];
   
-    // Start with zero reviews for each star rating
-    const starCounts = {
-      5: 0,
-      4: 0, 
-      3: 0,
-      2: 0,
-      1: 0
-    };
-    
-    // Go through each review and count how many we have for each star level
+  // Initialize counters for each star rating
+  const starCounts = {
+    5: 0,
+    4: 0, 
+    3: 0,
+    2: 0,
+    1: 0
+  };
   
-    reviewResult.reviews.forEach((review: IReview) => {
-      // Get the star rating from the review (1-5)
-      const rating = review.rating;
-      
-      // Make sure it's a valid rating between 1-5
-      if (rating >= 1 && rating <= 5) {
-        // Add one to the count for this star rating
-        
-        starCounts[rating as keyof typeof starCounts]++;
-      }
-    });
+  // Count the number of reviews for each star rating
+  reviewResult.reviews.forEach((review: IReview) => {
+    // Get the star rating from the review (1-5)
+    const rating = review.rating;
     
-    // Calculate what percentage each star rating makes up of the total
-    const totalReviews = reviewResult.reviews.length;
-    
-    // Create our final results array
-    const results = [];
-    
-    // Add data for each star rating (5 stars, 4 stars, etc.)
-    for (let stars = 5; stars >= 1; stars--) {
-
-    const count = starCounts[stars as keyof typeof starCounts];
-      const percentage = totalReviews > 0 
-        ? Math.round((count / totalReviews) * 100) 
-        : 0;
-        
-      results.push({
-        stars,
-        count,
-        percentage
-      });
+    // Make sure it's a valid rating between 1-5
+    if (rating >= 1 && rating <= 5) {
+    // Increment the count for this star rating
+    starCounts[rating as keyof typeof starCounts]++;
     }
+  });
+  
+  // Calculate percentage distribution
+  const totalReviews = reviewResult.reviews.length;
+  
+  // Create results array for the star distribution
+  const results = [];
+  
+  // Process each star rating from highest (5) to lowest (1)
+  for (let stars = 5; stars >= 1; stars--) {
+    const count = starCounts[stars as keyof typeof starCounts];
+    const percentage = totalReviews > 0 
+    ? Math.round((count / totalReviews) * 100) 
+    : 0;
     
-    return results;
+    results.push({
+    stars,
+    count,
+    percentage
+    });
+  }
+  
+  return results;
   }, [reviewResult, hasReviews]);
 
 
- // Function to render star rating
+ /**
+  * Helper function to render star ratings with consistent styling
+  * @param rating - Number of stars to display (1-5)
+  */
   const renderStars = (rating: number) => {
-    return (
-      <Rating
-        value={rating}
-        readOnly
-        cancel={false}
-        className="flex"
-        pt={{
-          onIcon: { className: "text-amber-500" },
-          offIcon: { className: "text-amber-500" },
-        }}
-      />
-    )
+  return (
+    <Rating
+    value={rating}
+    readOnly
+    cancel={false}
+    className="flex"
+    pt={{
+      onIcon: { className: "text-amber-500" },
+      offIcon: { className: "text-amber-500" },
+    }}
+    />
+  )
   }
 
+ // Show loading skeleton while data is being fetched
  if(loading && visible) return <CustomReviewModal/>
 
   return (
@@ -118,7 +139,7 @@ const ratingBreakdown = useMemo(() => {
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 border p-4 rounded-md shadow-sm">
             <div className="mb-4 md:mb-0">
               <h1 className="text-3xl md:text-5xl font-semibold text-gray-700">{averageRating?.toFixed(1)}</h1>
-              <p className="text-gray-500 mt-1 font-normal text-xl md:text-2xl">({reviewResult?.total?.toLocaleString()})</p>
+              <p className="text-gray-500 mt-1 font-normal text-xl md:text-2xl">({reviewResult?.reviews?.length?.toLocaleString()})</p>
               <div className="flex items-center mt-2">{renderStars(Math.round(averageRating))}</div>
             </div>
 
