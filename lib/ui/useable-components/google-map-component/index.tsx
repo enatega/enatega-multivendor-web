@@ -8,14 +8,8 @@ import {
   Circle,
 } from "@react-google-maps/api";
 import styles from "./google-map-component.module.css";
+import { IGoogleMapComponentProps } from "@/lib/utils/interfaces";
 
-// Interface for component props
-interface IGoogleMapComponentProps {
-  apiKey: string;                       // Google Maps API key
-  center: { lat: number; lng: number }; // Center coordinates for the map
-  circleRadius?: number;                // Optional prop for circle radius in meters
-  visible: boolean;                     // Controls visibility of the map
-}
 
 const GoogleMapComponent = ({
   apiKey,
