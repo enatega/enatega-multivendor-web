@@ -104,13 +104,13 @@ export default function RestaurantDetailsScreen() {
     openingTimes: data?.restaurant?.openingTimes ?? [],
   };
 
-  const restaurantInfoProps={
-    _id: restaurantInfo._id,
-    name: restaurantInfo.name,
-    address: restaurantInfo.address,
-    location: restaurantInfo.location,
-    isAvailable: restaurantInfo.isAvailable,
-    openingTimes: restaurantInfo.openingTimes,
+  const restaurantInfoModalProps={
+    _id: data?.restaurant._id ?? "",
+    name: data?.restaurant?.name ?? "...",
+    address: data?.restaurant?.address ?? "",
+    location: data?.restaurant?.location ?? "",
+    isAvailable: data?.restaurant?.isAvailable ?? true,
+    openingTimes: data?.restaurant?.openingTimes ?? [],
     description: data?.restaurant?.description ?? "Preservation of the authentic taste of all traditional foods is upheld here.",
   }
 
@@ -195,7 +195,7 @@ export default function RestaurantDetailsScreen() {
             />
             {/* See More  Info Modal */}
             <InfoModal
-             restaurantInfo={restaurantInfoProps}
+             restaurantInfo={restaurantInfoModalProps}
              visible={showMoreInfo}
              onHide={() => setShowMoreInfo(false)}
             />
