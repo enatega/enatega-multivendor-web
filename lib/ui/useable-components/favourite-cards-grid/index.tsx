@@ -3,19 +3,19 @@ import { IFavouriteRestaurantItem } from "@/lib/utils/interfaces/favourite.resta
 
 interface IFavouriteGridProps {
   items: IFavouriteRestaurantItem[];
-  handleClickFavRestaurant: (id:string|undefined)=> void
+  handleClickFavRestaurant: (id:string|undefined, shopType: string | undefined, slug: string | undefined)=> void
 }
 
 const FavouriteCardsGrid: React.FC<IFavouriteGridProps> = ({ items,handleClickFavRestaurant }) => {
 
-  const handleClick = (FavRestaurantId:string|undefined)=>{
-    handleClickFavRestaurant?.(FavRestaurantId)
+  const handleClick = (FavRestaurantId:string|undefined, shopType: string | undefined, slug: string | undefined)=>{
+    handleClickFavRestaurant?.(FavRestaurantId, shopType, slug)
   }
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
       {items.slice(0, 4).map((item) => (
         <div key={item._id} className="w-full" 
-        onClick={()=>handleClick(item._id)}
+        onClick={()=>handleClick(item._id,item.shopType, item.slug)}
         >
           <FavoriteCard item={item} />
         </div>

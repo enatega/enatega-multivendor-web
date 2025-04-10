@@ -1,8 +1,7 @@
 "use client";
 import { Dialog } from "primereact/dialog";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 import { ICustomDialogProps } from "@/lib/utils/interfaces";
+import { CircleCrossSvg } from "@/lib/utils/assets/svg";
 
 
 export default function CustomDialog({
@@ -31,7 +30,7 @@ export default function CustomDialog({
             onClick={onHide}
             className=" absolute cursor-pointer right-4 top-4 z-10 w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:text-gray-700 focus:outline-none"
           >
-            <FontAwesomeIcon icon={faCircleXmark} />
+            <CircleCrossSvg color="black" width={24} height={24}/>
           </span>
         )}
 

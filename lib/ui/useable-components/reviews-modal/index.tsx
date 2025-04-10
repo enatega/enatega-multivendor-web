@@ -13,15 +13,12 @@ const ReviewsModal = ({ visible, onHide, restaurantId }: IReviewsModalProps) => 
 
     // Hooks
     const { data, loading } = useReviews(restaurantId);
-    console.log(data, "data of reviews on reviews modal")
 
     // Extract the review result from the nested data structure
     const reviewResult = data?.reviewsByRestaurant || { reviews: [], ratings: 0, total: 0 }
-    console.log("🚀 ~ ReviewsModal ~ reviewResult:", reviewResult)
  
     // Check if there are any reviews
     const hasReviews = reviewResult.total > 0 && reviewResult.reviews.length > 0
-    console.log("🚀 ~ ReviewsModal ~ reviewResult.total:", reviewResult.total)
 
 
     

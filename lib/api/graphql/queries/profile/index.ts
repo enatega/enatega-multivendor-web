@@ -33,6 +33,8 @@ export const FavouriteRestaurant = `query UserFavourite ($latitude:Float,$longit
             isActive
             image
             address
+            slug
+            shopType
             location{coordinates}
             deliveryTime
             minimumOrder

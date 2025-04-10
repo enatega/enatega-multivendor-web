@@ -21,9 +21,6 @@ const MYORDERS = gql`${myOrders}`;
         INACTIVE_STATUS.includes(o.orderStatus)
       );
 
-
-      console.log(isOrdersLoading, "Loading oriders on main orders history page")
-      console.log(ordersData, "my all orders from db on orders history page")
     return (
       <div className="flex flex-col space-y-10 my-10">
         {/* Active Orders */}
