@@ -7,7 +7,7 @@ export interface IFoodItemDetalComponentProps extends IGlobalComponentProps {
   foodItem: IFood | null;
   addons: IAddon[];
   options: IOption[];
-  onClose: ()=> void;
+  onClose?: ()=> void;
 }
 
 export interface Option {
