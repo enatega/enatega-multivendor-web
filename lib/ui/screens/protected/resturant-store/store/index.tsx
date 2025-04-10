@@ -12,14 +12,14 @@ import { MenuItem } from "primereact/menuitem";
 
 // Icons
 import { ClockSvg, HeartSvg, InfoSvg, RatingSvg } from "@/lib/utils/assets/svg";
-import { faPlus, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 // Hook
 // import useRestaurant from "@/lib/hooks/useRestaurant";
 
 // Components
 import { PaddingContainer } from "@/lib/ui/useable-components/containers";
-import CustomIconTextField from "@/lib/ui/useable-components/input-icon-field";
+// import CustomIconTextField from "@/lib/ui/useable-components/input-icon-field";
 import FoodItemDetail from "@/lib/ui/useable-components/item-detail";
 import FoodCategorySkeleton from "@/lib/ui/useable-components/custom-skeletons/food-items.skeleton";
 
@@ -51,7 +51,7 @@ export default function StoreDetailsScreen() {
 
   // State
   const [showDialog, setShowDialog] = useState<IFood | null>(null);
-  const [filter, setFilter] = useState("");
+  const [filter] = useState("");
   const [isScrolling, setIsScrolling] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedSubCategory, setSelectedSubCategory] = useState("");
@@ -344,7 +344,7 @@ export default function StoreDetailsScreen() {
                     </a>
                   </div>
                 </div>
-
+                {/* 
                 <div className="w-full md:w-[20%]">
                   <CustomIconTextField
                     value={filter}
@@ -361,7 +361,7 @@ export default function StoreDetailsScreen() {
                     isLoading={loading}
                     onChange={(e) => setFilter(e.target.value)}
                   />
-                </div>
+                </div> */}
               </div>
             </PaddingContainer>
           </div>
