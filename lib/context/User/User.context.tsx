@@ -3,7 +3,6 @@
 import {
     ApolloError,
   gql,
-  LazyQueryResultTuple,
   useApolloClient,
   useLazyQuery,
   useMutation,
@@ -14,7 +13,7 @@ import { orderStatusChanged } from "@/lib/api/graphql/subscription";
 import { profile } from "@/lib/api/graphql";
 import { saveNotificationTokenWeb } from "@/lib/api/graphql/mutations";
 import { myOrders } from "@/lib/api/graphql";
-import { IAddon, ICategory, IFood, IOption, IOrder, IOrdersResponse, IProfileResponse, IRestaurant, IUser, IVariation } from "@/lib/utils/interfaces";
+import { IAddon, ICategory, IFood, IOption, IOrder,IProfileResponse, IRestaurant, IVariation } from "@/lib/utils/interfaces";
 
 // GraphQL Queries
 const PROFILE = gql`${profile}`;
