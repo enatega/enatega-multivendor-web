@@ -20,7 +20,6 @@ export default function Cart({ onClose }: CartProps) {
     cart, 
     cartCount, 
     updateItemQuantity,
-    removeItem, 
     calculateSubtotal 
   } = useUser();
   

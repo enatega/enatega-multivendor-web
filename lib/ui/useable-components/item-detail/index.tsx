@@ -102,7 +102,7 @@ export default function FoodItemDetail(props: IFoodItemDetalComponentProps) {
 
     // Format addons for cart
     const formattedAddons = Object.entries(selectedAddonOptions)
-      .filter(([_, value]) => value) // Filter out undefined/null values
+      .filter(([, value]) => value) // Filter out undefined/null values
       .map(([addonId, optionOrOptions]) => {
         // Handle both single and multi-select addons
         const options = Array.isArray(optionOrOptions)
@@ -138,7 +138,7 @@ export default function FoodItemDetail(props: IFoodItemDetalComponentProps) {
     let totalPrice = selectedVariation.price * quantity;
 
     // Add prices for selected addons
-    Object.entries(selectedAddonOptions).forEach(([addonId, selected]) => {
+    Object.entries(selectedAddonOptions).forEach(([, selected]) => {
       if (!selected) return;
 
       if (Array.isArray(selected)) {
