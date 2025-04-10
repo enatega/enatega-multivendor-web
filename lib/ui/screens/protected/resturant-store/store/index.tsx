@@ -12,14 +12,14 @@ import { MenuItem } from "primereact/menuitem";
 
 // Icons
 import { ClockSvg, HeartSvg, InfoSvg, RatingSvg } from "@/lib/utils/assets/svg";
-import { faPlus, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 // Hook
 // import useRestaurant from "@/lib/hooks/useRestaurant";
 
 // Components
 import { PaddingContainer } from "@/lib/ui/useable-components/containers";
-import CustomIconTextField from "@/lib/ui/useable-components/input-icon-field";
+// import CustomIconTextField from "@/lib/ui/useable-components/input-icon-field";
 import FoodItemDetail from "@/lib/ui/useable-components/item-detail";
 import FoodCategorySkeleton from "@/lib/ui/useable-components/custom-skeletons/food-items.skeleton";
 
@@ -51,7 +51,7 @@ export default function StoreDetailsScreen() {
 
   // State
   const [showDialog, setShowDialog] = useState<IFood | null>(null);
-  const [filter, setFilter] = useState("");
+  const [filter] = useState("");
   const [isScrolling, setIsScrolling] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedSubCategory, setSelectedSubCategory] = useState("");
@@ -60,6 +60,7 @@ export default function StoreDetailsScreen() {
   >([]);
 
   // Ref
+  const selectedCategoryRefs = useRef<string>("");
   const selectedSubCategoryRefs = useRef<string>("");
 
   // Hooks
@@ -81,12 +82,29 @@ export default function StoreDetailsScreen() {
   );
 
   // Templates
+  const parentItemRenderer = (item: MenuItem) => {
+    const _url = item.url?.slice(1);
+    const isClicked = _url === selectedCategoryRefs.current;
+
+    return (
+      <div
+        className="flex align-items-center px-3 py-2 cursor-pointer"
+        onClick={() => handleScroll(_url ?? "", true)}
+      >
+        <span
+          className={`mx-2 ${item.items && "font-semibold"} text-${isClicked ? "[#5AC12F]" : "gray-600"}`}
+        >
+          {item.label}
+        </span>
+      </div>
+    );
+  };
   const itemRenderer = (item: MenuItem) => {
     const _url = item.url?.slice(1);
     const isClicked = _url === selectedSubCategoryRefs.current;
 
     return (
-      <a
+      <div
         className={`flex align-items-center px-3 py-2 cursor-pointer bg-${isClicked ? "[#F3FFEE]" : ""}`}
         onClick={() => handleScroll(_url ?? "", false, 80)}
       >
@@ -95,7 +113,7 @@ export default function StoreDetailsScreen() {
         >
           {item.label}
         </span>
-      </a>
+      </div>
     );
   };
 
@@ -170,7 +188,7 @@ export default function StoreDetailsScreen() {
         id: item.id,
         label: item.label,
         url: item.url,
-
+        template: parentItemRenderer,
         items:
           item.items?.map((subItem) => ({
             id: subItem.id,
@@ -187,7 +205,7 @@ export default function StoreDetailsScreen() {
   const handleScroll = (id: string, isParent = true, offset: number = 120) => {
     if (isParent) {
       setSelectedCategory(id);
-
+      selectedCategoryRefs.current = id || "";
       // Filter SubCategories
       const sliderSubCategories =
         menuItems?.find(
@@ -326,7 +344,7 @@ export default function StoreDetailsScreen() {
                     </a>
                   </div>
                 </div>
-
+                {/* 
                 <div className="w-full md:w-[20%]">
                   <CustomIconTextField
                     value={filter}
@@ -343,7 +361,7 @@ export default function StoreDetailsScreen() {
                     isLoading={loading}
                     onChange={(e) => setFilter(e.target.value)}
                   />
-                </div>
+                </div> */}
               </div>
             </PaddingContainer>
           </div>
