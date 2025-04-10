@@ -60,6 +60,7 @@ export default function StoreDetailsScreen() {
   >([]);
 
   // Ref
+  const selectedCategoryRefs = useRef<string>("");
   const selectedSubCategoryRefs = useRef<string>("");
 
   // Hooks
@@ -81,12 +82,29 @@ export default function StoreDetailsScreen() {
   );
 
   // Templates
+  const parentItemRenderer = (item: MenuItem) => {
+    const _url = item.url?.slice(1);
+    const isClicked = _url === selectedCategoryRefs.current;
+
+    return (
+      <div
+        className={`flex align-items-center px-3 py-2 cursor-pointer bg-${isClicked ? "[#F3FFEE]" : ""}`}
+        onClick={() => handleScroll(_url ?? "", true)}
+      >
+        <span
+          className={`mx-2 ${item.items && "font-semibold"} text-${isClicked ? "[#5AC12F]" : "gray-600"}`}
+        >
+          {item.label}
+        </span>
+      </div>
+    );
+  };
   const itemRenderer = (item: MenuItem) => {
     const _url = item.url?.slice(1);
     const isClicked = _url === selectedSubCategoryRefs.current;
 
     return (
-      <a
+      <div
         className={`flex align-items-center px-3 py-2 cursor-pointer bg-${isClicked ? "[#F3FFEE]" : ""}`}
         onClick={() => handleScroll(_url ?? "", false, 80)}
       >
@@ -95,7 +113,7 @@ export default function StoreDetailsScreen() {
         >
           {item.label}
         </span>
-      </a>
+      </div>
     );
   };
 
@@ -170,7 +188,7 @@ export default function StoreDetailsScreen() {
         id: item.id,
         label: item.label,
         url: item.url,
-
+        template: parentItemRenderer,
         items:
           item.items?.map((subItem) => ({
             id: subItem.id,
@@ -187,7 +205,7 @@ export default function StoreDetailsScreen() {
   const handleScroll = (id: string, isParent = true, offset: number = 120) => {
     if (isParent) {
       setSelectedCategory(id);
-
+      selectedCategoryRefs.current = id || "";
       // Filter SubCategories
       const sliderSubCategories =
         menuItems?.find(
