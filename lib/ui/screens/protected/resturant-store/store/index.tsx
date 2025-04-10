@@ -292,13 +292,14 @@ export default function StoreDetailsScreen() {
       {/* Reviews Modal  */}
       <ReviewsModal
         restaurantId={id}
-        visible={showReviews}
+        visible={showReviews && !loading}
         onHide={() => setShowReviews(false)}
       />
       {/* See More  Info Modal */}
       <InfoModal
         restaurantInfo={restaurantInfoModalProps}
-        visible={showMoreInfo}
+        // make sure data is not loading because if configuration data is not available it can cause error on google map due to unavailability of api key
+        visible={showMoreInfo && !loading}
         onHide={() => setShowMoreInfo(false)}
       />
       <div className="w-screen h-screen flex flex-col pb-20">
@@ -380,7 +381,10 @@ export default function StoreDetailsScreen() {
                     <a
                       className="flex items-center gap-2 text-[#0EA5E9] font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle"
                       href="#"
-                      onClick={handleSeeMoreInfo}
+                      onClick={(e)=>{
+                        e.preventDefault();
+                        handleSeeMoreInfo();
+                      }}
                     >
                       <InfoSvg />
                       {loading ? (
@@ -393,7 +397,10 @@ export default function StoreDetailsScreen() {
                     <a
                       className="flex items-center gap-2 text-[#0EA5E9] font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle"
                       href="#"
-                      onClick={handleSeeReviews}
+                      onClick={(e)=> {
+                        e.preventDefault();
+                        handleSeeReviews();
+                      } }
                     >
                       <ChatSvg />
                       {loading ? (

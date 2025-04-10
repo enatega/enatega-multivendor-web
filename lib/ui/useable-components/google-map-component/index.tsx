@@ -17,6 +17,8 @@ const GoogleMapComponent = ({
   circleRadius = 300, // Default radius of 300 meters
   visible,
 }: IGoogleMapComponentProps) => {
+  // states
+
   // State for storing the Google Maps instance
   const [mapInstance, setMapInstance] = useState<google.maps.Map | null>(null);
   // State for controlling zoom level
@@ -32,6 +34,8 @@ const GoogleMapComponent = ({
     libraries,
     id: "google-map-script",
   });
+
+  // useEffects
 
   // Clean up map instance when component becomes invisible
   useEffect(() => {
@@ -71,6 +75,8 @@ const GoogleMapComponent = ({
     setMapInstance(null);
   }, []);
 
+  // handlers
+  
   // Handler for zoom in button
   const handleZoomIn = useCallback(() => {
     if (mapInstance) {
