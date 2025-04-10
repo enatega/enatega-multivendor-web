@@ -97,7 +97,6 @@ export default function RestaurantDetailsScreen() {
     deals: deals,
     reviewData: data?.restaurant?.reviewData ?? {},
     address: data?.restaurant?.address ?? "",
-    location: data?.restaurant?.location ?? "",
     deliveryCharges: data?.restaurant?.deliveryCharges ?? "",
     deliveryTime: data?.restaurant?.deliveryTime ?? "...",
     isAvailable: data?.restaurant?.isAvailable ?? true,
