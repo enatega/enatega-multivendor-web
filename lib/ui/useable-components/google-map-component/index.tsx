@@ -9,47 +9,51 @@ import {
 } from "@react-google-maps/api";
 import styles from "./google-map-component.module.css";
 
+// Interface for component props
 interface IGoogleMapComponentProps {
-  apiKey: string;
-  center: { lat: number; lng: number };
-  circleRadius?: number; // Optional prop for circle radius in meters
-  visible: boolean;
+  apiKey: string;                       // Google Maps API key
+  center: { lat: number; lng: number }; // Center coordinates for the map
+  circleRadius?: number;                // Optional prop for circle radius in meters
+  visible: boolean;                     // Controls visibility of the map
 }
 
 const GoogleMapComponent = ({
   apiKey,
   center,
-  circleRadius = 300,
+  circleRadius = 300, // Default radius of 300 meters
   visible,
 }: IGoogleMapComponentProps) => {
+  // State for storing the Google Maps instance
   const [mapInstance, setMapInstance] = useState<google.maps.Map | null>(null);
+  // State for controlling zoom level
   const [zoom, setZoom] = useState(15);
 
-  // Memoize values to prevent reinitialization
+  // Memoize values to prevent reinitialization on re-renders
   const libraries: Libraries = useMemo(() => ["places"], []);
   const mapsKey = useMemo(() => apiKey, []);
 
+  // Load the Google Maps JavaScript API
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: mapsKey,
     libraries,
     id: "google-map-script",
   });
 
-  // Reset map when visibility changes
+  // Clean up map instance when component becomes invisible
   useEffect(() => {
     if (!visible && mapInstance) {
-      // Clean up map instance when component becomes invisible
       setMapInstance(null);
     }
   }, [visible, mapInstance]);
 
+  // Define container style for the map
   const mapContainerStyle = {
     width: "100%",
     height: "360px",
     position: "relative" as const,
   };
 
-  // Circle options
+  // Configuration for the circle overlay
   const circleOptions = {
     strokeColor: "#000",
     strokeOpacity: 0.5,
@@ -63,32 +67,38 @@ const GoogleMapComponent = ({
     zIndex: 1,
   };
 
+  // Callback when map is loaded
   const onLoad = useCallback((map: google.maps.Map) => {
     setMapInstance(map);
   }, []);
 
+  // Cleanup when map is unmounted
   const onUnmount = useCallback(() => {
     setMapInstance(null);
   }, []);
 
+  // Handler for zoom in button
   const handleZoomIn = useCallback(() => {
     if (mapInstance) {
-      const newZoom = Math.min(zoom + 1, 20);
+      const newZoom = Math.min(zoom + 1, 20); // Maximum zoom level is 20
       mapInstance.setZoom(newZoom);
       setZoom(newZoom);
     }
   }, [mapInstance, zoom]);
 
+  // Handler for zoom out button
   const handleZoomOut = useCallback(() => {
     if (mapInstance) {
-      const newZoom = Math.max(zoom - 1, 1);
+      const newZoom = Math.max(zoom - 1, 1); // Minimum zoom level is 1
       mapInstance.setZoom(newZoom);
       setZoom(newZoom);
     }
   }, [mapInstance, zoom]);
 
+  // Don't render the component if not visible
   if (!visible) return null;
 
+  // Show error message if maps failed to load
   if (loadError) {
     return (
       <div
@@ -100,6 +110,7 @@ const GoogleMapComponent = ({
     );
   }
 
+  // Show loading state while API is being loaded
   if (!isLoaded) {
     return (
       <div
@@ -113,6 +124,7 @@ const GoogleMapComponent = ({
 
   return (
     <div className="map-container" style={{ position: "relative" }}>
+      {/* Google Map Component */}
       <GoogleMap
         mapContainerStyle={mapContainerStyle}
         center={center}
@@ -136,7 +148,9 @@ const GoogleMapComponent = ({
           ],
         }}
       >
+        {/* Marker at the center position */}
         <Marker position={center} />
+        {/* Circle with specified radius around the center */}
         <Circle center={center} radius={circleRadius} options={circleOptions} />
       </GoogleMap>
 
