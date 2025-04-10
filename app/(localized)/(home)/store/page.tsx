@@ -1,5 +1,7 @@
 "use client";
 
+import { StoreScreen } from "@/lib/ui/screens/protected/home";
+
 export default function StorePage() {
-  return <div>Store Page</div>;
+  return <StoreScreen/>;
 }

@@ -109,7 +109,7 @@ const SliderCard = <T,>({ title, data, last }: ISliderCardComponentProps<T>) => 
       <Carousel
         value={data}
         style={{ width: "100%" }}
-        itemTemplate={(item) => <Card item={item}/>}
+          itemTemplate={(item) => <Card item={item} isDiscovery={true} />}
         numVisible={numVisible}
         numScroll={1}
         circular

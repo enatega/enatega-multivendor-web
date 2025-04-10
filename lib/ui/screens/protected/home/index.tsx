@@ -1,3 +1,3 @@
 export { default as DiscoveryScreen } from "./discovery";
-// export * from './restaurants'
-// export * from './store'
+export { default as RestaurantsScreen } from './restaurants'
+export { default as StoreScreen } from './store'
