@@ -1,7 +1,6 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useParams } from "next/navigation";
 import { Skeleton } from "primereact/skeleton";
@@ -10,18 +9,24 @@ import { useQuery } from "@apollo/client";
 import { PanelMenu } from "primereact/panelmenu";
 import { MenuItem } from "primereact/menuitem";
 
+// Context & Hooks
+import useUser from "@/lib/hooks/useUser";
+import useRestaurant from "@/lib/hooks/useRestaurant";
+
 // Icons
 import { ClockSvg, HeartSvg, InfoSvg, RatingSvg } from "@/lib/utils/assets/svg";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
-// Hook
-// import useRestaurant from "@/lib/hooks/useRestaurant";
-
 // Components
 import { PaddingContainer } from "@/lib/ui/useable-components/containers";
-// import CustomIconTextField from "@/lib/ui/useable-components/input-icon-field";
 import FoodItemDetail from "@/lib/ui/useable-components/item-detail";
 import FoodCategorySkeleton from "@/lib/ui/useable-components/custom-skeletons/food-items.skeleton";
+
+// API
+import {
+  GET_CATEGORIES_SUB_CATEGORIES_LIST,
+  GET_SUB_CATEGORIES,
+} from "@/lib/api/graphql";
 
 // Interface
 import {
@@ -33,19 +38,13 @@ import {
   ISubCategoryV2,
 } from "@/lib/utils/interfaces";
 
-// Hook
-import useRestaurant from "@/lib/hooks/useRestaurant";
-
-// API
-import {
-  GET_CATEGORIES_SUB_CATEGORIES_LIST,
-  GET_SUB_CATEGORIES,
-} from "@/lib/api/graphql";
-
 // Methods
 import { toSlug } from "@/lib/utils/methods";
 
 export default function StoreDetailsScreen() {
+  // Access the UserContext via our custom hook
+  const { cart, transformCartWithFoodInfo, updateCart } = useUser();
+
   // Params
   const { id, slug }: { id: string; slug: string } = useParams();
 
@@ -75,6 +74,16 @@ export default function StoreDetailsScreen() {
   });
   const { data: subcategoriesData, loading: subcategoriesLoading } =
     useQuery(GET_SUB_CATEGORIES);
+
+  // Transform cart items when restaurant data is loaded
+  useEffect(() => {
+    if (data?.restaurant && cart.length > 0) {
+      const transformedCart = transformCartWithFoodInfo(cart, data.restaurant);
+      if (JSON.stringify(transformedCart) !== JSON.stringify(cart)) {
+        updateCart(transformedCart);
+      }
+    }
+  }, [data?.restaurant, cart.length, transformCartWithFoodInfo, updateCart]);
 
   // Constants
   const allDeals = data?.restaurant?.categories?.filter(
@@ -210,7 +219,7 @@ export default function StoreDetailsScreen() {
       const sliderSubCategories =
         menuItems?.find(
           (item: ICategoryDetailsResponse) => toSlug(item.label) === id
-        ).items || [];
+        )?.items || [];
 
       setSubCategoriesForCategories(sliderSubCategories);
     } else {
@@ -238,6 +247,20 @@ export default function StoreDetailsScreen() {
     }
   };
 
+  // Function to handle opening the food item modal
+  const handleOpenFoodModal = (food: IFood) => {
+    // Add restaurant ID to the food item
+    setShowDialog({
+      ...food,
+      restaurant: data?.restaurant?._id
+    });
+  };
+
+  // Function to close the food item modal
+  const handleCloseFoodModal = () => {
+    setShowDialog(null);
+  };
+
   // Constants
   const headerData = {
     name: data?.restaurant?.name ?? "...",
@@ -249,7 +272,7 @@ export default function StoreDetailsScreen() {
   };
 
   const restaurantInfo = {
-    _id: data?.restaurant._id ?? "",
+    _id: data?.restaurant?._id ?? "",
     name: data?.restaurant?.name ?? "...",
     image: data?.restaurant?.image ?? "",
     reviewData: data?.restaurant?.reviewData ?? {},
@@ -262,18 +285,17 @@ export default function StoreDetailsScreen() {
 
   return (
     <>
+  
       <div className="w-screen h-screen flex flex-col pb-20">
         <div className="scrollable-container flex-1 overflow-auto">
           {/* Banner */}
-
           <div className="relative">
             {loading ?
               <Skeleton width="100%" height="20rem" borderRadius="0" />
             : <img
-                alt="McDonald's banner with a burger and fries"
+                alt={`${restaurantInfo.name} banner`}
                 className="w-full h-72 object-cover"
                 height="300"
-                // src="https://storage.googleapis.com/a1aa/image/l_S6V3o3Sf_fYnRuAefKySjq6q-HmTjiF37tvk6PiMU.jpg"
                 src={restaurantInfo.image}
                 width="1200"
               />
@@ -283,10 +305,9 @@ export default function StoreDetailsScreen() {
               <div className="absolute bottom-0 left-0 md:left-20 p-4">
                 <div className="flex flex-col items-start">
                   <img
-                    alt="McDonald's logo"
+                    alt={`${restaurantInfo.name} logo`}
                     className="w-12 h-12 mb-2"
                     height="50"
-                    // src="https://storage.googleapis.com/a1aa/image/_a4rKBo9YwPTH-AHQzOLoIcNAirPNTI7alqAVAEqmOo.jpg"
                     src={restaurantInfo.image}
                     width="50"
                   />
@@ -304,12 +325,11 @@ export default function StoreDetailsScreen() {
             )}
 
             <div className="absolute top-4 right-4 md:bottom-4 md:right-4 md:top-auto rounded-full bg-white h-8 w-8 flex justify-center items-center">
-              {/* <FontAwesomeIcon icon={faHeart} className="  text-2xl" /> */}
               <HeartSvg />
             </div>
           </div>
 
-          {/* Restaurnat Info */}
+          {/* Restaurant Info */}
           <div className="bg-gray-50 shadow-[0px_1px_3px_rgba(0,0,0,0.1)]  p-3 md:h-[80px] h-fit flex justify-between items-center">
             <PaddingContainer>
               <div className="p-3  h-full w-full flex flex-col md:flex-row gap-2 items-center justify-between">
@@ -344,31 +364,12 @@ export default function StoreDetailsScreen() {
                     </a>
                   </div>
                 </div>
-                {/* 
-                <div className="w-full md:w-[20%]">
-                  <CustomIconTextField
-                    value={filter}
-                    className="w-full md:h-10 h-9 rounded-full pl-10 mt-2 md:mt-0"
-                    iconProperties={{
-                      icon: faSearch,
-                      position: "left",
-                      style: { marginTop: "-10px" },
-                    }}
-                    placeholder="Search for Restaurants"
-                    type="text"
-                    name="search"
-                    showLabel={false}
-                    isLoading={loading}
-                    onChange={(e) => setFilter(e.target.value)}
-                  />
-                </div> */}
               </div>
             </PaddingContainer>
           </div>
 
           {/* Category Section */}
           <PaddingContainer
-            // height="90px"
             style={{
               position: "sticky",
               top: 0,
@@ -451,10 +452,7 @@ export default function StoreDetailsScreen() {
                       onScroll={handleMouseEnterCategoryPanel}
                     >
                       <PanelMenu
-                        model={
-                          menuItems
-                          // SIDEBAR_CATEGORY
-                        }
+                        model={menuItems}
                         className="w-full"
                         expandIcon={<span></span>}
                         collapseIcon={<span></span>}
@@ -518,11 +516,12 @@ export default function StoreDetailsScreen() {
                                       />
                                     </div>
 
-                                    {/* Image Section */}
+                                    {/* Add Button */}
                                     <div className="absolute top-2 right-2">
                                       <button
                                         className="bg-[#0EA5E9] rounded-full shadow-md w-6 h-6 flex items-center justify-center"
-                                        onClick={() => setShowDialog(meal)}
+                                        onClick={() => handleOpenFoodModal(meal)}
+                                        type="button"
                                       >
                                         <FontAwesomeIcon
                                           icon={faPlus}
@@ -546,19 +545,20 @@ export default function StoreDetailsScreen() {
         </div>
       </div>
 
+      {/* Food Item Detail Modal */}
       <Dialog
         visible={!!showDialog}
         className="mx-4 md:mx-0" // Adds margin on small screens
-        onHide={() => {
-          if (!showDialog) return;
-          setShowDialog(null);
-        }}
+        onHide={handleCloseFoodModal}
       >
-        <FoodItemDetail
-          foodItem={showDialog}
-          addons={data?.restaurant?.addons}
-          options={data?.restaurant?.options}
-        />
+        {showDialog && (
+          <FoodItemDetail
+            foodItem={showDialog}
+            addons={data?.restaurant?.addons}
+            options={data?.restaurant?.options}
+            onClose={handleCloseFoodModal}
+          />
+        )}
       </Dialog>
     </>
   );
