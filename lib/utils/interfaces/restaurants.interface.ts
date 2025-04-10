@@ -77,6 +77,7 @@ export interface IFood {
   image: string;
   description: string;
   subCategory: string;
+  restaurant: string;
   variations: IVariation[];
 }
 

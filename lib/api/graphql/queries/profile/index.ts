@@ -8,7 +8,6 @@ export const profile = `
             email
             emailIsVerified
             notificationToken
-            isActive
             isOrderNotification
             isOfferNotification
             addresses{
@@ -22,7 +21,6 @@ export const profile = `
             favourite
           }
         }`;
-
 
 export const FavouriteRestaurant = `query UserFavourite ($latitude:Float,$longitude:Float){
           userFavourite(latitude:$latitude,longitude:$longitude) {
@@ -101,4 +99,3 @@ export const FavouriteRestaurant = `query UserFavourite ($latitude:Float,$longit
             }
            }
         }`;
-

@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
@@ -7,25 +6,23 @@ import { useParams } from "next/navigation";
 import { Skeleton } from "primereact/skeleton";
 import { Dialog } from "primereact/dialog";
 
+// Context & Hooks
+import useUser from "@/lib/hooks/useUser";
+import useRestaurant from "@/lib/hooks/useRestaurant";
+
 // Icons
 import { ClockSvg, HeartSvg, InfoSvg, RatingSvg } from "@/lib/utils/assets/svg";
 import { faPlus, faSearch } from "@fortawesome/free-solid-svg-icons";
-
-// Hook
-// import useRestaurant from "@/lib/hooks/useRestaurant";
 
 // Components
 import Spacer from "@/lib/ui/useable-components/spacer";
 import { PaddingContainer } from "@/lib/ui/useable-components/containers";
 import CustomIconTextField from "@/lib/ui/useable-components/input-icon-field";
 import FoodItemDetail from "@/lib/ui/useable-components/item-detail";
-
 import FoodCategorySkeleton from "@/lib/ui/useable-components/custom-skeletons/food-items.skeleton";
+
 // Interface
 import { ICategory, IFood } from "@/lib/utils/interfaces";
-
-// Hook
-import useRestaurant from "@/lib/hooks/useRestaurant";
 
 // Methods
 import { toSlug } from "@/lib/utils/methods";
@@ -34,7 +31,10 @@ import ReviewsModal from "@/lib/ui/useable-components/reviews-modal";
 import InfoModal from "@/lib/ui/useable-components/info-modal";
 
 export default function RestaurantDetailsScreen() {
-  // Params
+  // Access the UserContext via our custom hook
+  const { cart, transformCartWithFoodInfo, updateCart } = useUser();
+
+  // Params from route
   const { id, slug }: { id: string; slug: string } = useParams();
 
 
@@ -42,12 +42,23 @@ export default function RestaurantDetailsScreen() {
   // State
   const [filter, setFilter] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [showDialog, setShowDialog] = useState<boolean>(false);
+  const [selectedFood, setSelectedFood] = useState<IFood | null>(null);
 
-
-  // Hooks
+  // Fetch restaurant data
   const { data, loading } = useRestaurant(id, decodeURIComponent(slug));
 
-  // Constants
+  // Transform cart items when restaurant data is loaded - only once when dependencies change
+  useEffect(() => {
+    if (data?.restaurant && cart.length > 0) {
+      const transformedCart = transformCartWithFoodInfo(cart, data.restaurant);
+      if (JSON.stringify(transformedCart) !== JSON.stringify(cart)) {
+        updateCart(transformedCart);
+      }
+    }
+  }, [data?.restaurant, cart.length]); // Only re-run when restaurant data or cart length changes
+
+  // Filter food categories based on search term
   const allDeals = data?.restaurant?.categories?.filter(
     (cat: ICategory) => cat.foods.length
   );
@@ -72,14 +83,22 @@ export default function RestaurantDetailsScreen() {
         .map((c: ICategory, index: number) => ({
           ...c,
           index,
-          foods: c.foods.map((food: IFood) => ({
-            ...food,
-            title: food.title.toLowerCase(), // Modify food titles if needed
-          })),
-        })) || []
+          foods: c.foods.filter(food => {
+            // If filter is empty, include all foods
+            if (filter.trim() === "") return true;
+            
+            // Include food if title or description matches filter
+            return (
+              food.title.toLowerCase().includes(filter.toLowerCase()) ||
+              (food.description && food.description.toLowerCase().includes(filter.toLowerCase()))
+            );
+          }),
+        }))
+        .filter((c: ICategory) => c.foods.length > 0) || []
     );
   }, [allDeals, filter]);
 
+  // Restaurant info
   const headerData = {
     name: data?.restaurant?.name ?? "...",
     averageReview: data?.restaurant?.reviewData?.ratings ?? "...",
@@ -91,7 +110,7 @@ export default function RestaurantDetailsScreen() {
   };
 
   const restaurantInfo = {
-    _id: data?.restaurant._id ?? "",
+    _id: data?.restaurant?._id ?? "",
     name: data?.restaurant?.name ?? "...",
     image: data?.restaurant?.image ?? "",
     deals: deals,
@@ -117,7 +136,6 @@ export default function RestaurantDetailsScreen() {
   const [visibleItems, setVisibleItems] = useState(10); // Default visible items
   const [showAll, setShowAll] = useState(false);
   const [headerHeight, setHeaderHeight] = useState("64px"); // Default for desktop
-  const [showDialog, setShowDialog] = useState<IFood | null>(null);
   const [showReviews, setShowReviews] = useState<boolean>(false);
   const [showMoreInfo, setShowMoreInfo] = useState<boolean>(false);
 
@@ -125,7 +143,7 @@ export default function RestaurantDetailsScreen() {
   const handleScroll = (id: string) => {
     setSelectedCategory(id);
     const element = document.getElementById(id);
-    const container = document.querySelector(".scrollable-container"); // Adjust selector
+    const container = document.querySelector(".scrollable-container");
 
     if (element && container) {
       const headerOffset = 120;
@@ -139,6 +157,23 @@ export default function RestaurantDetailsScreen() {
     }
   };
 
+    // Function to handle opening the food item modal
+    const handleOpenFoodModal = (food: IFood) => {
+      // Add restaurant ID to the food item
+      setSelectedFood({
+        ...food,
+        restaurant: restaurantInfo._id
+      });
+      setShowDialog(true);
+    };
+  
+    // Function to close the food item modal
+    const handleCloseFoodModal = () => {
+      setShowDialog(false);
+      setSelectedFood(null);
+    };
+
+  // Adjust UI based on screen size
   // Function to handle the logic for seeing reviews
   const handleSeeReviews = () => {
     setShowReviews(true);
@@ -156,13 +191,14 @@ export default function RestaurantDetailsScreen() {
     const updateVisibleItems = () => {
       const width = window.innerWidth;
       if (width < 640) {
-        setVisibleItems(10); // Small screens
+        setVisibleItems(3); // Small screens
       } else if (width < 1024) {
         setVisibleItems(4); // Medium screens
       } else {
         setVisibleItems(5); // Large screens
       }
     };
+    
     const updateHeight = () => {
       if (window.innerWidth >= 1024)
         setHeaderHeight("64px"); // lg (desktop)
@@ -202,28 +238,26 @@ export default function RestaurantDetailsScreen() {
       <div className="w-screen h-screen flex flex-col pb-20">
         <div className="scrollable-container flex-1 overflow-auto">
           {/* Banner */}
-
           <div className="relative">
-            {loading ?
+            {loading ? (
               <Skeleton width="100%" height="20rem" borderRadius="0" />
-            : <img
-                alt="McDonald's banner with a burger and fries"
+            ) : (
+              <img
+                alt={`${restaurantInfo.name} banner`}
                 className="w-full h-72 object-cover"
                 height="300"
-                // src="https://storage.googleapis.com/a1aa/image/l_S6V3o3Sf_fYnRuAefKySjq6q-HmTjiF37tvk6PiMU.jpg"
                 src={restaurantInfo.image}
                 width="1200"
               />
-            }
+            )}
 
             {!loading && (
               <div className="absolute bottom-0 left-0 md:left-20 p-4">
                 <div className="flex flex-col items-start">
                   <img
-                    alt="McDonald's logo"
+                    alt={`${restaurantInfo.name} logo`}
                     className="w-12 h-12 mb-2"
                     height="50"
-                    // src="https://storage.googleapis.com/a1aa/image/_a4rKBo9YwPTH-AHQzOLoIcNAirPNTI7alqAVAEqmOo.jpg"
                     src={restaurantInfo.image}
                     width="50"
                   />
@@ -241,30 +275,32 @@ export default function RestaurantDetailsScreen() {
             )}
 
             <div className="absolute top-4 right-4 md:bottom-4 md:right-4 md:top-auto rounded-full bg-white h-8 w-8 flex justify-center items-center">
-              {/* <FontAwesomeIcon icon={faHeart} className="  text-2xl" /> */}
               <HeartSvg />
             </div>
           </div>
 
-          {/* Restaurnat Info */}
-          <div className="bg-gray-50  shadow-[0px_1px_3px_rgba(0,0,0,0.1)]  p-3 h-[80px] flex justify-between items-center">
+          {/* Restaurant Info */}
+          <div className="bg-gray-50 shadow-[0px_1px_3px_rgba(0,0,0,0.1)] p-3 h-[80px] flex justify-between items-center">
             <PaddingContainer>
               <div className="flex flex-wrap items-center gap-4 sm:gap-6">
                 {/* Time */}
                 <span className="flex items-center gap-2 text-gray-600 font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle">
                   <ClockSvg />
-                  {loading ?
+                  {loading ? (
                     <Skeleton width="2rem" height="1.5rem" />
-                  : headerData.deliveryTime}
-                  mins
+                  ) : (
+                    `${headerData.deliveryTime} mins`
+                  )}
                 </span>
 
                 {/* Rating */}
                 <span className="flex items-center gap-2 text-gray-600 font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle">
                   <RatingSvg />
-                  {loading ?
+                  {loading ? (
                     <Skeleton width="2rem" height="1.5rem" />
-                  : headerData.averageReview}
+                  ) : (
+                    headerData.averageReview
+                  )}
                 </span>
 
                 {/* Info Link */}
@@ -277,9 +313,11 @@ export default function RestaurantDetailsScreen() {
                   }}
                 >
                   <InfoSvg />
-                  {loading ?
+                  {loading ? (
                     <Skeleton width="10rem" height="1.5rem" />
-                  : "See more information"}
+                  ) : (
+                    "See more information"
+                  )}
                 </a>
                  {/* Review Link */}
                  <a
@@ -324,6 +362,7 @@ export default function RestaurantDetailsScreen() {
                         return (
                           <li key={index} className="shrink-0">
                             <button
+                              type="button"
                               className={`bg-${selectedCategory === _slug ? "[#F3FFEE]" : "gray-100"} text-${selectedCategory === _slug ? "[#5AC12F]" : "gray-600"} rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap`}
                               onClick={() =>
                                 handleScroll(toSlug(category.title))
@@ -338,12 +377,13 @@ export default function RestaurantDetailsScreen() {
 
                     {!showAll && deals.length > visibleItems && (
                       <li className="shrink-0">
-                        <span
+                        <button
+                          type="button"
                           className="bg-blue-500 text-white rounded-full px-4 py-2 font-medium text-[14px] cursor-pointer"
                           onClick={() => setShowAll(true)}
                         >
                           More
-                        </span>
+                        </button>
                       </li>
                     )}
                   </ul>
@@ -361,7 +401,7 @@ export default function RestaurantDetailsScreen() {
                       position: "left",
                       style: { marginTop: "-10px" },
                     }}
-                    placeholder="Search for Restaurants"
+                    placeholder="Search for food items"
                     type="text"
                     name="search"
                     showLabel={false}
@@ -375,12 +415,12 @@ export default function RestaurantDetailsScreen() {
 
           <Spacer height="20px" />
 
-          {/* Main Section */}
-
+          {/* Food Categories and Items */}
           <PaddingContainer>
-            {loading ?
+            {loading ? (
               <FoodCategorySkeleton />
-            : deals.map((category: ICategory, catIndex: number) => (
+            ) : (
+              deals.map((category: ICategory, catIndex: number) => (
                 <div
                   key={catIndex}
                   className="mb-4 p-3"
@@ -422,11 +462,12 @@ export default function RestaurantDetailsScreen() {
                           />
                         </div>
 
-                        {/* Image Section */}
+                        {/* Add Button */}
                         <div className="absolute top-2 right-2">
                           <button
                             className="bg-[#0EA5E9] rounded-full shadow-md w-6 h-6 flex items-center justify-center"
-                            onClick={() => setShowDialog(meal)}
+                            onClick={() => handleOpenFoodModal(meal)}
+                            type="button"
                           >
                             <FontAwesomeIcon icon={faPlus} color="white" />
                           </button>
@@ -436,24 +477,25 @@ export default function RestaurantDetailsScreen() {
                   </div>
                 </div>
               ))
-            }
+            )}
           </PaddingContainer>
         </div>
       </div>
 
+      {/* Food Item Detail Modal */}
       <Dialog
-        visible={!!showDialog}
+        visible={showDialog}
         className="mx-4 md:mx-0" // Adds margin on small screens
-        onHide={() => {
-          if (!showDialog) return;
-          setShowDialog(null);
-        }}
+        onHide={handleCloseFoodModal}
       >
-        <FoodItemDetail
-          foodItem={showDialog}
-          addons={data?.restaurant?.addons}
-          options={data?.restaurant?.options}
-        />
+        {selectedFood && (
+          <FoodItemDetail
+            foodItem={selectedFood}
+            addons={data?.restaurant?.addons}
+            options={data?.restaurant?.options}
+            onClose={handleCloseFoodModal}
+          />
+        )}
       </Dialog>
     </>
   );
