@@ -98,16 +98,11 @@ export const PLACE_ORDER = gql`
   }
 `;
 
-export const reviewOrder = `mutation ReviewOrder(
-    $order:String!,
-    $rating:Int!,
-    $description:String,
-  ){
-    reviewOrder(reviewInput:{
-      order:$order,
-      rating:$rating,
-      description:$description,
-    }){
+export const ADD_REVIEW_ORDER = gql`
+  mutation ReviewOrder($order: String!, $rating: Int!, $description: String) {
+    reviewOrder(
+      reviewInput: { order: $order, rating: $rating, description: $description }
+    ) {
       _id
       orderId
       restaurant {
@@ -185,4 +180,5 @@ export const reviewOrder = `mutation ReviewOrder(
       cancelledAt
       assignedAt
     }
-  }`;
+  }
+`;
