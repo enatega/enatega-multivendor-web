@@ -1,23 +1,24 @@
 "use client"
-import useDebounceFunction from "@/lib/hooks/useDebounceForFunction";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+// Components
 import OrderCardSkeleton from "@/lib/ui/useable-components/custom-skeletons/order.card.skelton";
 import OrderCard from "@/lib/ui/useable-components/order-card";
 import EmptyState from "@/lib/ui/useable-components/orders-empty-state";
+import RatingModal from "../rating/main";
+import TextComponent from "@/lib/ui/useable-components/text-field";
+// Interfaces
 import {
   IOrder,
   IPastOrdersProps,
 } from "@/lib/utils/interfaces/orders.interface";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import RatingModal from "../rating/main";
-import { reviewOrder } from "@/lib/api/graphql/mutations";
-import { gql, useMutation } from "@apollo/client";
+// Hooks
 import useToast from "@/lib/hooks/useToast";
-import TextComponent from "@/lib/ui/useable-components/text-field";
-
-const REVIEWORDER = gql`
-  ${reviewOrder}
-`;
+// Querys and Mutations
+import { useMutation } from "@apollo/client";
+import { ADD_REVIEW_ORDER } from "@/lib/api/graphql/mutations";
+// Methods
+import useDebounceFunction from "@/lib/hooks/useDebounceForFunction";
 
 export default function PastOrders({
   pastOrders,
@@ -33,7 +34,7 @@ export default function PastOrders({
 
   //mutation
   const [mutate, { loading: isloadingReviewOrder }] =
-    useMutation(REVIEWORDER, {
+    useMutation(ADD_REVIEW_ORDER, {
       onCompleted,
       onError,
     });
@@ -65,7 +66,11 @@ export default function PastOrders({
     },
     500 // Debounce time in milliseconds
   );
-
+  
+  // handle rate order clicked
+  // use debouncefunction if user click multiple times at once it will call function only 1 time
+  // this function will set the selected order and show the rating modal
+  // and also find the order by id
   const handleRateOrderClicked = useDebounceFunction(
     (orderId: string | undefined) => {
       // Find the order by ID
@@ -77,7 +82,8 @@ export default function PastOrders({
     },
     500 // Debounce time in milliseconds
   );
-
+  
+  // handle submit rating
   const handleSubmitRating = async (
     orderId: string | undefined,
     ratingValue: number,
@@ -122,7 +128,6 @@ export default function PastOrders({
       />
     );
   }
-
 
   return (
     <>

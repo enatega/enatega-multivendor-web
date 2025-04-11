@@ -1,25 +1,32 @@
 "use client";
+
 import { useCallback, useEffect, useState, useRef } from "react";
+// Queries- Mutations
 import { gql, useMutation, useQuery } from "@apollo/client";
-import { deleteAddress } from "@/lib/api/graphql/mutations/addresses";
+import { DELETE_ADDRESS } from "@/lib/api/graphql/mutations";
+import { profile } from "@/lib/api/graphql/queries/profile";
+//Hooks
 import useToast from "@/lib/hooks/useToast";
+// Components
 import AddressesSkeleton from "@/lib/ui/useable-components/custom-skeletons/addresses.skelton";
 import CustomIconButton from "@/lib/ui/useable-components/custom-icon-button";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import AddressItem from  "../main/address-listings"
 import CustomDialog from "@/lib/ui/useable-components/delete-dialog";
-import { ISingleAddress } from "@/lib/utils/interfaces/profile.interface";
-import { profile } from "@/lib/api/graphql/queries/profile";
 import EmptyAddress from "@/lib/ui/useable-components/empty-address";
+//Interfaces
+import { ISingleAddress } from "@/lib/utils/interfaces/profile.interface";
+//Icons
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
-// Queries & Mutations
+// Query
 const PROFILE = gql`${profile}`;
-const DELETE_ADDRESS = gql`${deleteAddress}`;
 
 export default function AddressesMain() {
   // states
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+
+  // Hooks
   const { showToast } = useToast();
 
   //Queries and Mutations
@@ -31,19 +38,32 @@ export default function AddressesMain() {
     onCompleted,
   });
 
+  function onCompleted() {
+    showToast({ type: 'success', title: 'Address', message: 'Deleted Successfully', duration: 3000 });
+    setDeleteTarget(null);
+  }
+
 // variables
   const addresses = profileData?.profile?.addresses || [];
   const dropdownRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
+  // Handlers
+
+  // Handle Toggle Dropdown
+  // This function toggles the dropdown menu for a specific address.
   const toggleDropdown = useCallback((addressId: string) => {
     setActiveDropdown(prev => prev === addressId ? null : addressId);
   }, []);
 
-  //Handlers
+  // Handle Delete Address
+  // This function sets the target address ID for deletion.
   const handleDeleteAddress = useCallback((addressId: string) => {
     setDeleteTarget(addressId);
   }, []);
 
+  // Handle Confirm Delete
+  // This function confirms the deletion of the address.
+  // It calls the mutation to delete the address and resets the target.
   const handleConfirmDelete = useCallback(async () => {
     if (deleteTarget) {
       await mutate({ variables: { id: deleteTarget } });
@@ -51,21 +71,22 @@ export default function AddressesMain() {
     }
   }, [deleteTarget]);
 
-  function onCompleted() {
-    showToast({ type: 'success', title: 'Address', message: 'Deleted Successfully', duration: 3000 });
-    setDeleteTarget(null);
-  }
 
   // UseEffects
+
+  // Handle Address Deletion Error
+  // This effect shows a toast notification if there is an error deleting the address.
   useEffect(() => {
     if (deleteAddressError) {
       showToast({ type: 'error', title: 'Address', message: 'Failed to delete', duration: 3000 });
     }
   }, [deleteAddressError]);
 
+  // Handle Click Outside Dropdown
+  // This effect closes the dropdown menu if a click is detected outside of it.
+  // It uses a ref to check if the click target is outside of the dropdown.
   useEffect(() => {
-
-     // Only run on client side
+    // Only run on client side
     if (typeof window === 'undefined') return;
     
     const handleClickOutside = (event: MouseEvent) => {
@@ -95,7 +116,6 @@ export default function AddressesMain() {
         visible={!!deleteTarget}
         loading={loadingAddressMutation}
       />
-      
       {addresses?.map((address:ISingleAddress) => (
         <AddressItem 
           key={address?._id} 

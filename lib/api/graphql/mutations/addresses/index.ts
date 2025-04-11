@@ -1,12 +1,18 @@
-export const deleteAddress = `mutation DeleteAddress($id:ID!){
-    deleteAddress(id:$id){
+import { gql } from "@apollo/client";
+
+export const DELETE_ADDRESS = gql`
+  mutation DeleteAddress($id: ID!) {
+    deleteAddress(id: $id) {
       _id
-      addresses{
+      addresses {
         _id
         label
         deliveryAddress
         details
-        location{coordinates}
+        location {
+          coordinates
+        }
       }
     }
-}`;
+  }
+`;
