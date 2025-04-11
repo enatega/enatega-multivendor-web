@@ -113,12 +113,8 @@ const GoogleMapComponent = ({
   // Show loading state while API is being loaded
   if (!isLoaded) {
     return (
-      <div
-        style={mapContainerStyle}
-        className="flex items-center justify-center bg-gray-100"
-      >
-        Loading map...
-      </div>
+      <div className="w-full h-[500px] bg-gray-200 rounded-md flex items-center justify-center text-gray-500">
+    </div>
     );
   }
 
