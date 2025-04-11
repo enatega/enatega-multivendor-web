@@ -20,17 +20,26 @@ export default function OrderHistoryScreen() {
     INACTIVE_STATUS.includes(o.orderStatus)
   );
 
-  console.log(isOrdersLoading, "Loading oriders on main orders history page");
-  console.log(ordersData, "my all orders from db on orders history page");
-  return (
-    <div className="flex flex-col space-y-10 my-10">
-      {/* Active Orders */}
-      <ActiveOrders
-        activeOrders={activeOrders}
-        isOrdersLoading={isOrdersLoading}
-      />
-      {/* Past Orders  */}
-      <PastOrders pastOrders={pastOrders} isOrdersLoading={isOrdersLoading} />
-    </div>
-  );
-}
+  export default function OrderHistoryScreen() {
+
+      const { data: ordersData, loading: isOrdersLoading } = useQuery(ORDERS, {
+        fetchPolicy: "cache-and-network",
+      });
+
+      const activeOrders = ordersData?.orders?.filter((o:IOrder) =>
+        ACTIVE_STATUS.includes(o.orderStatus)
+      );
+      const pastOrders = ordersData?.orders?.filter((o:IOrder) =>
+        INACTIVE_STATUS.includes(o.orderStatus)
+      );
+
+    return (
+      <div className="flex flex-col space-y-10 my-10">
+        {/* Active Orders */}
+        <ActiveOrders activeOrders={activeOrders} isOrdersLoading={isOrdersLoading}/>
+       {/* Past Orders  */}
+        <PastOrders pastOrders={pastOrders} isOrdersLoading={isOrdersLoading}/>
+      </div>
+    );
+  }
+  

@@ -24,7 +24,6 @@ export default function PastOrders({
   isOrdersLoading,
 }: IPastOrdersProps) {
   // states
-  const [rating, setRating] = useState<number | null>(null);
   const [showRatingModal, setShowRatingModal] = useState<boolean>(false);
   const [selectedOrder, setSelectedOrder] = useState<IOrder | null>(null);
 
@@ -32,17 +31,11 @@ export default function PastOrders({
   const router = useRouter();
   const { showToast } = useToast();
 
-  console.log(selectedOrder, "selectedOrder");
-
   //mutation
-  const [mutate, { loading: isloadingReviewOrder, error: isErrorReviewOrder }] =
-    useMutation(REVIEWORDER, {
-      onCompleted,
-      onError,
-    });
-
-  console.log(isloadingReviewOrder, "loadingReviewOrder");
-  console.log(isErrorReviewOrder, "ErrorReviewOrder");
+  const [mutate, { loading: isloadingReviewOrder }] = useMutation(REVIEWORDER, {
+    onCompleted,
+    onError,
+  });
 
   function onCompleted() {
     showToast({
@@ -67,16 +60,13 @@ export default function PastOrders({
   // use debouncefunction if user click multiple times at once it will call function only 1 time
   const handleReOrderClicked = useDebounceFunction(
     (restaurantId: string | undefined) => {
-      console.log("ready for navigation");
       router.push(`/restaurants/${restaurantId}`);
     },
     500 // Debounce time in milliseconds
   );
 
   const handleRateOrderClicked = useDebounceFunction(
-    (orderId: string | undefined, ratingValue: number = 0) => {
-      console.log(orderId, "OrderId for rating");
-      console.log(ratingValue, "ratingValue on past order component");
+    (orderId: string | undefined) => {
       // Find the order by ID
       const order = pastOrders.find((order) => order._id === orderId);
       if (order) {
@@ -86,7 +76,6 @@ export default function PastOrders({
     },
     500 // Debounce time in milliseconds
   );
-  console.log(rating, "rating in state");
 
   const handleSubmitRating = async (
     orderId: string | undefined,
@@ -94,13 +83,8 @@ export default function PastOrders({
     comment?: string,
     aspects?: string[]
   ) => {
-    console.log(orderId, "OrderId for rating");
-    console.log(ratingValue, "ratingValue on past order component");
-    console.log(comment, "comment on past order component");
-    console.log(aspects, "selected aspects on past order component");
-
-    // Set the rating in state
-    setRating(ratingValue);
+    // Temporarily console the aspects-
+    console.log(aspects, "Temporarily consoling aspects");
 
     // Here you would  call an API to save the rating
     try {

@@ -75,6 +75,8 @@ export interface IUserReviewAuthor {
     orderPrefix?: string;
     name?: string;
     isActive?: boolean;
+    slug?: string;
+    shopType?: string;
     image?: string;
     address?: string;
     location?: {
