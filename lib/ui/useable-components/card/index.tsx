@@ -1,8 +1,11 @@
 "use client";
 
+// core
 import Image from "next/image";
 import React from "react";
 import { useRouter } from "next/navigation";
+// tailwind css merge
+import { twMerge } from "tailwind-merge";
 
 // Assets
 import { ClockSvg, CycleSvg, FaceSvg } from "@/lib/utils/assets/svg";
@@ -11,17 +14,28 @@ import IconWithTitle from "../icon-with-title";
 // Interface
 import { ICardProps } from "@/lib/utils/interfaces";
 
-const Card: React.FC<ICardProps> = ({ item }) => {
+const Card: React.FC<ICardProps> = ({ item, isDiscovery = false }) => {
   const router = useRouter();
+
+  const cardClass = twMerge(
+    `rounded-md shadow-md m-2 cursor-pointer 
+     hover:scale-105 hover:opacity-95 hover:shadow-lg 
+     transition-transform duration-500`,
+    isDiscovery
+      ? "mb-6 max-w-[402px] max-h-[272px] md:w-[185px] lg:w-[188px] xl:w-[276px] 2xl:w-[402px]"
+      : "mb-2 max-h-[272px] w-[94%] sm:w-[80%] md:w-[94%]"
+  );
 
   return (
     <div
-      className="max-w-[402px] max-h-[272px] md:w-[180px] lg:w-[180px] xl:w-[270px] 2xl:w-[380px] rounded-md shadow-md m-2 mb-6 cursor-pointer hover:scale-105 hover:opacity-95 hover:shadow-lg transition-transform duration-500"
+      className={cardClass}
       onClick={() => {
         // const params = new URLSearchParams({ name: item?.name, id: item._id });
         // router.push(`/restaurant?${params.toString()}`);
 
-        router.push(`/restaurant/${item?.slug}/${item._id}`); // the root route may change based on store or grocery
+        router.push(
+          `/${item.shopType === "restaurant" ? "restaurant" : "store"}/${item?.slug}/${item._id}`
+        ); // the root route may change based on store or grocery
       }}
     >
       {/* Image Container */}
@@ -58,7 +72,7 @@ const Card: React.FC<ICardProps> = ({ item }) => {
         {/* Icons Section */}
         <div className="flex flex-row justify-between w-[80%] sm:w-[100%] lg:w-[70%] pt-1">
           <IconWithTitle
-            logo={ClockSvg}
+            logo={() => <ClockSvg isBlue={true} />}
             title={item?.deliveryTime + " mins"}
             isBlue={true}
           />

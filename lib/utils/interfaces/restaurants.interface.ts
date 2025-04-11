@@ -9,6 +9,7 @@ export interface IRestaurant {
   _id: string;
   name: string;
   image: string;
+  logo: string;
   address: string;
   deliveryTime: number;
   minimumOrder: number;
@@ -39,8 +40,18 @@ export interface IRestaurant {
 export interface INearByRestaurantsPreviewData {
   nearByRestaurantsPreview: {
     restaurants: IRestaurant[];
-  };
-}
+  };}
+
+  export interface ITopRatedVendorData {
+    topRatedVendorsPreview: IRestaurant[];
+  }
+  export interface IMostOrderedRestaurantsData {
+    mostOrderedRestaurantsPreview: IRestaurant[];
+  }
+
+  export interface IRecentOrderedRestaurantsData {
+    recentOrderRestaurantsPreview: IRestaurant[];
+  }
 
 export interface IReviewData {
   total: number;
@@ -54,11 +65,19 @@ export interface ICategory {
   foods: IFood[];
 }
 
+export interface ISubCategory {
+  _id: string;
+  title: string;
+  parentCategoryId: string;
+}
+
 export interface IFood {
   _id: string;
   title: string;
   image: string;
   description: string;
+  subCategory: string;
+  restaurant: string;
   variations: IVariation[];
 }
 
@@ -104,4 +123,23 @@ export interface IOpeningTime {
 export interface ITimeSlot {
   startTime: string;
   endTime: string;
+}
+
+// Double Category
+export interface ISubCategoryV2 extends ISubCategory {
+  foods: IFood[];
+}
+export interface ICategoryV2 {
+  _id: string;
+  title: string;
+  subCategories: ISubCategoryV2[];
+}
+
+export interface ICategoryDetailsResponse {
+  id: string;
+  label: string;
+  url: string;
+  icon?: string;
+  items?: ICategoryDetailsResponse[];
+  __typename: string;
 }

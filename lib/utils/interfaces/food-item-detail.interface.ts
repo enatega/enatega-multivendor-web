@@ -7,6 +7,7 @@ export interface IFoodItemDetalComponentProps extends IGlobalComponentProps {
   foodItem: IFood | null;
   addons: IAddon[];
   options: IOption[];
+  onClose?: ()=> void;
 }
 
 export interface Option {
@@ -25,6 +26,8 @@ export interface SectionProps<T extends { _id: string }> {
   onSingleSelect?: Dispatch<SetStateAction<T | null>>;
   onMultiSelect?: Dispatch<SetStateAction<T[] | null>>;
   multiple?: boolean;
+  requiredTag?: string;
+  showTag?: boolean
 }
 export interface AddonSectionProps<T extends { _id: string }> {
   title: string;

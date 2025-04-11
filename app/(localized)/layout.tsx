@@ -21,7 +21,7 @@ import "./global.css";
 import AuthProvider from "@/lib/context/auth/auth.context";
 import { ConfigurationProvider } from "@/lib/context/configuration/configuration.context";
 import { useSetupApollo } from "@/lib/hooks/useSetApollo";
-
+import { UserProvider } from "@/lib/context/User/User.context";
 // Layout
 import AppLayout from "@/lib/ui/layouts/global";
 import { FontawesomeConfig } from "@/lib/config";

@@ -5,10 +5,12 @@ export const RESTAURANTS_FRAGMENT = gql`
     _id
     name
     image
+    logo
     address
     deliveryTime
     minimumOrder
     rating
+    slug
     isActive
     isAvailable
     commissionRate
@@ -36,15 +38,6 @@ export const MOST_ORDER_RESTAURANTS = gql`
   ${RESTAURANTS_FRAGMENT}
   query GetMostOrderedRestaurants($latitude: Float!, $longitude: Float!) {
     mostOrderedRestaurantsPreview(latitude: $latitude, longitude: $longitude) {
-      ...RestaurantPreviewFields
-    }
-  }
-`;
-
-export const TOP_RATED_VENDORS = gql`
-  ${RESTAURANTS_FRAGMENT}
-  query TopRatedVendors($latitude: Float!, $longitude: Float!) {
-    topRatedVendorsPreview(latitude: $latitude, longitude: $longitude) {
       ...RestaurantPreviewFields
     }
   }
@@ -94,6 +87,7 @@ export const GET_RESTAURANT_BY_ID_SLUG = gql`
       name
       image
       slug
+      shopType
       address
       location {
         coordinates
@@ -126,6 +120,7 @@ export const GET_RESTAURANT_BY_ID_SLUG = gql`
           title
           image
           description
+          subCategory
           variations {
             _id
             title
@@ -166,3 +161,61 @@ export const GET_RESTAURANT_BY_ID_SLUG = gql`
     }
   }
 `;
+
+
+export const GET_REVIEWS_BY_RESTAURANT = gql`
+  query GetReviewsByRestaurant($restaurant: String!) {
+    reviewsByRestaurant(restaurant: $restaurant) {
+      reviews {
+        _id
+        rating
+        description
+        isActive
+        createdAt
+        updatedAt
+        order {
+          _id
+          user {
+            _id
+            name
+            email
+          }
+        }
+        restaurant {
+          _id
+          name
+        }
+      }
+      ratings
+      total
+    }
+  }
+`;
+
+export const GET_CATEGORIES_SUB_CATEGORIES_LIST = gql`
+  query FetchCategoryDetailsByStoreId($storeId: String!) {
+    fetchCategoryDetailsByStoreId(storeId: $storeId) {
+      id
+      label
+      # slug
+      url
+      items {
+        id
+        label
+        url
+        # slug
+      }
+    }
+  }
+`;
+
+export const GET_SUB_CATEGORIES = gql`
+  query subCategories {
+    subCategories {
+      _id
+      title
+      parentCategoryId
+    }
+  }
+`;
+
