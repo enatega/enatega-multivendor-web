@@ -11,7 +11,7 @@ import { faSpinner } from "@fortawesome/free-solid-svg-icons/faSpinner";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AnimatePresence, motion } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
-import { useMutation } from "@apollo/client";
+import { ApolloCache, ApolloError, useMutation } from "@apollo/client";
 
 // Componentns
 import { PaddingContainer } from "@/lib/ui/useable-components/containers";
@@ -34,12 +34,19 @@ import { PAYMENT_METHOD_LIST, TIPS } from "@/lib/utils/constants";
 import { PLACE_ORDER, VERIFY_COUPON } from "@/lib/api/graphql/mutations";
 
 // Interfaces
-import { ICoupon, ILocation } from "@/lib/utils/interfaces";
-import { calculateAmount, calculateDistance } from "@/lib/utils/methods";
+import { ICoupon, ILocation, IOrder } from "@/lib/utils/interfaces";
+import {
+  calculateAmount,
+  calculateDistance,
+  checkPaymentMethod,
+} from "@/lib/utils/methods";
 import { OrderTypes } from "@/lib/utils/types/order";
 import { useLocationContext } from "@/lib/context/location/location.context";
 import { useRouter } from "next/navigation";
 import { ORDERS } from "@/lib/api/graphql";
+import { CartItem } from "@/lib/context/User/User.context";
+import { DAYS } from "@/lib/utils/constants/orders";
+import useToast from "@/lib/hooks/useToast";
 
 export default function OrderCheckoutScreen() {
   const [isOpen, setIsOpen] = useState(false);
@@ -60,9 +67,10 @@ export default function OrderCheckoutScreen() {
 
   // Hooks
   const router = useRouter();
+  const { showToast } = useToast();
   const { CURRENCY_SYMBOL, CURRENCY, DELIVERY_RATE, COST_TYPE } = useConfig();
   const { location, setLocation } = useLocationContext();
-  const { cart, restaurant: restaurantId, clearCart } = useUser();
+  const { cart, restaurant: restaurantId, clearCart, profile } = useUser();
   const { data: restaurantData } = useRestaurant(restaurantId || "");
 
   // Ref
@@ -116,6 +124,42 @@ export default function OrderCheckoutScreen() {
   const togglePriceSummary = () => {
     setIsOpen((prev) => !prev);
   };
+  function transformOrder(cartData: CartItem[]) {
+    return cartData.map((food) => {
+      return {
+        food: food._id,
+        quantity: food.quantity,
+        variation: food.variation._id,
+        addons:
+          food.addons ?
+            food.addons.map(({ _id, options }) => ({
+              _id,
+              options: options.map(({ _id }) => _id),
+            }))
+          : [],
+        specialInstructions: food.specialInstructions,
+      };
+    });
+  }
+
+  const onCheckIsOpen = () => {
+    const date = new Date();
+    const day = date.getDay();
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const todaysTimings = restaurantData.restaurant.openingTimes.find(
+      (o: any) => o.day === DAYS[day]
+    );
+    const times = todaysTimings.times.filter(
+      (t: any) =>
+        hours >= Number(t.startTime[0]) &&
+        minutes >= Number(t.startTime[1]) &&
+        hours <= Number(t.endTime[0]) &&
+        minutes <= Number(t.endTime[1])
+    );
+
+    return times.length > 0;
+  };
 
   // API Handlers
   const onApplyCoupon = () => {
@@ -133,7 +177,122 @@ export default function OrderCheckoutScreen() {
     }
   }
 
-  async function onCompleted(data) {
+  function couponOnError() {
+    console.log({
+      type: "error",
+      message: "Invalid Coupon.",
+    });
+  }
+
+  function validateOrder() {
+    if (!restaurantData.restaurant.isAvailable || !onCheckIsOpen()) {
+      // toggleCloseModal();
+      return;
+    }
+    if (!cart.length) {
+      showToast({ title: "Cart", message: "Cart is empty", type: "error" });
+
+      return false;
+    }
+    const delivery = isPickUp ? 0 : deliveryCharges;
+    if (
+      Number(calculatePrice(delivery, true)) <
+      restaurantData?.restaurant?.minimumOrder
+    ) {
+      showToast({
+        title: "Minimum Amount",
+        message: `The minimum amount of (${CURRENCY_SYMBOL} ${restaurantData?.restaurant?.minimumOrder}) for your order has not been reached.`,
+        type: "warn",
+      });
+
+      return false;
+    }
+    if (!location) {
+      showToast({
+        title: "Missing Address",
+        message: "Select your address.",
+        type: "warn",
+      });
+
+      return false;
+    }
+    if (!paymentMethod) {
+      showToast({
+        title: "Missing Payment Method",
+        message: "Set payment method before checkout",
+        type: "warn",
+      });
+
+      return false;
+    }
+    if ((profile?.phone?.length || 0) < 1) {
+      showToast({
+        title: "Missing Phone number",
+        message: "Phone number is missing.",
+        type: "warn",
+      });
+
+      setTimeout(() => {
+        router.replace("/phone-number");
+      }, 1000);
+
+      return false;
+    }
+    if (!profile?.phoneIsVerified) {
+      showToast({
+        title: "Unverified Phone number",
+        message: "Phone Number is not verified",
+
+        type: "warn",
+      });
+
+      setTimeout(() => {
+        router.replace("/phone-number");
+      }, 1000);
+
+      return false;
+    }
+    return true;
+  }
+
+  // Order
+  async function onPlaceOrder() {
+    if (!validateOrder()) {
+      return;
+    }
+
+    if (checkPaymentMethod(CURRENCY, paymentMethod)) {
+      const items = transformOrder(cart);
+      placeOrder({
+        variables: {
+          restaurant: restaurantId,
+          orderInput: items,
+          paymentMethod: paymentMethod,
+          couponCode: coupon ? coupon.title : null,
+          tipping: +calculateTip(),
+          taxationAmount: +taxCalculation(),
+          address: {
+            label: location?.label,
+            deliveryAddress: location?.deliveryAddress,
+            details: location?.details,
+            longitude: "" + location?.longitude,
+            latitude: "" + location?.latitude,
+          },
+          orderDate: new Date(),
+          isPickedUp: isPickUp,
+          deliveryCharges: isPickUp ? 0 : deliveryCharges,
+        },
+      });
+    } else {
+      showToast({
+        title: "Unsupported Payment Method",
+        message: "Payment method not supported",
+        type: "warn",
+      });
+    }
+  }
+
+  async function onCompleted(data: { placeOrder: IOrder }) {
     if (paymentMethod === "COD") {
       clearCart();
       router.replace(`/order-detail/${data.placeOrder._id}`);
@@ -144,17 +303,15 @@ export default function OrderCheckoutScreen() {
     }
   }
 
-  function couponOnError() {
-    console.log({
-      type: "error",
-      message: "Invalid Coupon.",
-    });
-  }
+  function update(
+    cache: ApolloCache<any>,
+    { data }: { data?: { placeOrder: IOrder } }
+  ) {
+    const placeOrder = data?.placeOrder;
 
-  function update(cache, { data: { placeOrder } }) {
     console.log("update");
     if (placeOrder && placeOrder.paymentMethod === "COD") {
-      const data = cache.readQuery({ query: ORDERS });
+      const data = cache.readQuery({ query: ORDERS }) as { orders: IOrder[] };
       if (data) {
         cache.writeQuery({
           query: ORDERS,
@@ -164,7 +321,7 @@ export default function OrderCheckoutScreen() {
     }
   }
 
-  function onError(error) {
+  function onError(error: ApolloError) {
     console.log("Check-out Error", error);
   }
 
@@ -253,7 +410,9 @@ export default function OrderCheckoutScreen() {
             className="bg-white text-[#5AC12F] w-full py-2 px-4 rounded-full border border-gray-300 flex justify-between items-center"
             onClick={togglePriceSummary}
           >
-            <span className="font-inter text-[14px]">Total: $7.00</span>
+            <span className="font-inter text-[14px]">
+              Total: {`${CURRENCY_SYMBOL} ${calculateTotal()}`}
+            </span>
 
             <FontAwesomeIcon icon={faChevronDown} className="text-[14px]" />
           </button>
@@ -582,8 +741,14 @@ export default function OrderCheckoutScreen() {
                   <span>{`${CURRENCY_SYMBOL} ${calculateTotal()}`}</span>
                 </div>
 
-                <button className="bg-[#5AC12F] text-gray-900 w-full py-2 rounded-full text-xs lg:text-[12px]">
+                <button
+                  className="bg-[#5AC12F] text-gray-900 w-full py-2 rounded-full text-xs lg:text-[12px]"
+                  onClick={onPlaceOrder}
+                >
                   Click to order
+                  {loadingOrderMutation ?
+                    <FontAwesomeIcon icon={faSpinner} spin />
+                  : <span> Click to order</span>}
                 </button>
               </div>
             </div>
@@ -681,8 +846,13 @@ export default function OrderCheckoutScreen() {
                         {calculateTotal()}
                       </span>
                     </div>
-                    <button className="bg-[#5AC12F] text-gray-900 w-full py-2 rounded-full text-sm">
-                      Click to order
+                    <button
+                      className="bg-[#5AC12F] text-gray-900 w-full py-2 rounded-full text-sm"
+                      onClick={onPlaceOrder}
+                    >
+                      {loadingOrderMutation ?
+                        <FontAwesomeIcon icon={faSpinner} spin />
+                      : <span> Click to order</span>}
                     </button>
                   </motion.div>
                 )}

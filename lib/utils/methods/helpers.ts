@@ -1,123 +1,135 @@
-import { OrderStatus } from "../interfaces"
-
+import {
+  PAYPAL_ALLOWED_CURRENCIES,
+  STRIPE_ALLOWED_CURRENCIES,
+} from "../constants/currencies";
+import { OrderStatus } from "../interfaces";
 
 export function formatDate(dateString?: string): string {
-  if (!dateString) return ""
+  if (!dateString) return "";
 
-  const date = new Date(dateString)
+  const date = new Date(dateString);
   return new Intl.DateTimeFormat("en-US", {
     weekday: "short",
     day: "numeric",
     month: "short",
     year: "numeric",
-  }).format(date)
+  }).format(date);
 }
 
 export function formatDateAndTime(dateString: string): string {
   const date = new Date(dateString);
-  return `${date.toLocaleDateString('en-GB', {
-    weekday: 'short',
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  })}, ${date.toLocaleTimeString('en-GB', {
-    hour: '2-digit',
-    minute: '2-digit',
+  return `${date.toLocaleDateString("en-GB", {
+    weekday: "short",
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  })}, ${date.toLocaleTimeString("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
     hour12: true,
   })}`;
 }
 
 export function formatTime(dateString?: string): string {
-  if (!dateString) return ""
+  if (!dateString) return "";
 
-  const date = new Date(dateString)
+  const date = new Date(dateString);
   return new Intl.DateTimeFormat("en-US", {
     hour: "numeric",
     minute: "numeric",
     hour12: true,
-  }).format(date)
+  }).format(date);
 }
 
 export function getStatusLabel(status: OrderStatus): string {
   switch (status) {
     case "PENDING":
-      return "Pending"
+      return "Pending";
     case "ACCEPTED":
-      return "Accepted"
+      return "Accepted";
     case "ASSIGNED":
-      return "Assigned to Rider"
+      return "Assigned to Rider";
     case "PICKED":
-      return "On the Way"
+      return "On the Way";
     case "DELIVERED":
-      return "Delivered"
+      return "Delivered";
     case "COMPLETED":
-      return "Completed"
+      return "Completed";
     case "CANCELLED":
-      return "Cancelled"
+      return "Cancelled";
     default:
-      return status
+      return status;
   }
 }
 
-export function getStatusColor(status: OrderStatus): "success" | "info" | "warning" | "danger" | undefined {
+export function getStatusColor(
+  status: OrderStatus
+): "success" | "info" | "warning" | "danger" | undefined {
   switch (status) {
     case "PENDING":
-      return "warning"
+      return "warning";
     case "ACCEPTED":
-      return "info"
+      return "info";
     case "ASSIGNED":
-      return "info"
+      return "info";
     case "PICKED":
-      return "success"
+      return "success";
     case "DELIVERED":
-      return "success"
+      return "success";
     case "COMPLETED":
-      return "success"
+      return "success";
     case "CANCELLED":
-      return "danger"
+      return "danger";
     default:
-      return undefined
+      return undefined;
   }
 }
 
-    // Format date from timestamp
-  export const formatDateForCreatedAt = (timestamp: string) => {
-      try {
-        const date = new Date(Number.parseInt(timestamp))
-        const now = new Date()
-        const diffTime = Math.abs(now.getTime() - date.getTime())
-        
-        // Calculate minutes and hours
-        const diffMinutes = Math.floor(diffTime / (1000 * 60))
-        const diffHours = Math.floor(diffTime / (1000 * 60 * 60))
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-        
-        // Minutes (if less than an hour)
-        if (diffMinutes < 1) return "Just now"
-        if (diffMinutes === 1) return "1 Minute ago"
-        if (diffMinutes < 60) return `${diffMinutes} Minutes ago`
-        
-        // Hours (if less than a day)
-        if (diffHours === 1) return "1 Hour ago"
-        if (diffHours < 24) return `${diffHours} Hours ago`
-        
-        // Days (if less than a month)
-        if (diffDays === 1) return "1 Day ago"
-        if (diffDays < 30) return `${diffDays} Days ago`
-    
-        // Months (if less than a year)
-        const diffMonths = Math.floor(diffDays / 30)
-        if (diffMonths === 1) return "1 Month ago"
-        if (diffMonths < 12) return `${diffMonths} Months ago`
-    
-        // Years
-        const diffYears = Math.floor(diffDays / 365)
-        if (diffYears === 1) return "1 Year ago"
-        return `${diffYears} Years ago`
-      } catch (error) {
-        return "Unknown date"
-      }
-    }
+// Format date from timestamp
+export const formatDateForCreatedAt = (timestamp: string) => {
+  try {
+    const date = new Date(Number.parseInt(timestamp));
+    const now = new Date();
+    const diffTime = Math.abs(now.getTime() - date.getTime());
 
+    // Calculate minutes and hours
+    const diffMinutes = Math.floor(diffTime / (1000 * 60));
+    const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-  
+    // Minutes (if less than an hour)
+    if (diffMinutes < 1) return "Just now";
+    if (diffMinutes === 1) return "1 Minute ago";
+    if (diffMinutes < 60) return `${diffMinutes} Minutes ago`;
+
+    // Hours (if less than a day)
+    if (diffHours === 1) return "1 Hour ago";
+    if (diffHours < 24) return `${diffHours} Hours ago`;
+
+    // Days (if less than a month)
+    if (diffDays === 1) return "1 Day ago";
+    if (diffDays < 30) return `${diffDays} Days ago`;
+
+    // Months (if less than a year)
+    const diffMonths = Math.floor(diffDays / 30);
+    if (diffMonths === 1) return "1 Month ago";
+    if (diffMonths < 12) return `${diffMonths} Months ago`;
+
+    // Years
+    const diffYears = Math.floor(diffDays / 365);
+    if (diffYears === 1) return "1 Year ago";
+    return `${diffYears} Years ago`;
+  } catch (error) {
+    return "Unknown date";
+  }
+};
+
+export function checkPaymentMethod(currency: string, paymentMethod: string) {
+  if (paymentMethod === "STRIPE") {
+    return STRIPE_ALLOWED_CURRENCIES.find((val) => val.currency === currency);
+  }
+  if (paymentMethod === "PAYPAL") {
+    return PAYPAL_ALLOWED_CURRENCIES.find((val) => val.currency === currency);
+  }
+  return true;
+}

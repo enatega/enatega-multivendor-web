@@ -6,7 +6,7 @@ import {
 } from "@/lib/ui/screen-components/protected/profile";
 import { ACTIVE_STATUS, INACTIVE_STATUS } from "@/lib/utils/constants/orders";
 import { IOrder } from "@/lib/utils/interfaces/orders.interface";
-import { gql, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 
 export default function OrderHistoryScreen() {
   const { data: ordersData, loading: isOrdersLoading } = useQuery(ORDERS, {
