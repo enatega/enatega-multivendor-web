@@ -62,6 +62,7 @@ export default function OrderCheckoutScreen() {
   const [taxValue, setTaxValue] = useState();
 
   // Coupon
+  const [isCouponApplied, setIsCouponApplied] = useState(false);
   const [couponText, setCouponText] = useState("");
   const [coupon, setCoupon] = useState<ICoupon>({} as ICoupon);
 
@@ -169,10 +170,19 @@ export default function OrderCheckoutScreen() {
   function couponCompleted({ coupon }: { coupon: ICoupon }) {
     if (coupon) {
       if (coupon.enabled) {
-        console.log("Coupon applied");
+        showToast({
+          type: "info",
+          title: "Coupon Applied",
+          message: `${coupon.title} coupon has been applied`,
+        });
+        setIsCouponApplied(true);
         setCoupon(coupon);
       } else {
-        console.log("Coupon not found!");
+        showToast({
+          type: "info",
+          title: "Coupon Not Found",
+          message: `${coupon.title} coupon is not valid.`,
+        });
       }
     }
   }
@@ -180,6 +190,11 @@ export default function OrderCheckoutScreen() {
   function couponOnError() {
     console.log({
       type: "error",
+      message: "Invalid Coupon.",
+    });
+    showToast({
+      type: "error",
+      title: "Invalid Coupon",
       message: "Invalid Coupon.",
     });
   }
@@ -269,7 +284,7 @@ export default function OrderCheckoutScreen() {
           orderInput: items,
           paymentMethod: paymentMethod,
           couponCode: coupon ? coupon.title : null,
-          tipping: +calculateTip(),
+          tipping: +selectedTip,
           taxationAmount: +taxCalculation(),
           address: {
             label: location?.label,
@@ -309,7 +324,6 @@ export default function OrderCheckoutScreen() {
   ) {
     const placeOrder = data?.placeOrder;
 
-    console.log("update");
     if (placeOrder && placeOrder.paymentMethod === "COD") {
       const data = cache.readQuery({ query: ORDERS }) as { orders: IOrder[] };
       if (data) {
@@ -322,7 +336,14 @@ export default function OrderCheckoutScreen() {
   }
 
   function onError(error: ApolloError) {
-    console.log("Check-out Error", error);
+    showToast({
+      title: "Error",
+      message:
+        error.graphQLErrors[0]?.message ||
+        error?.networkError?.message ||
+        "Something went wrong",
+      type: "error",
+    });
   }
 
   // Pricing Handlers
@@ -368,7 +389,7 @@ export default function OrderCheckoutScreen() {
     const delivery = isPickUp ? 0 : deliveryCharges;
     total += +calculatePrice(delivery, true);
     total += +taxCalculation();
-    total += +calculateTip();
+    total += selectedTip ? Number(selectedTip) : 0;
     return total.toFixed(2);
   }
 
@@ -689,16 +710,19 @@ export default function OrderCheckoutScreen() {
                   </span>
                 </div>
 
-                <div className="flex justify-between mb-1 text-xs lg:text-[12px]">
-                  <span className="font-inter text-gray-900 leading-5">
-                    Tip
-                  </span>
-                  <span className="font-inter text-gray-900 leading-5">
-                    {`${CURRENCY_SYMBOL} ${parseFloat(calculateTip()).toFixed(
+                {selectedTip && (
+                  <div className="flex justify-between mb-1 text-xs lg:text-[12px]">
+                    <span className="font-inter text-gray-900 leading-5">
+                      Tip
+                    </span>
+                    <span className="font-inter text-gray-900 leading-5">
+                      {`${CURRENCY_SYMBOL} ${selectedTip}`}
+                      {/*    {`${CURRENCY_SYMBOL} ${parseFloat(calculateTip()).toFixed(
                       2
-                    )}`}
-                  </span>
-                </div>
+                    )}`} */}
+                    </span>
+                  </div>
+                )}
 
                 <div className="flex justify-between mb-1 text-xs lg:text-[12px]">
                   <span className="font-inter text-gray-900 leading-5">
@@ -721,14 +745,19 @@ export default function OrderCheckoutScreen() {
 
                 <Divider />
 
-                <div className="flex justify-between mb-1 text-xs lg:text-[12px]">
-                  <span className="font-inter text-gray-900 leading-5">
-                    Discount
-                  </span>
-                  <span className="font-inter text-gray-900 leading-5">
-                    $0.00
-                  </span>
-                </div>
+                {isCouponApplied && (
+                  <div className="flex justify-between mb-1 text-xs lg:text-[12px]">
+                    <span className="font-inter text-gray-900 leading-5">
+                      Discount
+                    </span>
+                    <span className="font-inter text-gray-900 leading-5">
+                      {`-${CURRENCY_SYMBOL} ${(
+                        Number(calculatePrice(0, false)) -
+                        Number(calculatePrice(0, true))
+                      ).toFixed(2)}`}
+                    </span>
+                  </div>
+                )}
 
                 <div className="text-[#0EA5E9] mb-1 text-left font-inter text-xs lg:text-[12px]">
                   Choose an offer (1 available)
@@ -745,7 +774,6 @@ export default function OrderCheckoutScreen() {
                   className="bg-[#5AC12F] text-gray-900 w-full py-2 rounded-full text-xs lg:text-[12px]"
                   onClick={onPlaceOrder}
                 >
-                  Click to order
                   {loadingOrderMutation ?
                     <FontAwesomeIcon icon={faSpinner} spin />
                   : <span> Click to order</span>}
@@ -793,16 +821,19 @@ export default function OrderCheckoutScreen() {
                       </span>
                     </div>
 
-                    <div className="flex justify-between mb-1 text-sm">
-                      <span className="font-inter  text-gray-900 text-[14px] md:text-lg leading-6 md:leading-7">
-                        Tip
-                      </span>
-                      <span className="font-inter  text-gray-900 text-[14px] md:text-lg leading-6 md:leading-7">
-                        {`${CURRENCY_SYMBOL} ${parseFloat(
+                    {selectedTip && (
+                      <div className="flex justify-between mb-1 text-sm">
+                        <span className="font-inter  text-gray-900 text-[14px] md:text-lg leading-6 md:leading-7">
+                          Tip
+                        </span>
+                        <span className="font-inter  text-gray-900 text-[14px] md:text-lg leading-6 md:leading-7">
+                          {`${CURRENCY_SYMBOL} ${selectedTip}`}
+                          {/*   {`${CURRENCY_SYMBOL} ${parseFloat(
                           calculateTip()
-                        ).toFixed(2)}`}
-                      </span>
-                    </div>
+                        ).toFixed(2)}`} */}
+                        </span>
+                      </div>
+                    )}
 
                     <div className="flex justify-between mb-1 text-sm">
                       <span className="font-inter  text-gray-900 text-[14px] md:text-lg leading-6 md:leading-7">
@@ -830,7 +861,10 @@ export default function OrderCheckoutScreen() {
                         Discount
                       </span>
                       <span className="font-inter  text-gray-900 text-[14px] md:text-lg leading-6 md:leading-7">
-                        $0.00
+                        {`-${CURRENCY_SYMBOL} ${(
+                          Number(calculatePrice(0, false)) -
+                          Number(calculatePrice(0, true))
+                        ).toFixed(2)}`}
                       </span>
                     </div>
 
