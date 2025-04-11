@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import useDebounceFunction from "@/lib/hooks/useDebounceForFunction";
 import OrderCardSkeleton from "@/lib/ui/useable-components/custom-skeletons/order.card.skelton";
 import OrderCard from "@/lib/ui/useable-components/order-card";
@@ -74,7 +74,7 @@ export default function PastOrders({
   );
 
   const handleRateOrderClicked = useDebounceFunction(
-    (orderId: string | undefined, ratingValue: number) => {
+    (orderId: string | undefined, ratingValue: number = 0) => {
       console.log(orderId, "OrderId for rating");
       console.log(ratingValue, "ratingValue on past order component");
       // Find the order by ID
@@ -141,7 +141,10 @@ export default function PastOrders({
   return (
     <>
       <div className="space-y-4 py-4">
-        <TextComponent text="Past Orders" className="text-2xl md:text-3xl xl:text-4xl font-semibold mb-6"/>
+        <TextComponent
+          text="Past Orders"
+          className="text-2xl md:text-3xl xl:text-4xl font-semibold mb-6"
+        />
         <div className="space-y-4">
           {pastOrders?.map((order: IOrder) => (
             <OrderCard
@@ -156,8 +159,8 @@ export default function PastOrders({
         </div>
       </div>
       {/* Rating Modal */}
-      {/* conditionally render the modal based on the loading state of mutation for better user experience */} 
-      {!isloadingReviewOrder && !(selectedOrder?.review?.rating) && (
+      {/* conditionally render the modal based on the loading state of mutation for better user experience */}
+      {!isloadingReviewOrder && !selectedOrder?.review?.rating && (
         <RatingModal
           visible={showRatingModal}
           onHide={() => setShowRatingModal(false)}

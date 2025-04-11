@@ -25,6 +25,7 @@ import { UserProvider } from "@/lib/context/User/User.context";
 // Layout
 import AppLayout from "@/lib/ui/layouts/global";
 import { FontawesomeConfig } from "@/lib/config";
+import { LocationProvider } from "@/lib/context/location/location.context";
 
 export default function RootLayout({
   children,
@@ -52,7 +53,9 @@ export default function RootLayout({
               <ToastProvider>
                 <AuthProvider>
                   <UserProvider>
-                    <AppLayout>{children}</AppLayout>
+                    <LocationProvider>
+                      <AppLayout>{children}</AppLayout>
+                    </LocationProvider>
                   </UserProvider>
                 </AuthProvider>
               </ToastProvider>

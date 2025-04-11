@@ -1,32 +1,235 @@
 "use client";
 
-import { PaddingContainer } from "@/lib/ui/useable-components/containers";
-import Divider from "@/lib/ui/useable-components/custom-divider";
-import { InfoSvg } from "@/lib/utils/assets/svg";
-import { TIPS } from "@/lib/utils/dummy";
+// Core
 import {
   faBicycle,
   faChevronDown,
   faChevronRight,
-  faCreditCard,
-  faDollar,
   faStore,
 } from "@fortawesome/free-solid-svg-icons";
+import { faSpinner } from "@fortawesome/free-solid-svg-icons/faSpinner";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AnimatePresence, motion } from "framer-motion";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { useMutation } from "@apollo/client";
+
+// Componentns
+import { PaddingContainer } from "@/lib/ui/useable-components/containers";
+import Divider from "@/lib/ui/useable-components/custom-divider";
+
+// Context
+import { useConfig } from "@/lib/context/configuration/configuration.context";
+
+// Hooks
+import useUser from "@/lib/hooks/useUser";
+import useRestaurant from "@/lib/hooks/useRestaurant";
+
+// Asssets
+import { InfoSvg } from "@/lib/utils/assets/svg";
+
+// Constants
+import { PAYMENT_METHOD_LIST, TIPS } from "@/lib/utils/constants";
+
+// API
+import { PLACE_ORDER, VERIFY_COUPON } from "@/lib/api/graphql/mutations";
+
+// Interfaces
+import { ICoupon, ILocation } from "@/lib/utils/interfaces";
+import { calculateAmount, calculateDistance } from "@/lib/utils/methods";
+import { OrderTypes } from "@/lib/utils/types/order";
+import { useLocationContext } from "@/lib/context/location/location.context";
+import { useRouter } from "next/navigation";
+import { ORDERS } from "@/lib/api/graphql";
 
 export default function OrderCheckoutScreen() {
   const [isOpen, setIsOpen] = useState(false);
   const [deliveryType, setDeliveryType] = useState("Delivery");
+  const [deliveryCharges, setDeliveryCharges] = useState(0);
+  const [isPickUp, setIsPickUp] = useState(false);
   const [selectedTip, setSelectedTip] = useState("");
+  const [distance, setDistance] = useState("0.0");
+  const [shouldLeaveAtDoor, setShouldLeaveAtDoor] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState(
+    PAYMENT_METHOD_LIST[0].value
+  );
+  const [taxValue, setTaxValue] = useState();
+
+  // Coupon
+  const [couponText, setCouponText] = useState("");
+  const [coupon, setCoupon] = useState<ICoupon>({} as ICoupon);
+
+  // Hooks
+  const router = useRouter();
+  const { CURRENCY_SYMBOL, CURRENCY, DELIVERY_RATE, COST_TYPE } = useConfig();
+  const { location, setLocation } = useLocationContext();
+  const { cart, restaurant: restaurantId, clearCart } = useUser();
+  const { data: restaurantData } = useRestaurant(restaurantId || "");
 
   // Ref
   const contentRef = useRef<HTMLDivElement>(null);
 
+  // API
+  const [placeOrder, { loading: loadingOrderMutation }] = useMutation(
+    PLACE_ORDER,
+    {
+      onCompleted,
+      onError,
+      update,
+    }
+  );
+  const [verifyCoupon, { loading: couponLoading }] = useMutation(
+    VERIFY_COUPON,
+    {
+      onCompleted: couponCompleted,
+      onError: couponOnError,
+    }
+  );
+
+  // Handlers
+  const onInit = () => {
+    if (!restaurantData) return;
+
+    // Set Tax
+    setTaxValue(restaurantData?.restaurant?.tax);
+
+    // Delivery Charges
+    onInitDeliveryCharges();
+  };
+
+  const onInitDeliveryCharges = () => {
+    const latOrigin = Number(restaurantData.restaurant.location.coordinates[1]);
+    const lonOrigin = Number(restaurantData.restaurant.location.coordinates[0]);
+    const latDest = Number(location?.latitude || "0");
+    const longDest = Number(location?.longitude || "0");
+    const distance = calculateDistance(latOrigin, lonOrigin, latDest, longDest);
+    setDistance(distance.toFixed(2));
+
+    let amount = calculateAmount(
+      COST_TYPE as OrderTypes.TCostType,
+      DELIVERY_RATE,
+      distance
+    );
+
+    setDeliveryCharges(amount > 0 ? amount : DELIVERY_RATE);
+  };
+
   const togglePriceSummary = () => {
     setIsOpen((prev) => !prev);
   };
+
+  // API Handlers
+  const onApplyCoupon = () => {
+    verifyCoupon({ variables: { coupon: couponText } });
+  };
+
+  function couponCompleted({ coupon }: { coupon: ICoupon }) {
+    if (coupon) {
+      if (coupon.enabled) {
+        console.log("Coupon applied");
+        setCoupon(coupon);
+      } else {
+        console.log("Coupon not found!");
+      }
+    }
+  }
+
+  async function onCompleted(data) {
+    if (paymentMethod === "COD") {
+      clearCart();
+      router.replace(`/order-detail/${data.placeOrder._id}`);
+    } else if (paymentMethod === "PAYPAL") {
+      router.replace(`/paypal?id=${data.placeOrder._id}`);
+    } else if (paymentMethod === "STRIPE") {
+      router.replace(`/stripe?id=${data.placeOrder._id}`);
+    }
+  }
+
+  function couponOnError() {
+    console.log({
+      type: "error",
+      message: "Invalid Coupon.",
+    });
+  }
+
+  function update(cache, { data: { placeOrder } }) {
+    console.log("update");
+    if (placeOrder && placeOrder.paymentMethod === "COD") {
+      const data = cache.readQuery({ query: ORDERS });
+      if (data) {
+        cache.writeQuery({
+          query: ORDERS,
+          data: { orders: [placeOrder, ...data.orders] },
+        });
+      }
+    }
+  }
+
+  function onError(error) {
+    console.log("Check-out Error", error);
+  }
+
+  // Pricing Handlers
+  function calculatePrice(delivery = 0, withDiscount: boolean = false) {
+    let itemTotal: number = 0;
+    cart.forEach((cartItem) => {
+      itemTotal = itemTotal + Number(cartItem?.price || 0) * cartItem.quantity;
+    });
+    if (withDiscount && coupon && coupon.discount) {
+      itemTotal = itemTotal - (coupon.discount / 100) * itemTotal;
+    }
+    const deliveryAmount = delivery > 0 ? deliveryCharges : 0;
+    return (itemTotal + deliveryAmount).toFixed(2);
+  }
+
+  function taxCalculation() {
+    const tax = taxValue ?? 0;
+    if (tax === 0) {
+      return tax.toFixed(2);
+    }
+    const delivery = isPickUp ? 0 : deliveryCharges;
+    const amount = +calculatePrice(delivery, true);
+    const taxAmount = ((amount / 100) * tax).toFixed(2);
+    return taxAmount;
+  }
+
+  function calculateTip() {
+    if (selectedTip) {
+      const _tip = parseFloat(selectedTip);
+      let total = 0;
+      const delivery = isPickUp ? 0 : deliveryCharges;
+      total += +calculatePrice(delivery, true);
+      total += +taxCalculation();
+      const tipPercentage = ((total / 100) * _tip).toFixed(2);
+      return tipPercentage;
+    } else {
+      return "0";
+    }
+  }
+
+  function calculateTotal() {
+    let total: number = 0;
+    const delivery = isPickUp ? 0 : deliveryCharges;
+    total += +calculatePrice(delivery, true);
+    total += +taxCalculation();
+    total += +calculateTip();
+    return total.toFixed(2);
+  }
+
+  // Use Effect
+  useEffect(() => {
+    onInit();
+  }, [restaurantData]);
+
+  useEffect(() => {
+    if (!location) {
+      const localStorageLocation = JSON.parse(
+        localStorage.getItem("location") || "null"
+      ) as ILocation;
+      if (localStorageLocation) {
+        setLocation(localStorageLocation);
+      }
+    }
+  }, []);
 
   return (
     <div className="w-screen h-screen flex flex-col pb-20">
@@ -64,7 +267,10 @@ export default function OrderCheckoutScreen() {
               <div className="flex justify-between bg-gray-100 rounded-full p-2 mb-6">
                 <button
                   className={`w-1/2 bg-${deliveryType === "Delivery" ? "[#5AC12F]" : "-gray-600"} text-white py-2 rounded-full flex items-center justify-center`}
-                  onClick={() => setDeliveryType("Delivery")}
+                  onClick={() => {
+                    setDeliveryType("Delivery");
+                    setIsPickUp(false);
+                  }}
                 >
                   <FontAwesomeIcon
                     icon={faBicycle}
@@ -77,7 +283,10 @@ export default function OrderCheckoutScreen() {
 
                 <button
                   className={`w-1/2 bg-${deliveryType === "Pickup" ? "[#5AC12F]" : "-gray-600"} px-6 py-2 rounded-full mx-2 flex items-center justify-center`}
-                  onClick={() => setDeliveryType("Pickup")}
+                  onClick={() => {
+                    setDeliveryType("Pickup");
+                    setIsPickUp(true);
+                  }}
                 >
                   <FontAwesomeIcon
                     icon={faStore}
@@ -105,7 +314,9 @@ export default function OrderCheckoutScreen() {
                     <p className="text-gray-900 leading-4 sm:leading-5 tracking-normal font-inter text-xs sm:text-sm md:text-sm align-middle">
                       <span className="font-semibold">Delivery </span>
                       <span className="font-normal">in 10-20 min </span>
-                      <span className="font-semibold">to Kamppi</span>
+                      <span className="font-semibold">
+                        {location?.deliveryAddress}
+                      </span>
                     </p>
                   </div>
 
@@ -119,7 +330,13 @@ export default function OrderCheckoutScreen() {
               {/* <!-- Leave at Door --> */}
               <div className="bg-white px-4 pt-4 pb-2 rounded-lg mb-4 border border-gray-300 w-full">
                 <div className="flex items-center">
-                  <input className="mr-2" id="leave-at-door" type="checkbox" />
+                  <input
+                    className="mr-2"
+                    id="leave-at-door"
+                    type="checkbox"
+                    checked={shouldLeaveAtDoor}
+                    onChange={() => setShouldLeaveAtDoor((prev) => !prev)}
+                  />
                   <label
                     className="text-gray-900 leading-4 sm:leading-5 tracking-normal font-inter text-xs sm:text-sm md:text-sm align-middle"
                     htmlFor="leave-at-door"
@@ -139,32 +356,51 @@ export default function OrderCheckoutScreen() {
                   Selected items
                 </h2>
                 {/* Map this below section */}
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center">
-                    <img
-                      alt="Big Share meal"
-                      className="w-12 h-12 rounded-full mr-2"
-                      height="50"
-                      src="https://storage.googleapis.com/a1aa/image/cPA2BWDjlQ26C-OR-Sz-gd7gFcDc7QbvTZ_904FkN0Y.jpg"
-                      width="50"
-                    />
-                    <div>
-                      <h3 className="font-semibold text-gray-900 mb-2 text-sm sm:text-base md:text-[12px] lg:text-[14px] xl:text-[16px] leading-5">
-                        Big Share
-                      </h3>
-                      <p className="text-gray-600 leading-4 sm:leading-5 tracking-normal font-inter text-xs sm:text-[12px] md:text-[12px] align-middle mt-2">
-                        De 1/2 Currydip! Sweet and sour dip.
-                      </p>
-                      <p className="text-[#0EA5E9] font-semibold text-sm sm:text-base md:text-[11px] lg:text-[12px] xl:text-[14px]">
-                        $6
-                      </p>
-                    </div>
-                  </div>
+                {cart.map((item) => {
+                  return (
+                    <div
+                      key={item._id}
+                      className="flex items-center justify-between mb-2"
+                    >
+                      <div className="flex items-start">
+                        <img
+                          alt="Big Share meal"
+                          className="w-12 h-12 rounded-full mr-2"
+                          height="50"
+                          src="https://storage.googleapis.com/a1aa/image/cPA2BWDjlQ26C-OR-Sz-gd7gFcDc7QbvTZ_904FkN0Y.jpg"
+                          width="50"
+                        />
+                        <div>
+                          <h3 className="font-semibold text-gray-900 text-sm sm:text-base md:text-[12px] lg:text-[14px] xl:text-[16px]">
+                            {item.foodTitle}
+                          </h3>
+                          <div className="flex flex-col items-start">
+                            {item?.optionTitles?.map(
+                              (optionTitle, optionIndex) => {
+                                return (
+                                  <p
+                                    key={`${optionTitle}-${optionIndex}`}
+                                    className="text-gray-600 tracking-normal font-inter text-xs sm:text-[12px] md:text-[12px]"
+                                  >
+                                    + {optionTitle}
+                                  </p>
+                                );
+                              }
+                            )}
+                          </div>
+                          <p className="text-[#0EA5E9] font-semibold text-sm sm:text-base md:text-[11px] lg:text-[12px] xl:text-[14px]">
+                            {CURRENCY_SYMBOL}
+                            {item.price}
+                          </p>
+                        </div>
+                      </div>
 
-                  <div className="border border-[#0EA5E9] text-[#0EA5E9] py-1 px-3 rounded-lg text-xs sm:text-sm font-medium w-fit">
-                    1
-                  </div>
-                </div>
+                      <div className="border border-[#0EA5E9] text-[#0EA5E9] py-1 px-3 rounded-lg text-xs sm:text-sm font-medium w-fit">
+                        {item.quantity}
+                      </div>
+                    </div>
+                  );
+                })}
                 <button className="text-gray-900 mt-2 font-semibold mb-2 text-sm sm:text-base md:text-[12px] lg:text-[12px] xl:text-[14px]">
                   + Add more items
                 </button>
@@ -174,47 +410,38 @@ export default function OrderCheckoutScreen() {
               <h2 className="font-semibold text-gray-900 mb-2 text-base sm:text-lg md:text-[16px] lg:text-[18px]">
                 Payment details
               </h2>
-              <div className="bg-white px-4 pt-4 pb-2 rounded-lg mb-4 border border-gray-300 w-full">
-                <div className="flex items-center justify-between mb-2">
-                  <label
-                    className="text-gray-600 flex items-center text-sm sm:text-base md:text-[12px] lg:text-[12px] xl:text-[14px]"
-                    htmlFor="card"
+              {PAYMENT_METHOD_LIST.map((paymentMethodItem, methodIndex) => {
+                return (
+                  <div
+                    key={`${paymentMethodItem.value}-${methodIndex}`}
+                    className="bg-white px-4 pt-4 pb-2 rounded-lg mb-4 border border-gray-300 w-full"
                   >
-                    <FontAwesomeIcon
-                      icon={faCreditCard}
-                      className="text-gray-900 mr-2"
-                    />
-                    Card
-                  </label>
-                  <input
-                    className="mr-2"
-                    id="card"
-                    name="payment"
-                    type="radio"
-                  />
-                </div>
-              </div>
-
-              <div className="bg-white px-4 pt-4 pb-2 rounded-lg mb-6 border border-gray-300 w-full">
-                <div className="flex items-center justify-between mb-2">
-                  <label
-                    className="text-gray-600 flex items-center text-sm sm:text-base md:text-[12px] lg:text-[12px] xl:text-[14px]"
-                    htmlFor="cash"
-                  >
-                    <FontAwesomeIcon
-                      icon={faDollar}
-                      className="text-gray-900 mr-2"
-                    />
-                    Cash
-                  </label>
-                  <input
-                    className="mr-2"
-                    id="cash"
-                    name="payment"
-                    type="radio"
-                  />
-                </div>
-              </div>
+                    <div className="flex items-center justify-between mb-2">
+                      <label
+                        className="text-gray-600 flex items-center text-sm sm:text-base md:text-[12px] lg:text-[12px] xl:text-[14px]"
+                        htmlFor="card"
+                      >
+                        <FontAwesomeIcon
+                          icon={paymentMethodItem.icon}
+                          className="text-gray-900 mr-2"
+                        />
+                        {paymentMethodItem.label}
+                      </label>
+                      <input
+                        className="mr-2"
+                        id="card"
+                        name="payment"
+                        type="radio"
+                        checked={paymentMethod === paymentMethodItem.value}
+                        value={paymentMethod}
+                        onChange={() =>
+                          setPaymentMethod(paymentMethodItem.value)
+                        }
+                      />
+                    </div>
+                  </div>
+                );
+              })}
 
               {/* <!-- Tip the Courier --> */}
               <div className="bg-white mb-6 w-full">
@@ -226,14 +453,14 @@ export default function OrderCheckoutScreen() {
                     They&apos;ll get 100% of your tip after the delivery
                   </p>
                   <div className="grid grid-cols-2 gap-2">
-                    {TIPS.map((tip, index) => (
+                    {TIPS.map((tip: string, index: number) => (
                       <button
                         key={index}
                         className={`text-[12px] text-${selectedTip === tip ? "white" : "[#0EA5E9]"} bg-${selectedTip === tip ? "[#0EA5E9]" : "white"} border border-[#0EA5E9] px-4 py-2 rounded-full w-full`}
                         onClick={() => setSelectedTip(tip)}
                       >
+                        {tip !== "Other" ? CURRENCY_SYMBOL : ""}
                         {tip}
-                        {tip !== "Other" ? "$" : ""}
                       </button>
                     ))}
                   </div>
@@ -253,9 +480,17 @@ export default function OrderCheckoutScreen() {
                     className="flex-grow p-2 border border-gray-300 rounded text-[12px] md:text-[14px]"
                     placeholder="Enter promo code..."
                     type="text"
+                    value={couponText}
+                    onChange={(e) => setCouponText(e.target.value)}
+                    disabled={couponLoading}
                   />
-                  <button className="bg-[#5AC12F] h-10 px-8 font-medium text-gray-900  tracking-normal font-inter text-sm sm:text-base md:text-[12px] lg:text-[14px] rounded-full">
-                    Submit
+                  <button
+                    className="bg-[#5AC12F] h-10 px-8 space-x-2 font-medium text-gray-900  tracking-normal font-inter text-sm sm:text-base md:text-[12px] lg:text-[14px] rounded-full"
+                    onClick={onApplyCoupon}
+                  >
+                    {couponLoading ?
+                      <FontAwesomeIcon icon={faSpinner} spin />
+                    : <span>Submit</span>}
                   </button>
                 </div>
               </div>
@@ -268,7 +503,7 @@ export default function OrderCheckoutScreen() {
                 id="price-summary"
               >
                 <h2 className="text-sm lg:text-base font-semibold text-left flex justify-between">
-                  Prices in USD
+                  Prices in {CURRENCY}
                   <InfoSvg />
                 </h2>
                 <p className="text-gray-400 mb-3 text-left leading-5 tracking-normal font-inter text-xs lg:text-[10px]">
@@ -280,27 +515,50 @@ export default function OrderCheckoutScreen() {
                     Item subtotal
                   </span>
                   <span className="font-inter text-gray-900 leading-5">
-                    $6.00
+                    {CURRENCY_SYMBOL}
+                    {calculatePrice(0)}
                   </span>
                 </div>
 
                 <div className="flex justify-between mb-1 text-xs lg:text-[12px]">
                   <span className="font-inter text-gray-900 leading-5">
-                    Delivery (0.316 km)
+                    Delivery ({distance} km)
                   </span>
                   <span className="font-inter text-gray-900 leading-5">
-                    $0.60
+                    {CURRENCY_SYMBOL}
+                    {deliveryCharges.toFixed()}
                   </span>
                 </div>
 
                 <div className="flex justify-between mb-1 text-xs lg:text-[12px]">
+                  <span className="font-inter text-gray-900 leading-5">
+                    Tip
+                  </span>
+                  <span className="font-inter text-gray-900 leading-5">
+                    {`${CURRENCY_SYMBOL} ${parseFloat(calculateTip()).toFixed(
+                      2
+                    )}`}
+                  </span>
+                </div>
+
+                <div className="flex justify-between mb-1 text-xs lg:text-[12px]">
+                  <span className="font-inter text-gray-900 leading-5">
+                    Tax
+                  </span>
+                  <span className="font-inter text-gray-900 leading-5">
+                    {CURRENCY_SYMBOL}
+                    {taxCalculation()}
+                  </span>
+                </div>
+
+                {/* <div className="flex justify-between mb-1 text-xs lg:text-[12px]">
                   <span className="font-inter text-gray-900 leading-5">
                     Service fee
                   </span>
                   <span className="font-inter text-gray-900 leading-5">
                     $0.40
                   </span>
-                </div>
+                </div> */}
 
                 <Divider />
 
@@ -321,7 +579,7 @@ export default function OrderCheckoutScreen() {
 
                 <div className="flex justify-between font-semibold mb-4 text-xs lg:text-[14px]">
                   <span>Total sum</span>
-                  <span>$7.00</span>
+                  <span>{`${CURRENCY_SYMBOL} ${calculateTotal()}`}</span>
                 </div>
 
                 <button className="bg-[#5AC12F] text-gray-900 w-full py-2 rounded-full text-xs lg:text-[12px]">
@@ -343,7 +601,7 @@ export default function OrderCheckoutScreen() {
                     className="bg-white p-2 rounded-lg shadow-md border border-gray-300 overflow-hidden"
                   >
                     <h2 className="text-base font-semibold text-left flex justify-between">
-                      Prices in USD
+                      Prices in {CURRENCY}
                       <InfoSvg />
                     </h2>
                     <p className="text-gray-300 mb-4 text-left  sm:leading-5 tracking-normal font-inter text-xs sm:text-sm md:text-sm align-middle ">
@@ -355,26 +613,50 @@ export default function OrderCheckoutScreen() {
                         Item subtotal
                       </span>
                       <span className="font-inter  text-gray-900 text-[14px] md:text-lg leading-6 md:leading-7">
-                        $6.00
+                        {CURRENCY_SYMBOL}
+                        {calculatePrice(0)}
                       </span>
                     </div>
 
                     <div className="flex justify-between mb-1 text-sm">
                       <span className="font-inter  text-gray-900 text-[14px] md:text-lg leading-6 md:leading-7">
-                        Delivery (0.316 km)
+                        Delivery ({distance} km)
                       </span>
                       <span className="font-inter  text-gray-900 text-[14px] md:text-lg leading-6 md:leading-7">
-                        $0.60
+                        {CURRENCY_SYMBOL}
+                        {deliveryCharges.toFixed()}
                       </span>
                     </div>
+
                     <div className="flex justify-between mb-1 text-sm">
+                      <span className="font-inter  text-gray-900 text-[14px] md:text-lg leading-6 md:leading-7">
+                        Tip
+                      </span>
+                      <span className="font-inter  text-gray-900 text-[14px] md:text-lg leading-6 md:leading-7">
+                        {`${CURRENCY_SYMBOL} ${parseFloat(
+                          calculateTip()
+                        ).toFixed(2)}`}
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between mb-1 text-sm">
+                      <span className="font-inter  text-gray-900 text-[14px] md:text-lg leading-6 md:leading-7">
+                        Tax
+                      </span>
+                      <span className="font-inter  text-gray-900 text-[14px] md:text-lg leading-6 md:leading-7">
+                        {CURRENCY_SYMBOL}
+                        {taxCalculation()}
+                      </span>
+                    </div>
+
+                    {/*  <div className="flex justify-between mb-1 text-sm">
                       <span className="font-inter  text-gray-900 text-[14px] md:text-lg leading-6 md:leading-7">
                         Service fee
                       </span>
                       <span className="font-inter  text-gray-900 text-[14px] md:text-lg leading-6 md:leading-7">
                         $0.40
                       </span>
-                    </div>
+                    </div> */}
 
                     <Divider />
 
@@ -394,7 +676,10 @@ export default function OrderCheckoutScreen() {
 
                     <div className="flex justify-between font-semibold mb-4 text-sm">
                       <span>Total sum</span>
-                      <span>$7.00</span>
+                      <span>
+                        {CURRENCY_SYMBOL}
+                        {calculateTotal()}
+                      </span>
                     </div>
                     <button className="bg-[#5AC12F] text-gray-900 w-full py-2 rounded-full text-sm">
                       Click to order
