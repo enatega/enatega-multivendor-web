@@ -140,7 +140,7 @@ export interface IOrderCardProps {
   className?: string;
   handleTrackOrderClicked?: (id: string | undefined) => void;
   handleReOrderClicked?: (id: string | undefined) => void;
-  handleRateOrderClicked?: (id: string | undefined, value: number) => void;
+  handleRateOrderClicked?: (id: string | undefined) => void;
 }
 
 export interface IOrderItemsProps {

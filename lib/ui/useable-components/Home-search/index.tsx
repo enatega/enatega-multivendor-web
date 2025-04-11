@@ -1,19 +1,18 @@
 import React, { useRef, useState, useEffect, useContext } from 'react';
 import { GoogleMapsContext } from '@/lib/context/global/google-maps.context';
-import { useLocation } from '@/lib/context/Location/Location.context';
+import { useLocationContext } from '@/lib/context/Location/Location.context';
 import useDebounce from '@/lib/hooks/useDebounce';
 import { useRouter } from 'next/navigation'; 
 
 const CitySearch: React.FC = () => {
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const { setLocation } = useLocation();
+  const { setLocation } = useLocationContext();
   const { isLoaded } = useContext(GoogleMapsContext);
   const router = useRouter(); 
 
   const [cityName, setCityName] = useState<string>('');
   const [suggestions, setSuggestions] = useState<google.maps.places.AutocompletePrediction[]>([]);
 
-  // Use the debounced cityName
   const debouncedCityName = useDebounce(cityName, 500);
 
   useEffect(() => {
@@ -24,8 +23,8 @@ const CitySearch: React.FC = () => {
     autocompleteService.getPlacePredictions(
       { input: debouncedCityName, types: ['(cities)'] },
       (
-        predictions: google.maps.places.AutocompletePrediction[] | null,
-        status: google.maps.places.PlacesServiceStatus
+        predictions,
+        status
       ) => {
         if (status === window.google.maps.places.PlacesServiceStatus.OK && predictions) {
           setSuggestions(predictions);
@@ -43,22 +42,20 @@ const CitySearch: React.FC = () => {
 
     service.getDetails(
       { placeId },
-      (
-        place: google.maps.places.PlaceResult | null,
-        status: google.maps.places.PlacesServiceStatus
-      ) => {
+      (place, status) => {
         if (status === window.google.maps.places.PlacesServiceStatus.OK && place?.geometry?.location) {
-          const lat = place.geometry.location.lat();
-          const lng = place.geometry.location.lng();
+          const latitude = place.geometry.location.lat();
+          const longitude = place.geometry.location.lng();
 
           setLocation({
-            name: description,
-            lat,
-            lng,
+            label: description,
+            latitude,
+            longitude,
+            deliveryAddress: `Delivery in ${description}`,
+            details: `Selected from Google search`,
           });
-          
-          router.push('/restaurants');
 
+          router.push('/restaurants');
           setCityName('');
           setSuggestions([]);
         }
@@ -83,10 +80,18 @@ const CitySearch: React.FC = () => {
         <ul className="absolute top-full left-0 right-0 z-10 bg-white border rounded-md shadow-md">
           {suggestions.map((suggestion) => (
             <div className='flex gap-2 p-2 items-center' key={suggestion.place_id}>
-              <i className="pi pi-map-marker" style={{ fontSize: '1.3rem', color: "black", backgroundColor: "#ededee", padding: "10px", borderRadius: "50%" }}></i>
+              <i
+                className="pi pi-map-marker"
+                style={{
+                  fontSize: '1.3rem',
+                  color: 'black',
+                  backgroundColor: '#ededee',
+                  padding: '10px',
+                  borderRadius: '50%',
+                }}
+              ></i>
               <div className='w-full'>
                 <li
-                  key={suggestion.place_id}
                   onClick={() => handleSelect(suggestion.place_id, suggestion.description)}
                   className="p-2 hover:text-red-300 cursor-pointer"
                 >

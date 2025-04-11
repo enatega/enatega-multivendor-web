@@ -21,25 +21,20 @@ const OrderCard: FC<IOrderCardProps> = ({ order, type, className,handleTrackOrde
 
   const handleTrackOrder = (order:IOrder) => {
     // Implement tracking functionality
-    console.log("Track order:", order._id);
     // The ?. (optional chaining) operator is used to safely call the function handleTrackOrderClicked only if it is defined.
     handleTrackOrderClicked?.(order?._id)
   };
 
   const handleReorder = useCallback((order: IOrder) => {
   // Implement reorder functionality
-  console.log("order id :", order?._id);
-
-  console.log("restaurant id :", order?.restaurant?._id);
   // pass restaurant id of that order
   handleReOrderClicked?.(order?.restaurant?._id)
   
 }, []);
 
-  const handleRateOrder = (value: number) => {
+  const handleRateOrder = () => {
     // Implement rating functionality
-    console.log("Rate order:", order._id, "with", value, "stars");
-    handleRateOrderClicked?.(order?._id, value)
+    handleRateOrderClicked?.(order?._id)
   };
 
   return (
@@ -130,7 +125,7 @@ const OrderCard: FC<IOrderCardProps> = ({ order, type, className,handleTrackOrde
             <Rating
               value={order.review?.rating || 0}
               cancel={false}
-              onChange={(e) => handleRateOrder(e.value || 0)}
+              onChange={handleRateOrder}
               pt={{
                 onIcon: { className: "text-yellow-400" },
               }}

@@ -29,7 +29,6 @@ const FavouriteProducts = () => {
   //Handlers
   // Handle See All Click
   const handleSeeAllClick = useDebounceFunction(() => {
-    console.log("See all clicked");
 
     // use route state to handle fetching all favourites Restaurants on that page
     router.push("/restaurants?q=favourites");
@@ -37,10 +36,8 @@ const FavouriteProducts = () => {
 
   // use debouncefunction if user click multiple times at once it will call function only 1 time
   const handleClickFavRestaurant = useDebounceFunction(
-    (FavRestaurantId: string | undefined) => {
-      console.log(FavRestaurantId, "fav restaurant id on main component of fav restaurant");
-      console.log("Navigating Restaurant Details screen");
-      router.push(`/restaurants/${FavRestaurantId}`);
+    (FavRestaurantId: string | undefined, shopType: string | undefined, slug: string | undefined) => {
+      router.push( `/${shopType === "restaurant" ? "restaurant" : "store"}/${slug}/${FavRestaurantId}`);
     },
     500 // Debounce time in milliseconds
   );

@@ -40,6 +40,9 @@ import {
 
 // Methods
 import { toSlug } from "@/lib/utils/methods";
+import ReviewsModal from "@/lib/ui/useable-components/reviews-modal";
+import InfoModal from "@/lib/ui/useable-components/info-modal";
+import ChatSvg from "@/lib/utils/assets/svg/chat";
 
 export default function StoreDetailsScreen() {
   // Access the UserContext via our custom hook
@@ -50,6 +53,8 @@ export default function StoreDetailsScreen() {
 
   // State
   const [showDialog, setShowDialog] = useState<IFood | null>(null);
+  const [showReviews, setShowReviews] = useState<boolean>(false);
+  const [showMoreInfo, setShowMoreInfo] = useState<boolean>(false);
   const [filter] = useState("");
   const [isScrolling, setIsScrolling] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -155,8 +160,8 @@ export default function StoreDetailsScreen() {
           const subCategoryGroups = subCats
             .map((subCat: ISubCategory) => {
               const foods = groupedFoods[subCat._id] || [];
-              return foods.length > 0 ?
-                  {
+              return foods.length > 0
+                ? {
                     _id: subCat._id,
                     title: subCat.title,
                     foods,
@@ -283,23 +288,61 @@ export default function StoreDetailsScreen() {
     openingTimes: data?.restaurant?.openingTimes ?? [],
   };
 
+  const restaurantInfoModalProps = {
+    _id: data?.restaurant._id ?? "",
+    name: data?.restaurant?.name ?? "...",
+    username: data?.restaurant?.username ?? "N/A",
+    phone: data?.restaurant?.phone ?? "N/A",
+    address: data?.restaurant?.address ?? "N/A",
+    location: data?.restaurant?.location ?? "N/A",
+    isAvailable: data?.restaurant?.isAvailable ?? true,
+    openingTimes: data?.restaurant?.openingTimes ?? [],
+    description:
+      data?.restaurant?.description ??
+      "Preservation of the authentic taste of all traditional foods is upheld here.",
+  };
+
+  // Handlers
+  // Function to handle the logic for seeing reviews
+  const handleSeeReviews = () => {
+    setShowReviews(true);
+  };
+
+  // Function to handle the logic for seeing more information
+  const handleSeeMoreInfo = () => {
+    setShowMoreInfo(true);
+  };
+
   return (
     <>
-  
+      {/* Reviews Modal  */}
+      <ReviewsModal
+        restaurantId={id}
+        visible={showReviews && !loading}
+        onHide={() => setShowReviews(false)}
+      />
+      {/* See More  Info Modal */}
+      <InfoModal
+        restaurantInfo={restaurantInfoModalProps}
+        // make sure data is not loading because if configuration data is not available it can cause error on google map due to unavailability of api key
+        visible={showMoreInfo && !loading}
+        onHide={() => setShowMoreInfo(false)}
+      />
       <div className="w-screen h-screen flex flex-col pb-20">
         <div className="scrollable-container flex-1 overflow-auto">
           {/* Banner */}
           <div className="relative">
-            {loading ?
+            {loading ? (
               <Skeleton width="100%" height="20rem" borderRadius="0" />
-            : <img
-                alt={`${restaurantInfo.name} banner`}
+            ) : (
+              <img
+                alt="McDonald's banner with a burger and fries"
                 className="w-full h-72 object-cover"
                 height="300"
                 src={restaurantInfo.image}
                 width="1200"
               />
-            }
+            )}
 
             {!loading && (
               <div className="absolute bottom-0 left-0 md:left-20 p-4">
@@ -338,29 +381,55 @@ export default function StoreDetailsScreen() {
                     {/* Time */}
                     <span className="flex items-center gap-2 text-gray-600 font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle">
                       <ClockSvg />
-                      {loading ?
+                      {loading ? (
                         <Skeleton width="2rem" height="1.5rem" />
-                      : headerData.deliveryTime}
+                      ) : (
+                        headerData.deliveryTime
+                      )}
                       mins
                     </span>
 
                     {/* Rating */}
                     <span className="flex items-center gap-2 text-gray-600 font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle">
                       <RatingSvg />
-                      {loading ?
+                      {loading ? (
                         <Skeleton width="2rem" height="1.5rem" />
-                      : headerData.averageReview}
+                      ) : (
+                        headerData.averageReview
+                      )}
                     </span>
 
                     {/* Info Link */}
                     <a
                       className="flex items-center gap-2 text-[#0EA5E9] font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle"
                       href="#"
+                      onClick={(e)=>{
+                        e.preventDefault();
+                        handleSeeMoreInfo();
+                      }}
                     >
                       <InfoSvg />
-                      {loading ?
+                      {loading ? (
                         <Skeleton width="10rem" height="1.5rem" />
-                      : "See more information"}
+                      ) : (
+                        "See more information"
+                      )}
+                    </a>
+                    {/* Review Link */}
+                    <a
+                      className="flex items-center gap-2 text-[#0EA5E9] font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle"
+                      href="#"
+                      onClick={(e)=> {
+                        e.preventDefault();
+                        handleSeeReviews();
+                      } }
+                    >
+                      <ChatSvg />
+                      {loading ? (
+                        <Skeleton width="10rem" height="1.5rem" />
+                      ) : (
+                        "See reviews"
+                      )}
                     </a>
                   </div>
                 </div>
@@ -438,16 +507,19 @@ export default function StoreDetailsScreen() {
 
           {/* Main Section */}
           <PaddingContainer>
-            {loading || categoriesSubCategoriesLoading || subcategoriesLoading ?
+            {loading ||
+            categoriesSubCategoriesLoading ||
+            subcategoriesLoading ? (
               <FoodCategorySkeleton />
-            : <div className="flex flex-col md:flex-row w-full">
+            ) : (
+              <div className="flex flex-col md:flex-row w-full">
                 <div className="hidden md:block md:w-1/5 p-3 h-screen z-10  sticky top-0 left-0">
                   <div className="h-full overflow-hidden group">
                     <div
                       className={`h-full overflow-y-auto transition-all duration-300 ${
-                        isScrolling ?
-                          "scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
-                        : "overflow-hidden"
+                        isScrolling
+                          ? "scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
+                          : "overflow-hidden"
                       }`}
                       onScroll={handleMouseEnterCategoryPanel}
                     >
@@ -540,7 +612,7 @@ export default function StoreDetailsScreen() {
                   ))}
                 </div>
               </div>
-            }
+            )}
           </PaddingContainer>
         </div>
       </div>

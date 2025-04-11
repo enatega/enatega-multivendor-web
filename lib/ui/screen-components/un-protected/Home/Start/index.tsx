@@ -1,62 +1,60 @@
-"use client"
+'use client'
 
 import React from 'react';
 import HomeSearch from '@/lib/ui/useable-components/Home-search';
 import styles from './Start.module.css';
-import { useLocation } from '@/lib/context/Location/Location.context';  // Import useLocation context
-import { useRouter } from 'next/navigation';  // Import useRouter for navigation
-import AnimatedText from '@/lib/ui/useable-components/FlyingText';
+import { useLocationContext } from '@/lib/context/Location/Location.context';
+import { useRouter } from 'next/navigation';
 import TextFlyingAnimation from '@/lib/ui/useable-components/FlyingText';
 
 const Start: React.FC = () => {
-  const { setLocation } = useLocation();  // Destructure setLocation to update location in context
-  const router = useRouter();  // Initialize useRouter for navigation
+  const { setLocation } = useLocationContext();
+  const router = useRouter();
 
   const handleShareLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        position => {
+        (position) => {
           const { latitude, longitude } = position.coords;
-          console.log("Latitude:", latitude, "Longitude:", longitude);
 
           setLocation({
-            name: "Current Location",  
-            lat: latitude,
-            lng: longitude,
+            label: "Current Location",
+            latitude,
+            longitude,
+            deliveryAddress: "Using current location",
           });
 
-          
-          router.push('/restaurants');  
+          router.push("/restaurants");
         },
-        error => {
-          console.error("Error getting location:", error.message);
+        (error) => {
+          console.error("Geolocation error:", error.message);
         }
       );
     } else {
       alert("Geolocation is not supported by your browser.");
     }
-  }
+  };
 
   return (
-    <div className={`h-screen bg-cover bg-center flex items-center justify-center bg-[#94e469]`}>
-      <div>
-    <div className='items-center flex flex-col justify-center text-center'>
-     <TextFlyingAnimation />
-     <h1 className='text-[40px] md:text-[90px] font-extrabold text-white'>DELIEVERED</h1>
-     </div>
+    <div className="h-screen bg-cover bg-center flex items-center justify-center bg-[#94e469]">
+      <div className="text-center flex flex-col items-center justify-center">
+        <TextFlyingAnimation />
+        <h1 className="text-[40px] md:text-[90px] font-extrabold text-white">
+          DELIVERED
+        </h1>
         <HomeSearch />
-        <div className='my-6 text-white items-center justify-center flex'>
-          <div className='flex items-center gap-2'>
-            <i className="pi pi-map-marker" style={{ fontSize: '1rem', color: "white" }}></i>
-            <button className='me-2 underline' onClick={handleShareLocation}>
+        <div className="my-6 text-white flex items-center justify-center">
+          <div className="flex items-center gap-2">
+            <i className="pi pi-map-marker" style={{ fontSize: '1rem', color: 'white' }}></i>
+            <button className="me-2 underline" onClick={handleShareLocation}>
               Share Location
             </button>
           </div>
-          <button className='underline'>Login for saved address</button>
+          <button className="underline">Login for saved address</button>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default Start;

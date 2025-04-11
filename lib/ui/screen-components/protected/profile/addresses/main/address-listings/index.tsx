@@ -31,7 +31,7 @@ const AddressItem: FC<IAddressItemProps> = ({
 
         {activeDropdown === address?._id && (
           <div className="absolute right-0 top-full mt-2 w-40 bg-white border rounded shadow-lg z-10">
-            <div className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => console.log("Editing:", address?._id)}>
+            <div className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
               Edit
             </div>
             <div className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-red-600" onClick={() => handleDelete(address?._id)}>

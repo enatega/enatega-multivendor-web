@@ -25,9 +25,8 @@ import { UserProvider } from "@/lib/context/User/User.context";
 // Layout
 import AppLayout from "@/lib/ui/layouts/global";
 import { FontawesomeConfig } from "@/lib/config";
-
-import { LocationProvider } from "@/lib/context/Location/Location.context";
 import { GoogleMapsProvider } from "@/lib/context/global/google-maps.context";
+import { LocationProvider } from "@/lib/context/Location/Location.context";
 
 export default function RootLayout({
   children,
@@ -54,11 +53,13 @@ export default function RootLayout({
             <ConfigurationProvider>
               <ToastProvider>
                 <AuthProvider>
-                <GoogleMapsProvider>
+                  <UserProvider>
+                  <GoogleMapsProvider>
                   <LocationProvider>
                   <AppLayout>{children}</AppLayout>
                   </LocationProvider>
                   </GoogleMapsProvider>
+                  </UserProvider>
                 </AuthProvider>
               </ToastProvider>
             </ConfigurationProvider>
