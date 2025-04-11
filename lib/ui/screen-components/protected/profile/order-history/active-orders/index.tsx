@@ -15,7 +15,6 @@ export default function ActiveOrders({activeOrders,isOrdersLoading}:IActiveOrder
     //Handlers
     // use debouncefunction if user click multiple times at once it will call function only 1 time
     const handleTrackOrderClicked = useDebounceFunction((orderId: string | undefined) => {
-      console.log("Navigating to:", orderId);
       router.push(`/orders/${orderId}`);
     }, 500);
 
