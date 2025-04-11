@@ -106,8 +106,6 @@ export const RECOMMENDATIONS: Recommendation[] = [
   },
 ];
 
-export const TIPS = ["2", "4", "6", "8", "Other"];
-
 export const SIDEBAR_CATEGORY = [
   {
     label: "Files",

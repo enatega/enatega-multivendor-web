@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 // GQL
 import { GET_CONFIG } from "@/lib/api/graphql/queries";
@@ -31,7 +31,7 @@ export const ConfigurationProvider = ({
   const GOOGLE_MAPS_KEY = configuration.googleApiKey;
   const AMPLITUDE_API_KEY = configuration.webAmplitudeApiKey;
   const LIBRARIES = "places,drawing,geometry,localContext,visualization".split(
-    ",",
+    ","
   );
   const COLORS = {
     GOOGLE: configuration.googleColor as string,
@@ -39,6 +39,10 @@ export const ConfigurationProvider = ({
   const SENTRY_DSN = configuration.webSentryUrl;
   const SKIP_EMAIL_VERIFICATION = configuration.skipEmailVerification;
   const SKIP_MOBILE_VERIFICATION = configuration.skipMobileVerification;
+  const CURRENCY = configuration.currency;
+  const CURRENCY_SYMBOL = configuration.currencySymbol;
+  const DELIVERY_RATE = configuration.deliveryRate;
+  const COST_TYPE = configuration.costType;
 
   return (
     <ConfigurationContext.Provider
@@ -53,6 +57,10 @@ export const ConfigurationProvider = ({
         SENTRY_DSN,
         SKIP_EMAIL_VERIFICATION,
         SKIP_MOBILE_VERIFICATION,
+        CURRENCY,
+        CURRENCY_SYMBOL,
+        DELIVERY_RATE,
+        COST_TYPE,
       }}
     >
       {children}
@@ -60,4 +68,4 @@ export const ConfigurationProvider = ({
   );
 };
 export const ConfigurationConsumer = ConfigurationContext.Consumer;
-export const useConfig = () => useContext(ConfigurationContext)
+export const useConfig = () => useContext(ConfigurationContext);
