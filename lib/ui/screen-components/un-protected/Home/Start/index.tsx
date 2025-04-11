@@ -38,8 +38,9 @@ const Start: React.FC = () => {
   return (
     <div className={`h-screen bg-cover bg-center flex items-center justify-center bg-[#94e469]`}>
       <div>
-        <div>
-          <h1 className={`font-extrabold text-[40px] text-white text my-6 md:text-[80px] ${styles.anim}`}>Burgers Delivered</h1>
+        <div className='flex flex-col items-center'>
+          <h1 className={`font-extrabold text-[50px] text-white  md:text-[70px] leading-10 ${styles.anim}`}>Burgers</h1>
+          <h1 className={`font-extrabold text-[50px] text-white   md:text-[70px]  ${styles.anim}`}>Delivered</h1>
         </div>
         <HomeSearch />
         <div className='my-6 text-white items-center justify-center flex'>

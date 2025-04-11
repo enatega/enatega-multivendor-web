@@ -31,7 +31,7 @@ const EnategaInfo: React.FC = () => {
           }
           heading={"0 € delivery fees with Enatega"}
           subText={
-            "Enjoy zero delivery fees from the best restaurants and stores  in your city."
+            "Enjoy zero delivery fees from the best restaurants and stores in your city."
           }
         />
       </div>
