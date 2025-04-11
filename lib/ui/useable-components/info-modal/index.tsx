@@ -217,16 +217,29 @@ const InfoModal = ({ visible, onHide, restaurantInfo }: IInfoModalProps) => {
              {/* Phone */}
              <div className=" flex justify-between text-xs md:text-[16px] font-normal leading-[16px] md:leading-[24px] mt-2">
              <h1 className="text-sm md:text-[16px] font-bold mb-2">Phone Number</h1>
-            <a href={`tel:${restaurantInfo?.phone}`} className="text-blue-500 hover:underline">
-              {restaurantInfo?.phone || 'N/A'}
-            </a>   
+            {
+              restaurantInfo?.phone !== "N/A" ? (
+                <a href={`tel:${restaurantInfo?.phone}`} className="text-blue-500 hover:underline">
+                  {restaurantInfo?.phone}
+                </a>
+              ) : (
+                <span className="text-gray-500">N/A</span>
+              )
+            }  
              </div>
              <hr />
              <div className=" flex justify-between text-xs md:text-[16px] font-normal mt-2">
              <h1 className="text-sm md:text-[16px] font-bold mb-2">Email</h1>
-             <a href={`mailto:${restaurantInfo?.username || "N/A"}`} className="text-blue-500 hover:underline">
-               {restaurantInfo?.username || 'N/A'}
-             </a>
+             {
+              restaurantInfo?.username !== "N/A" ? (
+                <a href={`mailto:${restaurantInfo?.username || "N/A"}`} className="text-blue-500 hover:underline">
+                {restaurantInfo?.username}
+              </a>
+              ) : (
+                <span className="text-gray-500">N/A</span>
+              )
+             }
+            
              </div>
             </div>
         </div>
