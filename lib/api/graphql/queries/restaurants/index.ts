@@ -220,4 +220,3 @@ export const GET_SUB_CATEGORIES = gql`
     }
   }
 `;
-
