@@ -370,7 +370,7 @@ export default function OrderCheckoutScreen() {
     return taxAmount;
   }
 
-  function calculateTip() {
+  /* function calculateTip() {
     if (selectedTip) {
       const _tip = parseFloat(selectedTip);
       let total = 0;
@@ -382,7 +382,7 @@ export default function OrderCheckoutScreen() {
     } else {
       return "0";
     }
-  }
+  } */
 
   function calculateTotal() {
     let total: number = 0;
