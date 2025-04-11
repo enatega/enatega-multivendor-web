@@ -28,5 +28,7 @@ export * from "./restaurants.interface";
 export * from "./icon-with-title.interface";
 export * from "./orders.interface";
 export * from "./profile.interface";
-export * from './cuisines.interface'
-export * from './cuisines-slider-card.interface'
+export * from "./cuisines.interface";
+export * from "./cuisines-slider-card.interface";
+export * from "./coupon.interface";
+export * from "./location.interface";

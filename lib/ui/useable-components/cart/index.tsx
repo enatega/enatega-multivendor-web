@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faMinus, faTrash } from "@fortawesome/free-solid-svg-icons";
 
@@ -16,13 +17,10 @@ interface CartProps {
 
 export default function Cart({ onClose }: CartProps) {
   // Access user context for cart functionality
-  const { 
-    cart, 
-    cartCount, 
-    updateItemQuantity,
-    calculateSubtotal 
-  } = useUser();
-  
+  const { cart, cartCount, updateItemQuantity, calculateSubtotal } = useUser();
+
+  const router = useRouter();
+
   // Format subtotal for display
   const formattedSubtotal = cartCount > 0 ? `$${calculateSubtotal()}` : "$0";
 
@@ -58,7 +56,7 @@ export default function Cart({ onClose }: CartProps) {
             Your order
           </h2>
           <span className="text-gray-500 text-sm">
-            {cartCount} {cartCount === 1 ? 'item' : 'items'}
+            {cartCount} {cartCount === 1 ? "item" : "items"}
           </span>
         </div>
       </div>
@@ -73,14 +71,14 @@ export default function Cart({ onClose }: CartProps) {
             {/* Content */}
             <div className="flex-1 min-w-0">
               <h3 className="font-inter font-semibold text-[14px] md:text-[16px] text-gray-700 leading-snug">
-                {item.foodTitle || item.title || 'Food Item'}
+                {item.foodTitle || item.title || "Food Item"}
               </h3>
-              
+
               {/* Variation */}
               <p className="font-inter font-normal text-[12px] md:text-[14px] text-gray-500 leading-snug">
                 {item.variationTitle && `${item.variationTitle}`}
               </p>
-              
+
               {/* Add-ons */}
               {item.addons && item.addons.length > 0 && (
                 <div className="mt-1">
@@ -89,27 +87,27 @@ export default function Cart({ onClose }: CartProps) {
                       <span key={addon._id}>
                         {addon.options.map((option, optIndex) => (
                           <span key={option._id}>
-                            {option.title || ''}
-                            {optIndex < addon.options.length - 1 && ', '}
+                            {option.title || ""}
+                            {optIndex < addon.options.length - 1 && ", "}
                           </span>
                         ))}
-                        {index < (item.addons?.length ?? 0) - 1 && ', '}
+                        {index < (item.addons?.length ?? 0) - 1 && ", "}
                       </span>
                     ))}
                   </p>
                 </div>
               )}
-              
+
               {/* Special Instructions */}
               {item.specialInstructions && (
                 <p className="text-xs italic text-gray-500 mt-1">
                   {item.specialInstructions}
                 </p>
               )}
-              
+
               {/* Price */}
               <p className="text-[#0EA5E9] font-semibold text-sm md:text-base mt-1">
-                ${(item.price || 0)}
+                ${item.price || 0}
               </p>
             </div>
 
@@ -120,17 +118,15 @@ export default function Cart({ onClose }: CartProps) {
                 className="bg-gray-200 text-gray-600 rounded-full w-6 h-6 flex items-center justify-center"
                 type="button"
               >
-                {item.quantity === 1 ? (
+                {item.quantity === 1 ?
                   <FontAwesomeIcon icon={faTrash} size="xs" />
-                ) : (
-                  <FontAwesomeIcon icon={faMinus} size="xs" />
-                )}
+                : <FontAwesomeIcon icon={faMinus} size="xs" />}
               </button>
-              
+
               <span className="text-gray-900 w-6 text-center">
                 {item.quantity}
               </span>
-              
+
               <button
                 onClick={() => updateItemQuantity(item.key, 1)}
                 className="bg-[#0EA5E9] text-white rounded-full w-6 h-6 flex items-center justify-center"
@@ -148,7 +144,7 @@ export default function Cart({ onClose }: CartProps) {
         <h2 className="font-inter font-semibold text-base md:text-lg text-gray-900 mb-3">
           Recommendations
         </h2>
-        
+
         <div className="flex space-x-4 overflow-x-auto pb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           {RECOMMENDATIONS.map((item) => (
             <div
@@ -188,11 +184,12 @@ export default function Cart({ onClose }: CartProps) {
 
       {/* Checkout Button */}
       <div className="p-4 border-t">
-        <button 
+        <button
           className="flex justify-between items-center w-full bg-[#5AC12F] text-black rounded-full px-4 py-3"
           onClick={() => {
             // Handle checkout logic here
-            alert("Proceeding to checkout!");
+            router.push("/order/checkout");
+
             if (onClose) onClose();
           }}
           type="button"

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import useDebounceFunction from "@/lib/hooks/useDebounceForFunction";
 import OrderCardSkeleton from "@/lib/ui/useable-components/custom-skeletons/order.card.skelton";
 import OrderCard from "@/lib/ui/useable-components/order-card";
@@ -32,11 +32,10 @@ export default function PastOrders({
   const { showToast } = useToast();
 
   //mutation
-  const [mutate, { loading: isloadingReviewOrder }] =
-    useMutation(REVIEWORDER, {
-      onCompleted,
-      onError,
-    });
+  const [mutate, { loading: isloadingReviewOrder }] = useMutation(REVIEWORDER, {
+    onCompleted,
+    onError,
+  });
 
   function onCompleted() {
     showToast({
@@ -84,7 +83,7 @@ export default function PastOrders({
     comment?: string,
     aspects?: string[]
   ) => {
-     // Temporarily console the aspects- 
+    // Temporarily console the aspects-
     console.log(aspects, "Temporarily consoling aspects");
 
     // Here you would  call an API to save the rating
@@ -123,11 +122,13 @@ export default function PastOrders({
     );
   }
 
-
   return (
     <>
       <div className="space-y-4 py-4">
-        <TextComponent text="Past Orders" className="text-2xl md:text-3xl xl:text-4xl font-semibold mb-6"/>
+        <TextComponent
+          text="Past Orders"
+          className="text-2xl md:text-3xl xl:text-4xl font-semibold mb-6"
+        />
         <div className="space-y-4">
           {pastOrders?.map((order: IOrder) => (
             <OrderCard
@@ -142,8 +143,8 @@ export default function PastOrders({
         </div>
       </div>
       {/* Rating Modal */}
-      {/* conditionally render the modal based on the loading state of mutation for better user experience */} 
-      {!isloadingReviewOrder && !(selectedOrder?.review?.rating) && (
+      {/* conditionally render the modal based on the loading state of mutation for better user experience */}
+      {!isloadingReviewOrder && !selectedOrder?.review?.rating && (
         <RatingModal
           visible={showRatingModal}
           onHide={() => setShowRatingModal(false)}

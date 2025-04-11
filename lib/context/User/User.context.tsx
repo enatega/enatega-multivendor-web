@@ -1,25 +1,45 @@
 "use client";
 
 import {
-    ApolloError,
+  ApolloError,
   gql,
   useApolloClient,
   useLazyQuery,
   useMutation,
 } from "@apollo/client";
-import React, { createContext, useEffect, useState, ReactNode, useCallback } from "react";
+import React, {
+  createContext,
+  useEffect,
+  useState,
+  ReactNode,
+  useCallback,
+} from "react";
 import { v4 } from "uuid";
 import { orderStatusChanged } from "@/lib/api/graphql/subscription";
-import { profile } from "@/lib/api/graphql";
+import { ORDERS, profile } from "@/lib/api/graphql";
 import { saveNotificationTokenWeb } from "@/lib/api/graphql/mutations";
-import { myOrders } from "@/lib/api/graphql";
-import { IAddon, ICategory, IFood, IOption, IOrder,IProfileResponse, IRestaurant, IVariation } from "@/lib/utils/interfaces";
+
+import {
+  IAddon,
+  ICategory,
+  IFood,
+  IOption,
+  IOrder,
+  IProfileResponse,
+  IRestaurant,
+  IVariation,
+} from "@/lib/utils/interfaces";
 
 // GraphQL Queries
-const PROFILE = gql`${profile}`;
-const ORDERS = gql`${myOrders}`;
-const SUBSCRIPTION_ORDERS = gql`${orderStatusChanged}`;
-const SAVE_NOTIFICATION_TOKEN_WEB = gql`${saveNotificationTokenWeb}`;
+const PROFILE = gql`
+  ${profile}
+`;
+const SUBSCRIPTION_ORDERS = gql`
+  ${orderStatusChanged}
+`;
+const SAVE_NOTIFICATION_TOKEN_WEB = gql`
+  ${saveNotificationTokenWeb}
+`;
 
 // Types
 export interface CartItem {
@@ -164,7 +184,7 @@ export interface UserContextType {
   removeItem: (key: string) => Promise<void>;
   calculateSubtotal: () => string;
   transformCartWithFoodInfo: (
-    cartItems: CartItem[], 
+    cartItems: CartItem[],
     foodsData: IRestaurant
   ) => CartItem[];
 }
@@ -175,15 +195,15 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const client = useApolloClient();
   const [token, setToken] = useState<string | null>(
-    typeof window !== 'undefined' ? localStorage.getItem("token") : null
+    typeof window !== "undefined" ? localStorage.getItem("token") : null
   );
   const [cart, setCart] = useState<CartItem[]>([]);
   const [restaurant, setRestaurant] = useState<string | null>(null);
-  
+
   const [saveNotificationToken] = useMutation(SAVE_NOTIFICATION_TOKEN_WEB, {
     onError,
   });
-  
+
   const [
     fetchProfile,
     {
@@ -194,7 +214,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
     },
   ] = useLazyQuery(PROFILE, {
     fetchPolicy: "network-only",
-    onCompleted : onProfileCompleted,
+    onCompleted: onProfileCompleted,
     onError,
   });
 
@@ -212,91 +232,97 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
   ] = useLazyQuery(ORDERS, {
     fetchPolicy: "network-only",
     onError,
-  })
+  });
 
   // Universal cart transformation function that can be used anywhere
-  const transformCartWithFoodInfo = useCallback((cartItems: CartItem[], foodsData: IRestaurant): CartItem[] => {
-    if (!foodsData || !cartItems.length) return cartItems;
-    
-    // Extract all foods from categories
-    const foods = foodsData.categories 
-      ? foodsData.categories.flatMap((c: ICategory) => c.foods) 
-      : [];
-    
-    // Get addons and options data
-    const { addons, options } = foodsData;
-    
-    if (!foods.length || !addons || !options) return cartItems;
-    
-    // Transform each cart item with display info
-    return cartItems.map(cartItem => {
-      // Find the food item
-      const foodItem = foods.find((food: IFood) => food._id === cartItem._id);
-      if (!foodItem) return cartItem;
-      
-      // Find the variation
-      const variationItem = foodItem.variations.find(
-        (v: IVariation) => v._id === cartItem.variation._id
-      );
-      if (!variationItem) return cartItem;
-      
-      // Create the full title
-      const foodTitle = foodItem.title;
-      const variationTitle = variationItem.title;
-      const title = `${foodTitle}(${variationTitle})`;
-      
-      // Calculate price
-      let totalPrice = variationItem.price;
-      
-      // Process addons and create optionTitles
-      let optionTitles: string[] = [];
-      
-      if (cartItem.addons && cartItem.addons.length > 0) {
-        cartItem.addons.forEach((addon) => {
-          const addonItem = addons.find((a: IAddon) => a._id === addon._id);
-          if (!addonItem) return;
-          
-          addon.options.forEach((opt) => {
-            const optionItem = options.find((o: IOption) => o._id === opt._id);
-            if (!optionItem) return;
-            
-            totalPrice += optionItem.price;
-            if (optionItem.title) {
-              optionTitles.push(optionItem.title);
-            }
+  const transformCartWithFoodInfo = useCallback(
+    (cartItems: CartItem[], foodsData: IRestaurant): CartItem[] => {
+      if (!foodsData || !cartItems.length) return cartItems;
+
+      // Extract all foods from categories
+      const foods =
+        foodsData.categories ?
+          foodsData.categories.flatMap((c: ICategory) => c.foods)
+        : [];
+
+      // Get addons and options data
+      const { addons, options } = foodsData;
+
+      if (!foods.length || !addons || !options) return cartItems;
+
+      // Transform each cart item with display info
+      return cartItems.map((cartItem) => {
+        // Find the food item
+        const foodItem = foods.find((food: IFood) => food._id === cartItem._id);
+        if (!foodItem) return cartItem;
+
+        // Find the variation
+        const variationItem = foodItem.variations.find(
+          (v: IVariation) => v._id === cartItem.variation._id
+        );
+        if (!variationItem) return cartItem;
+
+        // Create the full title
+        const foodTitle = foodItem.title;
+        const variationTitle = variationItem.title;
+        const title = `${foodTitle}(${variationTitle})`;
+
+        // Calculate price
+        let totalPrice = variationItem.price;
+
+        // Process addons and create optionTitles
+        let optionTitles: string[] = [];
+
+        if (cartItem.addons && cartItem.addons.length > 0) {
+          cartItem.addons.forEach((addon) => {
+            const addonItem = addons.find((a: IAddon) => a._id === addon._id);
+            if (!addonItem) return;
+
+            addon.options.forEach((opt) => {
+              const optionItem = options.find(
+                (o: IOption) => o._id === opt._id
+              );
+              if (!optionItem) return;
+
+              totalPrice += optionItem.price;
+              if (optionItem.title) {
+                optionTitles.push(optionItem.title);
+              }
+            });
           });
-        });
-      }
-      
-      return {
-        ...cartItem,
-        foodTitle,
-        variationTitle,
-        title,
-        optionTitles,
-        price: totalPrice.toFixed(2)
-      };
-    });
-  }, []);
-  
+        }
+
+        return {
+          ...cartItem,
+          foodTitle,
+          variationTitle,
+          title,
+          optionTitles,
+          price: totalPrice.toFixed(2),
+        };
+      });
+    },
+    []
+  );
+
   // Define setCartRestaurant before it's used in dependencies
   const setCartRestaurant = useCallback(async (id: string) => {
     setRestaurant(id);
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       localStorage.setItem("restaurant", id);
     }
   }, []);
 
   // Initialize from local storage
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const storedRestaurant = localStorage.getItem("restaurant");
       const storedCart = localStorage.getItem("cartItems");
-      
+
       if (storedRestaurant) {
         setRestaurant(storedRestaurant);
       }
-      
+
       if (storedCart) {
         try {
           setCart(JSON.parse(storedCart));
@@ -306,7 +332,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
         }
       }
     }
-    
+
     setIsLoading(false);
   }, []);
 
@@ -316,16 +342,16 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
       setIsLoading(false);
       return;
     }
-    
+
     let isSubscribed = true;
-    
+
     (async () => {
       isSubscribed && setIsLoading(true);
       isSubscribed && (await fetchProfile());
       isSubscribed && (await fetchOrders());
       isSubscribed && setIsLoading(false);
     })();
-    
+
     return () => {
       isSubscribed = false;
     };
@@ -337,7 +363,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
     subscribeOrders();
   }, [dataProfile]);
 
-  function onProfileCompleted(data : IProfileResponse) {
+  function onProfileCompleted(data: IProfileResponse) {
     if (data.profile) {
       updateNotificationToken();
     }
@@ -349,7 +375,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
 
   const setTokenAsync = async (tokenReq: string, cb: () => void = () => {}) => {
     setToken(tokenReq);
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       localStorage.setItem("token", tokenReq);
     }
     cb();
@@ -357,7 +383,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
 
   const logout = async () => {
     try {
-      if (typeof window !== 'undefined') {
+      if (typeof window !== "undefined") {
         localStorage.removeItem("token");
       }
       setToken(null);
@@ -369,25 +395,31 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
 
   const subscribeOrders = useCallback(() => {
     if (!subscribeToMoreOrders || !dataProfile?.profile?._id) return;
-    
+
     try {
       const unsubscribeOrders = subscribeToMoreOrders({
         document: SUBSCRIPTION_ORDERS,
         variables: { userId: dataProfile.profile._id },
         updateQuery: (prev, { subscriptionData }) => {
           if (!subscriptionData.data) return prev;
-          const { _id } = subscriptionData.data.orderStatusChanged.order as IOrder;
+          const { _id } = subscriptionData.data.orderStatusChanged
+            .order as IOrder;
           if (subscriptionData.data.orderStatusChanged.origin === "new") {
-            if ((prev?.orders as IOrder[] || [] as IOrder[])?.findIndex((o: IOrder) => o._id === _id) > -1) return prev;
+            if (
+              ((prev?.orders as IOrder[]) || ([] as IOrder[]))?.findIndex(
+                (o: IOrder) => o._id === _id
+              ) > -1
+            )
+              return prev;
             return {
               orders: [
                 subscriptionData.data.orderStatusChanged.order,
-                ...(prev.orders||[] as IOrder[]),
+                ...(prev.orders || ([] as IOrder[])),
               ],
             };
           } else {
             const { orders } = prev;
-            let newList = [...(orders as IOrder[] || [] as IOrder[])];
+            let newList = [...((orders as IOrder[]) || ([] as IOrder[]))];
             const orderIndex = newList.findIndex((o: IOrder) => o._id === _id);
             if (orderIndex > -1) {
               newList[orderIndex] =
@@ -399,16 +431,16 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
           }
         },
       });
-      
+
       // Convert the function to return a Promise to satisfy TypeScript
       const unsubscribeAsPromise = () => {
         unsubscribeOrders();
         return Promise.resolve();
       };
-      
+
       client.onResetStore(unsubscribeAsPromise);
-    } catch (error: unknown ) {
-        const err = error as ApolloError
+    } catch (error: unknown) {
+      const err = error as ApolloError;
       console.log("error subscribing order", err.message);
     }
   }, [client, dataProfile, subscribeToMoreOrders]);
@@ -434,41 +466,41 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
   const clearCart = useCallback(() => {
     setCart([]);
     setRestaurant(null);
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       localStorage.removeItem("cartItems");
       localStorage.removeItem("restaurant");
     }
   }, []);
 
   const addQuantity = useCallback(async (key: string, quantity: number = 1) => {
-    setCart(prevCart => {
+    setCart((prevCart) => {
       const updatedCart = [...prevCart];
       const cartIndex = updatedCart.findIndex((c) => c.key === key);
-      
+
       if (cartIndex !== -1) {
         updatedCart[cartIndex].quantity += quantity;
-        
+
         // Save to local storage
-        if (typeof window !== 'undefined') {
+        if (typeof window !== "undefined") {
           localStorage.setItem("cartItems", JSON.stringify(updatedCart));
         }
       }
-      
+
       return updatedCart;
     });
   }, []);
 
   const deleteItem = useCallback(async (key: string) => {
-    setCart(prevCart => {
+    setCart((prevCart) => {
       const updatedCart = [...prevCart];
       const cartIndex = updatedCart.findIndex((c) => c.key === key);
-      
+
       if (cartIndex > -1) {
         updatedCart.splice(cartIndex, 1);
         const items = updatedCart.filter((c) => c.quantity > 0);
-        
+
         // Update localStorage
-        if (typeof window !== 'undefined') {
+        if (typeof window !== "undefined") {
           if (items.length === 0) {
             localStorage.removeItem("cartItems");
             localStorage.removeItem("restaurant");
@@ -477,26 +509,26 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
             localStorage.setItem("cartItems", JSON.stringify(items));
           }
         }
-        
+
         return items;
       }
-      
+
       return updatedCart;
     });
   }, []);
 
   const removeQuantity = useCallback(async (key: string) => {
-    setCart(prevCart => {
+    setCart((prevCart) => {
       const updatedCart = [...prevCart];
       const cartIndex = updatedCart.findIndex((c) => c.key === key);
-      
+
       if (cartIndex === -1) return prevCart;
-      
+
       updatedCart[cartIndex].quantity -= 1;
       const items = updatedCart.filter((c) => c.quantity > 0);
-      
+
       // Update localStorage
-      if (typeof window !== 'undefined') {
+      if (typeof window !== "undefined") {
         if (items.length === 0) {
           localStorage.removeItem("cartItems");
           localStorage.removeItem("restaurant");
@@ -505,96 +537,103 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
           localStorage.setItem("cartItems", JSON.stringify(items));
         }
       }
-      
+
       return items;
     });
   }, []);
 
-  const checkItemCart = useCallback((itemId: string) => {
-    const cartIndex = cart.findIndex((c) => c._id === itemId);
-    if (cartIndex < 0) {
-      return {
-        exist: false,
-        quantity: 0,
-      };
-    } else {
-      return {
-        exist: true,
-        quantity: cart[cartIndex].quantity,
-        key: cart[cartIndex].key,
-      };
-    }
-  }, [cart]);
+  const checkItemCart = useCallback(
+    (itemId: string) => {
+      const cartIndex = cart.findIndex((c) => c._id === itemId);
+      if (cartIndex < 0) {
+        return {
+          exist: false,
+          quantity: 0,
+        };
+      } else {
+        return {
+          exist: true,
+          quantity: cart[cartIndex].quantity,
+          key: cart[cartIndex].key,
+        };
+      }
+    },
+    [cart]
+  );
 
   const numberOfCartItems = useCallback(() => {
-    return cart
-      .map((c) => c.quantity)
-      .reduce((a, b) => a + b, 0);
+    return cart.map((c) => c.quantity).reduce((a, b) => a + b, 0);
   }, [cart]);
 
   // Enhanced method that replaces the old addCartItem - uses setCartRestaurant which is defined above
-  const addItem = useCallback(async (
-    foodId: string,
-    variationId: string,
-    restaurantId: string,
-    quantity: number = 1,
-    addons: Array<{
-      _id: string;
-      options: Array<{
+  const addItem = useCallback(
+    async (
+      foodId: string,
+      variationId: string,
+      restaurantId: string,
+      quantity: number = 1,
+      addons: Array<{
         _id: string;
-      }>;
-    }> = [],
-    specialInstructions: string = ""
-  ) => {
-    // Check if we need to clear the cart (different restaurant)
-    const needsClear = Boolean(restaurantId && restaurant !== restaurantId);
-    
-    // Create new cart item
-    const newItem: CartItem = {
-      key: v4(),
-      _id: foodId,
-      quantity,
-      variation: {
-        _id: variationId,
-      },
-      addons,
-      specialInstructions,
-    };
-    
-    // Set restaurant first
-    await setCartRestaurant(restaurantId);
-    
-    // Update cart
-    setCart(prevCart => {
-      // Use empty array if needsClear is true, otherwise use current cart
-      const cartItems = needsClear ? [] : [...prevCart];
-      
-      // Add the new item
-      const updatedCart = [...cartItems, newItem];
-      
-      // Save to localStorage
-      if (typeof window !== 'undefined') {
+        options: Array<{
+          _id: string;
+        }>;
+      }> = [],
+      specialInstructions: string = ""
+    ) => {
+      // Check if we need to clear the cart (different restaurant)
+      const needsClear = Boolean(restaurantId && restaurant !== restaurantId);
+
+      // Create new cart item
+      const newItem: CartItem = {
+        key: v4(),
+        _id: foodId,
+        quantity,
+        variation: {
+          _id: variationId,
+        },
+        addons,
+        specialInstructions,
+      };
+
+      // Set restaurant first
+      await setCartRestaurant(restaurantId);
+
+      // Update cart
+      setCart((prevCart) => {
+        // Use empty array if needsClear is true, otherwise use current cart
+        const cartItems = needsClear ? [] : [...prevCart];
+
+        // Add the new item
+        const updatedCart = [...cartItems, newItem];
+
+        // Save to localStorage
+        if (typeof window !== "undefined") {
+          localStorage.setItem("cartItems", JSON.stringify(updatedCart));
+        }
+
+        return updatedCart;
+      });
+    },
+    [restaurant, setCartRestaurant]
+  );
+
+  const updateCart = useCallback(
+    async (updatedCart: CartItem[]) => {
+      // Skip update if cart is empty or unchanged (prevents infinite loop)
+      if (JSON.stringify(cart) === JSON.stringify(updatedCart)) {
+        return;
+      }
+
+      setCart(updatedCart);
+      if (typeof window !== "undefined") {
         localStorage.setItem("cartItems", JSON.stringify(updatedCart));
       }
-      
-      return updatedCart;
-    });
-  }, [restaurant, setCartRestaurant]);
-
-  const updateCart = useCallback(async (updatedCart: CartItem[]) => {
-    // Skip update if cart is empty or unchanged (prevents infinite loop)
-    if (JSON.stringify(cart) === JSON.stringify(updatedCart)) {
-      return;
-    }
-    
-    setCart(updatedCart);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem("cartItems", JSON.stringify(updatedCart));
-    }
-  }, [cart]);
+    },
+    [cart]
+  );
 
   const updateNotificationToken = useCallback(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const token = localStorage.getItem("messaging-token");
       if (token) {
         saveNotificationToken({ variables: { token } });
@@ -603,29 +642,37 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
   }, [saveNotificationToken]);
 
   // Enhanced methods for the useUser hook
-  const updateItemQuantity = useCallback(async (key: string, changeAmount: number) => {
-    if (changeAmount > 0) {
-      await addQuantity(key, changeAmount);
-    } else if (changeAmount < 0) {
-      const absChange = Math.abs(changeAmount);
-      const item = cart.find(item => item.key === key);
-      
-      if (item && item.quantity <= absChange) {
-        await deleteItem(key);
-      } else {
-        await removeQuantity(key);
-      }
-    }
-  }, [addQuantity, cart, deleteItem, removeQuantity]);
+  const updateItemQuantity = useCallback(
+    async (key: string, changeAmount: number) => {
+      if (changeAmount > 0) {
+        await addQuantity(key, changeAmount);
+      } else if (changeAmount < 0) {
+        const absChange = Math.abs(changeAmount);
+        const item = cart.find((item) => item.key === key);
 
-  const removeItem = useCallback(async (key: string) => {
-    await deleteItem(key);
-  }, [deleteItem]);
+        if (item && item.quantity <= absChange) {
+          await deleteItem(key);
+        } else {
+          await removeQuantity(key);
+        }
+      }
+    },
+    [addQuantity, cart, deleteItem, removeQuantity]
+  );
+
+  const removeItem = useCallback(
+    async (key: string) => {
+      await deleteItem(key);
+    },
+    [deleteItem]
+  );
 
   const calculateSubtotal = useCallback(() => {
-    return cart.reduce((total, item) => {
-      return total + (parseFloat(item.price as string) || 0) * item.quantity;
-    }, 0).toFixed(2);
+    return cart
+      .reduce((total, item) => {
+        return total + (parseFloat(item.price as string) || 0) * item.quantity;
+      }, 0)
+      .toFixed(2);
   }, [cart]);
 
   return (
