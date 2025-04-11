@@ -47,6 +47,7 @@ import { ORDERS } from "@/lib/api/graphql";
 import { CartItem } from "@/lib/context/User/User.context";
 import { DAYS } from "@/lib/utils/constants/orders";
 import useToast from "@/lib/hooks/useToast";
+import { Message } from "primereact/message";
 
 export default function OrderCheckoutScreen() {
   const [isOpen, setIsOpen] = useState(false);
@@ -652,27 +653,36 @@ export default function OrderCheckoutScreen() {
                 <h2 className="font-semibold text-gray-900 mb-2 text-base sm:text-lg md:text-[16px] lg:text-[18px]">
                   Promo code
                 </h2>
-                <p className="text-gray-500 mb-4 leading-5 sm:leading-5 tracking-normal font-inter text-xs sm:text-sm md:text-sm align-middle mt-2">
-                  If you have a promo code enter it below to claim your benefit!
-                </p>
-                <div className="flex items-center flex-wrap space-x-2">
-                  <input
-                    className="flex-grow p-2 border border-gray-300 rounded text-[12px] md:text-[14px]"
-                    placeholder="Enter promo code..."
-                    type="text"
-                    value={couponText}
-                    onChange={(e) => setCouponText(e.target.value)}
-                    disabled={couponLoading}
+                {!isCouponApplied ?
+                  <Message
+                    severity="success"
+                    text="Coupon has been applied successfully"
                   />
-                  <button
-                    className="bg-[#5AC12F] h-10 px-8 space-x-2 font-medium text-gray-900  tracking-normal font-inter text-sm sm:text-base md:text-[12px] lg:text-[14px] rounded-full"
-                    onClick={onApplyCoupon}
-                  >
-                    {couponLoading ?
-                      <FontAwesomeIcon icon={faSpinner} spin />
-                    : <span>Submit</span>}
-                  </button>
-                </div>
+                : <>
+                    <p className="text-gray-500 mb-4 leading-5 sm:leading-5 tracking-normal font-inter text-xs sm:text-sm md:text-sm align-middle mt-2">
+                      If you have a promo code enter it below to claim your
+                      benefit!
+                    </p>
+                    <div className="flex items-center flex-wrap space-x-2">
+                      <input
+                        className="flex-grow p-2 border border-gray-300 rounded text-[12px] md:text-[14px]"
+                        placeholder="Enter promo code..."
+                        type="text"
+                        value={couponText}
+                        onChange={(e) => setCouponText(e.target.value)}
+                        disabled={couponLoading}
+                      />
+                      <button
+                        className="bg-[#5AC12F] h-10 px-8 space-x-2 font-medium text-gray-900  tracking-normal font-inter text-sm sm:text-base md:text-[12px] lg:text-[14px] rounded-full"
+                        onClick={onApplyCoupon}
+                      >
+                        {couponLoading ?
+                          <FontAwesomeIcon icon={faSpinner} spin />
+                        : <span>Submit</span>}
+                      </button>
+                    </div>
+                  </>
+                }
               </div>
             </div>
 
