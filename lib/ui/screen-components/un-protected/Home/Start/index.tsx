@@ -5,6 +5,8 @@ import HomeSearch from '@/lib/ui/useable-components/Home-search';
 import styles from './Start.module.css';
 import { useLocation } from '@/lib/context/Location/Location.context';  // Import useLocation context
 import { useRouter } from 'next/navigation';  // Import useRouter for navigation
+import AnimatedText from '@/lib/ui/useable-components/FlyingText';
+import TextFlyingAnimation from '@/lib/ui/useable-components/FlyingText';
 
 const Start: React.FC = () => {
   const { setLocation } = useLocation();  // Destructure setLocation to update location in context
@@ -38,10 +40,10 @@ const Start: React.FC = () => {
   return (
     <div className={`h-screen bg-cover bg-center flex items-center justify-center bg-[#94e469]`}>
       <div>
-        <div className='flex flex-col items-center'>
-          <h1 className={`font-extrabold text-[50px] text-white  md:text-[70px] leading-10 ${styles.anim}`}>Burgers</h1>
-          <h1 className={`font-extrabold text-[50px] text-white   md:text-[70px]  ${styles.anim}`}>Delivered</h1>
-        </div>
+    <div className='items-center flex flex-col justify-center text-center'>
+     <TextFlyingAnimation />
+     <h1 className='text-[40px] md:text-[90px] font-extrabold text-white'>DELIEVERED</h1>
+     </div>
         <HomeSearch />
         <div className='my-6 text-white items-center justify-center flex'>
           <div className='flex items-center gap-2'>

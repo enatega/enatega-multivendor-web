@@ -55,7 +55,7 @@ export default function RestaurantDetailsScreen() {
         updateCart(transformedCart);
       }
     }
-  }, [data?.restaurant, cart.length]); // Only re-run when restaurant data or cart length changes
+  }, [data?.restaurant, cart?.length]); // Only re-run when restaurant data or cart length changes
 
   // Filter food categories based on search term
   const allDeals = data?.restaurant?.categories?.filter(

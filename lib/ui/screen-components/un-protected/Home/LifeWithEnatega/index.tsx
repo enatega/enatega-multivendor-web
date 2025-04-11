@@ -5,9 +5,8 @@ import React from "react";
 const EnategaInfo: React.FC = () => {
   return (
     <div className="mt-[40px] mb-[40px]">
-      <div className="flex flex-col justify-center items-center">
-        <h1 className="text-[60px] font-extrabold m-4">
-          {" "}
+      <div className="flex flex-col justify-center items-center my-[20px]">
+        <h1 className="text-[40px] md:[text-60px] font-extrabold m-4">
           LIFE TASTES BETTER WITH ENATEGA
         </h1>
         <p className="m-4 text-[28px]">
