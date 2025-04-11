@@ -192,7 +192,7 @@ const InfoModal = ({ visible, onHide, restaurantInfo }: IInfoModalProps) => {
           </div>
 
           {/* Delivery Information Section - Shows delivery hours by day */}
-          <div>
+          <div className="mb-6">
             <h2 className="text-lg md:text-xl font-bold mb-2">
               Delivery information
             </h2>
@@ -208,6 +208,27 @@ const InfoModal = ({ visible, onHide, restaurantInfo }: IInfoModalProps) => {
               ))}
             </div>
           </div>
+          {/* Restaurant Contact Details */}
+            <div>
+            <h2 className="text-lg md:text-xl font-bold mb-2">
+              Contact
+            </h2>
+            <p className="text-gray-500 text-xs md:text-[16px] font-normal leading-[16px] md:leading-[24px]">If you have allergies or other dietary restrictions, please contact the restaurant. The restaurant will provide food-specific information upon request.</p>
+             {/* Phone */}
+             <div className=" flex justify-between text-xs md:text-[16px] font-normal leading-[16px] md:leading-[24px] mt-2">
+             <h1 className="text-sm md:text-[16px] font-bold mb-2">Phone Number</h1>
+            <a href={`tel:${restaurantInfo?.phone}`} className="text-blue-500 hover:underline">
+              {restaurantInfo?.phone || 'N/A'}
+            </a>   
+             </div>
+             <hr />
+             <div className=" flex justify-between text-xs md:text-[16px] font-normal mt-2">
+             <h1 className="text-sm md:text-[16px] font-bold mb-2">Email</h1>
+             <a href={`mailto:${restaurantInfo?.username || "N/A"}`} className="text-blue-500 hover:underline">
+               {restaurantInfo?.username || 'N/A'}
+             </a>
+             </div>
+            </div>
         </div>
       </div>
     </CustomDialog>

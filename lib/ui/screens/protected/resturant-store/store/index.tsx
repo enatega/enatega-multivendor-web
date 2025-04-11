@@ -291,8 +291,10 @@ export default function StoreDetailsScreen() {
   const restaurantInfoModalProps = {
     _id: data?.restaurant._id ?? "",
     name: data?.restaurant?.name ?? "...",
-    address: data?.restaurant?.address ?? "",
-    location: data?.restaurant?.location ?? "",
+    username: data?.restaurant?.username ?? "N/A",
+    phone: data?.restaurant?.phone ?? "N/A",
+    address: data?.restaurant?.address ?? "N/A",
+    location: data?.restaurant?.location ?? "N/A",
     isAvailable: data?.restaurant?.isAvailable ?? true,
     openingTimes: data?.restaurant?.openingTimes ?? [],
     description:

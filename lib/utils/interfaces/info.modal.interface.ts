@@ -18,6 +18,8 @@ export interface IOpeningTime {
 export interface IRestaurantInfo {
   _id: string;
   name?: string;
+  username?: string;
+  phone?: string;
   address?: string;
   location?: ICoordinates;
   isAvailable?: boolean;
