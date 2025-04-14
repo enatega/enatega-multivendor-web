@@ -1,4 +1,4 @@
-import { OrderItem, Recommendation } from "../interfaces";
+import { IUserAddress, OrderItem, Recommendation } from "../interfaces";
 
 export const DUMMY_BANNER_IMAGES_URL = [
   {
@@ -254,5 +254,43 @@ export const SIDEBAR_CATEGORY = [
   {
     label: "Logout",
     // icon: "pi pi-sign-out",
+  },
+];
+
+export const USER_ADDRESSES: IUserAddress[] = [
+  {
+    _id: "1",
+    label: "Home",
+    deliveryAddress: "123 Main Street, Springfield",
+    details: "Leave at the front door",
+    selected: true,
+  },
+  {
+    _id: "2",
+    label: "Work",
+    deliveryAddress: "456 Corporate Blvd, Metropolis",
+    details: "Deliver to reception",
+    selected: false,
+  },
+  {
+    _id: "3",
+    label: "Gym",
+    deliveryAddress: "789 Fitness Ave, Gotham City",
+    details: "Back entrance near the parking lot",
+    selected: false,
+  },
+  {
+    _id: "4",
+    label: "Parent's House",
+    deliveryAddress: "321 Cozy Lane, Smallville",
+    details: "Ring the bell twice",
+    selected: false,
+  },
+  {
+    _id: "4",
+    label: "Friend's Place",
+    deliveryAddress: "654 Sunset Blvd, Star City",
+    details: "Call upon arrival",
+    selected: false,
   },
 ];

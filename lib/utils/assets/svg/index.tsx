@@ -1,4 +1,7 @@
 export { default as HomeSvg } from "./home";
+export { default as OfficeSvg } from "./office";
+export { default as ApartmentSvg } from "./apartment";
+export { default as OtherSvg } from "./other";
 export { default as CutlerySvg } from "./cutlery";
 export { default as StoreSvg } from "./store";
 export { default as HeartSvg } from "./heart";
