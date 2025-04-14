@@ -760,7 +760,7 @@ export default function OrderCheckoutScreen() {
                 <h2 className="font-semibold text-gray-900 mb-2 text-base sm:text-lg md:text-[16px] lg:text-[18px]">
                   Promo code
                 </h2>
-                {!isCouponApplied ?
+                {isCouponApplied ?
                   <Message
                     severity="success"
                     text="Coupon has been applied successfully"
