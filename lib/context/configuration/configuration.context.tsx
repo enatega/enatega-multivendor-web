@@ -56,7 +56,6 @@ export const ConfigurationProvider = ({
         SENTRY_DSN,
         SKIP_EMAIL_VERIFICATION,
         SKIP_MOBILE_VERIFICATION,
-        GOOGLE_PLACES_API_BASE_URL,
         CURRENCY,
         CURRENCY_SYMBOL,
         DELIVERY_RATE,
