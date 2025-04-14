@@ -1,4 +1,7 @@
 export { default as HomeSvg } from "./home";
+export { default as OfficeSvg } from "./office";
+export { default as ApartmentSvg } from "./apartment";
+export { default as OtherSvg } from "./other";
 export { default as CutlerySvg } from "./cutlery";
 export { default as StoreSvg } from "./store";
 export { default as HeartSvg } from "./heart";
@@ -8,6 +11,7 @@ export { default as ClockSvg } from "./clock";
 export { default as CircleCrossSvg } from "./circle-cross";
 export { default as MenuSvg } from "./menu";
 export { default as CartSvg } from "./cart";
-export { default as CycleSvg } from './cycle';
-export { default as FaceSvg } from './face';
-export {default as LaptopSvg} from './laptop';
+export { default as CycleSvg } from "./cycle";
+export { default as FaceSvg } from "./face";
+export { default as LaptopSvg } from "./laptop";
+export { default as LocationSvg } from "./location";

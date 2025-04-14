@@ -138,3 +138,15 @@ export interface IUpdateUserResponse {
   addresses: IAddress[]; // assuming `addressSchema` maps to an Address interface
   favourite: string[];
 }
+export interface Point {
+  coordinates: [string];
+}
+
+export interface IUserAddress {
+  _id: string;
+  location?: Point; // optional if it can be null
+  deliveryAddress: string;
+  details?: string;
+  label: string;
+  selected?: boolean;
+}

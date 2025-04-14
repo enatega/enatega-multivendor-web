@@ -13,18 +13,21 @@ import Cart from "@/lib/ui/useable-components/cart";
 import useUser from "@/lib/hooks/useUser";
 
 // Icons
-import { CartSvg } from "@/lib/utils/assets/svg";
+import { CartSvg, LocationSvg } from "@/lib/utils/assets/svg";
 
 // Interface
 import { IAppBarProps } from "@/lib/utils/interfaces/auth.interface";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
+import UserAddressComponent from "@/lib/ui/useable-components/address";
 
 const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
   // State for cart sidebar
   const [isCartOpen, setIsCartOpen] = useState(false);
-  
+
   // Access user context for cart information
   const { cartCount, calculateSubtotal } = useUser();
-  
+
   // Format subtotal for display
   const formattedSubtotal = cartCount > 0 ? `$${calculateSubtotal()}` : "$0";
 
@@ -34,13 +37,24 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
         <div className="w-full">
           <PaddingContainer>
             <div className="flex flex-row items-center justify-between w-full h-16">
-              <Link href="/" className="text-xl font-bold text-gray-900">
-                Enatega
-              </Link>
+              <div className="flex gap-x-2 items-center">
+                <Link href="/" className="text-xl font-bold text-gray-900">
+                  Enatega
+                </Link>
+                <div className="flex items-center">
+                  <div className="p-[4px] m-2 bg-gray-50 rounded-full">
+                    <LocationSvg />
+                  </div>
+                  <span className="text-gray-900 font-inter font-normal text-base leading-6 tracking-normal mr-2">
+                    SOME ADDRESS
+                  </span>
+                  <FontAwesomeIcon icon={faChevronDown} />
+                </div>
+              </div>
               <div className="flex justify-end items-center space-x-4">
                 {/* Login Button */}
                 {handleModalToggle && (
-                  <button 
+                  <button
                     onClick={handleModalToggle}
                     className="text-gray-700 hover:text-gray-900"
                   >
@@ -72,7 +86,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
 
                   {/* Cart icon with badge for small screens or empty cart */}
                   <div
-                    className={`${cartCount > 0 ? 'sm:hidden' : ''} flex items-center justify-center rounded-full w-10 h-10 bg-gray-100 relative`}
+                    className={`${cartCount > 0 ? "sm:hidden" : ""} flex items-center justify-center rounded-full w-10 h-10 bg-gray-100 relative`}
                     onClick={() => setIsCartOpen(true)}
                   >
                     <CartSvg color="black" width={24} height={24} />
@@ -99,6 +113,8 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
       >
         <Cart onClose={() => setIsCartOpen(false)} />
       </Sidebar>
+
+      <UserAddressComponent />
     </>
   );
 };

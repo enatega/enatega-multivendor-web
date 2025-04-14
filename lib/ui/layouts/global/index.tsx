@@ -9,6 +9,7 @@ import { IProvider } from "@/lib/utils/interfaces";
 
 // Google OAuth
 import AuthModal from "@/lib/ui/screen-components/un-protected/authentication";
+import AppFooter from "../../screen-components/un-protected/layout/app-footer";
 
 // Hooks
 import { useAuth } from "@/lib/context/auth/auth.context";
@@ -28,6 +29,9 @@ const AppLayout = ({ children }: IProvider) => {
       </div>
       <div className="layout-main-container">
         <div className="layout-main">{children}</div>
+      </div>
+      <div>
+        <AppFooter/>
       </div>
       <AuthModal
         handleModalToggle={handleModalToggle}
