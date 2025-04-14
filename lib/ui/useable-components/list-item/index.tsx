@@ -24,13 +24,17 @@ const ListItem: React.FC<TileProps> = ({
     <div>
       <button
         className="border-[1px] border-solid flex w-[280px] rounded-md h-[60px] p-2 border-[#D1D5DB] gap-4 justify-between items-center"
-        onClick={() => onClick(item)}
+        onClick={()=>{
+          if(onClick)
+          {
+          onClick(item)
+        }}}
       >
         <div className="flex gap-6 items-center">
-          {item.flag && (
+          {item?.flag && (
             <Image src={item.flag} height={50} width={50} alt="Flag image" />
           )}
-          <p className="text-[#374151] text-[16px]">{item.name}</p>
+          <p className="text-[#374151] text-[16px]">{item?.name}</p>
         </div>
         <i className="pi pi-angle-right" style={{ fontSize: "1rem" }}></i>
       </button>

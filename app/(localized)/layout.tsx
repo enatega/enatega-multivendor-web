@@ -26,7 +26,10 @@ import { UserProvider } from "@/lib/context/User/User.context";
 import AppLayout from "@/lib/ui/layouts/global";
 import { FontawesomeConfig } from "@/lib/config";
 import { GoogleMapsProvider } from "@/lib/context/global/google-maps.context";
+// import { LocationProvider } from "@/lib/context/Location/Location.context";
+
 import { LocationProvider } from "@/lib/context/Location/Location.context";
+
 
 export default function RootLayout({
   children,

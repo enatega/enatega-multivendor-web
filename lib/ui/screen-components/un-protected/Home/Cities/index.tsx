@@ -5,6 +5,7 @@ import { useQuery,gql } from '@apollo/client'
 import { GET_COUNTRIES } from '@/lib/api/graphql/queries/Countries'
 import ListItem from '@/lib/ui/useable-components/list-item';
 import CitiesTiles from './CitilesTiles/CitiesTiles';
+import { CountryItem,City } from '@/lib/utils/interfaces/Home-interfaces';
 
 const COUNTRIES = gql`
   ${GET_COUNTRIES}
@@ -16,10 +17,11 @@ const Cities = () => {
   const { data, loading } = useQuery(COUNTRIES, {
     fetchPolicy: "cache-and-network",
   });
-const onCountryClick =(item)=>
+const onCountryClick =(item : CountryItem | City | void)=>
   {
+   const country = item as CountryItem
    setToggle(true)
-   setCountryId(item._id)
+   setCountryId(country._id)
   }
 
   const AllCountrybuttonClick =()=>
@@ -37,7 +39,7 @@ const onCountryClick =(item)=>
       <div className='flex flex-wrap gap-6 items-center justify-center my-[30px]'>
       {loading
           ? [...Array(8)].map((_, index) => <ListItem key={index} loading={true} />)
-          : data?.getCountries?.map((item, index) => (
+          : data?.getCountries?.map((item: CountryItem, index:number) => (
               <ListItem key={index} item={item} onClick={onCountryClick} />
             ))}
             </div>

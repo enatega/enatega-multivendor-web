@@ -10,9 +10,9 @@ export interface buttonProps{
     backColor:string,
 }
  export interface MoveableProps{
-    heading:string,
-    subText:string,
-    button:React.ReactNode,
+    heading?:string,
+    subText?:string,
+    button?:React.ReactNode,
     image:string,
     middle?:boolean,
     height?:string
@@ -46,10 +46,11 @@ export interface CitiesTilesProps {
 export interface CountryItem {
   name: string;
   flag?: string;
+  _id:string
 }
 
 export interface TileProps {
-  item: CountryItem;
+  item?: CountryItem | City;
   loading?: boolean;
-  onClick: (country: CountryItem | City ) => void  ;
+  onClick?: (country: CountryItem | City | void ) => void   ;
 }

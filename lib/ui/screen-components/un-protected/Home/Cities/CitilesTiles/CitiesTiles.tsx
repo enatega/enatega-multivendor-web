@@ -10,6 +10,7 @@ import {
   CitiesTilesProps,
   GetCitiesByCountryResponse,
   City,
+  CountryItem
 } from "@/lib/utils/interfaces/Home-interfaces";
 
 const CITIES = gql`
@@ -25,12 +26,17 @@ const CitiesTiles: React.FC<CitiesTilesProps> = ({ countryId, AllCountries }) =>
     fetchPolicy: "cache-and-network",
   });
 
-  const onCityClick = (item: City) => {
+  const onCityClick = (item: City | CountryItem | void) => {
+     
+    if (!item || !("latitude" in item)) return;
+
+    const city = item as City
+
     setLocation({
-      label: item.name,
-      latitude: item.latitude,
-      longitude: item.longitude,
-      deliveryAddress: `Selected city: ${item.name}`,
+      label: city.name,
+      latitude: city.latitude,
+      longitude: city.longitude,
+      deliveryAddress: `Selected city: ${city.name}`,
       details: `Auto-selected from ${data?.getCitiesByCountry?.name}`,
     });
 
@@ -50,7 +56,7 @@ const CitiesTiles: React.FC<CitiesTilesProps> = ({ countryId, AllCountries }) =>
       <div className="flex flex-wrap gap-6 items-center justify-center my-[30px]">
         {loading
           ? [...Array(8)].map((_, index) => (
-              <ListItem key={index} loading={true} />
+              <ListItem key={index} loading={true} onClick={(()=>{})} />
             ))
           : data?.getCitiesByCountry?.cities.map((item, index) => (
               <ListItem key={index} item={item} onClick={onCityClick} />
