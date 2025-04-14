@@ -6,7 +6,7 @@ export default function UserAddressComponent() {
     <Dialog
       header="Welcome!"
       showHeader={false}
-      visible={true}
+      visible={false}
       onHide={() => {}}
       className="lg:w-1/3 w-full h-auto"
     >
