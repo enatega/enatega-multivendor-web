@@ -85,6 +85,30 @@ export function getStatusColor(
   }
 }
 
+
+export function loadGoogleMapsScript(key: string): Promise<void>{
+  return new Promise((resolve, reject) => {
+    if (typeof window.google === 'object' && window.google.maps) {
+      resolve(); // already loaded
+      return;
+    }
+    const scriptId = 'google-maps-script';
+    if (document.getElementById(scriptId)) {
+      resolve(); // already injected
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.id = scriptId;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places`;
+    script.async = true;
+    script.defer = true;
+    script.onload = () => resolve();
+    script.onerror = () => reject('Google Maps script failed to load.');
+    document.head.appendChild(script);
+  });
+}
+
 // Format date from timestamp
 export const formatDateForCreatedAt = (timestamp: string) => {
   try {

@@ -1,6 +1,6 @@
 import React from "react";
 
-import ComingSoon from "@/lib/ui/useable-components/coming-soon";
+import Home from "@/lib/ui/screens/unprotected/index"
 export default function RootPage() {
-  return <ComingSoon />;
+  return <Home/>
 }
