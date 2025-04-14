@@ -19,7 +19,7 @@ import "./global.css";
 
 // Apollo
 import AuthProvider from "@/lib/context/auth/auth.context";
-import { ConfigurationProvider } from "@/lib/context/configuration/configuration.context";
+import { ConfigurationProvider,useConfig } from "@/lib/context/configuration/configuration.context";
 import { useSetupApollo } from "@/lib/hooks/useSetApollo";
 import { UserProvider } from "@/lib/context/User/User.context";
 // Layout
@@ -35,6 +35,8 @@ export default function RootLayout({
 }>) {
   // Apollo
   const client = useSetupApollo();
+
+  const {GOOGLE_MAPS_KEY,LIBRARIES} =useConfig()
 
   // Constants
   const value = {
@@ -54,7 +56,7 @@ export default function RootLayout({
               <ToastProvider>
                 <AuthProvider>
                   <UserProvider>
-                  <GoogleMapsProvider>
+                  <GoogleMapsProvider apiKey={GOOGLE_MAPS_KEY} libraries={LIBRARIES} >
                   <LocationProvider>
                   <AppLayout>{children}</AppLayout>
                   </LocationProvider>

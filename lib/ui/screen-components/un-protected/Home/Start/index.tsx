@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react';
-import HomeSearch from '@/lib/ui/useable-components/Home-search';
+// import HomeSearch from '@/lib/ui/useable-components/Home-search';
 import { useLocationContext } from '@/lib/context/Location/Location.context';
 import { useRouter } from 'next/navigation';
 import TextFlyingAnimation from '@/lib/ui/useable-components/FlyingText';
@@ -41,7 +41,7 @@ const Start: React.FC = () => {
         <h1 className="text-[40px] md:text-[90px] font-extrabold text-white">
           DELIVERED
         </h1>
-        <HomeSearch />
+        {/* <HomeSearch /> */}
         <div className="my-6 text-white flex items-center justify-center">
           <div className="flex items-center gap-2">
             <i className="pi pi-map-marker" style={{ fontSize: '1rem', color: 'white' }}></i>

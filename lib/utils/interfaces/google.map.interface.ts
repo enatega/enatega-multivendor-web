@@ -20,8 +20,8 @@ export interface IGoogleMapsContext {
 }
 
 export interface IGoogleMapsProviderProps {
-  // apiKey: string;
-  // libraries: Libraries;
+  apiKey: string;
+  libraries: Libraries;
   children: ReactNode;
 }
 
