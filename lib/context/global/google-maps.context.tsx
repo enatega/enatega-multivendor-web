@@ -34,8 +34,6 @@ export const GoogleMapsProvider: React.FC<IGoogleMapsProviderProps> = ({
     libraries: libraries,
   });
 
-  console.log({ GoogleMapsProvider: isLoaded, apiKey, libraries, loadError });
-
   useEffect(() => {
     const loadGoogleMapsScript = (key: string) => {
       return new Promise<void>((resolve, reject) => {
