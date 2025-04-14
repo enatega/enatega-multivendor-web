@@ -10,44 +10,66 @@ import {
 import { faSpinner } from "@fortawesome/free-solid-svg-icons/faSpinner";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AnimatePresence, motion } from "framer-motion";
-import React, { useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { ApolloCache, ApolloError, useMutation } from "@apollo/client";
+import { Message } from "primereact/message";
+import { useRouter } from "next/navigation";
+
+import {
+  GoogleMap,
+  DirectionsService,
+  DirectionsRenderer,
+  Marker,
+} from "@react-google-maps/api";
 
 // Componentns
 import { PaddingContainer } from "@/lib/ui/useable-components/containers";
 import Divider from "@/lib/ui/useable-components/custom-divider";
 
+import { GoogleMapsContext } from "@/lib/context/global/google-maps.context";
 // Context
+import { CartItem } from "@/lib/context/User/User.context";
+import { useLocationContext } from "@/lib/context/location/location.context";
 import { useConfig } from "@/lib/context/configuration/configuration.context";
 
 // Hooks
 import useUser from "@/lib/hooks/useUser";
+import useToast from "@/lib/hooks/useToast";
 import useRestaurant from "@/lib/hooks/useRestaurant";
 
 // Asssets
 import { InfoSvg } from "@/lib/utils/assets/svg";
 
 // Constants
+import { DAYS } from "@/lib/utils/constants/orders";
 import { PAYMENT_METHOD_LIST, TIPS } from "@/lib/utils/constants";
 
 // API
-import { PLACE_ORDER, VERIFY_COUPON } from "@/lib/api/graphql/mutations";
+import { PLACE_ORDER, VERIFY_COUPON, ORDERS } from "@/lib/api/graphql";
 
 // Interfaces
 import { ICoupon, ILocation, IOrder } from "@/lib/utils/interfaces";
+
+// Types
+import { OrderTypes } from "@/lib/utils/types/order";
+
+// Methods
 import {
   calculateAmount,
   calculateDistance,
   checkPaymentMethod,
 } from "@/lib/utils/methods";
-import { OrderTypes } from "@/lib/utils/types/order";
-import { useLocationContext } from "@/lib/context/location/location.context";
-import { useRouter } from "next/navigation";
-import { ORDERS } from "@/lib/api/graphql";
-import { CartItem } from "@/lib/context/User/User.context";
-import { DAYS } from "@/lib/utils/constants/orders";
-import useToast from "@/lib/hooks/useToast";
-import { Message } from "primereact/message";
+
+// Asets
+import HomeIcon from "../../../../../assets/home_icon.png";
+import RestIcon from "../../../../../assets/rest_icon.png";
+// import RiderIcon from "../../../../../assets/rider_icon.png";
 
 export default function OrderCheckoutScreen() {
   const [isOpen, setIsOpen] = useState(false);
@@ -61,6 +83,8 @@ export default function OrderCheckoutScreen() {
     PAYMENT_METHOD_LIST[0].value
   );
   const [taxValue, setTaxValue] = useState();
+  const [directions, setDirections] =
+    useState<google.maps.DirectionsResult | null>(null);
 
   // Coupon
   const [isCouponApplied, setIsCouponApplied] = useState(false);
@@ -74,6 +98,9 @@ export default function OrderCheckoutScreen() {
   const { location, setLocation } = useLocationContext();
   const { cart, restaurant: restaurantId, clearCart, profile } = useUser();
   const { data: restaurantData } = useRestaurant(restaurantId || "");
+
+  // Context
+  const { isLoaded } = useContext(GoogleMapsContext);
 
   // Ref
   const contentRef = useRef<HTMLDivElement>(null);
@@ -394,6 +421,17 @@ export default function OrderCheckoutScreen() {
     return total.toFixed(2);
   }
 
+  const directionsCallback = useCallback(
+    (result: google.maps.DirectionsResult | null, status: string) => {
+      if (status === "OK" && result) {
+        setDirections(result);
+      } else {
+        console.error("Directions request failed due to", status);
+      }
+    },
+    []
+  );
+
   // Use Effect
   useEffect(() => {
     onInit();
@@ -410,21 +448,90 @@ export default function OrderCheckoutScreen() {
     }
   }, []);
 
+  const origin = {
+    lat: Number(restaurantData?.restaurant?.location.coordinates[1]) || 0,
+    lng: Number(restaurantData?.restaurant?.location.coordinates[0]) || 0,
+  };
+
+  const destination = {
+    lat: Number(location?.latitude) || 0,
+    lng: Number(location?.longitude) || 0,
+  };
+
   return (
     <div className="w-screen h-screen flex flex-col pb-20">
       <div className="scrollable-container flex-1 overflow-auto">
         {/* <!-- Header with map and navigation --> */}
         <div className="relative">
-          <img
-            alt="Map showing delivery route"
-            className="w-full h-64 object-cover"
-            height="300"
-            src="https://storage.googleapis.com/a1aa/image/jt1AynRJJVtM9j1LRb30CodA1xsK2R23pWTOmRv3nsM.jpg"
-            width="1200"
-          />
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-[#5AC12F] text-white rounded-full w-12 h-12 flex items-center justify-center text-xl font-bold">
-            H
-          </div>
+          {isLoaded ?
+            <GoogleMap
+              mapContainerStyle={{
+                width: "100%",
+                height: "400px",
+              }}
+              center={{
+                lat: 24.8607, // Example: Karachi
+                lng: 67.0011,
+              }}
+              zoom={13}
+            >
+              {/* Custom Origin Marker */}
+              <Marker
+                position={origin}
+                icon={{
+                  url: HomeIcon.src, // Replace with your icon path or external URL
+                  scaledSize: new window.google.maps.Size(40, 40),
+                }}
+              />
+
+              {/* Custom Destination Marker */}
+              <Marker
+                position={destination}
+                icon={{
+                  url: RestIcon.src, // Replace with your icon path or external URL
+                  scaledSize: new window.google.maps.Size(40, 40),
+                }}
+              />
+
+              {!directions && (
+                <DirectionsService
+                  options={{
+                    destination,
+                    origin,
+                    travelMode: google.maps.TravelMode.DRIVING,
+                  }}
+                  callback={directionsCallback}
+                />
+              )}
+              {directions && (
+                <DirectionsRenderer
+                  directions={directions}
+                  options={{
+                    directions,
+                    suppressMarkers: true, // Hide default markers
+                    polylineOptions: {
+                      strokeColor: "#5AC12F", // blue line
+                      strokeOpacity: 0.8,
+                      strokeWeight: 3, // thickness
+                      zIndex: 10,
+                    },
+                  }}
+                />
+              )}
+            </GoogleMap>
+          : <>
+              <img
+                alt="Map showing delivery route"
+                className="w-full h-64 object-cover"
+                height="300"
+                src="https://storage.googleapis.com/a1aa/image/jt1AynRJJVtM9j1LRb30CodA1xsK2R23pWTOmRv3nsM.jpg"
+                width="1200"
+              />
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-[#5AC12F] text-white rounded-full w-12 h-12 flex items-center justify-center text-xl font-bold">
+                H
+              </div>{" "}
+            </>
+          }
         </div>
         {/* <!-- Toggle Prices Button for Mobile --> */}
         <div className="sm:hidden fixed top-10 left-0 right-0 bg-transparent z-10 p-4">
