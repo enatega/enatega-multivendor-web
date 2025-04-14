@@ -8,6 +8,7 @@ import { IConfigProps } from "@/lib/utils/interfaces";
 
 // Apollo
 import { useQuery } from "@apollo/client";
+import { Libraries } from "@react-google-maps/api";
 
 // Core
 import React, { ReactNode, useContext } from "react";
@@ -32,7 +33,7 @@ export const ConfigurationProvider = ({
   const AMPLITUDE_API_KEY = configuration.webAmplitudeApiKey;
   const LIBRARIES = "places,drawing,geometry,localContext,visualization".split(
     ","
-  );
+  ) as Libraries;
   const COLORS = {
     GOOGLE: configuration.googleColor as string,
   };
