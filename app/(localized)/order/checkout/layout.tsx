@@ -13,8 +13,6 @@ export default function RootLayout({
 }>) {
   const { GOOGLE_MAPS_KEY, LIBRARIES } = useConfig();
 
-  console.log({ GOOGLE_MAPS_KEY });
-
   return GOOGLE_MAPS_KEY ?
       <GoogleMapsProvider apiKey={GOOGLE_MAPS_KEY} libraries={LIBRARIES}>
         <GlobalLayout>{children}</GlobalLayout>
