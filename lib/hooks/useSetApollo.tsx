@@ -22,9 +22,10 @@ import { SubscriptionClient } from "subscriptions-transport-ws";
 
 // Utility imports
 import { Subscription } from "zen-observable-ts";
-import { onUseLocalStorage } from "../utils/methods/local-storage";
 
 export const useSetupApollo = (): ApolloClient<NormalizedCacheObject> => {
+
+  // Getters
   const { SERVER_URL, WS_SERVER_URL } = getEnv("PROD");
 
   const cache = new InMemoryCache();
@@ -59,11 +60,13 @@ export const useSetupApollo = (): ApolloClient<NormalizedCacheObject> => {
     // const data = localStorage.getItem(`user-${APP_NAME}`);
     // Set This Token empty later...
     // let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2U2OThjZDFkNmFkNmZkMmMyZTk5NWQiLCJlbWFpbCI6ImR1bW15Y3VzdG9tZXIwNkBnbWFpbC5jb20iLCJpYXQiOjE3NDMxNjU2NDV9.XcOHtJtdb55PK6Bgwf2WZnWPHzkuH4vgFwq4yi8RWbA";
-    const token = onUseLocalStorage("get", "token");
-
+    const token = localStorage.getItem("token");
+    const userId = localStorage.getItem("userId");
     operation.setContext({
       headers: {
         authorization: token ? `Bearer ${token}` : "",
+        userId:userId,
+        isAuth:!!token
       },
     });
   };

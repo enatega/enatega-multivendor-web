@@ -30,7 +30,7 @@ export default function PhoneVerification({
   // Mutations
   const [updateUser] = useMutation<
     IUpdateUserResponse,
-    undefined | { phone: string }
+    undefined | { phone: string, name: string }
   >(UPDATE_USER, {
     onError: (error: ApolloError) => {
       showToast({
@@ -55,6 +55,7 @@ export default function PhoneVerification({
         await updateUser({
           variables: {
             phone: user?.phone,
+            name:user?.name??""
           },
         });
       } else {
@@ -101,7 +102,8 @@ export default function PhoneVerification({
         color="red"
         autoFocus={true}
         mask
-        maxLength={5}
+        maxLength={6}
+        length={6}
         className="w-full h-20 my-2"
         onPaste={(e) =>
           setPhoneOtp(

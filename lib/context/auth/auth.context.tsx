@@ -36,7 +36,7 @@ import {
 } from "@/lib/utils/interfaces";
 
 // Apollo
-import { ApolloError, useMutation, useQuery } from "@apollo/client";
+import { ApolloError, useMutation } from "@apollo/client";
 
 // Google API
 import { onUseLocalStorage } from "@/lib/utils/methods/local-storage";
@@ -85,7 +85,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   const [sendOtpToEmail] =
     useMutation<ISendOtpToEmailResponse>(SENT_OTP_TO_EMAIL);
 
-  const {data:userProfileData, refetch:fetchUserProfileData} = useQuery(PROFILE)
+  // const {data:userProfileData, refetch:fetchUserProfileData} = useQuery(PROFILE)
 
   // Checkers
   async function checkEmail(email: string) {
@@ -137,7 +137,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
           return;
         } else {
           generateOTP();
-          setOtp((otpFrom.current??TEST_OTP)?.substring(0,4));
+          setOtp((otpFrom.current??TEST_OTP))
           const otpResponse = await sendOtpToPhone({
             variables: { phone: phone, otp: otpFrom.current },
           });
@@ -175,7 +175,8 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         variables: { ...user },
       });
       const { data } = userResponse;
-      onUseLocalStorage("save", "userId", data?.login.userId);
+      localStorage.setItem("userId", data?.login.userId??"");
+      localStorage.setItem("token", data?.login.token??"");
       return data;
     } catch (err) {
       const error = err as ApolloError;
