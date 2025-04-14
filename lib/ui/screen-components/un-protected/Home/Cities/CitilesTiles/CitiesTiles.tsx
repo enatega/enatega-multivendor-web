@@ -5,7 +5,7 @@ import { useQuery, gql } from "@apollo/client";
 import { GET_CITIES } from "@/lib/api/graphql/queries/Countries";
 import ListItem from "@/lib/ui/useable-components/list-item";
 import { useRouter } from "next/navigation";
-import { useLocationContext } from "@/lib/context/Location/Location.context";
+import { useLocationContext } from "@/lib/context/Location/location.context";
 import {
   CitiesTilesProps,
   GetCitiesByCountryResponse,

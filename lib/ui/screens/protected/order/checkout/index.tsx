@@ -35,7 +35,7 @@ import Divider from "@/lib/ui/useable-components/custom-divider";
 import { GoogleMapsContext } from "@/lib/context/global/google-maps.context";
 // Context
 import { CartItem } from "@/lib/context/User/User.context";
-import { useLocationContext } from "@/lib/context/location/location.context";
+import { useLocationContext } from "@/lib/context/Location/location.context";
 import { useConfig } from "@/lib/context/configuration/configuration.context";
 
 // Hooks

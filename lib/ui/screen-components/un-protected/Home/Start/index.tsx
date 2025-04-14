@@ -2,7 +2,7 @@
 
 import React from 'react';
 // import HomeSearch from '@/lib/ui/useable-components/Home-search';
-import { useLocationContext } from '@/lib/context/Location/Location.context';
+import { useLocationContext } from '@/lib/context/Location/location.context';
 import { useRouter } from 'next/navigation';
 import TextFlyingAnimation from '@/lib/ui/useable-components/FlyingText';
 
