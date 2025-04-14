@@ -727,25 +727,17 @@ Discovery Caurousal
 }
 
 /* Panel Menu */
-/* Highlight expanded parent item */
-/* Highlight expanded parent item */
-/* ✅ Expanded parent item (e.g., "Laptops") */
-.p-panelmenu .p-panelmenu-header .p-highlight {
-  background-color: white !important;
-  font-weight: 600 !important;
-  color: red !important;
+
+.p-panelmenu .p-panelmenu-header.p-highlight .p-menuitem-text,
+.p-panelmenu .p-panelmenu-header.p-highlight .p-panelmenu-header-link {
+  color: #5ac12f !important;
 }
 
-/* ✅ Menu label inside the expanded header */
-.p-panelmenu .p-panelmenu-header .p-highlight .p-menuitem-text {
-  color: yellow !important;
-}
-
-/* ✅ Child item (active state — assuming typical structure) */
-.p-panelmenu .p-menuitem-link .p-menuitem-active {
-  background-color: #e0f2fe !important;
-  color: #0369a1 !important;
-  font-weight: 600 !important;
+/* Remove background color on hover for menu items */
+.p-panelmenu .p-menuitem-link:hover {
+  background: transparent !important;
+  color: inherit !important;
+  box-shadow: none !important;
 }
 
 .p-stepper-nav{

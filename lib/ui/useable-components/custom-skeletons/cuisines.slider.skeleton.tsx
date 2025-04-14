@@ -23,17 +23,6 @@ const CardSkeleton = () => {
             <div className="h-4 bg-gray-300 mb-2 w-3/4 rounded"></div>
             <div className="h-3 bg-gray-300 w-1/2 rounded"></div>
           </div>
-          <div className="bg-gray-300 rounded-md w-[60px] h-[50px]"></div>
-        </div>
-
-        {/* Icons Skeleton */}
-        <div className="flex flex-row justify-between w-[80%] sm:w-[100%] lg:w-[70%] pt-1">
-          {[1, 2, 3].map((item) => (
-            <div key={item} className="flex flex-col items-center">
-              <div className="w-6 h-6 bg-gray-300 rounded-full mb-1"></div>
-              <div className="h-3 bg-gray-300 w-12 rounded"></div>
-            </div>
-          ))}
         </div>
       </div>
     </div>
@@ -41,7 +30,7 @@ const CardSkeleton = () => {
 };
 
 
-const SliderSkeleton = () => {
+const CuisinesSliderSkeleton = () => {
   const numVisible = 4;
 
   return (
@@ -70,4 +59,4 @@ const SliderSkeleton = () => {
   );
 };
 
-export default SliderSkeleton;
+export default CuisinesSliderSkeleton;

@@ -77,6 +77,7 @@ export interface IFood {
   image: string;
   description: string;
   subCategory: string;
+  restaurant: string;
   variations: IVariation[];
 }
 
@@ -132,4 +133,13 @@ export interface ICategoryV2 {
   _id: string;
   title: string;
   subCategories: ISubCategoryV2[];
+}
+
+export interface ICategoryDetailsResponse {
+  id: string;
+  label: string;
+  url: string;
+  icon?: string;
+  items?: ICategoryDetailsResponse[];
+  __typename: string;
 }

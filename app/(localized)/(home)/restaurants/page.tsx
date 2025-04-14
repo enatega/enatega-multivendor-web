@@ -1,5 +1,7 @@
 "use client";
 
+import { RestaurantsScreen } from "@/lib/ui/screens/protected/home";
+
 export default function RestaurantPage() {
-  return <div>Restaurants Page</div>;
+  return <RestaurantsScreen />;
 }

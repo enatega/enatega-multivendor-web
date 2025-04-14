@@ -1,5 +1,7 @@
 import {
   faCheck,
+  faCreditCard,
+  faDollar,
   faExclamationTriangle,
   faInfoCircle,
   faXmarkCircle,
@@ -49,3 +51,17 @@ export const SEVERITY_STYLES: ISeverityStyles = {
   },
 };
 
+export const TIPS = ["2", "4", "6", "8"];
+
+export const PAYMENT_METHOD_LIST = [
+  {
+    label: "Cash",
+    value: "CASH",
+    icon: faDollar,
+  },
+  {
+    label: "Card",
+    value: "STRIPE",
+    icon: faCreditCard,
+  },
+];

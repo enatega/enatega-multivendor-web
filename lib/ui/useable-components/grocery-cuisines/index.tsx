@@ -3,11 +3,11 @@ import CuisinesSliderCard from "@/lib/ui/useable-components/cuisines-slider-card
 // hook
 import useGetCuisines from "@/lib/hooks/useGetCuisines";
 // loading skeleton
-import CuisinesSliderSkeleton from "@/lib/ui/useable-components/cuisines-slider-loading-skeleton";
+import CuisinesSliderSkeleton from "@/lib/ui/useable-components/custom-skeletons/cuisines.slider.skeleton";
 // interface
 import { ICuisinesData } from "@/lib/utils/interfaces";
 
-function RestaurantCuisines() {
+function GroceryCuisines({title="Grocery cuisines"}: {title?:string}) {
   const { data, loading, error } = useGetCuisines();
 
   if (loading) {
@@ -18,17 +18,17 @@ function RestaurantCuisines() {
     return;
   }
 
-  let restaurantCuisinesData: ICuisinesData[] = Array.isArray(data?.cuisines)
-    ? data.cuisines.filter(item => item.shopType.toLowerCase() === 'restaurant')
+  let groceryCuisinesData: ICuisinesData[] = Array.isArray(data?.cuisines)
+    ? data.cuisines.filter((item) => item.shopType.toLowerCase() === "grocery")
     : [];
 
   return (
     <CuisinesSliderCard
-      title="Restaurant cuisines"
-      data={restaurantCuisinesData || []}
+      title={title}
+      data={groceryCuisinesData || []}
       cuisines={true}
     />
   );
 }
 
-export default RestaurantCuisines;
+export default GroceryCuisines;
