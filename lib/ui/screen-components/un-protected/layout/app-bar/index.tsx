@@ -18,7 +18,7 @@ import { CartSvg, LocationSvg } from "@/lib/utils/assets/svg";
 // Interface
 import { IAppBarProps } from "@/lib/utils/interfaces/auth.interface";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowDown, faChevronDown } from "@fortawesome/free-solid-svg-icons";
+import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import UserAddressComponent from "@/lib/ui/useable-components/address";
 
 const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
