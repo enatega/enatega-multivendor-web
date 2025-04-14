@@ -28,11 +28,13 @@ export const GoogleMapsProvider: React.FC<IGoogleMapsProviderProps> = ({
 }) => {
   const { showToast } = useContext(ToastContext);
 
-  const { isLoaded } = useJsApiLoader({
+  const { isLoaded, loadError } = useJsApiLoader({
     id: "google-map-script",
     googleMapsApiKey: apiKey,
     libraries: libraries,
   });
+
+  console.log({ GoogleMapsProvider: isLoaded, apiKey, libraries, loadError });
 
   useEffect(() => {
     const loadGoogleMapsScript = (key: string) => {
@@ -64,13 +66,14 @@ export const GoogleMapsProvider: React.FC<IGoogleMapsProviderProps> = ({
       unloadGoogleMapsScript(); // Unload the previous script if any
       loadGoogleMapsScript(apiKey)
         .then(() => {})
-        .catch(() =>
+        .catch((err) => {
+          console.log(err);
           showToast({
             type: "error",
             title: "Google Maps",
             message: "Failed to load Google Maps script.",
-          })
-        );
+          });
+        });
     }
   }, [apiKey]);
 
