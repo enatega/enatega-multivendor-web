@@ -3,8 +3,8 @@ import MoveableCard from '../Moveable-Card'
 
 interface HomeCardProps{
 image:string,
-heading:string,
-subText:string
+heading?:string,
+subText?:string
 }
 
 
