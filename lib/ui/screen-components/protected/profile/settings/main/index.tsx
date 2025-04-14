@@ -28,25 +28,21 @@ export default function SettingsMain() {
   // Handle send receipts toggle
   const handleSendReceiptsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.checked;
-    console.log(newValue, "new value");
     setSendReceipts(newValue);
     // You can use a mutation to update the user's settings
   };
   //  handle Logout
   const handleLogout = () => {
-    console.log("Logging out...");
     // Add your logout logic here
     // e.g., clear cookies, redirect to login page, etc.
   };
 
   // Handle Delete Account
   const handleDeleteAccount = () => {
-    console.log("Deleting confirmation Required")
     setDeleteAccount(true)
   }
 
   const handleConfirmDelete = () => {
-    console.log("Deleting account...")
     setIsDeleting(true)
 
     // Simulate API call

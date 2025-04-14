@@ -1,30 +1,30 @@
 "use client"
-import useDebounceFunction from "@/lib/hooks/useDebounceForFunction";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+// Components
 import OrderCardSkeleton from "@/lib/ui/useable-components/custom-skeletons/order.card.skelton";
 import OrderCard from "@/lib/ui/useable-components/order-card";
 import EmptyState from "@/lib/ui/useable-components/orders-empty-state";
+import RatingModal from "../rating/main";
+import TextComponent from "@/lib/ui/useable-components/text-field";
+// Interfaces
 import {
   IOrder,
   IPastOrdersProps,
 } from "@/lib/utils/interfaces/orders.interface";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import RatingModal from "../rating/main";
-import { reviewOrder } from "@/lib/api/graphql/mutations";
-import { gql, useMutation } from "@apollo/client";
+// Hooks
 import useToast from "@/lib/hooks/useToast";
-import TextComponent from "@/lib/ui/useable-components/text-field";
-
-const REVIEWORDER = gql`
-  ${reviewOrder}
-`;
+// Querys and Mutations
+import { useMutation } from "@apollo/client";
+import { ADD_REVIEW_ORDER } from "@/lib/api/graphql/mutations";
+// Methods
+import useDebounceFunction from "@/lib/hooks/useDebounceForFunction";
 
 export default function PastOrders({
   pastOrders,
   isOrdersLoading,
 }: IPastOrdersProps) {
   // states
-  const [rating, setRating] = useState<number | null>(null);
   const [showRatingModal, setShowRatingModal] = useState<boolean>(false);
   const [selectedOrder, setSelectedOrder] = useState<IOrder | null>(null);
 
@@ -32,17 +32,12 @@ export default function PastOrders({
   const router = useRouter();
   const { showToast } = useToast();
 
-  console.log(selectedOrder, "selectedOrder");
-
   //mutation
-  const [mutate, { loading: isloadingReviewOrder, error: isErrorReviewOrder }] =
-    useMutation(REVIEWORDER, {
+  const [mutate, { loading: isloadingReviewOrder }] =
+    useMutation(ADD_REVIEW_ORDER, {
       onCompleted,
       onError,
     });
-
-  console.log(isloadingReviewOrder, "loadingReviewOrder");
-  console.log(isErrorReviewOrder, "ErrorReviewOrder");
 
   function onCompleted() {
     showToast({
@@ -67,16 +62,17 @@ export default function PastOrders({
   // use debouncefunction if user click multiple times at once it will call function only 1 time
   const handleReOrderClicked = useDebounceFunction(
     (restaurantId: string | undefined) => {
-      console.log("ready for navigation");
       router.push(`/restaurants/${restaurantId}`);
     },
     500 // Debounce time in milliseconds
   );
-
+  
+  // handle rate order clicked
+  // use debouncefunction if user click multiple times at once it will call function only 1 time
+  // this function will set the selected order and show the rating modal
+  // and also find the order by id
   const handleRateOrderClicked = useDebounceFunction(
-    (orderId: string | undefined, ratingValue: number) => {
-      console.log(orderId, "OrderId for rating");
-      console.log(ratingValue, "ratingValue on past order component");
+    (orderId: string | undefined) => {
       // Find the order by ID
       const order = pastOrders.find((order) => order._id === orderId);
       if (order) {
@@ -86,21 +82,16 @@ export default function PastOrders({
     },
     500 // Debounce time in milliseconds
   );
-  console.log(rating, "rating in state");
-
+  
+  // handle submit rating
   const handleSubmitRating = async (
     orderId: string | undefined,
     ratingValue: number,
     comment?: string,
     aspects?: string[]
   ) => {
-    console.log(orderId, "OrderId for rating");
-    console.log(ratingValue, "ratingValue on past order component");
-    console.log(comment, "comment on past order component");
-    console.log(aspects, "selected aspects on past order component");
-
-    // Set the rating in state
-    setRating(ratingValue);
+    // Temporarily console the aspects-
+    console.log(aspects, "Temporarily consoling aspects");
 
     // Here you would  call an API to save the rating
     try {
@@ -141,7 +132,10 @@ export default function PastOrders({
   return (
     <>
       <div className="space-y-4 py-4">
-        <TextComponent text="Past Orders" className="text-2xl md:text-3xl xl:text-4xl font-semibold mb-6"/>
+        <TextComponent
+          text="Past Orders"
+          className="text-2xl md:text-3xl xl:text-4xl font-semibold mb-6"
+        />
         <div className="space-y-4">
           {pastOrders?.map((order: IOrder) => (
             <OrderCard
@@ -156,8 +150,8 @@ export default function PastOrders({
         </div>
       </div>
       {/* Rating Modal */}
-      {/* conditionally render the modal based on the loading state of mutation for better user experience */} 
-      {!isloadingReviewOrder && !(selectedOrder?.review?.rating) && (
+      {/* conditionally render the modal based on the loading state of mutation for better user experience */}
+      {!isloadingReviewOrder && !selectedOrder?.review?.rating && (
         <RatingModal
           visible={showRatingModal}
           onHide={() => setShowRatingModal(false)}

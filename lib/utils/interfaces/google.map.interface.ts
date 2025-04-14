@@ -1,6 +1,6 @@
-import { Libraries } from '@react-google-maps/api';
-import { ReactNode } from 'react';
-import { IGlobalComponentProps } from './global.interface';
+import { Libraries } from "@react-google-maps/api";
+import { ReactNode } from "react";
+import { IGlobalComponentProps } from "./global.interface";
 
 export interface IGoogleMapsLoaderComponentProps
   extends IGlobalComponentProps {}
@@ -38,6 +38,7 @@ export interface ILocationPoint {
 }
 
 export interface ILocation {
+  details?: string;
   label: string;
   latitude: number;
   longitude: number;
@@ -81,4 +82,11 @@ export interface IUpdateRestaurantDeliveryZoneVariables {
   address?: string;
   postCode?: string;
   city?: string;
+}
+
+// Interface for Google Map component props
+export interface IGoogleMapComponentProps {
+  center: { lat: number; lng: number }; // Center coordinates for the map
+  circleRadius?: number; // Optional prop for circle radius in meters
+  visible: boolean; // Controls visibility of the map
 }

@@ -28,6 +28,7 @@ import { ICategory, IFood } from "@/lib/utils/interfaces";
 import { toSlug } from "@/lib/utils/methods";
 import ChatSvg from "@/lib/utils/assets/svg/chat";
 import ReviewsModal from "@/lib/ui/useable-components/reviews-modal";
+import InfoModal from "@/lib/ui/useable-components/info-modal";
 
 export default function RestaurantDetailsScreen() {
   // Access the UserContext via our custom hook
@@ -55,7 +56,7 @@ export default function RestaurantDetailsScreen() {
         updateCart(transformedCart);
       }
     }
-  }, [data?.restaurant, cart.length]); // Only re-run when restaurant data or cart length changes
+  }, [data?.restaurant, cart?.length]); // Only re-run when restaurant data or cart length changes
 
   // Filter food categories based on search term
   const allDeals = data?.restaurant?.categories?.filter(
@@ -121,29 +122,26 @@ export default function RestaurantDetailsScreen() {
     openingTimes: data?.restaurant?.openingTimes ?? [],
   };
 
-  // States for UI
+  const restaurantInfoModalProps={
+    _id: data?.restaurant._id ?? "",
+    name: data?.restaurant?.name ?? "...",
+    username: data?.restaurant?.username ?? "N/A",
+    phone: data?.restaurant?.phone ?? "N/A",
+    address: data?.restaurant?.address ?? "N/A",
+    location: data?.restaurant?.location ?? "N/A",
+    isAvailable: data?.restaurant?.isAvailable ?? true,
+    openingTimes: data?.restaurant?.openingTimes ?? [],
+    description: data?.restaurant?.description ?? "Preservation of the authentic taste of all traditional foods is upheld here.",
+  }
+
+  // States
   const [visibleItems, setVisibleItems] = useState(10); // Default visible items
   const [showAll, setShowAll] = useState(false);
   const [headerHeight, setHeaderHeight] = useState("64px"); // Default for desktop
   const [showReviews, setShowReviews] = useState<boolean>(false);
+  const [showMoreInfo, setShowMoreInfo] = useState<boolean>(false);
 
-  // Function to handle opening the food item modal
-  const handleOpenFoodModal = (food: IFood) => {
-    // Add restaurant ID to the food item
-    setSelectedFood({
-      ...food,
-      restaurant: restaurantInfo._id
-    });
-    setShowDialog(true);
-  };
-
-  // Function to close the food item modal
-  const handleCloseFoodModal = () => {
-    setShowDialog(false);
-    setSelectedFood(null);
-  };
-
-  // Handlers for category navigation
+  // Handlers
   const handleScroll = (id: string) => {
     setSelectedCategory(id);
     const element = document.getElementById(id);
@@ -161,10 +159,31 @@ export default function RestaurantDetailsScreen() {
     }
   };
 
+    // Function to handle opening the food item modal
+    const handleOpenFoodModal = (food: IFood) => {
+      // Add restaurant ID to the food item
+      setSelectedFood({
+        ...food,
+        restaurant: restaurantInfo._id
+      });
+      setShowDialog(true);
+    };
+  
+    // Function to close the food item modal
+    const handleCloseFoodModal = () => {
+      setShowDialog(false);
+      setSelectedFood(null);
+    };
+
   // Adjust UI based on screen size
   // Function to handle the logic for seeing reviews
   const handleSeeReviews = () => {
     setShowReviews(true);
+  }
+
+  // Function to handle the logic for seeing more information
+  const handleSeeMoreInfo = () => {
+    setShowMoreInfo(true);
   }
 
 
@@ -205,10 +224,18 @@ export default function RestaurantDetailsScreen() {
 
   return (
     <>
+           {/* Reviews Modal  */}
             <ReviewsModal
               restaurantId={id}
-              visible={showReviews}
+              visible={showReviews && !loading}
               onHide={() => setShowReviews(false)}
+            />
+            {/* See More  Info Modal */}
+            <InfoModal
+             restaurantInfo={restaurantInfoModalProps}
+             // make sure data is not loading because if configuration data is not available it can cause error on google map due to unavailability of api key
+             visible={showMoreInfo && !loading}
+             onHide={() => setShowMoreInfo(false)}
             />
       <div className="w-screen h-screen flex flex-col pb-20">
         <div className="scrollable-container flex-1 overflow-auto">
@@ -282,6 +309,10 @@ export default function RestaurantDetailsScreen() {
                 <a
                   className="flex items-center gap-2 text-[#0EA5E9] font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle"
                   href="#"
+                  onClick={(e)=>{
+                    e.preventDefault();
+                    handleSeeMoreInfo();
+                  }}
                 >
                   <InfoSvg />
                   {loading ? (
@@ -294,7 +325,10 @@ export default function RestaurantDetailsScreen() {
                  <a
                   className="flex items-center gap-2 text-[#0EA5E9] font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle"
                   href="#"
-                  onClick={handleSeeReviews}
+                  onClick={(e)=>{
+                    e.preventDefault();
+                    handleSeeReviews();
+                  }}
                 >
                   <ChatSvg />
                   {loading ?

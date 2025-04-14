@@ -1,3 +1,5 @@
+import { gql } from "@apollo/client";
+
 export const profile = `
         query{
           profile{
@@ -22,78 +24,84 @@ export const profile = `
           }
         }`;
 
-export const FavouriteRestaurant = `query UserFavourite ($latitude:Float,$longitude:Float){
-          userFavourite(latitude:$latitude,longitude:$longitude) {
+export const GET_USER_FAVOURITE = gql`
+  query UserFavourite($latitude: Float, $longitude: Float) {
+    userFavourite(latitude: $latitude, longitude: $longitude) {
+      _id
+      orderId
+      orderPrefix
+      name
+      isActive
+      image
+      address
+      slug
+      shopType
+      location {
+        coordinates
+      }
+      deliveryTime
+      minimumOrder
+      tax
+      isAvailable
+      reviewCount
+      reviewAverage
+      reviewData {
+        total
+        ratings
+        reviews {
+          _id
+          order {
+            user {
+              _id
+              name
+              email
+            }
+          }
+          rating
+          description
+          createdAt
+        }
+      }
+      categories {
+        _id
+        title
+        foods {
+          _id
+          title
+          image
+          description
+          subCategory
+          variations {
             _id
-            orderId
-            orderPrefix
-            name
-            isActive
-            image
-            address
-            location{coordinates}
-            deliveryTime
-            minimumOrder
-            tax
-            isAvailable
-            reviewCount
-            reviewAverage
-            reviewData{
-              total
-              ratings
-              reviews{
-                _id
-                order{
-                  user{
-                    _id
-                    name
-                    email
-                  }
-                }
-                rating
-                description
-                createdAt
-              }
-            }
-            categories{
-              _id
-              title
-              foods{
-                _id
-                title
-                image
-                description
-                subCategory
-                variations{
-                  _id
-                  title
-                  price
-                  discounted
-                  addons
-                }
-              }
-            }
-            options{
-              _id
-              title
-              description
-              price
-            }
-            addons{
-              _id
-              options
-              title
-              description
-              quantityMinimum
-              quantityMaximum
-            }
-            rating
-            openingTimes{
-              day
-              times{
-                startTime
-                endTime
-              }
-            }
-           }
-        }`;
+            title
+            price
+            discounted
+            addons
+          }
+        }
+      }
+      options {
+        _id
+        title
+        description
+        price
+      }
+      addons {
+        _id
+        options
+        title
+        description
+        quantityMinimum
+        quantityMaximum
+      }
+      rating
+      openingTimes {
+        day
+        times {
+          startTime
+          endTime
+        }
+      }
+    }
+  }
+`;

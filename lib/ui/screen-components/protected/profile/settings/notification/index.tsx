@@ -14,14 +14,12 @@ export default function NotificationSection() {
   const handlePushNotificationsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.checked
     setPushNotifications(newValue)
-    console.log(newValue,"PushNotificationsChange")
   }
 
   // Handle email notifications toggle
   const handleEmailNotificationsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.checked
     setEmailNotifications(newValue)
-    console.log(newValue,"EmailNotificationsChange")
   }
 
   return (

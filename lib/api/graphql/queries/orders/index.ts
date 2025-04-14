@@ -1,21 +1,28 @@
-export const myOrders = `query Orders($offset:Int){
-    orders(offset:$offset){
+import { gql } from "@apollo/client";
+
+export const ORDERS = gql`
+  query Orders($offset: Int) {
+    orders(offset: $offset) {
       _id
       orderId
-        id
-      restaurant{
+      id
+      restaurant {
         _id
         name
         image
         address
-        location{coordinates}
+        location {
+          coordinates
+        }
       }
-      deliveryAddress{
-        location{coordinates}
+      deliveryAddress {
+        location {
+          coordinates
+        }
         deliveryAddress
         id
       }
-      items{
+      items {
         _id
         id
         title
@@ -23,17 +30,17 @@ export const myOrders = `query Orders($offset:Int){
         description
         quantity
         image
-        variation{
+        variation {
           _id
           id
           title
           price
           discounted
         }
-        addons{
+        addons {
           _id
           id
-          options{
+          options {
             _id
             id
             title
@@ -46,17 +53,17 @@ export const myOrders = `query Orders($offset:Int){
           quantityMaximum
         }
       }
-      user{
+      user {
         _id
         name
         phone
       }
-      rider{
+      rider {
         _id
         name
         phone
       }
-      review{
+      review {
         _id
         rating
       }
@@ -82,4 +89,4 @@ export const myOrders = `query Orders($offset:Int){
       instructions
     }
   }
-  `;
+`;
