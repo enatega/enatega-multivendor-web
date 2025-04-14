@@ -15,5 +15,4 @@ export interface IConfigProps {
   CURRENCY_SYMBOL: string;
   DELIVERY_RATE: number;
   COST_TYPE: string;
-  GOOGLE_PLACES_API_BASE_URL:string
 }
