@@ -5,25 +5,30 @@ import CustomButton from "@/lib/ui/useable-components/button";
 import { IEmailVerificationProps } from "@/lib/utils/interfaces";
 
 // Hooks
+import { useAuth } from "@/lib/context/auth/auth.context";
 import { useTranslations } from "next-intl";
 
 // Prime React
 import { InputOtp } from "primereact/inputotp";
+import { useEffect } from "react";
 
 export default function EmailVerification({
-  emailOtp,
-  setEmailOtp,
-  email = "example@gmail.com",
   handleChangePanel,
 }: IEmailVerificationProps) {
   // Hooks
   const t = useTranslations();
+  const { user, emailOtp, setEmailOtp } = useAuth();
 
+  useEffect(() => {
+    if(!user?.email) {
+      handleChangePanel(4);
+    }
+  },[user?.email])
   return (
     <div className="flex flex-col justify-between item-center self-center p-4">
       <p>
-        {t("We have sent OTP code to")}
-        <span className="font-bold">{email}</span>
+        {t("We have sent OTP code to")}&nbsp;
+        <span className="font-bold">{user?.email??"example@email.com"}</span>
       </p>
       <p className="font-light text-sm">{t("Please check your inbox")}</p>
       <InputOtp

@@ -44,6 +44,7 @@ export const ConfigurationProvider = ({
   const CURRENCY_SYMBOL = configuration.currencySymbol;
   const DELIVERY_RATE = configuration.deliveryRate;
   const COST_TYPE = configuration.costType;
+  const TEST_OTP = configuration.testOtp;
 
   return (
     <ConfigurationContext.Provider
@@ -62,6 +63,7 @@ export const ConfigurationProvider = ({
         CURRENCY_SYMBOL,
         DELIVERY_RATE,
         COST_TYPE,
+        TEST_OTP
       }}
     >
       {children}

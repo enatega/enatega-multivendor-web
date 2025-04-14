@@ -26,7 +26,6 @@ export interface IProfileResponse extends IAddresses {
         isActive: boolean;
         isOrderNotification: boolean;
         isOfferNotification: boolean;
-       
         favourite: string[];
     };
 }

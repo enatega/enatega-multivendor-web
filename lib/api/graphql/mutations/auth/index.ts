@@ -2,27 +2,39 @@ import { gql } from "@apollo/client";
 
 export const LOGIN = gql`
   mutation Login(
+    $type: String!
     $email: String
     $password: String
-    $type: String!
-    $appleId: String
     $name: String
     $notificationToken: String
+    $isActive: Boolean
   ) {
     login(
+      type: $type
       email: $email
       password: $password
-      type: $type
-      appleId: $appleId
       name: $name
       notificationToken: $notificationToken
+      isActive: $isActive
     ) {
       userId
       token
       tokenExpiration
       name
-      email
       phone
+      phoneIsVerified
+      email
+      emailIsVerified
+      picture
+      addresses {
+        location {
+          coordinates
+        }
+        deliveryAddress
+      }
+      isNewUser
+      userTypeId
+      isActive
     }
   }
 `;

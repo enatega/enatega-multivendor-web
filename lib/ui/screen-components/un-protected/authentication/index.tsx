@@ -1,6 +1,10 @@
 "use client";
 // Interfaces
-import { IAuthFormData, IAuthModalProps } from "@/lib/utils/interfaces";
+import {
+  IAuthFormData,
+  IAuthModalProps,
+  ILoginProfile,
+} from "@/lib/utils/interfaces";
 
 // Hooks
 import { useAuth } from "@/lib/context/auth/auth.context";
@@ -18,6 +22,8 @@ import EmailVerification from "./email-verification";
 import LoginWithEmail from "./login-with-email";
 import LoginWithGoogle from "./login-with-google";
 import PhoneVerification from "./phone-verification";
+import SaveEmailAddress from "./save-email-address";
+import SavePhoneNumber from "./save-phone-number";
 import SignUpWithEmail from "./signup-with-email";
 
 export default function AuthModal({
@@ -25,7 +31,6 @@ export default function AuthModal({
   handleModalToggle,
 }: IAuthModalProps) {
   // States
-  const [activePanel, setActivePanel] = useState(0);
   const [emailOtp, setEmailOtp] = useState("");
   const [phoneOtp, setPhoneOtp] = useState("");
   const [formData, setFormData] = useState<IAuthFormData>({
@@ -39,7 +44,7 @@ export default function AuthModal({
   const authenticationPanelRef = useRef(null);
 
   // Hooks
-  const {setUser} = useAuth();
+  const { handleUserLogin, activePanel, setActivePanel, setUser } = useAuth();
 
   // Login With Google
   const googleLogin = useGoogleLogin({
@@ -50,14 +55,18 @@ export default function AuthModal({
         { headers: { Authorization: `Bearer ${tokenResponse.access_token}` } },
       );
       const userData = await userInfo.json();
-      setUser({
-        name:userData.name,
-        email:userData.email,
-        token:tokenResponse.access_token,
+
+      const userLoginResponse = await handleUserLogin({
+        type: "google",
+        email: userData.email,
+        name: userData.name,
+        notificationToken: "",
       });
-
-
+      if (userLoginResponse) {
+        setUser(userLoginResponse.login as ILoginProfile);
+      }
     },
+
     onError: (errorResponse) => {
       console.log(errorResponse);
     },
@@ -91,7 +100,7 @@ export default function AuthModal({
         height: "fit-content",
       }}
       className="lg:w-1/3 w-full h-auto"
-      closeOnEscape={activePanel <= 2}
+      closeOnEscape={activePanel <= 3}
     >
       <Stepper
         ref={authenticationPanelRef}
@@ -129,6 +138,12 @@ export default function AuthModal({
             emailOtp={emailOtp}
             setEmailOtp={setEmailOtp}
           />
+        </StepperPanel>
+        <StepperPanel>
+          <SavePhoneNumber />
+        </StepperPanel>
+        <StepperPanel>
+          <SaveEmailAddress handleChangePanel={handleChangePanel} />
         </StepperPanel>
         <StepperPanel>
           <PhoneVerification

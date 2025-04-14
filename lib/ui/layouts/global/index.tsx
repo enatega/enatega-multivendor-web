@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import { useState } from "react";
 // Components
 import AppTopbar from "@/lib/ui/screen-components/un-protected/layout/app-bar";
 
@@ -11,9 +10,12 @@ import { IProvider } from "@/lib/utils/interfaces";
 // Google OAuth
 import AuthModal from "@/lib/ui/screen-components/un-protected/authentication";
 
+// Hooks
+import { useAuth } from "@/lib/context/auth/auth.context";
+
 const AppLayout = ({ children }: IProvider) => {
-  // States
-  const [isAuthModalVisible, setIsAuthModalVisible] = useState(false);
+  // Hooks
+ const { isAuthModalVisible, setIsAuthModalVisible } = useAuth();
 
   // Handlers
   const handleModalToggle = () => {
