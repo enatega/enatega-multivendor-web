@@ -1,18 +1,11 @@
 "use client";
-import { useEffect, useState, useMemo, useCallback } from "react";
-import {
-  GoogleMap,
-  Marker,
-  useJsApiLoader,
-  Libraries,
-  Circle,
-} from "@react-google-maps/api";
+import { useEffect, useState, useCallback, useContext } from "react";
+import { GoogleMap, Marker, Circle } from "@react-google-maps/api";
 import styles from "./google-map-component.module.css";
 import { IGoogleMapComponentProps } from "@/lib/utils/interfaces";
-
+import { GoogleMapsContext } from "@/lib/context/global/google-maps.context";
 
 const GoogleMapComponent = ({
-  apiKey,
   center,
   circleRadius = 300, // Default radius of 300 meters
   visible,
@@ -24,16 +17,8 @@ const GoogleMapComponent = ({
   // State for controlling zoom level
   const [zoom, setZoom] = useState(15);
 
-  // Memoize values to prevent reinitialization on re-renders
-  const libraries: Libraries = useMemo(() => ["places"], []);
-  const mapsKey = useMemo(() => apiKey, []);
-
-  // Load the Google Maps JavaScript API
-  const { isLoaded, loadError } = useJsApiLoader({
-    googleMapsApiKey: mapsKey,
-    libraries,
-    id: "google-map-script",
-  });
+  // Context
+  const { isLoaded } = useContext(GoogleMapsContext);
 
   // useEffects
 
@@ -76,7 +61,7 @@ const GoogleMapComponent = ({
   }, []);
 
   // handlers
-  
+
   // Handler for zoom in button
   const handleZoomIn = useCallback(() => {
     if (mapInstance) {
@@ -99,22 +84,21 @@ const GoogleMapComponent = ({
   if (!visible) return null;
 
   // Show error message if maps failed to load
-  if (loadError) {
-    return (
-      <div
-        style={mapContainerStyle}
-        className="flex items-center justify-center bg-gray-100"
-      >
-        Error loading maps
-      </div>
-    );
-  }
+  // if (loadError) {
+  //   return (
+  //     <div
+  //       style={mapContainerStyle}
+  //       className="flex items-center justify-center bg-gray-100"
+  //     >
+  //       Error loading maps
+  //     </div>
+  //   );
+  // }
 
   // Show loading state while API is being loaded
   if (!isLoaded) {
     return (
-      <div className="w-full h-[500px] bg-gray-200 rounded-md flex items-center justify-center text-gray-500">
-    </div>
+      <div className="w-full h-[500px] bg-gray-200 rounded-md flex items-center justify-center text-gray-500"></div>
     );
   }
 
