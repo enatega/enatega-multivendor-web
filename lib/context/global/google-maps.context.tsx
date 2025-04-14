@@ -28,7 +28,7 @@ export const GoogleMapsProvider: React.FC<IGoogleMapsProviderProps> = ({
 }) => {
   const { showToast } = useContext(ToastContext);
 
-  const { isLoaded, loadError } = useJsApiLoader({
+  const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
     googleMapsApiKey: apiKey,
     libraries: libraries,
