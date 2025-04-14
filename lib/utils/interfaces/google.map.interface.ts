@@ -86,8 +86,7 @@ export interface IUpdateRestaurantDeliveryZoneVariables {
 
 // Interface for Google Map component props
 export interface IGoogleMapComponentProps {
-  apiKey: string;                       // Google Maps API key
   center: { lat: number; lng: number }; // Center coordinates for the map
-  circleRadius?: number;                // Optional prop for circle radius in meters
-  visible: boolean;                     // Controls visibility of the map
+  circleRadius?: number; // Optional prop for circle radius in meters
+  visible: boolean; // Controls visibility of the map
 }
