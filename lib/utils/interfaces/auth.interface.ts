@@ -7,7 +7,7 @@ export interface IAuthModalProps {
 }
 
 interface Point {
-  coordinates: [string];
+  coordinates: [number, number];
 }
 
 export interface IUserAddress {
@@ -22,4 +22,9 @@ export interface IUserAddress {
 export interface IUserAddressProps {
   userAddress: IUserAddress | null;
   setUserAddress: (address: IUserAddress | null) => void;
+}
+
+export interface IUserAddressComponentProps {
+  visible: boolean;
+  onHide: () => void;
 }
