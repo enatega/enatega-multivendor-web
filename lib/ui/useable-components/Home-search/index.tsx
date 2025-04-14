@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect, useContext } from 'react';
 import { GoogleMapsContext } from '@/lib/context/global/google-maps.context';
-import { useLocationContext } from '@/lib/context/Location/location.context';
+import { useLocationContext } from '@/lib/context/Location/Location.context';
 import useDebounce from '@/lib/hooks/useDebounce';
 import { useRouter } from 'next/navigation'; 
 
