@@ -747,3 +747,12 @@ Discovery Caurousal
   color: #0369a1 !important;
   font-weight: 600 !important;
 }
+
+.p-stepper-nav{
+  display: none !important;
+}
+
+.p-inputotp-input{
+  border:1px solid lightgray;
+  border-radius: 32px;
+}

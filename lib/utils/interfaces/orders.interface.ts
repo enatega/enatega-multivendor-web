@@ -65,6 +65,7 @@ export interface IUser {
   name?: string;
   phone?: string;
   email?: string;
+  token?:string;
 }
 
 export interface IRider {
