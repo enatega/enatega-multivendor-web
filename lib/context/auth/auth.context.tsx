@@ -187,7 +187,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
           ...user,
         },
       });
-      if (userData.data?.createUser.userId) {
+      if (userData.data?.createUser && userData.data.createUser.userId) {
         localStorage.setItem("token", userData.data.createUser.token);
         localStorage.setItem("userId", userData.data.createUser.userId);
         const {
@@ -201,7 +201,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
           isNewUser,
           picture,
           userTypeId,
-        } = userData.data?.createUser;
+        } = userData.data.createUser;
         setUser(() => ({
           userId,
           email,
