@@ -144,6 +144,10 @@ export interface IUserAddress {
   label: string;
   selected?: boolean;
 }
+export interface IUserAddressProps {
+  userAddress: IUserAddress | null;
+  setUserAddress: (address: IUserAddress | null) => void;
+}
 
 export interface IEnterPasswordProps {
   handleChangePanel: (index: number) => void;
