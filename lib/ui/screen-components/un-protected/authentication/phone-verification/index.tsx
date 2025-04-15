@@ -31,8 +31,14 @@ export default function PhoneVerification({
   // Hooks
   const { SKIP_MOBILE_VERIFICATION, TEST_OTP } = useConfig();
   const t = useTranslations();
-  const { user, otp, setOtp, sendOtpToPhoneNumber, setIsAuthModalVisible } =
-    useAuth();
+  const {
+    user,
+    otp,
+    setOtp,
+    sendOtpToPhoneNumber,
+    setIsAuthModalVisible,
+    isRegistering,
+  } = useAuth();
   const { showToast } = useToast();
   const { profile } = useUser();
 
@@ -56,19 +62,24 @@ export default function PhoneVerification({
   const handleSubmit = async () => {
     try {
       if (String(phoneOtp) === String(otp) && !!user?.phone) {
+        const args = isRegistering?{
+          name: user?.name ?? "",
+          phoneIsVerified: true,
+        }:{
+          phone:user?.phone,
+          name: user?.name ?? "",
+          phoneIsVerified: true,
+        };
+        
         const userData = await updateUser({
-          variables: {
-            phone: user?.phone,
-            name: user?.name ?? "",
-            phoneIsVerified: true,
-          },
+          variables: args,
         });
         setOtp("");
         setPhoneOtp("");
-        console.log({userData:userData}, "userData")
-        console.log({ isEmailVerified: userData.data?.updateUser?.emailIsVerified });
-        if (!userData.data?.updateUser?.emailIsVerified) {
+        if (!userData.data?.updateUser?.emailIsVerified && !user.email) {
           handleChangePanel(5);
+        } else if (!userData.data?.updateUser?.emailIsVerified && user.email) {
+          handleChangePanel(3);
         } else {
           handleChangePanel(0);
           setIsAuthModalVisible(false);

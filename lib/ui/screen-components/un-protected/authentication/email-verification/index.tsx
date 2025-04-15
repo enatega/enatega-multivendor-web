@@ -29,8 +29,14 @@ export default function EmailVerification({
   // Hooks
   const t = useTranslations();
   const { SKIP_EMAIL_VERIFICATION, TEST_OTP } = useConfig();
-  const { user, setIsAuthModalVisible, otp, setOtp, sendOtpToEmailAddress } =
-    useAuth();
+  const {
+    user,
+    setIsAuthModalVisible,
+    otp,
+    setOtp,
+    sendOtpToEmailAddress,
+    sendOtpToPhoneNumber,
+  } = useAuth();
   const { showToast } = useToast();
   const { profile } = useUser();
 
@@ -52,6 +58,8 @@ export default function EmailVerification({
 
   // Handlers
   const handleSubmit = async () => {
+    console.log("user data --- from email verification", { user });
+
     try {
       if (SKIP_EMAIL_VERIFICATION) {
         if (profile?.phoneIsVerified) {
@@ -82,14 +90,13 @@ export default function EmailVerification({
         if (String(emailOtp) === String(otp) && !!user?.email) {
           const userData = await updateUser({
             variables: {
-              email: user?.email ?? "",
               name: user?.name ?? "",
+              email: user?.email ?? "",
               emailIsVerified: true,
             },
           });
           setOtp("");
           setEmailOtp("");
-          console.log({isPhoneVerified:userData?.data?.updateUser?.phoneIsVerified})
           if (userData?.data?.updateUser?.phoneIsVerified) {
             showToast({
               type: "success",
@@ -103,6 +110,17 @@ export default function EmailVerification({
             });
             handleChangePanel(0);
             setIsAuthModalVisible(false);
+          } else if (
+            !userData?.data?.updateUser?.phoneIsVerified &&
+            user.phone
+          ) {
+            showToast({
+              type: "success",
+              title: t("Email Verification"),
+              message: t("Your email is verified successfully"),
+            });
+            sendOtpToPhoneNumber(user.phone);
+            handleChangePanel(6);
           } else {
             showToast({
               type: "success",

@@ -100,8 +100,13 @@ export const CREATE_USER = gql`
       token
       tokenExpiration
       name
-      email
       phone
+      phoneIsVerified
+      email
+      emailIsVerified
+      picture
+      isNewUser
+      userTypeId
     }
   }
 `;

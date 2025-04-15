@@ -76,6 +76,9 @@ export interface IAuthContextProps {
   setOtp: Dispatch<SetStateAction<string | null>>;
   sendOtpToEmailAddress: { (email: string): Promise<void> };
   sendOtpToPhoneNumber: { (phone: string): Promise<void> };
+  handleCreateUser: (user: ICreateUserArguments) => Promise<ICreateUserData>;
+  isRegistering: boolean;
+  setIsRegistering: Dispatch<SetStateAction<boolean>>;
 }
 export interface ILoginProfile {
   userId?: string;
@@ -124,14 +127,12 @@ export interface ISendOtpToEmailResponse {
 export interface IUpdateUserResponse {
   updateUser: {
     name: string;
-    phone: string;
+    phone?: string;
     phoneIsVerified: boolean;
     emailIsVerified: boolean;
   };
 }
 export interface Point {
-  coordinates: [string];
-interface Point {
   coordinates: [number, number];
 }
 
@@ -154,4 +155,30 @@ export interface IEnterPasswordProps {
 export interface IUserAddressComponentProps {
   visible: boolean;
   onHide: () => void;
+}
+
+export interface ICreateUserData {
+  userId: string;
+  token: string;
+  tokenExpiration: number;
+  name: string;
+  phone: string;
+  phoneIsVerified: boolean;
+  email: string;
+  emailIsVerified: boolean;
+  picture: string;
+  isNewUser: boolean;
+  userTypeId: string;
+}
+export interface ICreateUserResponse {
+  createUser: ICreateUserData;
+}
+
+export interface ICreateUserArguments {
+  phone?: string;
+  email?: string;
+  password?: string;
+  name?: string;
+  notificationToken?: string;
+  appleId?: string;
 }

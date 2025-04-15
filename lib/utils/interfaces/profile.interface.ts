@@ -48,7 +48,7 @@ export interface IDeleteAccountDialogProps {
 }
 
 export interface IUpdateUserPhoneArguments {
-  phone: string;
+  phone?: string;
   name: string;
   phoneIsVerified: boolean;
 }

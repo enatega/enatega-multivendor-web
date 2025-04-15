@@ -17,6 +17,7 @@ import { useConfig } from "../configuration/configuration.context";
 
 // GQL
 import {
+  CREATE_USER,
   EMAIL_EXISTS,
   LOGIN,
   PHONE_EXISTS,
@@ -27,6 +28,9 @@ import {
 // Interface & Types
 import {
   IAuthContextProps,
+  ICreateUserArguments,
+  ICreateUserData,
+  ICreateUserResponse,
   IEmailExists,
   IEmailExistsResponse,
   ILoginProfile,
@@ -70,7 +74,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   const t = useTranslations();
   const router = useRouter();
   const { profile } = useUser();
-
+  const [isRegistering, setIsRegistering] = useState(false);
   // Mutations
   const [mutateEmailCheck] = useMutation<
     IEmailExistsResponse,
@@ -88,6 +92,10 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     useMutation<ISendOtpToPhoneResponse>(SENT_OTP_TO_PHONE);
   const [sendOtpToEmail] =
     useMutation<ISendOtpToEmailResponse>(SENT_OTP_TO_EMAIL);
+  const [createUser] = useMutation<
+    ICreateUserResponse,
+    undefined | ICreateUserArguments
+  >(CREATE_USER);
 
   // Checkers
   async function checkEmailExists(email: string): Promise<IEmailExists> {
@@ -166,6 +174,67 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         message:
           error.cause?.message || t("An error occurred while logging in"),
       });
+    }
+  };
+
+  const handleCreateUser = async (
+    user: ICreateUserArguments,
+  ): Promise<ICreateUserData> => {
+    try {
+      setIsRegistering(true);
+      const userData = await createUser({
+        variables: {
+          ...user,
+        },
+      });
+      if (userData.data?.createUser.userId) {
+        localStorage.setItem("token", userData.data.createUser.token);
+        localStorage.setItem("userId", userData.data.createUser.userId);
+        const {
+          userId,
+          email,
+          emailIsVerified,
+          phoneIsVerified,
+          name,
+          phone,
+          token,
+          isNewUser,
+          picture,
+          userTypeId,
+        } = userData.data?.createUser;
+        setUser(() => ({
+          userId,
+          email,
+          emailIsVerified,
+          phoneIsVerified,
+          name,
+          phone,
+          token,
+          isNewUser,
+          picture,
+          userTypeId,
+        }));
+        console.log(".....", user)
+        showToast({
+          type: "success",
+          title: t("Create User"),
+          message: t("You have successfully registered"),
+        });
+        return userData.data.createUser as ICreateUserData;
+      } else {
+        return {} as ICreateUserData;
+      }
+    } catch (err) {
+      const error = err as ApolloError;
+      console.error("An error occured while creating the user", error);
+      showToast({
+        type: "error",
+        title: t("Create User"),
+        message:
+          error.cause?.message || t("An error occured while creating the user"),
+      });
+      setIsRegistering(false);
+      return {} as ICreateUserData;
     }
   };
 
@@ -349,6 +418,9 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
           setOtp,
           sendOtpToEmailAddress,
           sendOtpToPhoneNumber,
+          handleCreateUser,
+          setIsRegistering,
+          isRegistering,
         }}
       >
         {children}
