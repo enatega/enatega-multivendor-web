@@ -20,6 +20,7 @@ import { IAppBarProps } from "@/lib/utils/interfaces/auth.interface";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import UserAddressComponent from "@/lib/ui/useable-components/address";
+import { useUserAddress } from "@/lib/context/address/address.context";
 
 const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
   // State for cart sidebar
@@ -28,6 +29,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
 
   // Access user context for cart information
   const { cartCount, calculateSubtotal } = useUser();
+  const { userAddress } = useUserAddress();
 
   // Format subtotal for display
   const formattedSubtotal = cartCount > 0 ? `$${calculateSubtotal()}` : "$0";
@@ -50,7 +52,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                     <LocationSvg />
                   </div>
                   <span className="text-gray-900 font-inter font-normal text-base leading-6 tracking-normal mr-2">
-                    SOME ADDRESS
+                    {userAddress?.deliveryAddress}
                   </span>
                   <FontAwesomeIcon icon={faChevronDown} />
                 </div>

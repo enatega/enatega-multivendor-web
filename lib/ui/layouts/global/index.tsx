@@ -13,6 +13,8 @@ import AuthModal from "@/lib/ui/screen-components/un-protected/authentication";
 import AppFooter from "../../screen-components/un-protected/layout/app-footer";
 import { useConfig } from "@/lib/context/configuration/configuration.context";
 import { GoogleMapsProvider } from "@/lib/context/global/google-maps.context";
+import useSetUserCurrentLocation from "@/lib/hooks/useSetUserCurrentLocation";
+import useLocation from "@/lib/hooks/useLocation";
 
 const AppLayout = ({ children }: IProvider) => {
   // States
@@ -20,11 +22,21 @@ const AppLayout = ({ children }: IProvider) => {
 
   // Hook
   const { GOOGLE_MAPS_KEY, LIBRARIES } = useConfig();
+  const { getCurrentLocation } = useLocation();
+  const { onSetUserLocation } = useSetUserCurrentLocation();
 
   // Handlers
+  const onInit = () => {
+    if (!GOOGLE_MAPS_KEY) return;
+    getCurrentLocation(onSetUserLocation);
+  };
   const handleModalToggle = () => {
     setIsAuthModalVisible((prev) => !prev);
   };
+
+  useEffect(() => {
+    onInit();
+  }, [GOOGLE_MAPS_KEY]);
 
   const UI = (
     <div className="layout-main">

@@ -13,6 +13,7 @@ export interface IDropdownSelectItem {
   _id?: string;
   label?: string;
   code?: string;
+  detail?: string;
   body?: () => void;
 }
 export interface IRiderDropDownSelectItem extends IDropdownSelectItem {
