@@ -4,11 +4,10 @@ import CustomPasswordTextField from "@/lib/ui/useable-components/password-input-
 
 // Hooks
 import { useAuth } from "@/lib/context/auth/auth.context";
+import useToast from "@/lib/hooks/useToast";
 import { useTranslations } from "next-intl";
 
 // Interfaces
-import useToast from "@/lib/hooks/useToast";
-import useUser from "@/lib/hooks/useUser";
 import { IAuthFormData, IEnterPasswordProps } from "@/lib/utils/interfaces";
 
 export default function EnterPassword({
@@ -22,7 +21,6 @@ export default function EnterPassword({
   const { handleUserLogin, sendOtpToEmailAddress, sendOtpToPhoneNumber, setIsAuthModalVisible} =
     useAuth();
   const { showToast } = useToast();
-  const {profile}=useUser()
 
   // Handlers
   const handleSubmit = async () => {

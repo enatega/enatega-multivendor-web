@@ -11,7 +11,6 @@ import EmailIcon from "@/public/assets/images/svgs/email";
 // Hooks
 import { useAuth } from "@/lib/context/auth/auth.context";
 import useToast from "@/lib/hooks/useToast";
-import useUser from "@/lib/hooks/useUser";
 import { useTranslations } from "next-intl";
 
 export default function LoginWithEmail({
@@ -22,7 +21,6 @@ export default function LoginWithEmail({
   // Hooks
   const t = useTranslations();
   const { setUser, checkEmailExists } = useAuth();
-  const { profile } = useUser();
   const { showToast } = useToast();
 
   // Handlers
