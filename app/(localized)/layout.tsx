@@ -21,16 +21,12 @@ import "./global.css";
 import AuthProvider from "@/lib/context/auth/auth.context";
 import {
   ConfigurationProvider,
-  useConfig,
 } from "@/lib/context/configuration/configuration.context";
 import { useSetupApollo } from "@/lib/hooks/useSetApollo";
 import { UserProvider } from "@/lib/context/User/User.context";
 // Layout
 import AppLayout from "@/lib/ui/layouts/global";
 import { FontawesomeConfig } from "@/lib/config";
-import { GoogleMapsProvider } from "@/lib/context/global/google-maps.context";
-// import { LocationProvider } from "@/lib/context/Location/Location.context";
-
 import { LocationProvider } from "@/lib/context/Location/Location.context";
 
 export default function RootLayout({
@@ -41,7 +37,6 @@ export default function RootLayout({
   // Apollo
   const client = useSetupApollo();
 
-  const { GOOGLE_MAPS_KEY, LIBRARIES } = useConfig();
 
   // Constants
   const value = {

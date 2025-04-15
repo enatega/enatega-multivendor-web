@@ -12,14 +12,13 @@ const CitySearch: React.FC = () => {
 
   const [cityName, setCityName] = useState<string>('');
   const [suggestions, setSuggestions] = useState<google.maps.places.AutocompletePrediction[]>([]);
-
   const debouncedCityName = useDebounce(cityName, 500);
 
   useEffect(() => {
     if (!isLoaded || !window.google || !debouncedCityName) return;
 
     const autocompleteService = new window.google.maps.places.AutocompleteService();
-
+    console.log(autocompleteService)
     autocompleteService.getPlacePredictions(
       { input: debouncedCityName, types: ['(cities)'] },
       (
