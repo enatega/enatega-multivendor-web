@@ -1,0 +1,88 @@
+import { useState } from "react";
+
+// Hooks
+import useGeocoding from "./useGeocoding";
+import useToast from "./useToast";
+
+// Context
+import { useUserAddress } from "../context/address/address.context";
+
+// Types
+import { LocationNameSpace } from "../utils/types/location";
+
+export default function useSetUserCurrentLocation() {
+  // States
+  const [isLocationFetching, setIsLocationFetching] = useState(false);
+
+  const { showToast } = useToast();
+  const { getAddress } = useGeocoding();
+  const { setUserAddress } = useUserAddress();
+
+  const onSetUserLocation: LocationNameSpace.LocationCallback = async (
+    error,
+    currrent_location
+  ) => {
+    try {
+      setIsLocationFetching(true);
+      if (error) {
+        setIsLocationFetching(false);
+        showToast({
+          type: "error",
+          title: "Current Location",
+          message: `Error fetching current location - ${error}`,
+        });
+        return;
+      }
+      if (!currrent_location) {
+        setIsLocationFetching(false);
+        showToast({
+          type: "error",
+          title: "Current Location",
+          message: `Error fetching current location`,
+        });
+        return;
+      }
+
+      // Fetch the address using the geocoding hook
+      const { formattedAddress } = await getAddress(
+        currrent_location.latitude,
+        currrent_location.longitude
+      );
+
+      let address = formattedAddress || "Unknown Address";
+
+      if (address.length > 21) {
+        address = address.substring(0, 21) + "...";
+      }
+
+      if (error) {
+        showToast({
+          type: "error",
+          title: "Current Location",
+          message: `Error fetching current location - ${error}`,
+        });
+        // navigation.navigate("SelectLocation");
+        setIsLocationFetching(false);
+      } else {
+        setIsLocationFetching(false);
+        setUserAddress({
+          label: "Home",
+          location: {
+            coordinates: [
+              currrent_location.longitude,
+              currrent_location.latitude,
+            ],
+          },
+          _id: "",
+
+          deliveryAddress: address,
+        });
+      }
+    } catch (fetchError) {
+      setIsLocationFetching(false);
+      console.error("Error fetching address using Google Maps API");
+    }
+  };
+
+  return { onSetUserLocation, isLocationFetching };
+}
