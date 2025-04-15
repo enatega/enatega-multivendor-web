@@ -20,7 +20,7 @@ export default function useUser() {
   const originalUpdateItemQuantity = context.updateItemQuantity;
   
   // Override the method with a debugging version
-  const debugUpdateItemQuantity = (key, changeAmount) => {
+  const debugUpdateItemQuantity = (key: string, changeAmount: number) => {
     console.log(`[useUser] updateItemQuantity called with:`, {
       key,
       changeAmount,
