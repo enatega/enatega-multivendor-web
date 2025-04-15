@@ -11,12 +11,17 @@ import {
 // Components
 import Divider from "../custom-divider";
 import { ItemDetailSection } from "./item-section";
+import ClearCartModal from "../clear-cart-modal";
 
 export default function FoodItemDetail(props: IFoodItemDetalComponentProps) {
   const { foodItem, addons, options, onClose } = props;
 
   // Access user context for cart functionality
-  const { addItem } = useUser();
+  const { 
+    addItem, 
+    restaurant: cartRestaurant, 
+    clearCart 
+  } = useUser();
 
   // State for selected variation
   const [selectedVariation, setSelectedVariation] = useState(
@@ -32,6 +37,9 @@ export default function FoodItemDetail(props: IFoodItemDetalComponentProps) {
   const [selectedAddonOptions, setSelectedAddonOptions] = useState<
     Record<string, Option | Option[]>
   >({});
+
+  // State for clear cart modal
+  const [showClearCartModal, setShowClearCartModal] = useState(false);
 
   // Get the addon objects for the selected variation
   const variationAddons =
@@ -100,6 +108,23 @@ export default function FoodItemDetail(props: IFoodItemDetalComponentProps) {
   const handleAddToCart = () => {
     if (!isFormValid() || !foodItem || !selectedVariation) return;
 
+    // Check if we need to clear the cart (different restaurant)
+    const needsClear = cartRestaurant && foodItem.restaurant !== cartRestaurant;
+
+    if (needsClear) {
+      // Show clear cart confirmation dialog
+      setShowClearCartModal(true);
+      return;
+    }
+
+    // Add item directly if from same restaurant or no restaurant in cart
+    addItemToCart();
+  };
+
+  // Function to add item to cart after confirmation if needed
+  const addItemToCart = () => {
+    if (!foodItem || !selectedVariation) return;
+
     // Format addons for cart
     const formattedAddons = Object.entries(selectedAddonOptions)
       .filter(([, value]) => value) // Filter out undefined/null values
@@ -131,6 +156,13 @@ export default function FoodItemDetail(props: IFoodItemDetalComponentProps) {
     }
   };
 
+  // Handle clear cart confirmation
+  const handleClearCartConfirm = async () => {
+    await clearCart();
+    addItemToCart();
+    setShowClearCartModal(false);
+  };
+
   // Calculate total price
   const calculateTotalPrice = () => {
     if (!selectedVariation) return 0;
@@ -156,7 +188,7 @@ export default function FoodItemDetail(props: IFoodItemDetalComponentProps) {
   };
 
   return (
-    <div className="bg-white max-w-md w-full">
+    <div className="bg-white max-w-md w-full p-2">
       <div className="text-center mb-4">
         <img
           alt={foodItem?.title}
@@ -178,7 +210,6 @@ export default function FoodItemDetail(props: IFoodItemDetalComponentProps) {
       <Divider />
 
       <div id="addon-sections">
-        {/* Variation Selection - With required tag */}
         {/* Variation Selection - With required tag */}
         {foodItem?.variations && foodItem.variations.length > 1 && (
           <ItemDetailSection
@@ -283,6 +314,13 @@ export default function FoodItemDetail(props: IFoodItemDetalComponentProps) {
           </span>
         </button>
       </div>
+
+      {/* Clear Cart Confirmation Modal */}
+      <ClearCartModal
+        isVisible={showClearCartModal}
+        onHide={() => setShowClearCartModal(false)}
+        onConfirm={handleClearCartConfirm}
+      />
     </div>
   );
 }
