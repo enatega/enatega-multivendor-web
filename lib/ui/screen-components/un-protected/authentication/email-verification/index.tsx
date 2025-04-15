@@ -10,16 +10,18 @@ import {
 
 // Hooks
 import { useAuth } from "@/lib/context/auth/auth.context";
-import { useTranslations } from "next-intl";
-
-// Prime React
-import { UPDATE_USER } from "@/lib/api/graphql";
 import { useConfig } from "@/lib/context/configuration/configuration.context";
 import useToast from "@/lib/hooks/useToast";
 import useUser from "@/lib/hooks/useUser";
 import { ApolloError, useMutation } from "@apollo/client";
-import { InputOtp } from "primereact/inputotp";
+import { useTranslations } from "next-intl";
 import { useEffect } from "react";
+
+// GQL
+import { UPDATE_USER } from "@/lib/api/graphql";
+
+// Prime React
+import { InputOtp } from "primereact/inputotp";
 
 export default function EmailVerification({
   handleChangePanel,
