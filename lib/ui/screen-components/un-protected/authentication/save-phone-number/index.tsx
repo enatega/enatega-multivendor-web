@@ -7,6 +7,7 @@ import PhoneIcon from "@/lib/utils/assets/svg/phone";
 // Hooks
 import { useAuth } from "@/lib/context/auth/auth.context";
 import useToast from "@/lib/hooks/useToast";
+import useUser from "@/lib/hooks/useUser";
 import CustomButton from "@/lib/ui/useable-components/button";
 import { useTranslations } from "next-intl";
 
@@ -14,7 +15,8 @@ export default function SavePhoneNumber() {
 
   // Hooks
   const t = useTranslations();
-  const { checkPhone, setUser, user } = useAuth();
+  const { sendOtpToPhoneNumber, setUser, user } = useAuth();
+  const {profile}=useUser();
   const { showToast } = useToast();
 
   // Handlers
@@ -33,15 +35,22 @@ export default function SavePhoneNumber() {
           message: "Please enter a valid phone number",
         });
         return;
+      }else if(profile?.phoneIsVerified){
+        showToast({
+          type: "info",
+          title: t("Phone Verification"),
+          message: t("Your phone number is already verified"),
+        });
+        return;
       }else{
-        await checkPhone(user?.phone)
+        await sendOtpToPhoneNumber(user?.phone)
       }
     } catch (error) {
       console.log(error);
       showToast({
         type: "error",
         title: t("Error"),
-        message: "An error occurec while saving the phone number",
+        message: t("An error occured while saving the phone number"),
       });
     }
   };

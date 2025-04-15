@@ -1,21 +1,27 @@
 // Components
-import { UPDATE_USER } from "@/lib/api/graphql";
-import { useAuth } from "@/lib/context/auth/auth.context";
-import useToast from "@/lib/hooks/useToast";
 import CustomButton from "@/lib/ui/useable-components/button";
 
 // Interfaces
 import {
   IPhoneVerificationProps,
+  IUpdateUserPhoneArguments,
   IUpdateUserResponse,
 } from "@/lib/utils/interfaces";
 import { ApolloError, useMutation } from "@apollo/client";
 
 // Hooks
+import { useAuth } from "@/lib/context/auth/auth.context";
+import { useConfig } from "@/lib/context/configuration/configuration.context";
+import useToast from "@/lib/hooks/useToast";
+import useUser from "@/lib/hooks/useUser";
 import { useTranslations } from "next-intl";
+import { useEffect } from "react";
 
 // Prime React
 import { InputOtp } from "primereact/inputotp";
+
+// GQL
+import { UPDATE_USER } from "@/lib/api/graphql";
 
 export default function PhoneVerification({
   phoneOtp,
@@ -23,20 +29,25 @@ export default function PhoneVerification({
   handleChangePanel,
 }: IPhoneVerificationProps) {
   // Hooks
+  const { SKIP_MOBILE_VERIFICATION, TEST_OTP } = useConfig();
   const t = useTranslations();
-  const { user, otp, checkPhone } = useAuth();
+  const { user, otp, setOtp, sendOtpToPhoneNumber, setIsAuthModalVisible } =
+    useAuth();
   const { showToast } = useToast();
+  const { profile } = useUser();
 
   // Mutations
   const [updateUser] = useMutation<
     IUpdateUserResponse,
-    undefined | { phone: string, name: string }
+    undefined | IUpdateUserPhoneArguments
   >(UPDATE_USER, {
     onError: (error: ApolloError) => {
       showToast({
         type: "error",
         title: t("Error"),
-        message: t("An error occurred while updating the user"),
+        message:
+          error.cause?.message ||
+          t("An error occurred while updating the user"),
       });
     },
   });
@@ -44,19 +55,28 @@ export default function PhoneVerification({
   // Handlers
   const handleSubmit = async () => {
     try {
-      console.log(
-        "🚀 ~ handleSubmit ~ phoneOtp === otp:",
-        phoneOtp === otp,
-        phoneOtp,
-        otp,
-      );
       if (String(phoneOtp) === String(otp) && !!user?.phone) {
-        handleChangePanel(5);
-        await updateUser({
+        const userData = await updateUser({
           variables: {
             phone: user?.phone,
-            name:user?.name??""
+            name: user?.name ?? "",
+            phoneIsVerified: true,
           },
+        });
+        setOtp("");
+        setPhoneOtp("");
+        console.log({userData:userData}, "userData")
+        console.log({ isEmailVerified: userData.data?.updateUser?.emailIsVerified });
+        if (!userData.data?.updateUser?.emailIsVerified) {
+          handleChangePanel(5);
+        } else {
+          handleChangePanel(0);
+          setIsAuthModalVisible(false);
+        }
+        return showToast({
+          type: "success",
+          title: t("Phone Verification"),
+          message: t("Your phone number is verified successfully"),
         });
       } else {
         showToast({
@@ -72,9 +92,10 @@ export default function PhoneVerification({
       );
     }
   };
+
   const handleResendPhoneOtp = () => {
     if (user?.phone) {
-      checkPhone(user?.phone);
+      sendOtpToPhoneNumber(user?.phone);
       showToast({
         type: "success",
         title: t("OTP Resent"),
@@ -89,6 +110,24 @@ export default function PhoneVerification({
       handleChangePanel(4);
     }
   };
+
+  // UseEffects
+  useEffect(() => {
+    if (SKIP_MOBILE_VERIFICATION) {
+      setOtp(TEST_OTP);
+      showToast({
+        type: "success",
+        title: t("Phone Verification"),
+        message: t("Your phone number is verified successfully"),
+      });
+      if (!profile?.emailIsVerified) {
+        handleChangePanel(5);
+      } else {
+        handleChangePanel(0);
+        setIsAuthModalVisible(false);
+      }
+    }
+  }, [SKIP_MOBILE_VERIFICATION]);
   return (
     <div className="flex flex-col justify-between item-center self-center">
       <p>

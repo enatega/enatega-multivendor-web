@@ -10,6 +10,8 @@ import EmailIcon from "@/public/assets/images/svgs/email";
 
 // Hooks
 import { useAuth } from "@/lib/context/auth/auth.context";
+import useToast from "@/lib/hooks/useToast";
+import useUser from "@/lib/hooks/useUser";
 import { useTranslations } from "next-intl";
 
 export default function SaveEmailAddress({
@@ -17,9 +19,48 @@ export default function SaveEmailAddress({
 }: ISaveEmailAddressProps) {
   // Hooks
   const t = useTranslations();
-  const { setUser, user } = useAuth();
+  const {showToast} = useToast();
+  const { setUser, user, sendOtpToEmailAddress, setIsAuthModalVisible} = useAuth();
+  const {profile} = useUser();
 
   // Handlers
+  const handleSubmit = async () => {
+    try {
+      if (!user?.email) {
+        showToast({
+          type: "error",
+          title: t("Error"),
+          message: t("Please enter a valid email address"),
+        });
+        return;
+      }
+      if (!profile?.emailIsVerified) {
+        await sendOtpToEmailAddress(user?.email);
+        handleChangePanel(3);
+        return;
+      } else{
+        showToast({
+          type:"info",
+          title: t("Email Verification"),
+          message:t("Your email is already verified")
+        })
+        if(profile?.phoneIsVerified){
+          handleChangePanel(0);
+          setIsAuthModalVisible(false)
+          showToast({
+            type: "success",
+            title: t("Login"),
+            message: t("You have logged in successfully"), // put ! at the end of the statement in the translation
+          });
+        }else{
+          handleChangePanel(4);
+        }
+        
+      }
+    } catch (error) {
+      console.error('An error occurred while saving email address:', error);
+    }
+  }
   const handleChange = (email: string) => {
     setUser((prev) => ({
       ...prev,
@@ -47,7 +88,7 @@ export default function SaveEmailAddress({
       </div>
       <CustomButton
         label={t("Continue")}
-        onClick={() => handleChangePanel(3)}
+        onClick={handleSubmit}
         className={`bg-[#5AC12F] flex items-center justify-center gap-x-4 px-3 rounded-full border border-gray-300 p-3 m-auto w-72`}
       />
     </div>

@@ -2,33 +2,179 @@
 import CustomButton from "@/lib/ui/useable-components/button";
 
 // Interfaces
-import { IEmailVerificationProps } from "@/lib/utils/interfaces";
+import {
+  IEmailVerificationProps,
+  IUpdateUserEmailArguments,
+  IUpdateUserResponse,
+} from "@/lib/utils/interfaces";
 
 // Hooks
 import { useAuth } from "@/lib/context/auth/auth.context";
 import { useTranslations } from "next-intl";
 
 // Prime React
+import { UPDATE_USER } from "@/lib/api/graphql";
+import { useConfig } from "@/lib/context/configuration/configuration.context";
+import useToast from "@/lib/hooks/useToast";
+import useUser from "@/lib/hooks/useUser";
+import { ApolloError, useMutation } from "@apollo/client";
 import { InputOtp } from "primereact/inputotp";
 import { useEffect } from "react";
 
 export default function EmailVerification({
   handleChangePanel,
+  emailOtp,
+  setEmailOtp,
 }: IEmailVerificationProps) {
   // Hooks
   const t = useTranslations();
-  const { user, emailOtp, setEmailOtp } = useAuth();
+  const { SKIP_EMAIL_VERIFICATION, TEST_OTP } = useConfig();
+  const { user, setIsAuthModalVisible, otp, setOtp, sendOtpToEmailAddress } =
+    useAuth();
+  const { showToast } = useToast();
+  const { profile } = useUser();
 
+  // Mutations
+  const [updateUser] = useMutation<
+    IUpdateUserResponse,
+    undefined | IUpdateUserEmailArguments
+  >(UPDATE_USER, {
+    onError: (error: ApolloError) => {
+      showToast({
+        type: "error",
+        title: t("Error"),
+        message:
+          error.cause?.message ||
+          t("An error occurred while updating the user"),
+      });
+    },
+  });
+
+  // Handlers
+  const handleSubmit = async () => {
+    try {
+      if (SKIP_EMAIL_VERIFICATION) {
+        if (profile?.phoneIsVerified) {
+          showToast({
+            type: "success",
+            title: t("Email Verification"),
+            message: t("Your email is verified successfully"),
+          });
+          showToast({
+            type: "success",
+            title: t("Login"),
+            message: t("You have logged in successfully"), // put ! at the end of the statement in the translation
+          });
+          handleChangePanel(0);
+          setOtp("");
+          setEmailOtp("");
+          setIsAuthModalVisible(false);
+        } else {
+          showToast({
+            type: "success",
+            title: t("Email Verification"),
+            message: t("Your email is verified successfully"),
+          });
+          setOtp(TEST_OTP);
+          handleChangePanel(4);
+        }
+      } else {
+        if (String(emailOtp) === String(otp) && !!user?.email) {
+          const userData = await updateUser({
+            variables: {
+              email: user?.email ?? "",
+              name: user?.name ?? "",
+              emailIsVerified: true,
+            },
+          });
+          setOtp("");
+          setEmailOtp("");
+          console.log({isPhoneVerified:userData?.data?.updateUser?.phoneIsVerified})
+          if (userData?.data?.updateUser?.phoneIsVerified) {
+            showToast({
+              type: "success",
+              title: t("Email Verification"),
+              message: t("Your email is verified successfully"),
+            });
+            showToast({
+              type: "success",
+              title: t("Login"),
+              message: t("You have logged in successfully"), // put ! at the end of the statement in the translation
+            });
+            handleChangePanel(0);
+            setIsAuthModalVisible(false);
+          } else {
+            showToast({
+              type: "success",
+              title: t("Email Verification"),
+              message: t("Your email is verified successfully"),
+            });
+            handleChangePanel(4);
+          }
+        } else {
+          return showToast({
+            type: "error",
+            title: t("OTP Error"),
+            message: t("Please enter a valid OTP code"),
+          });
+        }
+      }
+    } catch (error) {
+      console.error("An error occured while email verification:", error);
+      showToast({
+        type: "error",
+        title: t("Error"),
+        message: t("An error occurred while verifying the email"),
+      });
+    }
+  };
+
+  const handleOtpResend = async () => {
+    if (user?.email) {
+      await sendOtpToEmailAddress(user?.email);
+    } else {
+      showToast({
+        type: "error",
+        title: t("Error"),
+        message: t("Please enter a valid email address"),
+      });
+    }
+  };
+  // UseEffects
   useEffect(() => {
-    if(!user?.email) {
+    if (!user?.email) {
       handleChangePanel(4);
     }
-  },[user?.email])
+  }, [user?.email]);
+
+  useEffect(() => {
+    if (SKIP_EMAIL_VERIFICATION) {
+      setOtp(TEST_OTP);
+      if (profile?.phoneIsVerified) {
+        handleChangePanel(0);
+        setIsAuthModalVisible(false);
+        showToast({
+          type: "success",
+          title: t("Login"),
+          message: t("You have logged in successfully"), // put ! at the end of the statement in the translation
+        });
+      } else {
+        handleChangePanel(4);
+      }
+      showToast({
+        type: "success",
+        title: t("Email Verification"),
+        message: t("Your email is verified successfully"),
+      });
+      setOtp("");
+      setEmailOtp("");
+    }
+  }, [SKIP_EMAIL_VERIFICATION]);
   return (
     <div className="flex flex-col justify-between item-center self-center p-4">
       <p>
         {t("We have sent OTP code to")}&nbsp;
-        <span className="font-bold">{user?.email??"example@email.com"}</span>
+        <span className="font-bold">{user?.email ?? "example@email.com"}</span>
       </p>
       <p className="font-light text-sm">{t("Please check your inbox")}</p>
       <InputOtp
@@ -37,17 +183,20 @@ export default function EmailVerification({
         color="red"
         autoFocus={true}
         mask
+        maxLength={6}
+        length={6}
         className="w-full h-20 my-2"
       />
 
       <CustomButton
         label={t("Continue")}
         className={`bg-[#5AC12F] flex items-center justify-center gap-x-4 px-3 rounded-full border border-gray-300 p-3 m-auto w-72 my-1`}
-        onClick={() => handleChangePanel(4)}
+        onClick={handleSubmit}
       />
       <CustomButton
         label={t("Resend OTP")}
         className={`bg-[#fff] flex items-center justify-center gap-x-4 px-3 rounded-full border border-gray-300 p-3 m-auto w-72 my-1`}
+        onClick={handleOtpResend}
       />
     </div>
   );

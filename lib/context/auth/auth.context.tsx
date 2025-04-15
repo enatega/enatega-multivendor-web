@@ -27,18 +27,21 @@ import {
 // Interface & Types
 import {
   IAuthContextProps,
+  IEmailExists,
+  IEmailExistsResponse,
   ILoginProfile,
   ILoginProfileResponse,
   IPhoneExistsResponse,
   ISendOtpToEmailResponse,
   ISendOtpToPhoneResponse,
-  IUserLoginArguments
+  IUserLoginArguments,
 } from "@/lib/utils/interfaces";
 
 // Apollo
 import { ApolloError, useMutation } from "@apollo/client";
 
 // Google API
+import useUser from "@/lib/hooks/useUser";
 import { onUseLocalStorage } from "@/lib/utils/methods/local-storage";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { useRouter } from "next/navigation";
@@ -66,10 +69,11 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   const { showToast } = useToast();
   const t = useTranslations();
   const router = useRouter();
+  const { profile } = useUser();
 
   // Mutations
   const [mutateEmailCheck] = useMutation<
-    IPhoneExistsResponse,
+    IEmailExistsResponse,
     undefined | { email: string }
   >(EMAIL_EXISTS);
   const [mutatePhoneCheck] = useMutation<
@@ -85,40 +89,34 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   const [sendOtpToEmail] =
     useMutation<ISendOtpToEmailResponse>(SENT_OTP_TO_EMAIL);
 
-  // const {data:userProfileData, refetch:fetchUserProfileData} = useQuery(PROFILE)
-
   // Checkers
-  async function checkEmail(email: string) {
+  async function checkEmailExists(email: string): Promise<IEmailExists> {
     try {
       const emailResponse = await mutateEmailCheck({
         variables: { email: email },
       });
-
-      if (emailResponse.data?.profile?._id) {
-        return true;
-      } else {
-        return false;
-      }
+      return emailResponse.data?.emailExist || ({} as IEmailExists);
     } catch (err) {
       const error = err as ApolloError;
       console.error("Error while checking email:", error);
-      return showToast({
+      showToast({
         type: "error",
         title: t("Email Check Error"),
         message:
           error.cause?.message ||
           t("An error occurred while checking the email"),
       });
+      return {} as IEmailExists;
     }
   }
 
-  async function checkPhone(phone: string) {
+  async function checkPhoneExists(phone: string) {
     try {
       const phoneResponse = await mutatePhoneCheck({
         variables: { phone: phone },
       });
       if (phoneResponse.data?.phoneExist?._id) {
-        return showToast({
+        showToast({
           type: "error",
           title: t("Phone Check Error"),
           message: t(
@@ -127,33 +125,9 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
             ), // put a ","m after "registered" and "." at the end of the sentence in the translation
           ),
         });
+        return true;
       } else {
-        if (SKIP_MOBILE_VERIFICATION) {
-          console.log("🚀 ~ checkPhone ~ SKIP_MOBILE_VERIFICATION:", {
-            SKIP_MOBILE_VERIFICATION,
-          });
-          setOtp(TEST_OTP);
-          setActivePanel(6);
-          return;
-        } else {
-          generateOTP();
-          setOtp((otpFrom.current??TEST_OTP))
-          const otpResponse = await sendOtpToPhone({
-            variables: { phone: phone, otp: otpFrom.current },
-          });
-          if (otpResponse.data?.sendOtpToPhoneNumber?.result) {
-            setActivePanel(6);
-
-          } else {
-            showToast({
-              type: "error",
-              title: t("Error Sending OTP"),
-              message: t("An error occurred while sending the OTP"),
-            });
-            setActivePanel(4);
-            return;
-          }
-        }
+        return false;
       }
     } catch (err) {
       const error = err as ApolloError;
@@ -175,8 +149,8 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         variables: { ...user },
       });
       const { data } = userResponse;
-      localStorage.setItem("userId", data?.login.userId??"");
-      localStorage.setItem("token", data?.login.token??"");
+      localStorage.setItem("userId", data?.login.userId ?? "");
+      localStorage.setItem("token", data?.login.token ?? "");
       return data;
     } catch (err) {
       const error = err as ApolloError;
@@ -195,35 +169,28 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  async function handleUserProfile(){
-    try {
-      
-    } catch (err) {
-      const error = err as ApolloError;
-      console.error('Error while fetching user profile:', error);
-      showToast({
-        type: "error",
-        title: t("Profile Error"),
-        message:
-          error.cause?.message || t("An error occurred while fetching profile"),
-      });
-    }
-  }
-
   // GQL Handlers
   function onLoginCompleted(data: ILoginProfileResponse) {
     try {
       setUser(data.login);
-      console.log(data.login);
+      console.log({ loginDataOnCompleted: data.login });
       if (!data.login.emailIsVerified) {
-        setActivePanel(3);
-        console.log("Email is not verified");
+        setActivePanel(5);
       } else if (!data.login.phoneIsVerified) {
         setActivePanel(4);
-        console.log("Phone is not verified");
       } else {
         router.push("/");
-        setIsAuthModalVisible(false);
+        if (profile?.phoneIsVerified && profile?.emailIsVerified) {
+          setActivePanel(0);
+          setIsAuthModalVisible(false);
+          showToast({
+            type: "success",
+            title: t("Login Success"),
+            message: t("You have logged in successfully"),
+          });
+        } else {
+          setActivePanel(4);
+        }
       }
     } catch (err) {
       const error = err as ApolloError;
@@ -249,6 +216,97 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   // Generators
   function generateOTP() {
     otpFrom.current = Math.floor(100000 + Math.random() * 900000).toString();
+  }
+
+  // OTP Handlers
+  async function sendOtpToEmailAddress(email: string) {
+    try {
+      if (SKIP_EMAIL_VERIFICATION) {
+        setOtp(TEST_OTP);
+        setActivePanel(5);
+        return;
+      } else {
+        generateOTP();
+        setOtp(otpFrom.current);
+        const otpResponse = await sendOtpToEmail({
+          variables: { email: email, otp: otpFrom.current },
+        });
+        if (otpResponse.data?.sendOtpToEmail?.result) {
+          setActivePanel(3);
+          showToast({
+            type: "info",
+            title: t("Email Verification"),
+            message: t(
+              `An OTP is sent at ${email} please verify your email address`,
+            ),
+          });
+          return;
+        } else {
+          showToast({
+            type: "error",
+            title: t("Error Sending OTP"),
+            message: t("An error occurred while sending the OTP"),
+          });
+          return;
+        }
+      }
+    } catch (err) {
+      const error = err as ApolloError;
+      console.error("Error while sending OTP to email:", error);
+      showToast({
+        type: "error",
+        title: t("Email OTP Error"),
+        message:
+          error.cause?.message ||
+          t("An error occurred while sending the OTP to email"),
+      });
+    }
+  }
+
+  async function sendOtpToPhoneNumber(phone: string) {
+    try {
+      if (SKIP_MOBILE_VERIFICATION) {
+        console.log("🚀 ~ sendOtpToPhoneNumber ~ SKIP_MOBILE_VERIFICATION:", {
+          SKIP_MOBILE_VERIFICATION,
+        });
+        setOtp(TEST_OTP);
+        setActivePanel(6);
+        return;
+      } else {
+        generateOTP();
+        setOtp(otpFrom.current);
+        const otpResponse = await sendOtpToPhone({
+          variables: { phone: phone, otp: otpFrom.current },
+        });
+        if (!otpResponse.data?.sendOtpToPhoneNumber?.result) {
+          showToast({
+            type: "error",
+            title: t("Error Sending OTP"),
+            message: t("An error occurred while sending the OTP"),
+          });
+          return;
+        } else {
+          showToast({
+            type: "info",
+            title: t("Phone Verification"),
+            message: t(
+              `An OTP is sent at ${phone} please verify your phone number`,
+            ),
+          });
+          setActivePanel(6);
+        }
+      }
+    } catch (err) {
+      const error = err as ApolloError;
+      console.error("Error while sending OTP to phone:", error);
+      showToast({
+        type: "error",
+        title: t("Phone OTP Error"),
+        message:
+          error.cause?.message ||
+          t("An error occurred while sending the OTP to phone"),
+      });
+    }
   }
 
   // Use Effects
@@ -280,15 +338,17 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
           setAuthToken,
           user,
           setUser,
-          checkEmail,
-          checkPhone,
+          checkEmailExists,
+          checkPhoneExists,
           handleUserLogin,
           activePanel,
           setActivePanel,
           isAuthModalVisible,
           setIsAuthModalVisible,
           otp,
-          setOtp
+          setOtp,
+          sendOtpToEmailAddress,
+          sendOtpToPhoneNumber,
         }}
       >
         {children}

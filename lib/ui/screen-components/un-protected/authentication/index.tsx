@@ -19,6 +19,7 @@ import { StepperPanel } from "primereact/stepperpanel";
 
 // Components
 import EmailVerification from "./email-verification";
+import EnterPassword from "./enter-password";
 import LoginWithEmail from "./login-with-email";
 import LoginWithGoogle from "./login-with-google";
 import PhoneVerification from "./phone-verification";
@@ -88,7 +89,7 @@ export default function AuthModal({
       showHeader={true}
       visible={isAuthModalVisible}
       onHide={handleModalToggle}
-      closable={activePanel <= 2}
+      closable={activePanel <= 3}
       contentStyle={{
         padding: "22px",
         borderBottomLeftRadius: "12px",
@@ -134,7 +135,6 @@ export default function AuthModal({
         <StepperPanel>
           <EmailVerification
             handleChangePanel={handleChangePanel}
-            email="example@gmail.com"
             emailOtp={emailOtp}
             setEmailOtp={setEmailOtp}
           />
@@ -148,11 +148,16 @@ export default function AuthModal({
         <StepperPanel>
           <PhoneVerification
             handleChangePanel={handleChangePanel}
-            phone={formData.phone ?? "+9234235899999"}
             phoneOtp={phoneOtp}
             setPhoneOtp={setPhoneOtp}
-            handleFormChange={handleFormChange}
+          />
+        </StepperPanel>
+        <StepperPanel>
+          <EnterPassword
             formData={formData}
+            setFormData={setFormData}
+            handleChangePanel={handleChangePanel}
+            handleFormChange={handleFormChange}
           />
         </StepperPanel>
       </Stepper>

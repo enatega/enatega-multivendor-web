@@ -42,6 +42,7 @@ export const LOGIN = gql`
 export const EMAIL_EXISTS = gql`
   mutation EmailExist($email: String!) {
     emailExist(email: $email) {
+      userType
       _id
     }
   }

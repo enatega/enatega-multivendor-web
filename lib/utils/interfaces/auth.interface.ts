@@ -1,6 +1,5 @@
 import { OverridableTokenClientConfig } from "@react-oauth/google";
 import { Dispatch, SetStateAction } from "react";
-import { IAddress } from "./address.interface";
 import { IUser } from "./orders.interface";
 
 export interface IAppBarProps {
@@ -38,16 +37,12 @@ export interface ISaveEmailAddressProps {
 export interface IEmailVerificationProps {
   emailOtp: string;
   setEmailOtp: Dispatch<SetStateAction<string>>;
-  email: string;
   handleChangePanel: (index: number) => void;
 }
 export interface IPhoneVerificationProps {
   phoneOtp: string;
   setPhoneOtp: Dispatch<SetStateAction<string>>;
-  phone: string;
   handleChangePanel: (index: number) => void;
-  handleFormChange: (name: string, value: string) => void;
-  formData: IAuthFormData;
 }
 
 export interface IUserLoginArguments {
@@ -66,8 +61,8 @@ export interface IAuthContextProps {
   setAuthToken: Dispatch<SetStateAction<string>>;
   user: IUser | null;
   setUser: Dispatch<SetStateAction<ILoginProfile | null>>;
-  checkEmail: (email: string) => Promise<boolean | void>;
-  checkPhone: (phone: string) => Promise<boolean | void>;
+  checkEmailExists: (email: string) => Promise<IEmailExists>;
+  checkPhoneExists: (phone: string) => Promise<boolean | void>;
   handleUserLogin: (
     user: IUserLoginArguments & {
       phone?: string;
@@ -79,6 +74,8 @@ export interface IAuthContextProps {
   setIsAuthModalVisible: Dispatch<SetStateAction<boolean>>;
   otp: string | null;
   setOtp: Dispatch<SetStateAction<string | null>>;
+  sendOtpToEmailAddress: { (email: string): Promise<void> };
+  sendOtpToPhoneNumber: { (phone: string): Promise<void> };
 }
 export interface ILoginProfile {
   userId?: string;
@@ -88,7 +85,7 @@ export interface ILoginProfile {
   phone?: string;
   phoneIsVerified?: boolean;
   email?: string;
-  emailIsVerified?: string;
+  emailIsVerified?: boolean;
   picture?: string;
   addresses?: {
     location?: {
@@ -108,8 +105,12 @@ export interface IPhoneExistsResponse {
   phoneExist: { _id: string };
 }
 
+export interface IEmailExists {
+  _id: string;
+  userType: string;
+}
 export interface IEmailExistsResponse {
-  emailExist: { _id: string };
+  emailExist: IEmailExists;
 }
 
 export interface ISendOtpToPhoneResponse {
@@ -121,22 +122,12 @@ export interface ISendOtpToEmailResponse {
 }
 
 export interface IUpdateUserResponse {
-  name: string;
-  email: string;
-  emailIsVerified: boolean;
-  phone: string;
-  phoneIsVerified: boolean;
-  password: string;
-  appleId?: string;
-  userType?: string;
-  isActive: boolean;
-  notificationToken?: string;
-  notificationTokenWeb?: string;
-  isOrderNotification: boolean;
-  isOfferNotification: boolean;
-  notifications: any[]; // You can replace `any` with a specific type if you have one
-  addresses: IAddress[]; // assuming `addressSchema` maps to an Address interface
-  favourite: string[];
+  updateUser: {
+    name: string;
+    phone: string;
+    phoneIsVerified: boolean;
+    emailIsVerified: boolean;
+  };
 }
 export interface Point {
   coordinates: [string];
@@ -149,4 +140,11 @@ export interface IUserAddress {
   details?: string;
   label: string;
   selected?: boolean;
+}
+
+export interface IEnterPasswordProps {
+  handleChangePanel: (index: number) => void;
+  handleFormChange: (name: string, value: string) => void;
+  setFormData: Dispatch<SetStateAction<IAuthFormData>>;
+  formData: IAuthFormData;
 }
