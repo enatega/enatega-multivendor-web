@@ -18,6 +18,7 @@ import { Stepper } from "primereact/stepper";
 import { StepperPanel } from "primereact/stepperpanel";
 
 // Components
+import useToast from "@/lib/hooks/useToast";
 import EmailVerification from "./email-verification";
 import EnterPassword from "./enter-password";
 import LoginWithEmail from "./login-with-email";
@@ -45,12 +46,18 @@ export default function AuthModal({
   const authenticationPanelRef = useRef(null);
 
   // Hooks
-  const { handleUserLogin, activePanel, setActivePanel, setUser } = useAuth();
+  const {
+    handleUserLogin,
+    activePanel,
+    setActivePanel,
+    setUser,
+    setIsAuthModalVisible,
+  } = useAuth();
+  const { showToast } = useToast();
 
   // Login With Google
   const googleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
-      console.log(tokenResponse);
       const userInfo = await fetch(
         "https://www.googleapis.com/oauth2/v3/userinfo",
         { headers: { Authorization: `Bearer ${tokenResponse.access_token}` } },
@@ -65,6 +72,19 @@ export default function AuthModal({
       });
       if (userLoginResponse) {
         setUser(userLoginResponse.login as ILoginProfile);
+        if (!userLoginResponse.login.emailIsVerified) {
+          setActivePanel(5);
+        } else if (!userLoginResponse.login.phoneIsVerified) {
+          setActivePanel(4);
+        } else {
+          setActivePanel(0);
+          setIsAuthModalVisible(false);
+          showToast({
+            type:"success",
+            title:"Login",
+            message:"You have logged in successfully"
+          });
+        }
       }
     },
 

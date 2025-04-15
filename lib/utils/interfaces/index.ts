@@ -32,4 +32,5 @@ export * from "./svg.interface";
 export * from "./table.interface";
 export * from "./text.interface";
 export * from "./toast.interface";
+export * from "./zone.interface";
 

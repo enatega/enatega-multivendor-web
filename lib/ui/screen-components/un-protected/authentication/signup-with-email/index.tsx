@@ -10,9 +10,20 @@ import { useTranslations } from "next-intl";
 
 export default function SignUpWithEmail({
   handleChangePanel,
+  formData,
+  handleFormChange,
 }: ILoginWithEmailProps) {
   // Hooks
   const t = useTranslations();
+
+  // Handlers
+  const handleSubmit = async () => {
+    try {
+      
+    } catch (error) {
+      console.error('An error occured while registering a new user', error);
+    }
+  }
   return (
     <div className="flex flex-col items-start justify-between w-full h-full">
       <PersonIcon />
@@ -24,28 +35,31 @@ export default function SignUpWithEmail({
       </div>
       <div className="flex flex-col gap-y-1 my-3 w-full">
         <CustomTextField
-          value=""
+          value={formData.name}
           showLabel={false}
-          name=""
+          name="name"
           type="text"
           placeholder={t("Name")}
+          onChange={(e) => handleFormChange("name", e.target.value)}
         />
       </div>
       <div className="flex flex-col gap-y-1 my-3 w-full">
         <CustomTextField
-          value=""
+          value={formData.email}
           showLabel={false}
-          name=""
+          name="email"
           type="email"
           placeholder={t("Email")}
+          onChange={(e) => handleFormChange("email", e.target.value)}
         />
       </div>
       <div className="flex flex-col gap-y-1 my-3 w-full">
         <CustomPasswordTextField
-          value=""
+          value={formData.password}
           showLabel={false}
-          name=""
+          name="password"
           placeholder={t("Password")}
+          onChange={(e) => handleFormChange("password", e.target.value)}
         />
         <span
           className="self-end font-semibold text-sm underline cursor-pointer text-[#5AC12F]"
@@ -57,7 +71,7 @@ export default function SignUpWithEmail({
       <CustomButton
         label={t("Continue")}
         className={`bg-[#5AC12F] flex items-center justify-center gap-x-4 px-3 rounded-full border border-gray-300 p-3 m-auto w-72`}
-        onClick={()=>handleChangePanel(1)}
+        onClick={() => handleChangePanel(1)}
       />
     </div>
   );

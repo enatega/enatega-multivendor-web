@@ -131,6 +131,8 @@ export interface IUpdateUserResponse {
 }
 export interface Point {
   coordinates: [string];
+interface Point {
+  coordinates: [number, number];
 }
 
 export interface IUserAddress {
@@ -147,4 +149,9 @@ export interface IEnterPasswordProps {
   handleFormChange: (name: string, value: string) => void;
   setFormData: Dispatch<SetStateAction<IAuthFormData>>;
   formData: IAuthFormData;
+}
+
+export interface IUserAddressComponentProps {
+  visible: boolean;
+  onHide: () => void;
 }

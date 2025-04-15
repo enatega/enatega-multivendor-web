@@ -301,6 +301,19 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
     []
   );
 
+  const onInit = async (isSubscribed: true) => {
+    const _token = localStorage.getItem("token") || null;
+
+    if (_token) return;
+
+    setToken(localStorage.getItem("token") || null);
+
+    isSubscribed && setIsLoading(true);
+    isSubscribed && (await fetchProfile());
+    isSubscribed && (await fetchOrders());
+    isSubscribed && setIsLoading(false);
+  };
+
   // Define setCartRestaurant before it's used in dependencies
   const setCartRestaurant = useCallback(async (id: string) => {
     setRestaurant(id);
@@ -334,19 +347,14 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
 
   // Load user profile and orders
   useEffect(() => {
+    let isSubscribed = true;
+
+    onInit(isSubscribed);
+
     if (!token) {
       setIsLoading(false);
       return;
     }
-
-    let isSubscribed = true;
-
-    (async () => {
-      isSubscribed && setIsLoading(true);
-      isSubscribed && (await fetchProfile());
-      isSubscribed && (await fetchOrders());
-      isSubscribed && setIsLoading(false);
-    })();
 
     return () => {
       isSubscribed = false;

@@ -9,6 +9,7 @@ import { ILocation } from "@/lib/utils/interfaces";
 
 // Hooks
 import useToast from "./useToast";
+import { useConfig } from "../context/configuration/configuration.context";
 
 type LocationCallback = (error: string | null, location?: ILocation) => void;
 
@@ -16,7 +17,7 @@ export default function useLocation() {
   // Toast Context
   const { showToast } = useToast();
 
-  const { GOOGLE_MAPS_KEY } = { GOOGLE_MAPS_KEY: "" }; //useConfiguration();
+  const { GOOGLE_MAPS_KEY } = useConfig();
 
   const latLngToGeoString = async ({
     latitude,
@@ -32,7 +33,7 @@ export default function useLocation() {
     return location.results[0].formatted_address;
   };
 
-  const getCurrentLocation = (callback: LocationCallback): void => {
+  const getCurrentLocation = (callback?: LocationCallback): void => {
     navigator.geolocation.getCurrentPosition(
       async (position: GeolocationPosition) => {
         const { latitude, longitude } = position.coords;
@@ -41,18 +42,21 @@ export default function useLocation() {
             latitude.toString(),
             longitude.toString()
           );
-          callback(null, {
-            label: "Home",
-            latitude,
-            longitude,
-            deliveryAddress: location.results[0].formatted_address,
-          });
+
+          callback &&
+            callback(null, {
+              label: "Home",
+              latitude,
+              longitude,
+              deliveryAddress: location.results[0].formatted_address,
+            });
         } catch (error) {
-          callback(error instanceof Error ? error.message : String(error));
+          callback &&
+            callback(error instanceof Error ? error.message : String(error));
         }
       },
       (error: GeolocationPositionError) => {
-        callback(error.message);
+        callback && callback(error.message);
         showToast({
           type: "error",
           title: "Current Location",

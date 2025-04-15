@@ -20,13 +20,16 @@ import { IAppBarProps } from "@/lib/utils/interfaces/auth.interface";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import UserAddressComponent from "@/lib/ui/useable-components/address";
+import { useUserAddress } from "@/lib/context/address/address.context";
 
 const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
   // State for cart sidebar
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isUserAddressModalOpen, setIsUserAddressModalOpen] = useState(false);
 
   // Access user context for cart information
   const { cartCount, calculateSubtotal } = useUser();
+  const { userAddress } = useUserAddress();
 
   // Format subtotal for display
   const formattedSubtotal = cartCount > 0 ? `$${calculateSubtotal()}` : "$0";
@@ -37,7 +40,10 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
         <div className="w-full">
           <PaddingContainer>
             <div className="flex flex-row items-center justify-between w-full h-16">
-              <div className="flex gap-x-2 items-center">
+              <div
+                className="flex gap-x-2 items-center cursor-pointer"
+                onClick={() => setIsUserAddressModalOpen(true)}
+              >
                 <Link href="/" className="text-xl font-bold text-gray-900">
                   Enatega
                 </Link>
@@ -46,7 +52,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                     <LocationSvg />
                   </div>
                   <span className="text-gray-900 font-inter font-normal text-base leading-6 tracking-normal mr-2">
-                    SOME ADDRESS
+                    {userAddress?.deliveryAddress}
                   </span>
                   <FontAwesomeIcon icon={faChevronDown} />
                 </div>
@@ -114,7 +120,10 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
         <Cart onClose={() => setIsCartOpen(false)} />
       </Sidebar>
 
-      <UserAddressComponent />
+      <UserAddressComponent
+        visible={isUserAddressModalOpen}
+        onHide={() => setIsUserAddressModalOpen(false)}
+      />
     </>
   );
 };
