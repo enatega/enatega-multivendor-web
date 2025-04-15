@@ -98,7 +98,7 @@ const ReviewsModal = ({
     const totalReviews = reviewResult.reviews.length;
 
     // Create results array for the star distribution
-    const results = [];
+    const results: { stars: number; count: number; percentage: number }[] = [];
 
     // Process each star rating from highest (5) to lowest (1)
     for (let stars = 5; stars >= 1; stars--) {

@@ -305,6 +305,19 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
     []
   );
 
+  const onInit = async (isSubscribed: true) => {
+    const _token = localStorage.getItem("token") || null;
+
+    if (_token) return;
+
+    setToken(localStorage.getItem("token") || null);
+
+    isSubscribed && setIsLoading(true);
+    isSubscribed && (await fetchProfile());
+    isSubscribed && (await fetchOrders());
+    isSubscribed && setIsLoading(false);
+  };
+
   // Define setCartRestaurant before it's used in dependencies
   const setCartRestaurant = useCallback(async (id: string) => {
     setRestaurant(id);
@@ -338,19 +351,14 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
 
   // Load user profile and orders
   useEffect(() => {
+    let isSubscribed = true;
+
+    onInit(isSubscribed);
+
     if (!token) {
       setIsLoading(false);
       return;
     }
-
-    let isSubscribed = true;
-
-    (async () => {
-      isSubscribed && setIsLoading(true);
-      isSubscribed && (await fetchProfile());
-      isSubscribed && (await fetchOrders());
-      isSubscribed && setIsLoading(false);
-    })();
 
     return () => {
       isSubscribed = false;
@@ -476,16 +484,17 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
     setCart((prevCart) => {
       const updatedCart = [...prevCart];
       const cartIndex = updatedCart.findIndex((c) => c.key === key);
-
+  
       if (cartIndex !== -1) {
-        updatedCart[cartIndex].quantity += quantity;
-
+        // Important: Set the exact new quantity instead of adding to prevent potential double-increments
+        updatedCart[cartIndex].quantity = updatedCart[cartIndex].quantity + quantity;
+  
         // Save to local storage
         if (typeof window !== "undefined") {
           localStorage.setItem("cartItems", JSON.stringify(updatedCart));
         }
       }
-
+  
       return updatedCart;
     });
   }, []);
@@ -521,12 +530,13 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
     setCart((prevCart) => {
       const updatedCart = [...prevCart];
       const cartIndex = updatedCart.findIndex((c) => c.key === key);
-
+  
       if (cartIndex === -1) return prevCart;
-
-      updatedCart[cartIndex].quantity -= 1;
+  
+      // Important: Ensure we're only decreasing by exactly 1
+      updatedCart[cartIndex].quantity = updatedCart[cartIndex].quantity - 1;
       const items = updatedCart.filter((c) => c.quantity > 0);
-
+  
       // Update localStorage
       if (typeof window !== "undefined") {
         if (items.length === 0) {
@@ -537,7 +547,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
           localStorage.setItem("cartItems", JSON.stringify(items));
         }
       }
-
+  
       return items;
     });
   }, []);
@@ -641,23 +651,82 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
     }
   }, [saveNotificationToken]);
 
-  // Enhanced methods for the useUser hook
   const updateItemQuantity = useCallback(
     async (key: string, changeAmount: number) => {
-      if (changeAmount > 0) {
-        await addQuantity(key, changeAmount);
-      } else if (changeAmount < 0) {
-        const absChange = Math.abs(changeAmount);
-        const item = cart.find((item) => item.key === key);
-
-        if (item && item.quantity <= absChange) {
-          await deleteItem(key);
-        } else {
-          await removeQuantity(key);
+      console.log(`[UserContext] updateItemQuantity start: key=${key}, change=${changeAmount}`);
+      
+      // Force change to be exactly +1 or -1
+      const safeChange = changeAmount > 0 ? 1 : -1;
+      console.log(`[UserContext] Using safe change value: ${safeChange}`);
+      
+      // Use a local variable that will be unique to each function call
+      // This ensures the flag is reset for each new click
+      let updateApplied = false;
+      
+      setCart((prevCart) => {
+        console.log(`[UserContext] setCart callback executing`);
+        
+        // If we've already applied an update in this callback invocation, don't do it again
+        if (updateApplied) {
+          console.log(`[UserContext] Preventing double update`);
+          return prevCart;
         }
-      }
+        
+        const updatedCart = [...prevCart];
+        const cartIndex = updatedCart.findIndex((c) => c.key === key);
+        
+        if (cartIndex === -1) {
+          console.log(`[UserContext] Item with key ${key} not found in cart`);
+          return prevCart;
+        }
+        
+        const currentItem = updatedCart[cartIndex];
+        const currentQuantity = currentItem.quantity;
+        console.log(`[UserContext] Current quantity for ${key}: ${currentQuantity}`);
+        
+        // For decrement
+        if (safeChange < 0) {
+          if (currentQuantity <= 1) {
+            console.log(`[UserContext] Removing item with key ${key} from cart`);
+            updatedCart.splice(cartIndex, 1);
+          } else {
+            console.log(`[UserContext] Decreasing quantity for ${key} from ${currentQuantity} to ${currentQuantity + safeChange}`);
+            updatedCart[cartIndex] = {
+              ...currentItem,
+              quantity: currentQuantity + safeChange
+            };
+          }
+        } 
+        // For increment
+        else {
+          console.log(`[UserContext] Increasing quantity for ${key} from ${currentQuantity} to ${currentQuantity + safeChange}`);
+          updatedCart[cartIndex] = {
+            ...currentItem,
+            quantity: currentQuantity + safeChange
+          };
+        }
+        
+        // Mark that we've applied an update
+        updateApplied = true;
+        
+        // Update localStorage
+        if (typeof window !== "undefined") {
+          if (updatedCart.length === 0) {
+            localStorage.removeItem("cartItems");
+            localStorage.removeItem("restaurant");
+            setRestaurant(null);
+          } else {
+            localStorage.setItem("cartItems", JSON.stringify(updatedCart));
+          }
+        }
+        
+        console.log(`[UserContext] Returning updated cart:`, updatedCart);
+        return updatedCart;
+      });
+      
+      console.log(`[UserContext] updateItemQuantity completed`);
     },
-    [addQuantity, cart, deleteItem, removeQuantity]
+    []
   );
 
   const removeItem = useCallback(

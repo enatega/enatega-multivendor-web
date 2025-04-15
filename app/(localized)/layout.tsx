@@ -19,15 +19,14 @@ import "./global.css";
 
 // Apollo
 import AuthProvider from "@/lib/context/auth/auth.context";
-import {
-  ConfigurationProvider,
-} from "@/lib/context/configuration/configuration.context";
+import { ConfigurationProvider } from "@/lib/context/configuration/configuration.context";
 import { useSetupApollo } from "@/lib/hooks/useSetApollo";
 import { UserProvider } from "@/lib/context/User/User.context";
 // Layout
 import AppLayout from "@/lib/ui/layouts/global";
 import { FontawesomeConfig } from "@/lib/config";
 import { LocationProvider } from "@/lib/context/Location/Location.context";
+import { UserAddressProvider } from "@/lib/context/address/address.context";
 
 export default function RootLayout({
   children,
@@ -36,7 +35,6 @@ export default function RootLayout({
 }>) {
   // Apollo
   const client = useSetupApollo();
-
 
   // Constants
   const value = {
@@ -57,7 +55,9 @@ export default function RootLayout({
                 <AuthProvider>
                   <UserProvider>
                     <LocationProvider>
-                      <AppLayout>{children}</AppLayout>
+                      <UserAddressProvider>
+                        <AppLayout>{children}</AppLayout>
+                      </UserAddressProvider>
                     </LocationProvider>
                   </UserProvider>
                 </AuthProvider>

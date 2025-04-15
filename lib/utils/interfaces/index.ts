@@ -32,3 +32,4 @@ export * from "./cuisines.interface";
 export * from "./cuisines-slider-card.interface";
 export * from "./coupon.interface";
 export * from "./location.interface";
+export * from "./zone.interface";
