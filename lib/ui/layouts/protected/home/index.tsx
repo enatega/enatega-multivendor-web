@@ -37,7 +37,7 @@ export default function HomeLayout({
   return (
     <div className="w-screen h-screen flex flex-col">
       {/* Sticky Top Tabs */}
-      <div className="sticky top-0 left-0 w-full bg-white z-50 pt-4 pb-4">
+      <div className="top-0 left-0 w-full bg-white z-50 pt-4 pb-4">
         <div className="flex justify-center items-center space-x-2 md:space-x-4 p-2 md:p-4 overflow-x-auto">
           <div
             className="flex items-center gap-x-1 p-2 md:pt-2 md:pb-2 md:pl-4 md:pr-4 text-gray-500 rounded-full cursor-pointer transition-all duration-300 whitespace-nowrap"

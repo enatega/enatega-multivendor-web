@@ -29,6 +29,7 @@ import { toSlug } from "@/lib/utils/methods";
 import ChatSvg from "@/lib/utils/assets/svg/chat";
 import ReviewsModal from "@/lib/ui/useable-components/reviews-modal";
 import InfoModal from "@/lib/ui/useable-components/info-modal";
+import CustomDialog from "@/lib/ui/useable-components/custom-dialog";
 
 export default function RestaurantDetailsScreen() {
   // Access the UserContext via our custom hook
@@ -485,7 +486,7 @@ export default function RestaurantDetailsScreen() {
       </div>
 
       {/* Food Item Detail Modal */}
-      <Dialog
+      <CustomDialog
         visible={showDialog}
         className="mx-4 md:mx-0" // Adds margin on small screens
         onHide={handleCloseFoodModal}
@@ -498,7 +499,7 @@ export default function RestaurantDetailsScreen() {
             onClose={handleCloseFoodModal}
           />
         )}
-      </Dialog>
+      </CustomDialog>
     </>
   );
 }

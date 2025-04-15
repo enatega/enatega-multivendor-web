@@ -156,7 +156,7 @@ export default function FoodItemDetail(props: IFoodItemDetalComponentProps) {
   };
 
   return (
-    <div className="bg-white max-w-md w-full">
+    <div className="bg-white max-w-md w-full p-2">
       <div className="text-center mb-4">
         <img
           alt={foodItem?.title}
