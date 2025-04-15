@@ -255,6 +255,7 @@ export default function UserAddressComponent(
       },
     });
 
+    setIndex([0, 0]);
     onHide();
   }
 
@@ -500,7 +501,10 @@ export default function UserAddressComponent(
         <div className="w-full flex justify-between gap-x-2">
           <button
             className="w-full  h-fit bg-transparent text-gray-900 py-2 border border-black rounded-full text-base lg:text-[14px]"
-            onClick={() => onHide()}
+            onClick={() => {
+              setIndex([0, 0]);
+              onHide();
+            }}
           >
             <span>Cancel</span>
           </button>
@@ -560,7 +564,10 @@ export default function UserAddressComponent(
   return (
     <Dialog
       visible={visible}
-      onHide={onHide}
+      onHide={() => {
+        setIndex([0, 0]);
+        onHide();
+      }}
       className="lg:w-1/3 w-full h-auto m-4"
       header={
         index !== 0 ?
