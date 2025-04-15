@@ -8,14 +8,12 @@ interface ClearCartModalProps {
   isVisible: boolean;
   onHide: () => void;
   onConfirm: () => void;
-  restaurantName: string;
 }
 
 export default function ClearCartModal({
   isVisible,
   onHide,
   onConfirm,
-  restaurantName,
 }: ClearCartModalProps) {
   return (
     <CustomDialog

@@ -283,7 +283,6 @@ export default function RestaurantDetailsScreen() {
         isVisible={showClearCartModal}
         onHide={() => setShowClearCartModal(false)}
         onConfirm={handleClearCartConfirm}
-        restaurantName={data?.restaurant?.name || ""}
       />
 
       <div className="w-screen h-screen flex flex-col pb-20">
