@@ -2,7 +2,7 @@
 
 // Core
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Sidebar } from "primereact/sidebar";
 
 // Components
@@ -21,6 +21,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import UserAddressComponent from "@/lib/ui/useable-components/address";
 import { useUserAddress } from "@/lib/context/address/address.context";
+import useLocation from "@/lib/hooks/useLocation";
+import useSetUserCurrentLocation from "@/lib/hooks/useSetUserCurrentLocation";
+import { useConfig } from "@/lib/context/configuration/configuration.context";
 
 const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
   // State for cart sidebar
@@ -28,11 +31,37 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
   const [isUserAddressModalOpen, setIsUserAddressModalOpen] = useState(false);
 
   // Access user context for cart information
-  const { cartCount, calculateSubtotal } = useUser();
-  const { userAddress } = useUserAddress();
+  const { GOOGLE_MAPS_KEY } = useConfig();
+  const { cartCount, calculateSubtotal, profile, loadingProfile } = useUser();
+  const { userAddress, setUserAddress } = useUserAddress();
+
+  // Hooks
+  const { getCurrentLocation } = useLocation();
+  const { onSetUserLocation } = useSetUserCurrentLocation();
 
   // Format subtotal for display
   const formattedSubtotal = cartCount > 0 ? `$${calculateSubtotal()}` : "$0";
+
+  // Handlers
+  const onInit = () => {
+    const selectedAddress = profile?.addresses.find(
+      (address) => address.selected
+    );
+
+    // ✅ If there's a selected address, use that
+    if (selectedAddress) {
+      setUserAddress(selectedAddress);
+    } else {
+      // 🚀 Otherwise, get current location if profile is loaded and maps key exists
+      if (!loadingProfile && GOOGLE_MAPS_KEY) {
+        getCurrentLocation(onSetUserLocation);
+      }
+    }
+  };
+
+  useEffect(() => {
+    onInit();
+  }, [GOOGLE_MAPS_KEY, profile]);
 
   return (
     <>
@@ -51,7 +80,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                   <div className="p-[4px] m-2 bg-gray-50 rounded-full">
                     <LocationSvg />
                   </div>
-                  <span className="text-gray-900 font-inter font-normal text-base leading-6 tracking-normal mr-2">
+                  <span className="text-gray-500 font-inter font-normal text-sm leading-6 tracking-normal mr-2">
                     {userAddress?.deliveryAddress}
                   </span>
                   <FontAwesomeIcon icon={faChevronDown} />
