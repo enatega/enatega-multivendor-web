@@ -320,7 +320,6 @@ export default function FoodItemDetail(props: IFoodItemDetalComponentProps) {
         isVisible={showClearCartModal}
         onHide={() => setShowClearCartModal(false)}
         onConfirm={handleClearCartConfirm}
-        restaurantName=""
       />
     </div>
   );
