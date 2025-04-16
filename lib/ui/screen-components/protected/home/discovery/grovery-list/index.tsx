@@ -3,11 +3,9 @@ import SliderCard from "@/lib/ui/useable-components/slider-card";
 import useNearByRestaurantsPreview from "@/lib/hooks/useNearByRestaurantsPreview";
 // loading skeleton
 import SliderSkeleton from "@/lib/ui/useable-components/custom-skeletons/slider.loading.skeleton";
-// interface
-import { IRestaurant } from "@/lib/utils/interfaces/restaurants.interface";
 
 function GroceryList() {
-  const { data, error, loading } = useNearByRestaurantsPreview();
+  const { error, loading, groceriesData } = useNearByRestaurantsPreview();
 
   if (loading) {
     return <SliderSkeleton />;
@@ -16,11 +14,6 @@ function GroceryList() {
   if (error) {
     return;
   }
-
-  let groceriesData: IRestaurant[] =
-    data?.nearByRestaurantsPreview.restaurants.filter(
-      (item) => item.shopType.toLowerCase() === "grocery"
-    ) || [];
 
   return <SliderCard title="Grocery list" data={groceriesData || []} />;
 }

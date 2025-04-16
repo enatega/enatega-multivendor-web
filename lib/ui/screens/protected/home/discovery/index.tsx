@@ -9,8 +9,7 @@ import {
   PopularStores,
   OrderItAgain
 } from "@/lib/ui/screen-components/protected/home";
-import GroceryCuisines from "@/lib/ui/useable-components/grocery-cuisines";
-import RestaurantCuisines from "@/lib/ui/useable-components/restaurant-cuisines";
+import CuisinesSection from "@/lib/ui/useable-components/cuisines-section";
 
 export default function DiscoveryScreen() {
   return (
@@ -18,9 +17,9 @@ export default function DiscoveryScreen() {
       <DiscoveryBannerSection />
       <OrderItAgain />
       <MostOrderedRestaurants />
-      <RestaurantCuisines />
+      <CuisinesSection restaurant={true} title="Restaurant cuisines"/>
       <RestaurantsNearYou />
-      <GroceryCuisines />
+      <CuisinesSection restaurant={false} title="Grocery cuisines"/>
       <GroceryList />
       <TopGroceryPicks />
       <TopRatedVendors />
