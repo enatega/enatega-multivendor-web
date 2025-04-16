@@ -4,7 +4,7 @@ import { GET_BANNERS } from "@/lib/api/graphql/queries";
 // gql
 import { useQuery } from "@apollo/client";
 // loading skeleton
-import DiscoveryBannerSkeleton from "./banner-loading-skeleton";
+import DiscoveryBannerSkeleton from "@/lib/ui/useable-components/custom-skeletons/banner.skeleton";
 // Interface
 import { IGetBannersResponse } from "@/lib/utils/interfaces";
 // banner card
@@ -24,13 +24,14 @@ export default function DiscoveryBannerSection() {
 
   return (
     <Carousel
-      className="discovery-carousel"
+      className="discovery-carousel flex justify-center items-center mb-[3%] md:mb-[2]"
       value={data?.banners}
       numVisible={2}
       numScroll={1}
       circular
       style={{ width: "100%" }}
       showNavigators
+      showIndicators={false}
       itemTemplate={(item) => <BannerCard item={item} />}
       autoplayInterval={5000}
       responsiveOptions={[
