@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 "use client";
 
 // Core
@@ -31,6 +32,7 @@ import {
 // Componentns
 import { PaddingContainer } from "@/lib/ui/useable-components/containers";
 import Divider from "@/lib/ui/useable-components/custom-divider";
+import UserAddressComponent from "@/lib/ui/useable-components/address";
 
 import { GoogleMapsContext } from "@/lib/context/global/google-maps.context";
 // Context
@@ -69,9 +71,13 @@ import {
 // Asets
 import HomeIcon from "../../../../../assets/home_icon.png";
 import RestIcon from "../../../../../assets/rest_icon.png";
+import { useUserAddress } from "@/lib/context/address/address.context";
+
 // import RiderIcon from "../../../../../assets/rider_icon.png";
 
 export default function OrderCheckoutScreen() {
+  const [isAddressSelectedOnce, setIsAddressSelectedOnce] = useState(false);
+  const [isUserAddressModalOpen, setIsUserAddressModalOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [deliveryType, setDeliveryType] = useState("Delivery");
   const [deliveryCharges, setDeliveryCharges] = useState(0);
@@ -96,6 +102,7 @@ export default function OrderCheckoutScreen() {
   const { showToast } = useToast();
   const { CURRENCY_SYMBOL, CURRENCY, DELIVERY_RATE, COST_TYPE } = useConfig();
   const { location, setLocation } = useLocationContext();
+  const { userAddress } = useUserAddress();
   const { cart, restaurant: restaurantId, clearCart, profile } = useUser();
   const { data: restaurantData } = useRestaurant(restaurantId || "");
 
@@ -310,6 +317,12 @@ export default function OrderCheckoutScreen() {
       return;
     }
 
+    // if false then select the address
+    if (!isAddressSelectedOnce) {
+      setIsUserAddressModalOpen(true);
+      return;
+    }
+
     if (checkPaymentMethod(CURRENCY, paymentMethod)) {
       const items = transformOrder(cart);
       placeOrder({
@@ -320,12 +333,19 @@ export default function OrderCheckoutScreen() {
           couponCode: coupon ? coupon.title : null,
           tipping: +selectedTip,
           taxationAmount: +taxCalculation(),
+          // address: {
+          //   label: location?.label,
+          //   deliveryAddress: location?.deliveryAddress,
+          //   details: location?.details,
+          //   longitude: "" + location?.longitude,
+          //   latitude: "" + location?.latitude,
+          // },
           address: {
-            label: location?.label,
-            deliveryAddress: location?.deliveryAddress,
-            details: location?.details,
-            longitude: "" + location?.longitude,
-            latitude: "" + location?.latitude,
+            label: userAddress?.label,
+            deliveryAddress: userAddress?.deliveryAddress,
+            details: userAddress?.details,
+            longitude: "" + userAddress?.location?.coordinates[0],
+            latitude: "" + userAddress?.location?.coordinates[1],
           },
           orderDate: new Date(),
           isPickedUp: isPickUp,
@@ -465,399 +485,400 @@ export default function OrderCheckoutScreen() {
   };
 
   return (
-    <div className="w-screen h-screen flex flex-col pb-20">
-      <div className="scrollable-container flex-1 overflow-auto">
-        {/* <!-- Header with map and navigation --> */}
-        <div className="relative">
-          {isLoaded ?
-            <GoogleMap
-              mapContainerStyle={{
-                width: "100%",
-                height: "400px",
-              }}
-              center={{
-                lat: 24.8607, // Example: Karachi
-                lng: 67.0011,
-              }}
-              zoom={13}
+    <>
+      <div className="w-screen h-screen flex flex-col pb-20">
+        <div className="scrollable-container flex-1 overflow-auto">
+          {/* <!-- Header with map and navigation --> */}
+          <div className="relative">
+            {isLoaded ?
+              <GoogleMap
+                mapContainerStyle={{
+                  width: "100%",
+                  height: "400px",
+                }}
+                center={{
+                  lat: 24.8607, // Example: Karachi
+                  lng: 67.0011,
+                }}
+                zoom={13}
+              >
+                {/* Custom Origin Marker */}
+                <Marker
+                  position={origin}
+                  icon={{
+                    url: HomeIcon.src, // Replace with your icon path or external URL
+                    scaledSize: new window.google.maps.Size(40, 40),
+                  }}
+                />
+
+                {/* Custom Destination Marker */}
+                <Marker
+                  position={destination}
+                  icon={{
+                    url: RestIcon.src, // Replace with your icon path or external URL
+                    scaledSize: new window.google.maps.Size(40, 40),
+                  }}
+                />
+
+                {!directions && (
+                  <DirectionsService
+                    options={{
+                      destination,
+                      origin,
+                      travelMode: google.maps.TravelMode.DRIVING,
+                    }}
+                    callback={directionsCallback}
+                  />
+                )}
+                {directions && (
+                  <DirectionsRenderer
+                    directions={directions}
+                    options={{
+                      directions,
+                      suppressMarkers: true, // Hide default markers
+                      polylineOptions: {
+                        strokeColor: "#5AC12F", // blue line
+                        strokeOpacity: 0.8,
+                        strokeWeight: 3, // thickness
+                        zIndex: 10,
+                      },
+                    }}
+                  />
+                )}
+              </GoogleMap>
+            : <>
+                <img
+                  alt="Map showing delivery route"
+                  className="w-full h-64 object-cover"
+                  height="300"
+                  src="https://storage.googleapis.com/a1aa/image/jt1AynRJJVtM9j1LRb30CodA1xsK2R23pWTOmRv3nsM.jpg"
+                  width="1200"
+                />
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-[#5AC12F] text-white rounded-full w-12 h-12 flex items-center justify-center text-xl font-bold">
+                  H
+                </div>{" "}
+              </>
+            }
+          </div>
+          {/* <!-- Toggle Prices Button for Mobile --> */}
+          <div className="sm:hidden fixed top-10 left-0 right-0 bg-transparent z-10 p-4">
+            <button
+              className="bg-white text-[#5AC12F] w-full py-2 px-4 rounded-full border border-gray-300 flex justify-between items-center"
+              onClick={togglePriceSummary}
             >
-              {/* Custom Origin Marker */}
-              <Marker
-                position={origin}
-                icon={{
-                  url: HomeIcon.src, // Replace with your icon path or external URL
-                  scaledSize: new window.google.maps.Size(40, 40),
-                }}
-              />
+              <span className="font-inter text-[14px]">
+                Total: {`${CURRENCY_SYMBOL} ${calculateTotal()}`}
+              </span>
 
-              {/* Custom Destination Marker */}
-              <Marker
-                position={destination}
-                icon={{
-                  url: RestIcon.src, // Replace with your icon path or external URL
-                  scaledSize: new window.google.maps.Size(40, 40),
-                }}
-              />
+              <FontAwesomeIcon icon={faChevronDown} className="text-[14px]" />
+            </button>
+          </div>
 
-              {!directions && (
-                <DirectionsService
-                  options={{
-                    destination,
-                    origin,
-                    travelMode: google.maps.TravelMode.DRIVING,
-                  }}
-                  callback={directionsCallback}
-                />
-              )}
-              {directions && (
-                <DirectionsRenderer
-                  directions={directions}
-                  options={{
-                    directions,
-                    suppressMarkers: true, // Hide default markers
-                    polylineOptions: {
-                      strokeColor: "#5AC12F", // blue line
-                      strokeOpacity: 0.8,
-                      strokeWeight: 3, // thickness
-                      zIndex: 10,
-                    },
-                  }}
-                />
-              )}
-            </GoogleMap>
-          : <>
-              <img
-                alt="Map showing delivery route"
-                className="w-full h-64 object-cover"
-                height="300"
-                src="https://storage.googleapis.com/a1aa/image/jt1AynRJJVtM9j1LRb30CodA1xsK2R23pWTOmRv3nsM.jpg"
-                width="1200"
-              />
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-[#5AC12F] text-white rounded-full w-12 h-12 flex items-center justify-center text-xl font-bold">
-                H
-              </div>{" "}
-            </>
-          }
-        </div>
-        {/* <!-- Toggle Prices Button for Mobile --> */}
-        <div className="sm:hidden fixed top-10 left-0 right-0 bg-transparent z-10 p-4">
-          <button
-            className="bg-white text-[#5AC12F] w-full py-2 px-4 rounded-full border border-gray-300 flex justify-between items-center"
-            onClick={togglePriceSummary}
-          >
-            <span className="font-inter text-[14px]">
-              Total: {`${CURRENCY_SYMBOL} ${calculateTotal()}`}
-            </span>
-
-            <FontAwesomeIcon icon={faChevronDown} className="text-[14px]" />
-          </button>
-        </div>
-
-        {/* <!-- Main Content --> */}
-        <PaddingContainer>
-          <div className="max-w-6xl md:pt-10 p-4 md:p-0 lg:flex lg:space-x-4">
-            <div className="lg:w-3/4 md:mr-40">
-              {/* <!-- Delivery and Pickup Toggle --> */}
-              <div className="flex justify-between bg-gray-100 rounded-full p-2 mb-6">
-                <button
-                  className={`w-1/2 bg-${deliveryType === "Delivery" ? "[#5AC12F]" : "-gray-600"} text-white py-2 rounded-full flex items-center justify-center`}
-                  onClick={() => {
-                    setDeliveryType("Delivery");
-                    setIsPickUp(false);
-                  }}
-                >
-                  <FontAwesomeIcon
-                    icon={faBicycle}
-                    className="mr-2 text-gray-900"
-                  />
-                  <span className="font-medium text-gray-900 font-inter text-xs md:text-sm xl:[14px]">
-                    Delivery
-                  </span>
-                </button>
-
-                <button
-                  className={`w-1/2 bg-${deliveryType === "Pickup" ? "[#5AC12F]" : "-gray-600"} px-6 py-2 rounded-full mx-2 flex items-center justify-center`}
-                  onClick={() => {
-                    setDeliveryType("Pickup");
-                    setIsPickUp(true);
-                  }}
-                >
-                  <FontAwesomeIcon
-                    icon={faStore}
-                    className="mr-2 text-gray-900"
-                  />
-                  <span className="font-medium text-gray-900 font-inter text-xs md:text-sm xl:[14px]">
-                    Pickup
-                  </span>
-                </button>
-              </div>
-
-              {/* <!-- Section Title --> */}
-              <h2 className="font-semibold text-gray-900 mb-2 text-base sm:text-lg md:text-[16px] lg:text-[18px]">
-                For greater hunger
-              </h2>
-
-              {/* <!-- Delivery Details --> */}
-              <div className="bg-white px-4 pt-4 pb-2 rounded-lg mb-4 border border-gray-300 w-full">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center">
+          {/* <!-- Main Content --> */}
+          <PaddingContainer>
+            <div className="max-w-6xl md:pt-10 p-4 md:p-0 lg:flex lg:space-x-4">
+              <div className="lg:w-3/4 md:mr-40">
+                {/* <!-- Delivery and Pickup Toggle --> */}
+                <div className="flex justify-between bg-gray-100 rounded-full p-2 mb-6">
+                  <button
+                    className={`w-1/2 bg-${deliveryType === "Delivery" ? "[#5AC12F]" : "-gray-600"} text-white py-2 rounded-full flex items-center justify-center`}
+                    onClick={() => {
+                      setDeliveryType("Delivery");
+                      setIsPickUp(false);
+                    }}
+                  >
                     <FontAwesomeIcon
                       icon={faBicycle}
                       className="mr-2 text-gray-900"
                     />
-                    <p className="text-gray-900 leading-4 sm:leading-5 tracking-normal font-inter text-xs sm:text-sm md:text-sm align-middle">
-                      <span className="font-semibold">Delivery </span>
-                      <span className="font-normal">in 10-20 min </span>
-                      <span className="font-semibold">
-                        {location?.deliveryAddress}
-                      </span>
-                    </p>
-                  </div>
+                    <span className="font-medium text-gray-900 font-inter text-xs md:text-sm xl:[14px]">
+                      Delivery
+                    </span>
+                  </button>
 
-                  <FontAwesomeIcon
-                    icon={faChevronRight}
-                    className="text-gray-500 self-center"
-                  />
-                </div>
-              </div>
-
-              {/* <!-- Leave at Door --> */}
-              <div className="bg-white px-4 pt-4 pb-2 rounded-lg mb-4 border border-gray-300 w-full">
-                <div className="flex items-center">
-                  <input
-                    className="mr-2"
-                    id="leave-at-door"
-                    type="checkbox"
-                    checked={shouldLeaveAtDoor}
-                    onChange={() => setShouldLeaveAtDoor((prev) => !prev)}
-                  />
-                  <label
-                    className="text-gray-900 leading-4 sm:leading-5 tracking-normal font-inter text-xs sm:text-sm md:text-sm align-middle"
-                    htmlFor="leave-at-door"
+                  <button
+                    className={`w-1/2 bg-${deliveryType === "Pickup" ? "[#5AC12F]" : "-gray-600"} px-6 py-2 rounded-full mx-2 flex items-center justify-center`}
+                    onClick={() => {
+                      setDeliveryType("Pickup");
+                      setIsPickUp(true);
+                    }}
                   >
-                    Leave the order at my door
-                  </label>
+                    <FontAwesomeIcon
+                      icon={faStore}
+                      className="mr-2 text-gray-900"
+                    />
+                    <span className="font-medium text-gray-900 font-inter text-xs md:text-sm xl:[14px]">
+                      Pickup
+                    </span>
+                  </button>
                 </div>
-                <p className="text-gray-300 leading-4 sm:leading-5 tracking-normal font-inter text-xs sm:text-sm md:text-sm align-middle mt-2">
-                  If you are not available to receive the order, the courier
-                  will leave it at your door.
-                </p>
-              </div>
 
-              {/* <!-- Selected Items --> */}
-              <div className="bg-white pt-4 pb-2 rounded-lg mb-4 w-full">
+                {/* <!-- Section Title --> */}
                 <h2 className="font-semibold text-gray-900 mb-2 text-base sm:text-lg md:text-[16px] lg:text-[18px]">
-                  Selected items
+                  For greater hunger
                 </h2>
-                {/* Map this below section */}
-                {cart.map((item) => {
-                  return (
-                    <div
-                      key={item._id}
-                      className="flex items-center justify-between mb-2"
+
+                {/* <!-- Delivery Details --> */}
+                <div className="bg-white px-4 pt-4 pb-2 rounded-lg mb-4 border border-gray-300 w-full">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center">
+                      <FontAwesomeIcon
+                        icon={faBicycle}
+                        className="mr-2 text-gray-900"
+                      />
+                      <p className="text-gray-900 leading-4 sm:leading-5 tracking-normal font-inter text-xs sm:text-sm md:text-sm align-middle">
+                        <span className="font-semibold">Delivery </span>
+                        <span className="font-normal">in 10-20 min </span>
+                        <span className="font-semibold">
+                          {location?.deliveryAddress}
+                        </span>
+                      </p>
+                    </div>
+
+                    <FontAwesomeIcon
+                      icon={faChevronRight}
+                      className="text-gray-500 self-center"
+                    />
+                  </div>
+                </div>
+
+                {/* <!-- Leave at Door --> */}
+                <div className="bg-white px-4 pt-4 pb-2 rounded-lg mb-4 border border-gray-300 w-full">
+                  <div className="flex items-center">
+                    <input
+                      className="mr-2"
+                      id="leave-at-door"
+                      type="checkbox"
+                      checked={shouldLeaveAtDoor}
+                      onChange={() => setShouldLeaveAtDoor((prev) => !prev)}
+                    />
+                    <label
+                      className="text-gray-900 leading-4 sm:leading-5 tracking-normal font-inter text-xs sm:text-sm md:text-sm align-middle"
+                      htmlFor="leave-at-door"
                     >
-                      <div className="flex items-start">
-                        <img
-                          alt="Big Share meal"
-                          className="w-12 h-12 rounded-full mr-2"
-                          height="50"
-                          src="https://storage.googleapis.com/a1aa/image/cPA2BWDjlQ26C-OR-Sz-gd7gFcDc7QbvTZ_904FkN0Y.jpg"
-                          width="50"
-                        />
-                        <div>
-                          <h3 className="font-semibold text-gray-900 text-sm sm:text-base md:text-[12px] lg:text-[14px] xl:text-[16px]">
-                            {item.foodTitle}
-                          </h3>
-                          <div className="flex flex-col items-start">
-                            {item?.optionTitles?.map(
-                              (optionTitle, optionIndex) => {
-                                return (
-                                  <p
-                                    key={`${optionTitle}-${optionIndex}`}
-                                    className="text-gray-600 tracking-normal font-inter text-xs sm:text-[12px] md:text-[12px]"
-                                  >
-                                    + {optionTitle}
-                                  </p>
-                                );
-                              }
-                            )}
+                      Leave the order at my door
+                    </label>
+                  </div>
+                  <p className="text-gray-300 leading-4 sm:leading-5 tracking-normal font-inter text-xs sm:text-sm md:text-sm align-middle mt-2">
+                    If you are not available to receive the order, the courier
+                    will leave it at your door.
+                  </p>
+                </div>
+
+                {/* <!-- Selected Items --> */}
+                <div className="bg-white pt-4 pb-2 rounded-lg mb-4 w-full">
+                  <h2 className="font-semibold text-gray-900 mb-2 text-base sm:text-lg md:text-[16px] lg:text-[18px]">
+                    Selected items
+                  </h2>
+                  {/* Map this below section */}
+                  {cart.map((item) => {
+                    return (
+                      <div
+                        key={item._id}
+                        className="flex items-center justify-between mb-2"
+                      >
+                        <div className="flex items-start">
+                          <img
+                            alt="Big Share meal"
+                            className="w-12 h-12 rounded-full mr-2"
+                            height="50"
+                            src="https://storage.googleapis.com/a1aa/image/cPA2BWDjlQ26C-OR-Sz-gd7gFcDc7QbvTZ_904FkN0Y.jpg"
+                            width="50"
+                          />
+                          <div>
+                            <h3 className="font-semibold text-gray-900 text-sm sm:text-base md:text-[12px] lg:text-[14px] xl:text-[16px]">
+                              {item.foodTitle}
+                            </h3>
+                            <div className="flex flex-col items-start">
+                              {item?.optionTitles?.map(
+                                (optionTitle, optionIndex) => {
+                                  return (
+                                    <p
+                                      key={`${optionTitle}-${optionIndex}`}
+                                      className="text-gray-600 tracking-normal font-inter text-xs sm:text-[12px] md:text-[12px]"
+                                    >
+                                      + {optionTitle}
+                                    </p>
+                                  );
+                                }
+                              )}
+                            </div>
+                            <p className="text-[#0EA5E9] font-semibold text-sm sm:text-base md:text-[11px] lg:text-[12px] xl:text-[14px]">
+                              {CURRENCY_SYMBOL}
+                              {item.price}
+                            </p>
                           </div>
-                          <p className="text-[#0EA5E9] font-semibold text-sm sm:text-base md:text-[11px] lg:text-[12px] xl:text-[14px]">
-                            {CURRENCY_SYMBOL}
-                            {item.price}
-                          </p>
+                        </div>
+
+                        <div className="border border-[#0EA5E9] text-[#0EA5E9] py-1 px-3 rounded-lg text-xs sm:text-sm font-medium w-fit">
+                          {item.quantity}
                         </div>
                       </div>
+                    );
+                  })}
+                  <button className="text-gray-900 mt-2 font-semibold mb-2 text-sm sm:text-base md:text-[12px] lg:text-[12px] xl:text-[14px]">
+                    + Add more items
+                  </button>
+                </div>
 
-                      <div className="border border-[#0EA5E9] text-[#0EA5E9] py-1 px-3 rounded-lg text-xs sm:text-sm font-medium w-fit">
-                        {item.quantity}
+                {/* <!-- Payment Details --> */}
+                <h2 className="font-semibold text-gray-900 mb-2 text-base sm:text-lg md:text-[16px] lg:text-[18px]">
+                  Payment details
+                </h2>
+                {PAYMENT_METHOD_LIST.map((paymentMethodItem, methodIndex) => {
+                  return (
+                    <div
+                      key={`${paymentMethodItem.value}-${methodIndex}`}
+                      className="bg-white px-4 pt-4 pb-2 rounded-lg mb-4 border border-gray-300 w-full"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <label
+                          className="text-gray-600 flex items-center text-sm sm:text-base md:text-[12px] lg:text-[12px] xl:text-[14px]"
+                          htmlFor="card"
+                        >
+                          <FontAwesomeIcon
+                            icon={paymentMethodItem.icon}
+                            className="text-gray-900 mr-2"
+                          />
+                          {paymentMethodItem.label}
+                        </label>
+                        <input
+                          className="mr-2"
+                          id="card"
+                          name="payment"
+                          type="radio"
+                          checked={paymentMethod === paymentMethodItem.value}
+                          value={paymentMethod}
+                          onChange={() =>
+                            setPaymentMethod(paymentMethodItem.value)
+                          }
+                        />
                       </div>
                     </div>
                   );
                 })}
-                <button className="text-gray-900 mt-2 font-semibold mb-2 text-sm sm:text-base md:text-[12px] lg:text-[12px] xl:text-[14px]">
-                  + Add more items
-                </button>
-              </div>
 
-              {/* <!-- Payment Details --> */}
-              <h2 className="font-semibold text-gray-900 mb-2 text-base sm:text-lg md:text-[16px] lg:text-[18px]">
-                Payment details
-              </h2>
-              {PAYMENT_METHOD_LIST.map((paymentMethodItem, methodIndex) => {
-                return (
-                  <div
-                    key={`${paymentMethodItem.value}-${methodIndex}`}
-                    className="bg-white px-4 pt-4 pb-2 rounded-lg mb-4 border border-gray-300 w-full"
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <label
-                        className="text-gray-600 flex items-center text-sm sm:text-base md:text-[12px] lg:text-[12px] xl:text-[14px]"
-                        htmlFor="card"
-                      >
-                        <FontAwesomeIcon
-                          icon={paymentMethodItem.icon}
-                          className="text-gray-900 mr-2"
-                        />
-                        {paymentMethodItem.label}
-                      </label>
-                      <input
-                        className="mr-2"
-                        id="card"
-                        name="payment"
-                        type="radio"
-                        checked={paymentMethod === paymentMethodItem.value}
-                        value={paymentMethod}
-                        onChange={() =>
-                          setPaymentMethod(paymentMethodItem.value)
-                        }
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-
-              {/* <!-- Tip the Courier --> */}
-              <div className="bg-white mb-6 w-full">
-                <h2 className="font-semibold text-gray-900 mb-2 text-base sm:text-lg md:text-[16px] lg:text-[18px]">
-                  Tip the courier
-                </h2>
-                <div className="border border-gray-300 rounded-lg p-5">
-                  <p className="text-gray-500 mb-4 leading-5 sm:leading-5 tracking-normal font-inter text-xs sm:text-sm md:text-sm align-middle mt-2">
-                    They&apos;ll get 100% of your tip after the delivery
-                  </p>
-                  <div className="grid grid-cols-2 gap-2">
-                    {TIPS.map((tip: string, index: number) => (
-                      <button
-                        key={index}
-                        className={`text-[12px] text-${selectedTip === tip ? "white" : "[#0EA5E9]"} bg-${selectedTip === tip ? "[#0EA5E9]" : "white"} border border-[#0EA5E9] px-4 py-2 rounded-full w-full`}
-                        onClick={() => setSelectedTip(tip)}
-                      >
-                        {tip !== "Other" ? CURRENCY_SYMBOL : ""}
-                        {tip}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* <!-- Promo Code --> */}
-              <div className="bg-white  pb-2 rounded-lg mb-4 w-full">
-                <h2 className="font-semibold text-gray-900 mb-2 text-base sm:text-lg md:text-[16px] lg:text-[18px]">
-                  Promo code
-                </h2>
-                {isCouponApplied ?
-                  <Message
-                    severity="success"
-                    text="Coupon has been applied successfully"
-                  />
-                : <>
+                {/* <!-- Tip the Courier --> */}
+                <div className="bg-white mb-6 w-full">
+                  <h2 className="font-semibold text-gray-900 mb-2 text-base sm:text-lg md:text-[16px] lg:text-[18px]">
+                    Tip the courier
+                  </h2>
+                  <div className="border border-gray-300 rounded-lg p-5">
                     <p className="text-gray-500 mb-4 leading-5 sm:leading-5 tracking-normal font-inter text-xs sm:text-sm md:text-sm align-middle mt-2">
-                      If you have a promo code enter it below to claim your
-                      benefit!
+                      They&apos;ll get 100% of your tip after the delivery
                     </p>
-                    <div className="flex items-center flex-wrap space-x-2">
-                      <input
-                        className="flex-grow p-2 border border-gray-300 rounded text-[12px] md:text-[14px]"
-                        placeholder="Enter promo code..."
-                        type="text"
-                        value={couponText}
-                        onChange={(e) => setCouponText(e.target.value)}
-                        disabled={couponLoading}
-                      />
-                      <button
-                        className="bg-[#5AC12F] h-10 px-8 space-x-2 font-medium text-gray-900  tracking-normal font-inter text-sm sm:text-base md:text-[12px] lg:text-[14px] rounded-full"
-                        onClick={onApplyCoupon}
-                      >
-                        {couponLoading ?
-                          <FontAwesomeIcon icon={faSpinner} spin />
-                        : <span>Submit</span>}
-                      </button>
+                    <div className="grid grid-cols-2 gap-2">
+                      {TIPS.map((tip: string, index: number) => (
+                        <button
+                          key={index}
+                          className={`text-[12px] text-${selectedTip === tip ? "white" : "[#0EA5E9]"} bg-${selectedTip === tip ? "[#0EA5E9]" : "white"} border border-[#0EA5E9] px-4 py-2 rounded-full w-full`}
+                          onClick={() => setSelectedTip(tip)}
+                        >
+                          {tip !== "Other" ? CURRENCY_SYMBOL : ""}
+                          {tip}
+                        </button>
+                      ))}
                     </div>
-                  </>
-                }
+                  </div>
+                </div>
+
+                {/* <!-- Promo Code --> */}
+                <div className="bg-white  pb-2 rounded-lg mb-4 w-full">
+                  <h2 className="font-semibold text-gray-900 mb-2 text-base sm:text-lg md:text-[16px] lg:text-[18px]">
+                    Promo code
+                  </h2>
+                  {isCouponApplied ?
+                    <Message
+                      severity="success"
+                      text="Coupon has been applied successfully"
+                    />
+                  : <>
+                      <p className="text-gray-500 mb-4 leading-5 sm:leading-5 tracking-normal font-inter text-xs sm:text-sm md:text-sm align-middle mt-2">
+                        If you have a promo code enter it below to claim your
+                        benefit!
+                      </p>
+                      <div className="flex items-center flex-wrap space-x-2">
+                        <input
+                          className="flex-grow p-2 border border-gray-300 rounded text-[12px] md:text-[14px]"
+                          placeholder="Enter promo code..."
+                          type="text"
+                          value={couponText}
+                          onChange={(e) => setCouponText(e.target.value)}
+                          disabled={couponLoading}
+                        />
+                        <button
+                          className="bg-[#5AC12F] h-10 px-8 space-x-2 font-medium text-gray-900  tracking-normal font-inter text-sm sm:text-base md:text-[12px] lg:text-[14px] rounded-full"
+                          onClick={onApplyCoupon}
+                        >
+                          {couponLoading ?
+                            <FontAwesomeIcon icon={faSpinner} spin />
+                          : <span>Submit</span>}
+                        </button>
+                      </div>
+                    </>
+                  }
+                </div>
               </div>
-            </div>
 
-            {/* <!-- Order Summary - Large Screen --> */}
-            <div className="hidden lg:sticky lg:top-4 lg:block lg:w-1/3 lg:m-0">
-              <div
-                className="bg-white p-2 rounded-lg shadow-md border border-gray-300 expandable max-h-0 sm:max-h-full sm:block hidden"
-                id="price-summary"
-              >
-                <h2 className="text-sm lg:text-base font-semibold text-left flex justify-between">
-                  Prices in {CURRENCY}
-                  <InfoSvg />
-                </h2>
-                <p className="text-gray-400 mb-3 text-left leading-5 tracking-normal font-inter text-xs lg:text-[10px]">
-                  Inc. Taxes (if applicable)
-                </p>
+              {/* <!-- Order Summary - Large Screen --> */}
+              <div className="hidden lg:sticky lg:top-4 lg:block lg:w-1/3 lg:m-0">
+                <div
+                  className="bg-white p-2 rounded-lg shadow-md border border-gray-300 expandable max-h-0 sm:max-h-full sm:block hidden"
+                  id="price-summary"
+                >
+                  <h2 className="text-sm lg:text-base font-semibold text-left flex justify-between">
+                    Prices in {CURRENCY}
+                    <InfoSvg />
+                  </h2>
+                  <p className="text-gray-400 mb-3 text-left leading-5 tracking-normal font-inter text-xs lg:text-[10px]">
+                    Inc. Taxes (if applicable)
+                  </p>
 
-                <div className="flex justify-between mb-1 text-xs lg:text-[12px]">
-                  <span className="font-inter text-gray-900 leading-5">
-                    Item subtotal
-                  </span>
-                  <span className="font-inter text-gray-900 leading-5">
-                    {CURRENCY_SYMBOL}
-                    {calculatePrice(0)}
-                  </span>
-                </div>
-
-                <div className="flex justify-between mb-1 text-xs lg:text-[12px]">
-                  <span className="font-inter text-gray-900 leading-5">
-                    Delivery ({distance} km)
-                  </span>
-                  <span className="font-inter text-gray-900 leading-5">
-                    {CURRENCY_SYMBOL}
-                    {deliveryCharges.toFixed()}
-                  </span>
-                </div>
-
-                {selectedTip && (
                   <div className="flex justify-between mb-1 text-xs lg:text-[12px]">
                     <span className="font-inter text-gray-900 leading-5">
-                      Tip
+                      Item subtotal
                     </span>
                     <span className="font-inter text-gray-900 leading-5">
-                      {`${CURRENCY_SYMBOL} ${selectedTip}`}
-                      {/*    {`${CURRENCY_SYMBOL} ${parseFloat(calculateTip()).toFixed(
-                      2
-                    )}`} */}
+                      {CURRENCY_SYMBOL}
+                      {calculatePrice(0)}
                     </span>
                   </div>
-                )}
 
-                <div className="flex justify-between mb-1 text-xs lg:text-[12px]">
-                  <span className="font-inter text-gray-900 leading-5">
-                    Tax
-                  </span>
-                  <span className="font-inter text-gray-900 leading-5">
-                    {CURRENCY_SYMBOL}
-                    {taxCalculation()}
-                  </span>
-                </div>
+                  <div className="flex justify-between mb-1 text-xs lg:text-[12px]">
+                    <span className="font-inter text-gray-900 leading-5">
+                      Delivery ({distance} km)
+                    </span>
+                    <span className="font-inter text-gray-900 leading-5">
+                      {CURRENCY_SYMBOL}
+                      {deliveryCharges.toFixed()}
+                    </span>
+                  </div>
 
-                {/* <div className="flex justify-between mb-1 text-xs lg:text-[12px]">
+                  {selectedTip && (
+                    <div className="flex justify-between mb-1 text-xs lg:text-[12px]">
+                      <span className="font-inter text-gray-900 leading-5">
+                        Tip
+                      </span>
+                      <span className="font-inter text-gray-900 leading-5">
+                        {`${CURRENCY_SYMBOL} ${selectedTip}`}
+                        {/*    {`${CURRENCY_SYMBOL} ${parseFloat(calculateTip()).toFixed(
+                      2
+                    )}`} */}
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="flex justify-between mb-1 text-xs lg:text-[12px]">
+                    <span className="font-inter text-gray-900 leading-5">
+                      Tax
+                    </span>
+                    <span className="font-inter text-gray-900 leading-5">
+                      {CURRENCY_SYMBOL}
+                      {taxCalculation()}
+                    </span>
+                  </div>
+
+                  {/* <div className="flex justify-between mb-1 text-xs lg:text-[12px]">
                   <span className="font-inter text-gray-900 leading-5">
                     Service fee
                   </span>
@@ -866,109 +887,109 @@ export default function OrderCheckoutScreen() {
                   </span>
                 </div> */}
 
-                <Divider />
+                  <Divider />
 
-                {isCouponApplied && (
-                  <div className="flex justify-between mb-1 text-xs lg:text-[12px]">
-                    <span className="font-inter text-gray-900 leading-5">
-                      Discount
-                    </span>
-                    <span className="font-inter text-gray-900 leading-5">
-                      {`-${CURRENCY_SYMBOL} ${(
-                        Number(calculatePrice(0, false)) -
-                        Number(calculatePrice(0, true))
-                      ).toFixed(2)}`}
-                    </span>
+                  {isCouponApplied && (
+                    <div className="flex justify-between mb-1 text-xs lg:text-[12px]">
+                      <span className="font-inter text-gray-900 leading-5">
+                        Discount
+                      </span>
+                      <span className="font-inter text-gray-900 leading-5">
+                        {`-${CURRENCY_SYMBOL} ${(
+                          Number(calculatePrice(0, false)) -
+                          Number(calculatePrice(0, true))
+                        ).toFixed(2)}`}
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="text-[#0EA5E9] mb-1 text-left font-inter text-xs lg:text-[12px]">
+                    Choose an offer (1 available)
                   </div>
-                )}
 
-                <div className="text-[#0EA5E9] mb-1 text-left font-inter text-xs lg:text-[12px]">
-                  Choose an offer (1 available)
-                </div>
+                  <Divider />
 
-                <Divider />
+                  <div className="flex justify-between font-semibold mb-4 text-xs lg:text-[14px]">
+                    <span>Total sum</span>
+                    <span>{`${CURRENCY_SYMBOL} ${calculateTotal()}`}</span>
+                  </div>
 
-                <div className="flex justify-between font-semibold mb-4 text-xs lg:text-[14px]">
-                  <span>Total sum</span>
-                  <span>{`${CURRENCY_SYMBOL} ${calculateTotal()}`}</span>
-                </div>
-
-                <button
-                  className="bg-[#5AC12F] text-gray-900 w-full py-2 rounded-full text-xs lg:text-[12px]"
-                  onClick={onPlaceOrder}
-                >
-                  {loadingOrderMutation ?
-                    <FontAwesomeIcon icon={faSpinner} spin />
-                  : <span> Click to order</span>}
-                </button>
-              </div>
-            </div>
-
-            {/* Order Summary - Small Screen */}
-            <div className="fixed top-4 right-0 mx-auto md:hidden lg:hidden xl:hidden m-4 p-4 w-full sm:w-64 ml-0 sm:ml-8 mt-16 sm:mt-0 lg:right-auto lg:m-0 lg:w-1/4 lg:sticky lg:top-4">
-              <AnimatePresence>
-                {isOpen && (
-                  <motion.div
-                    ref={contentRef}
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="bg-white p-2 rounded-lg shadow-md border border-gray-300 overflow-hidden"
+                  <button
+                    className="bg-[#5AC12F] text-gray-900 w-full py-2 rounded-full text-xs lg:text-[12px]"
+                    onClick={onPlaceOrder}
                   >
-                    <h2 className="text-base font-semibold text-left flex justify-between">
-                      Prices in {CURRENCY}
-                      <InfoSvg />
-                    </h2>
-                    <p className="text-gray-300 mb-4 text-left  sm:leading-5 tracking-normal font-inter text-xs sm:text-sm md:text-sm align-middle ">
-                      Inc. Taxes (if applicable)
-                    </p>
+                    {loadingOrderMutation ?
+                      <FontAwesomeIcon icon={faSpinner} spin />
+                    : <span> Click to order</span>}
+                  </button>
+                </div>
+              </div>
 
-                    <div className="flex justify-between mb-1 text-sm">
-                      <span className="font-inter  text-gray-900 text-[14px] md:text-lg leading-6 md:leading-7">
-                        Item subtotal
-                      </span>
-                      <span className="font-inter  text-gray-900 text-[14px] md:text-lg leading-6 md:leading-7">
-                        {CURRENCY_SYMBOL}
-                        {calculatePrice(0)}
-                      </span>
-                    </div>
+              {/* Order Summary - Small Screen */}
+              <div className="fixed top-4 right-0 mx-auto md:hidden lg:hidden xl:hidden m-4 p-4 w-full sm:w-64 ml-0 sm:ml-8 mt-16 sm:mt-0 lg:right-auto lg:m-0 lg:w-1/4 lg:sticky lg:top-4">
+                <AnimatePresence>
+                  {isOpen && (
+                    <motion.div
+                      ref={contentRef}
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="bg-white p-2 rounded-lg shadow-md border border-gray-300 overflow-hidden"
+                    >
+                      <h2 className="text-base font-semibold text-left flex justify-between">
+                        Prices in {CURRENCY}
+                        <InfoSvg />
+                      </h2>
+                      <p className="text-gray-300 mb-4 text-left  sm:leading-5 tracking-normal font-inter text-xs sm:text-sm md:text-sm align-middle ">
+                        Inc. Taxes (if applicable)
+                      </p>
 
-                    <div className="flex justify-between mb-1 text-sm">
-                      <span className="font-inter  text-gray-900 text-[14px] md:text-lg leading-6 md:leading-7">
-                        Delivery ({distance} km)
-                      </span>
-                      <span className="font-inter  text-gray-900 text-[14px] md:text-lg leading-6 md:leading-7">
-                        {CURRENCY_SYMBOL}
-                        {deliveryCharges.toFixed()}
-                      </span>
-                    </div>
-
-                    {selectedTip && (
                       <div className="flex justify-between mb-1 text-sm">
                         <span className="font-inter  text-gray-900 text-[14px] md:text-lg leading-6 md:leading-7">
-                          Tip
+                          Item subtotal
                         </span>
                         <span className="font-inter  text-gray-900 text-[14px] md:text-lg leading-6 md:leading-7">
-                          {`${CURRENCY_SYMBOL} ${selectedTip}`}
-                          {/*   {`${CURRENCY_SYMBOL} ${parseFloat(
-                          calculateTip()
-                        ).toFixed(2)}`} */}
+                          {CURRENCY_SYMBOL}
+                          {calculatePrice(0)}
                         </span>
                       </div>
-                    )}
 
-                    <div className="flex justify-between mb-1 text-sm">
-                      <span className="font-inter  text-gray-900 text-[14px] md:text-lg leading-6 md:leading-7">
-                        Tax
-                      </span>
-                      <span className="font-inter  text-gray-900 text-[14px] md:text-lg leading-6 md:leading-7">
-                        {CURRENCY_SYMBOL}
-                        {taxCalculation()}
-                      </span>
-                    </div>
+                      <div className="flex justify-between mb-1 text-sm">
+                        <span className="font-inter  text-gray-900 text-[14px] md:text-lg leading-6 md:leading-7">
+                          Delivery ({distance} km)
+                        </span>
+                        <span className="font-inter  text-gray-900 text-[14px] md:text-lg leading-6 md:leading-7">
+                          {CURRENCY_SYMBOL}
+                          {deliveryCharges.toFixed()}
+                        </span>
+                      </div>
 
-                    {/*  <div className="flex justify-between mb-1 text-sm">
+                      {selectedTip && (
+                        <div className="flex justify-between mb-1 text-sm">
+                          <span className="font-inter  text-gray-900 text-[14px] md:text-lg leading-6 md:leading-7">
+                            Tip
+                          </span>
+                          <span className="font-inter  text-gray-900 text-[14px] md:text-lg leading-6 md:leading-7">
+                            {`${CURRENCY_SYMBOL} ${selectedTip}`}
+                            {/*   {`${CURRENCY_SYMBOL} ${parseFloat(
+                          calculateTip()
+                        ).toFixed(2)}`} */}
+                          </span>
+                        </div>
+                      )}
+
+                      <div className="flex justify-between mb-1 text-sm">
+                        <span className="font-inter  text-gray-900 text-[14px] md:text-lg leading-6 md:leading-7">
+                          Tax
+                        </span>
+                        <span className="font-inter  text-gray-900 text-[14px] md:text-lg leading-6 md:leading-7">
+                          {CURRENCY_SYMBOL}
+                          {taxCalculation()}
+                        </span>
+                      </div>
+
+                      {/*  <div className="flex justify-between mb-1 text-sm">
                       <span className="font-inter  text-gray-900 text-[14px] md:text-lg leading-6 md:leading-7">
                         Service fee
                       </span>
@@ -977,47 +998,55 @@ export default function OrderCheckoutScreen() {
                       </span>
                     </div> */}
 
-                    <Divider />
+                      <Divider />
 
-                    <div className="flex justify-between mb-1 text-sm">
-                      <span className="font-inter  text-gray-900 text-[14px] md:text-lg leading-6 md:leading-7">
-                        Discount
-                      </span>
-                      <span className="font-inter  text-gray-900 text-[14px] md:text-lg leading-6 md:leading-7">
-                        {`-${CURRENCY_SYMBOL} ${(
-                          Number(calculatePrice(0, false)) -
-                          Number(calculatePrice(0, true))
-                        ).toFixed(2)}`}
-                      </span>
-                    </div>
+                      <div className="flex justify-between mb-1 text-sm">
+                        <span className="font-inter  text-gray-900 text-[14px] md:text-lg leading-6 md:leading-7">
+                          Discount
+                        </span>
+                        <span className="font-inter  text-gray-900 text-[14px] md:text-lg leading-6 md:leading-7">
+                          {`-${CURRENCY_SYMBOL} ${(
+                            Number(calculatePrice(0, false)) -
+                            Number(calculatePrice(0, true))
+                          ).toFixed(2)}`}
+                        </span>
+                      </div>
 
-                    <div className="text-[#0EA5E9] mb-1 text-left font-inter text-[14px] md:text-lg leading-6 md:leading-7">
-                      Choose an offer (1 available)
-                    </div>
-                    <Divider />
+                      <div className="text-[#0EA5E9] mb-1 text-left font-inter text-[14px] md:text-lg leading-6 md:leading-7">
+                        Choose an offer (1 available)
+                      </div>
+                      <Divider />
 
-                    <div className="flex justify-between font-semibold mb-4 text-sm">
-                      <span>Total sum</span>
-                      <span>
-                        {CURRENCY_SYMBOL}
-                        {calculateTotal()}
-                      </span>
-                    </div>
-                    <button
-                      className="bg-[#5AC12F] text-gray-900 w-full py-2 rounded-full text-sm"
-                      onClick={onPlaceOrder}
-                    >
-                      {loadingOrderMutation ?
-                        <FontAwesomeIcon icon={faSpinner} spin />
-                      : <span> Click to order</span>}
-                    </button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                      <div className="flex justify-between font-semibold mb-4 text-sm">
+                        <span>Total sum</span>
+                        <span>
+                          {CURRENCY_SYMBOL}
+                          {calculateTotal()}
+                        </span>
+                      </div>
+                      <button
+                        className="bg-[#5AC12F] text-gray-900 w-full py-2 rounded-full text-sm"
+                        onClick={onPlaceOrder}
+                      >
+                        {loadingOrderMutation ?
+                          <FontAwesomeIcon icon={faSpinner} spin />
+                        : <span> Click to order</span>}
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
-          </div>
-        </PaddingContainer>
+          </PaddingContainer>
+        </div>
       </div>
-    </div>
+      <UserAddressComponent
+        visible={isUserAddressModalOpen}
+        onHide={() => {
+          setIsUserAddressModalOpen(false);
+          setIsAddressSelectedOnce(true);
+        }}
+      />
+    </>
   );
 }

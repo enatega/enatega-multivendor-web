@@ -1,24 +1,26 @@
 "use client";
 
 import { useCallback, useEffect, useState, useRef } from "react";
-// Queries- Mutations
 import { gql, useMutation, useQuery } from "@apollo/client";
+// Queries- Mutations
 import { DELETE_ADDRESS } from "@/lib/api/graphql/mutations";
 import { profile } from "@/lib/api/graphql/queries/profile";
 //Hooks
 import useToast from "@/lib/hooks/useToast";
+
 // Components
 import AddressesSkeleton from "@/lib/ui/useable-components/custom-skeletons/addresses.skelton";
 import CustomIconButton from "@/lib/ui/useable-components/custom-icon-button";
 import AddressItem from "../main/address-listings";
 import CustomDialog from "@/lib/ui/useable-components/delete-dialog";
 import EmptyAddress from "@/lib/ui/useable-components/empty-address";
+import UserAddressComponent from "@/lib/ui/useable-components/address";
 //Interfaces
 import { ISingleAddress } from "@/lib/utils/interfaces/profile.interface";
+
+import { IUserAddress } from "@/lib/utils/interfaces";
 //Icons
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import UserAddressComponent from "@/lib/ui/useable-components/address";
-import { IUserAddress } from "@/lib/utils/interfaces";
 
 // Query
 const PROFILE = gql`
