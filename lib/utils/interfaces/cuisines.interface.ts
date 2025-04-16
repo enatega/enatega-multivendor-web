@@ -1,9 +1,11 @@
+export interface ICuisinesResponse {
+  nearByRestaurantsCuisines: ICuisinesData[];
+}
+
 export interface ICuisinesData {
-    cuisines: {
-        _id: string;
-        name: string;
-        description: string;
-        image: string;
-        shopType: string;
-    }
+  _id: string;
+  name: string;
+  description?: string;
+  image: string;
+  shopType: string;
 }

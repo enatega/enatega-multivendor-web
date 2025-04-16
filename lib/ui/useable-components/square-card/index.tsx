@@ -12,15 +12,22 @@ const SquareCard: React.FC<ICuisinesCardProps> = ({ item, cuisines=false, showLo
   const router = useRouter();
   const getImgSrc = showLogo ? item?.logo : item?.image
   
+  // console.log("item?.shopType=>>", item?.shopType)
+  
+  const onClickHandler = () => {
+    if (!cuisines) {
+      router.push(`/${item?.shopType === "restaurant" ? "restaurant" : "store"}/${item?.slug}/${item._id}`)
+    } else {
+      router.push(`/category/${(item.name).toLowerCase().replace(/\s/g, "-")}`)
+    }
+  }
   return (
     <div
-      className="max-w-[402px] max-h-[272px] md:w-[135px] lg:w-[120px] xl:w-[175px] 2xl:w-[360px] rounded-md shadow-md m-2 mb-6 cursor-pointer hover:scale-105 hover:opacity-95 hover:shadow-lg transition-transform duration-500"
-      onClick={() => {
-        router.push(`/restaurant/${item?.name}/${item._id}`); // the root route may change based on store or grocery
-      }}
+      className="rounded-md shadow-md m-2 mb-6 cursor-pointer hover:scale-102 hover:opacity-95 hover:shadow-lg transition-transform duration-500 max-h-[272px] w-[96%] ml-[2%] my-[4%]"
+      onClick={onClickHandler}
     >
       {/* Image Container */}
-      <div className="relative w-full h-[120px]">
+      <div className="relative w-full h-[150px]">
         <Image
           src={`${getImgSrc ||'https://res.cloudinary.com/do1ia4vzf/image/upload/v1740680733/food/ehmip6g5ddtmkygpw7he.webp'}`}
           alt={item?.name}

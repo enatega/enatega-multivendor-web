@@ -3,27 +3,30 @@
 import React, { useEffect, useState } from "react";
 import { Carousel } from "primereact/carousel";
 
-import {
-  ISliderCardComponentProps,
-
-} from "@/lib/utils/interfaces";
+import { ISliderCardComponentProps } from "@/lib/utils/interfaces";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faAngleLeft,
-  faAngleRight,
-} from "@fortawesome/free-solid-svg-icons";
+import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
+
+import { useRouter } from "next/navigation";
 
 import Card from "../card";
+import CustomButton from "../button";
 const responsiveOptions = [
-  { breakpoint: "1024px", numVisible: 4, numScroll: 1 }, // If screen width is ≤ 1024px, show 4 items
-  { breakpoint: "768px", numVisible: 3, numScroll: 1 }, // If screen width is ≤ 768px, show 3 items
-  { breakpoint: "560px", numVisible: 2, numScroll: 1 }, // If screen width is ≤ 560px, show 2 items
-  { breakpoint: "425px", numVisible: 1, numScroll: 1 }, // If screen width is ≤ 400px, show 1 item
+  { breakpoint: "1280px", numVisible: 4, numScroll: 1 }, // If screen width is ≤ 1280px, show 4 items
+  { breakpoint: "1024px", numVisible: 3, numScroll: 1 }, // If screen width is ≤ 1024px, show 3 items
+  { breakpoint: "640px", numVisible: 2, numScroll: 1 }, // If screen width is ≤ 640px, show 2 items
+  { breakpoint: "425px", numVisible: 1, numScroll: 1 }, // If screen width is ≤ 425px, show 1 item
 ];
 
-const SliderCard = <T,>({ title, data, last }: ISliderCardComponentProps<T>) => {
+const SliderCard = <T,>({
+  title,
+  data,
+  last,
+}: ISliderCardComponentProps<T>) => {
   const [page, setPage] = useState(0);
   const [numVisible, setNumVisible] = useState(getNumVisible());
+
+  const router = useRouter();
 
   function getNumVisible() {
     if (typeof window === "undefined") return;
@@ -72,53 +75,60 @@ const SliderCard = <T,>({ title, data, last }: ISliderCardComponentProps<T>) => 
   }, []);
 
   const numScroll = 1; // Scroll by 1 item
-  const totalPages = Math.ceil((data?.length - (numVisible || 0)) / numScroll) + 1; // Total pages
+  const totalPages =
+    Math.ceil((data?.length - (numVisible || 0)) / numScroll) + 1; // Total pages
+
+  // see all click handler
+  const onSeeAllClick = () => {
+    router.push(`/${title?.toLocaleLowerCase().replace(/\s/g, "-")}`);
+  };
 
   return (
     data?.length > 0 && (
-    <div className={`ml-8 mr-10 md:ml-12 md:mr-14 ${last && 'mb-20'}`}>
-      <div className="flex justify-between">
-        <span className="font-inter font-bold text-2xl leading-8 tracking-normal text-gray-900">
-          {title}
-        </span>
-        <div className="flex items-center justify-end gap-x-2 mb-2">
-          {/* "See all" Button */}
-
-          <span className="text-blue-500 text-sm font-inter font-medium tracking-[0px]">
-            See All
+      <div className={`${last && "mb-20"}`}>
+        <div className="flex justify-between mx-[6px]">
+          <span className="font-inter font-bold text-xl sm:text-2xl leading-8 tracking-normal text-gray-900">
+            {title}
           </span>
+          <div className="flex items-center justify-end gap-x-2">
+            {/* See All Button */}
+            <CustomButton
+              label="See all"
+              onClick={onSeeAllClick}
+              className="text-[#0EA5E9] transition-colors duration-200 text-sm md:text-base "
+            />
 
-          {/* Navigation Buttons */}
-          <div className="gap-x-2 hidden md:flex">
-            <button
-              className="w-8 h-8 flex items-center justify-center  shadow-md  rounded-full"
-              onClick={prev}
-            >
-              <FontAwesomeIcon icon={faAngleLeft} />
-            </button>
-            <button
-              className="w-8 h-8 flex items-center justify-center  shadow-md rounded-full"
-              onClick={next}
-            >
-              <FontAwesomeIcon icon={faAngleRight} />
-            </button>
+            {/* Navigation Buttons */}
+            <div className="gap-x-2 hidden md:flex">
+              <button
+                className="w-8 h-8 flex items-center justify-center  shadow-md  rounded-full"
+                onClick={prev}
+              >
+                <FontAwesomeIcon icon={faAngleLeft} />
+              </button>
+              <button
+                className="w-8 h-8 flex items-center justify-center  shadow-md rounded-full"
+                onClick={next}
+              >
+                <FontAwesomeIcon icon={faAngleRight} />
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
-      <Carousel
-        value={data}
-        style={{ width: "100%" }}
-          itemTemplate={(item) => <Card item={item} isDiscovery={true} />}
-        numVisible={numVisible}
-        numScroll={1}
-        circular
-        responsiveOptions={responsiveOptions}
-        showIndicators={false}
-        showNavigators={false}
-        page={page}
-      />
-    </div>
+        <Carousel
+          value={data}
+          className="w-[100%]"
+          itemTemplate={(item) => <Card item={item} />}
+          numVisible={numVisible}
+          numScroll={1}
+          circular
+          responsiveOptions={responsiveOptions}
+          showIndicators={false}
+          showNavigators={false}
+          page={page}
+        />
+      </div>
     )
   );
 };

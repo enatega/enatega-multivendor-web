@@ -69,14 +69,14 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
         <div className="w-full">
           <PaddingContainer>
             <div className="flex flex-row items-center justify-between w-full h-16">
-              <div
-                className="flex gap-x-2 items-center cursor-pointer"
-                onClick={() => setIsUserAddressModalOpen(true)}
-              >
+              <div className="flex gap-x-2 items-center cursor-pointer">
                 <Link href="/" className="text-xl font-bold text-gray-900">
                   Enatega
                 </Link>
-                <div className="flex items-center">
+                <div
+                  className="flex items-center"
+                  onClick={() => setIsUserAddressModalOpen(true)}
+                >
                   <div className="p-[4px] m-2 bg-gray-50 rounded-full">
                     <LocationSvg />
                   </div>

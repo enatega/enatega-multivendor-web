@@ -5,7 +5,7 @@ import useMostOrderedRestaurants from "@/lib/hooks/useMostOrderedRestaurants";
 import SliderSkeleton from "@/lib/ui/useable-components/custom-skeletons/slider.loading.skeleton";
 
 function MostOrderedRestaurants() {
-  const { data, error, loading } = useMostOrderedRestaurants()
+  const { queryData, error, loading } = useMostOrderedRestaurants()
 
   if (loading) {
     return <SliderSkeleton />;
@@ -17,7 +17,7 @@ function MostOrderedRestaurants() {
   return (
     <SliderCard
       title="Most ordered restaurants"
-      data={data?.mostOrderedRestaurantsPreview || []}
+      data={queryData || []}
     />
   );
 }
