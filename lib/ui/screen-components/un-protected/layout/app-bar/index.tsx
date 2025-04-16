@@ -80,10 +80,13 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                   <div className="p-[4px] m-2 bg-gray-50 rounded-full">
                     <LocationSvg />
                   </div>
-                  <span className="text-gray-500 font-inter font-normal text-sm leading-6 tracking-normal mr-2">
+                  <span className="text-xs sm:text-sm md:text-base  text-gray-500 font-inter font-normal leading-6 tracking-normal mr-2">
                     {userAddress?.deliveryAddress}
                   </span>
-                  <FontAwesomeIcon icon={faChevronDown} />
+
+                  <div className="hidden sm:flex items-center">
+                    <FontAwesomeIcon icon={faChevronDown} />
+                  </div>
                 </div>
               </div>
               <div className="flex justify-end items-center space-x-4">
