@@ -230,6 +230,12 @@ export default function OrderCheckoutScreen() {
   function validateOrder() {
     if (!restaurantData.restaurant.isAvailable || !onCheckIsOpen()) {
       // toggleCloseModal();
+      showToast({
+        title: "Restaurant",
+        message: "Restaurant is not available right now.",
+        type: "error",
+      });
+
       return;
     }
     if (!cart.length) {
