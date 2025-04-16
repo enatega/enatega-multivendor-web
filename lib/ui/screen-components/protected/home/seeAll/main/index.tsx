@@ -14,7 +14,7 @@ import HomeHeadingSection from "@/lib/ui/useable-components/home-heading-section
 import SquareCard from "@/lib/ui/useable-components/square-card";
 // interface
 import { IRestaurant } from "@/lib/utils/interfaces/restaurants.interface";
-import { ICuisineData } from "@/lib/utils/interfaces";
+import { ICuisinesData } from "@/lib/utils/interfaces";
 
 // cuisines slug for rendering cuisines card conditionally
 const CUISINE_SLUGS = new Set(["restaurant-cuisines", "grocery-cuisines"]);
@@ -47,7 +47,7 @@ function SeeAllSection() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 mt-4 items-center">
           {Array.isArray(data) &&
             CUISINE_SLUGS.has(slug) &&
-            (data as ICuisineData[]).map((item) => (
+            (data as ICuisinesData[]).map((item) => (
               <SquareCard
                 key={item._id}
                 item={item}
