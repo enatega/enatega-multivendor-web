@@ -1,3 +1,5 @@
+import { IUserAddress } from "./auth.interface";
+
 export interface ISingleAddress {
   _id: string;
   label: string;
@@ -30,11 +32,12 @@ export interface IProfileResponse extends IAddresses {
 }
 
 export interface IAddressItemProps {
-  address: { _id: string; label: string; details: string };
+  address: IUserAddress;
   activeDropdown: string | null;
   toggleDropdown: (id: string) => void;
   handleDelete: (id: string) => void;
   setDropdownRef: (id: string) => (el: HTMLDivElement | null) => void;
+  onEditAddress?: (address: IUserAddress | null) => void;
 }
 
 export interface IDeleteAccountDialogProps {
@@ -47,6 +50,7 @@ export interface IDeleteAccountDialogProps {
   loading?: boolean;
 }
 
+
 export interface IUpdateUserPhoneArguments {
   phone?: string;
   name: string;
@@ -58,3 +62,4 @@ export interface IUpdateUserEmailArguments {
     name: string;
     emailIsVerified: boolean;
   }
+
