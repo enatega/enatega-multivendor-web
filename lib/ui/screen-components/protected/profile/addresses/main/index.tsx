@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { gql, useMutation, useQuery } from "@apollo/client";
 // Queries- Mutations
 import { DELETE_ADDRESS } from "@/lib/api/graphql/mutations";
 import { useMutation, useQuery } from "@apollo/client";
@@ -9,13 +8,12 @@ import { useMutation, useQuery } from "@apollo/client";
 import useToast from "@/lib/hooks/useToast";
 
 // Components
-import CustomIconButton from "@/lib/ui/useable-components/custom-icon-button";
+import UserAddressComponent from "@/lib/ui/useable-components/address";
 import CustomIconButton from "@/lib/ui/useable-components/custom-icon-button";
 import AddressesSkeleton from "@/lib/ui/useable-components/custom-skeletons/addresses.skelton";
 import CustomDialog from "@/lib/ui/useable-components/delete-dialog";
 import EmptyAddress from "@/lib/ui/useable-components/empty-address";
 import AddressItem from "../main/address-listings";
-import UserAddressComponent from "@/lib/ui/useable-components/address";
   
 //Interfaces
 import { ISingleAddress } from "@/lib/utils/interfaces/profile.interface";
