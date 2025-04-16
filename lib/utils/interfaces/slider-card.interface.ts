@@ -42,5 +42,4 @@ export interface ISliderCardItemProps {
 
 export interface ICardProps {
   item: ISliderCardItemProps;
-  isDiscovery?: boolean
 }

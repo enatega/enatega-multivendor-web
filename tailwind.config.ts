@@ -50,7 +50,9 @@ const config = {
       fontFamily: {
         inter: ["Inter", "sans-serif"],
       },
-      
+      scale: {
+        102: '1.02',
+      },
     },
   },
   plugins: [require("tailwind-scrollbar")],

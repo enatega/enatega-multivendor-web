@@ -5,7 +5,7 @@ import useNearByRestaurantsPreview from "@/lib/hooks/useNearByRestaurantsPreview
 import SliderSkeleton from "@/lib/ui/useable-components/custom-skeletons/slider.loading.skeleton";
 
 function RestaurantsNearYou() {
-  const { data, error, loading } = useNearByRestaurantsPreview();
+  const { queryData, error, loading } = useNearByRestaurantsPreview();
 
   if (loading) {
     return <SliderSkeleton/>;
@@ -17,7 +17,7 @@ function RestaurantsNearYou() {
   return (
     <SliderCard
       title="Restaurants near you"
-      data={data?.nearByRestaurantsPreview?.restaurants || []}
+      data={queryData || []}
     />
   );
 }

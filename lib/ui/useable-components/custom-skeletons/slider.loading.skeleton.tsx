@@ -40,14 +40,13 @@ const CardSkeleton = () => {
   );
 };
 
-const SliderSkeleton = ({ isDiscovery = true }: { isDiscovery?: boolean }) => {
+const SliderSkeleton = () => {
   const numVisible = 4;
 
   return (
     <div className="ml-8 mr-10 md:ml-12 md:mr-14 mb-20 mt-6">
       <div className="flex justify-between mb-4">
         <div className="bg-gray-300 h-8 w-1/3 mb-2 rounded"></div>
-        {isDiscovery && (
           <div className="flex items-center justify-end gap-x-2">
             <span className="text-gray-300 text-sm">See All</span>
             <div className="gap-x-2 hidden md:flex">
@@ -55,7 +54,6 @@ const SliderSkeleton = ({ isDiscovery = true }: { isDiscovery?: boolean }) => {
               <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
             </div>
           </div>
-        )}
       </div>
 
       <Carousel
