@@ -80,8 +80,14 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                   <div className="p-[4px] m-2 bg-gray-50 rounded-full">
                     <LocationSvg />
                   </div>
-                  <span className="text-xs sm:text-sm md:text-base  text-gray-500 font-inter font-normal leading-6 tracking-normal mr-2">
+                  {/* Show on medium and up */}
+                  <span className="hidden md:inline text-xs sm:text-sm md:text-base text-gray-500 font-inter font-normal leading-6 tracking-normal mr-2">
                     {userAddress?.deliveryAddress}
+                  </span>
+
+                  {/* Show on small screens only */}
+                  <span className="inline md:hidden text-xs sm:text-sm md:text-base text-gray-500 font-inter font-normal leading-6 tracking-normal mr-2">
+                    {userAddress?.details}
                   </span>
 
                   <div className="hidden sm:flex items-center">
