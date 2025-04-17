@@ -1,6 +1,11 @@
 import HomeCard from "@/lib/ui/useable-components/Home-Card";
 import MoveableCard from "@/lib/ui/useable-components/Moveable-Card";
 import React from "react";
+import deliveryFee  from "@/public/assets/images/png/deliveryFee.webp"
+import freshGroceries  from "@/public/assets/images/png/freshGroceries.jpg"
+import DeliveringyHappines  from "@/public/assets/images/png/DeliveringHapiness.webp"
+import AwardWinning from "@/public/assets/images/png/AwardWinning.webp"
+import ZeroDelivery from "@/public/assets/images/png/0delivery.webp"
 
 const EnategaInfo: React.FC = () => {
   return (
@@ -17,7 +22,7 @@ const EnategaInfo: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 ">
         <MoveableCard
           image={
-            "https://images.ctfassets.net/23u853certza/5926qGJB2hSNE15qHWNLZn/388c6afaf9c273c328d6ec824f10b0e1/photocard_woltplus.jpg?w=1600&q=90&fm=webp"
+            deliveryFee
           }
           heading={"Real support from real people"}
           subText={
@@ -26,7 +31,7 @@ const EnategaInfo: React.FC = () => {
         />
         <MoveableCard
           image={
-            "https://images.ctfassets.net/23u853certza/5926qGJB2hSNE15qHWNLZn/388c6afaf9c273c328d6ec824f10b0e1/photocard_woltplus.jpg?w=1600&q=90&fm=webp"
+           ZeroDelivery
           }
           heading={"0 € delivery fees with Enatega"}
           subText={
@@ -38,17 +43,17 @@ const EnategaInfo: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-[30px] mb-[30px]">
         <HomeCard
           image={
-            "https://images.ctfassets.net/23u853certza/471ILgDT92ZOsRUtayO8Gy/3653197562a27c83d18caa3fb4a12256/photocardsmall_wolt_market_v2.jpg?w=960&q=90&fm=webp"
+            freshGroceries
           }
         />
         <HomeCard
           image={
-            "https://images.ctfassets.net/23u853certza/2PeZ6DypYynPSCEDHZbh1C/c978e38a82eb3f3331f184e67d2b4e00/photocardsmall_wolt_for_work.jpg?w=960&q=90&fm=webp"
+            DeliveringyHappines
           }
         />
         <HomeCard
           image={
-            "https://images.ctfassets.net/23u853certza/51WilVKmJ4MmFg3IBHK2ko/1d8652b44a5f77a8a68c22f1ab28db14/photocardsmall_woltapp.jpg?w=960&q=90&fm=webp"
+            AwardWinning
           }
         />
       </div>

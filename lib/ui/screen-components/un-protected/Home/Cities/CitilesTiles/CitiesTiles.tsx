@@ -28,6 +28,7 @@ const CitiesTiles: React.FC<CitiesTilesProps> = ({ countryId, AllCountries }) =>
 
   const onCityClick = (item: City | CountryItem | void) => {
      
+
     if (!item || !("latitude" in item)) return;
 
     const city = item as City

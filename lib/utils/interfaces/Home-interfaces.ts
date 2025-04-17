@@ -1,3 +1,5 @@
+import { StaticImageData } from "next/image";
+
 export interface buttonProps{
     text:string
   }
@@ -13,7 +15,7 @@ export interface buttonProps{
     heading?:string,
     subText?:string,
     button?:React.ReactNode,
-    image:string,
+    image:string | StaticImageData ,
     middle?:boolean,
     height?:string
     }

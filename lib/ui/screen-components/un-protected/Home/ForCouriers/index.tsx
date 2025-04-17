@@ -3,6 +3,9 @@ import TinyTiles from "@/lib/ui/useable-components/tinyTiles";
 import React from "react";
 import TranparentButton from "@/lib/ui/useable-components/Home-Buttons/TranparentButton";
 
+import competetiveEarning  from "@/public/assets/images/png/competitiveEarning.webp"
+import flexibleHours  from "@/public/assets/images/png/flexibleHours.webp"
+
 const Couriers:React.FC = () => {
   const EarningButton = <TranparentButton text={"Learn More"} />;
   const FLexiblegButton = <TranparentButton text={"Learn More"} />;
@@ -20,7 +23,7 @@ const Couriers:React.FC = () => {
       />
       <div className="grid gird-cols-1 md:grid-cols-2 my-[30px] gap-8">
         <MoveableCard
-          image="https://images.ctfassets.net/23u853certza/1CTswohkY0RySIw1tV30wt/26823bac3c49bd1a31a503eabccb00fe/5ef9f6cb20e0ac7e92b8dd720fb0fb7f.png?w=1600&q=90&fm=webp"
+          image={competetiveEarning}
           heading={"Competitive earnings"}
           subText={
             "The more you deliver, the more money you can earn. Get paid per delivery and for distance covered."
@@ -28,7 +31,7 @@ const Couriers:React.FC = () => {
           button={EarningButton}
         />
         <MoveableCard
-          image="https://images.ctfassets.net/23u853certza/14E5PXvsGT5GDxRarQIItq/ad42c51662ddae52e44d93a7f9dbafe2/photocard_courier_flexible_hours.jpg?w=1600&q=90&fm=webp"
+          image={flexibleHours}
           heading={"Flexible hours"}
           subText={
             "Choose your own hours and set your own schedule. Plus, no delivery experience required."

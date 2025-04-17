@@ -1,5 +1,7 @@
+import { StaticImageData } from "next/image";
+
 export interface Cards {
-  image: string;
+  image: string | StaticImageData;
   heading: string;
   text: string;
   color:string;
@@ -13,9 +15,21 @@ export interface sideCardProps{
   image:string,
   heading:string,
   subHeading:string,
+  right:boolean
   }
   
   
  export interface sideCardList{
     sideCards:sideCardProps[]
   }
+
+
+ export interface VendorFormValues {
+    firstName: string;
+    lastName: string;
+    phoneNumber: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+    termsAccepted: boolean;
+  };

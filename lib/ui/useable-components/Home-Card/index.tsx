@@ -1,8 +1,9 @@
 import React from 'react'
 import MoveableCard from '../Moveable-Card'
+import { StaticImageData } from 'next/image'
 
 interface HomeCardProps{
-image:string,
+image:string | StaticImageData,
 heading?:string,
 subText?:string
 }

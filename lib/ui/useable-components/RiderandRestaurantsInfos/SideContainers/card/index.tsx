@@ -1,16 +1,18 @@
-import React,{ReactNode} from 'react'
+import React from 'react'
 import Image from 'next/image'
 import { sideCardProps } from '@/lib/utils/interfaces/Rider-restaurant.interface'
 
-const SideCard:React.FC<sideCardProps> = ({image,heading,subHeading}) => {
+const SideCard:React.FC<sideCardProps> = ({image,heading,subHeading,right=true}) => {
   return (
-    <div className='grid grid-cols-2'>
-      <div>
-        <h1>{heading}</h1>
-        <p>{subHeading} </p>
+    <div className='grid grid-cols-1 md:grid-cols-2 p-2 justify-center items-center gap-6'>
+      <div className={`h-100% ${right== true ? 'order-2' : 'order-1'} `}>
+        <h1 className='text-[40px] font-bold my-6 leading-tight'>{heading}</h1>
+        <p className='font-light text-[#717173]'>{subHeading} </p>
       </div>
-      <div>
-          <Image src={"https://images.ctfassets.net/23u853certza/7c45kGPBSsstXHRYsdqakJ/41fb160caae9c9c8122ea06efbf41f27/Feature_6.jpeg?w=1920&q=75&fm=webp"} alt={"adasd"} width={100} height={100}/>
+      <div className='order-1 p-4 w-full h-[400px]'>
+      <div className='h-[400px] relative '>
+          <Image src={image} alt={"image"} fill className='object-cover rounded-lg'/>
+      </div>
       </div>
     </div>
   )
