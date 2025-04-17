@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 // Components
 import AppTopbar from "@/lib/ui/screen-components/un-protected/layout/app-bar";
 
@@ -9,14 +9,17 @@ import AppTopbar from "@/lib/ui/screen-components/un-protected/layout/app-bar";
 import { IProvider } from "@/lib/utils/interfaces";
 
 // Google OAuth
-import AuthModal from "@/lib/ui/screen-components/un-protected/authentication";
-import AppFooter from "../../screen-components/un-protected/layout/app-footer";
 import { useConfig } from "@/lib/context/configuration/configuration.context";
 import { GoogleMapsProvider } from "@/lib/context/global/google-maps.context";
+import AuthModal from "@/lib/ui/screen-components/un-protected/authentication";
+import AppFooter from "../../screen-components/un-protected/layout/app-footer";
+
+// Hooks
+import { useAuth } from "@/lib/context/auth/auth.context";
 
 const AppLayout = ({ children }: IProvider) => {
-  // States
-  const [isAuthModalVisible, setIsAuthModalVisible] = useState(false);
+  // Hooks
+ const { isAuthModalVisible, setIsAuthModalVisible } = useAuth();
 
   // Hook
   const { GOOGLE_MAPS_KEY, LIBRARIES } = useConfig();

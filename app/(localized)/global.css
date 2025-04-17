@@ -769,4 +769,11 @@ Discovery Caurousal
   box-shadow: none !important;
 }
 
+.p-stepper-nav{
+  display: none !important;
+}
 
+.p-inputotp-input{
+  border:1px solid lightgray;
+  border-radius: 32px;
+}

@@ -1,4 +1,6 @@
 export * from "./addresses";
-export * from "./orders";
-export * from "./Notification";
+export * from "./auth";
 export * from "./coupon";
+export * from "./Notification";
+export * from "./orders";
+

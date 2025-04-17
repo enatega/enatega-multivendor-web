@@ -1,5 +1,8 @@
 "use client";
 
+import { GET_USER_PROFILE, ORDERS } from "@/lib/api/graphql";
+import { saveNotificationTokenWeb } from "@/lib/api/graphql/mutations";
+import { orderStatusChanged } from "@/lib/api/graphql/subscription";
 import {
   ApolloError,
   gql,
@@ -9,15 +12,12 @@ import {
 } from "@apollo/client";
 import React, {
   createContext,
-  useEffect,
-  useState,
   ReactNode,
   useCallback,
+  useEffect,
+  useState,
 } from "react";
 import { v4 } from "uuid";
-import { orderStatusChanged } from "@/lib/api/graphql/subscription";
-import { ORDERS, profile } from "@/lib/api/graphql";
-import { saveNotificationTokenWeb } from "@/lib/api/graphql/mutations";
 
 import {
   IAddon,
@@ -30,10 +30,6 @@ import {
   IVariation,
 } from "@/lib/utils/interfaces";
 
-// GraphQL Queries
-const PROFILE = gql`
-  ${profile}
-`;
 const SUBSCRIPTION_ORDERS = gql`
   ${orderStatusChanged}
 `;
@@ -212,7 +208,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
       error: errorProfile,
       data: dataProfile,
     },
-  ] = useLazyQuery(PROFILE, {
+  ] = useLazyQuery(GET_USER_PROFILE, {
     fetchPolicy: "network-only",
     onCompleted: onProfileCompleted,
     onError,

@@ -1,31 +1,28 @@
 "use client";
 
-import { useCallback, useEffect, useState, useRef } from "react";
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { useCallback, useEffect, useRef, useState } from "react";
 // Queries- Mutations
 import { DELETE_ADDRESS } from "@/lib/api/graphql/mutations";
-import { profile } from "@/lib/api/graphql/queries/profile";
+import { useMutation, useQuery } from "@apollo/client";
 //Hooks
 import useToast from "@/lib/hooks/useToast";
 
 // Components
-import AddressesSkeleton from "@/lib/ui/useable-components/custom-skeletons/addresses.skelton";
+import UserAddressComponent from "@/lib/ui/useable-components/address";
 import CustomIconButton from "@/lib/ui/useable-components/custom-icon-button";
-import AddressItem from "../main/address-listings";
+import AddressesSkeleton from "@/lib/ui/useable-components/custom-skeletons/addresses.skelton";
 import CustomDialog from "@/lib/ui/useable-components/delete-dialog";
 import EmptyAddress from "@/lib/ui/useable-components/empty-address";
-import UserAddressComponent from "@/lib/ui/useable-components/address";
+import AddressItem from "../main/address-listings";
+  
 //Interfaces
 import { ISingleAddress } from "@/lib/utils/interfaces/profile.interface";
 
 import { IUserAddress } from "@/lib/utils/interfaces";
 //Icons
+import { GET_USER_PROFILE } from "@/lib/api/graphql";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
-// Query
-const PROFILE = gql`
-  ${profile}
-`;
 
 export default function AddressesMain() {
   // states
@@ -38,7 +35,7 @@ export default function AddressesMain() {
   const { showToast } = useToast();
 
   //Queries and Mutations
-  const { data: profileData, loading: profileLoading } = useQuery(PROFILE, {
+  const { data: profileData, loading: profileLoading } = useQuery(GET_USER_PROFILE, {
     fetchPolicy: "cache-and-network",
   });
 
