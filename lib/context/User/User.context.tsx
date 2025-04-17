@@ -376,7 +376,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
     console.log("error", error.message);
   }
 
-  const setTokenAsync = async (tokenReq: string, cb: () => void = () => {}) => {
+  const setTokenAsync = async (tokenReq: string, cb: () => void = () => { }) => {
     setToken(tokenReq);
     if (typeof window !== "undefined") {
       localStorage.setItem("token", tokenReq);
@@ -479,7 +479,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
     setCart((prevCart) => {
       const updatedCart = [...prevCart];
       const cartIndex = updatedCart.findIndex((c) => c.key === key);
-
+  
       if (cartIndex !== -1) {
         // Important: Set the exact new quantity instead of adding to prevent potential double-increments
         updatedCart[cartIndex].quantity =
@@ -526,13 +526,13 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
     setCart((prevCart) => {
       const updatedCart = [...prevCart];
       const cartIndex = updatedCart.findIndex((c) => c.key === key);
-
+  
       if (cartIndex === -1) return prevCart;
-
+  
       // Important: Ensure we're only decreasing by exactly 1
       updatedCart[cartIndex].quantity = updatedCart[cartIndex].quantity - 1;
       const items = updatedCart.filter((c) => c.quantity > 0);
-
+  
       // Update localStorage
       if (typeof window !== "undefined") {
         if (items.length === 0) {
@@ -543,7 +543,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
           localStorage.setItem("cartItems", JSON.stringify(items));
         }
       }
-
+  
       return items;
     });
   }, []);
@@ -656,28 +656,28 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
       // Force change to be exactly +1 or -1
       const safeChange = changeAmount > 0 ? 1 : -1;
       console.log(`[UserContext] Using safe change value: ${safeChange}`);
-
+      
       // Use a local variable that will be unique to each function call
       // This ensures the flag is reset for each new click
       let updateApplied = false;
-
+      
       setCart((prevCart) => {
         console.log(`[UserContext] setCart callback executing`);
-
+        
         // If we've already applied an update in this callback invocation, don't do it again
         if (updateApplied) {
           console.log(`[UserContext] Preventing double update`);
           return prevCart;
         }
-
+        
         const updatedCart = [...prevCart];
         const cartIndex = updatedCart.findIndex((c) => c.key === key);
-
+        
         if (cartIndex === -1) {
           console.log(`[UserContext] Item with key ${key} not found in cart`);
           return prevCart;
         }
-
+        
         const currentItem = updatedCart[cartIndex];
         const currentQuantity = currentItem.quantity;
         console.log(
@@ -700,7 +700,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
               quantity: currentQuantity + safeChange,
             };
           }
-        }
+        } 
         // For increment
         else {
           console.log(
@@ -711,10 +711,10 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
             quantity: currentQuantity + safeChange,
           };
         }
-
+        
         // Mark that we've applied an update
         updateApplied = true;
-
+        
         // Update localStorage
         if (typeof window !== "undefined") {
           if (updatedCart.length === 0) {
@@ -725,11 +725,11 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
             localStorage.setItem("cartItems", JSON.stringify(updatedCart));
           }
         }
-
+        
         console.log(`[UserContext] Returning updated cart:`, updatedCart);
         return updatedCart;
       });
-
+      
       console.log(`[UserContext] updateItemQuantity completed`);
     },
     []
