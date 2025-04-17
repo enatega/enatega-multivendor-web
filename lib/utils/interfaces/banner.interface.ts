@@ -1,8 +1,14 @@
 export interface IBannerItemProps {
   item: {
-    file: string;
+    _id: string;
     title: string;
     description: string;
+    action: string;
+    screen: string;
+    file: string;
+    parameters?: string[];
+    shopType?: string;
+    slug?: string;
   }
 }
 
@@ -15,6 +21,8 @@ export interface IBanner {
   screen: string;
   file: string;
   parameters?: string[];
+  shopType?: string;
+  slug?: string;
 }
 
 export interface IGetBannersResponse {

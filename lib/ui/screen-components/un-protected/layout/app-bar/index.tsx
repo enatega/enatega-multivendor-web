@@ -69,21 +69,30 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
         <div className="w-full">
           <PaddingContainer>
             <div className="flex flex-row items-center justify-between w-full h-16">
-              <div
-                className="flex gap-x-2 items-center cursor-pointer"
-                onClick={() => setIsUserAddressModalOpen(true)}
-              >
+              <div className="flex gap-x-2 items-center cursor-pointer">
                 <Link href="/" className="text-xl font-bold text-gray-900">
                   Enatega
                 </Link>
-                <div className="flex items-center">
+                <div
+                  className="flex items-center"
+                  onClick={() => setIsUserAddressModalOpen(true)}
+                >
                   <div className="p-[4px] m-2 bg-gray-50 rounded-full">
                     <LocationSvg />
                   </div>
-                  <span className="text-gray-500 font-inter font-normal text-sm leading-6 tracking-normal mr-2">
+                  {/* Show on medium and up */}
+                  <span className="hidden md:inline text-xs sm:text-sm md:text-base text-gray-500 font-inter font-normal leading-6 tracking-normal mr-2">
                     {userAddress?.deliveryAddress}
                   </span>
-                  <FontAwesomeIcon icon={faChevronDown} />
+
+                  {/* Show on small screens only */}
+                  <span className="inline md:hidden text-xs sm:text-sm md:text-base text-gray-500 font-inter font-normal leading-6 tracking-normal mr-2">
+                    {userAddress?.details}
+                  </span>
+
+                  <div className="hidden sm:flex items-center">
+                    <FontAwesomeIcon icon={faChevronDown} />
+                  </div>
                 </div>
               </div>
               <div className="flex justify-end items-center space-x-4">

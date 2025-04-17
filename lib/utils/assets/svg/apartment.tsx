@@ -15,9 +15,9 @@ export default function AppartmentSvg(props: ISvgComponentProps) {
       <path
         d="M0.75 19.5H17.25M1.5 1.5H16.5M2.25 1.5V19.5M15.75 1.5V19.5M6 5.25H7.5M6 8.25H7.5M6 11.25H7.5M10.5 5.25H12M10.5 8.25H12M10.5 11.25H12M6 19.5V16.125C6 15.5037 6.50368 15 7.125 15H10.875C11.4963 15 12 15.5037 12 16.125V19.5"
         stroke={color}
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );

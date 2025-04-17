@@ -25,6 +25,7 @@ export interface IUserAddressProps {
 }
 
 export interface IUserAddressComponentProps {
+  editAddress?: IUserAddress | null;
   visible: boolean;
   onHide: () => void;
 }

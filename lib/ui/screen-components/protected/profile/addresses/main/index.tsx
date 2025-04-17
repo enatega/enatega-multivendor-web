@@ -1,30 +1,38 @@
 "use client";
 
 import { useCallback, useEffect, useState, useRef } from "react";
-// Queries- Mutations
 import { gql, useMutation, useQuery } from "@apollo/client";
+// Queries- Mutations
 import { DELETE_ADDRESS } from "@/lib/api/graphql/mutations";
 import { profile } from "@/lib/api/graphql/queries/profile";
 //Hooks
 import useToast from "@/lib/hooks/useToast";
+
 // Components
 import AddressesSkeleton from "@/lib/ui/useable-components/custom-skeletons/addresses.skelton";
 import CustomIconButton from "@/lib/ui/useable-components/custom-icon-button";
-import AddressItem from  "../main/address-listings"
+import AddressItem from "../main/address-listings";
 import CustomDialog from "@/lib/ui/useable-components/delete-dialog";
 import EmptyAddress from "@/lib/ui/useable-components/empty-address";
+import UserAddressComponent from "@/lib/ui/useable-components/address";
 //Interfaces
 import { ISingleAddress } from "@/lib/utils/interfaces/profile.interface";
+
+import { IUserAddress } from "@/lib/utils/interfaces";
 //Icons
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 // Query
-const PROFILE = gql`${profile}`;
+const PROFILE = gql`
+  ${profile}
+`;
 
 export default function AddressesMain() {
   // states
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [isUserAddressModalOpen, setIsUserAddressModalOpen] = useState(false);
+  const [editAddress, setEditAddress] = useState<IUserAddress | null>(null);
 
   // Hooks
   const { showToast } = useToast();
@@ -34,16 +42,24 @@ export default function AddressesMain() {
     fetchPolicy: "cache-and-network",
   });
 
-  const [mutate, { loading: loadingAddressMutation, error: deleteAddressError }] = useMutation(DELETE_ADDRESS, {
+  const [
+    mutate,
+    { loading: loadingAddressMutation, error: deleteAddressError },
+  ] = useMutation(DELETE_ADDRESS, {
     onCompleted,
   });
 
   function onCompleted() {
-    showToast({ type: 'success', title: 'Address', message: 'Deleted Successfully', duration: 3000 });
+    showToast({
+      type: "success",
+      title: "Address",
+      message: "Deleted Successfully",
+      duration: 3000,
+    });
     setDeleteTarget(null);
   }
 
-// variables
+  // variables
   const addresses = profileData?.profile?.addresses || [];
   const dropdownRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
@@ -52,7 +68,7 @@ export default function AddressesMain() {
   // Handle Toggle Dropdown
   // This function toggles the dropdown menu for a specific address.
   const toggleDropdown = useCallback((addressId: string) => {
-    setActiveDropdown(prev => prev === addressId ? null : addressId);
+    setActiveDropdown((prev) => (prev === addressId ? null : addressId));
   }, []);
 
   // Handle Delete Address
@@ -71,14 +87,22 @@ export default function AddressesMain() {
     }
   }, [deleteTarget]);
 
+  const onEditAddress = (address: IUserAddress | null) => {
+    setEditAddress(address);
+    setIsUserAddressModalOpen(!!address);
+  };
 
   // UseEffects
-
   // Handle Address Deletion Error
   // This effect shows a toast notification if there is an error deleting the address.
   useEffect(() => {
     if (deleteAddressError) {
-      showToast({ type: 'error', title: 'Address', message: 'Failed to delete', duration: 3000 });
+      showToast({
+        type: "error",
+        title: "Address",
+        message: "Failed to delete",
+        duration: 3000,
+      });
     }
   }, [deleteAddressError]);
 
@@ -87,10 +111,10 @@ export default function AddressesMain() {
   // It uses a ref to check if the click target is outside of the dropdown.
   useEffect(() => {
     // Only run on client side
-    if (typeof window === 'undefined') return;
-    
+    if (typeof window === "undefined") return;
+
     const handleClickOutside = (event: MouseEvent) => {
-      const isOutside = addresses.every((address:ISingleAddress) => {
+      const isOutside = addresses.every((address: ISingleAddress) => {
         const ref = dropdownRefs.current[address?._id];
         return !ref || !ref.contains(event.target as Node);
       });
@@ -99,47 +123,53 @@ export default function AddressesMain() {
         setActiveDropdown(null);
       }
     };
-    window.addEventListener('mousedown', handleClickOutside);
-    return () => window.removeEventListener('mousedown', handleClickOutside);
+    window.addEventListener("mousedown", handleClickOutside);
+    return () => window.removeEventListener("mousedown", handleClickOutside);
   }, [addresses]);
 
-
-// Return Skelton on Loading state
+  // Return Skelton on Loading state
   if (profileLoading) return <AddressesSkeleton />;
-  
 
   return (
-    <div className="w-full mx-auto">
-      <CustomDialog 
-        onConfirm={handleConfirmDelete} 
-        onHide={() => setDeleteTarget(null)} 
-        visible={!!deleteTarget}
-        loading={loadingAddressMutation}
-      />
-      {addresses?.map((address:ISingleAddress) => (
-        <AddressItem 
-          key={address?._id} 
-          address={address} 
-          activeDropdown={activeDropdown} 
-          toggleDropdown={toggleDropdown} 
-          handleDelete={handleDeleteAddress} 
-          setDropdownRef={(id) => (el) => dropdownRefs.current[id] = el} 
+    <>
+      <div className="w-full mx-auto">
+        <CustomDialog
+          onConfirm={handleConfirmDelete}
+          onHide={() => setDeleteTarget(null)}
+          visible={!!deleteTarget}
+          loading={loadingAddressMutation}
         />
-      ))}
-      {
-        !addresses.length && (
-         <EmptyAddress/>
-        )}
+        {addresses?.map((address: IUserAddress) => (
+          <AddressItem
+            key={address?._id}
+            address={address}
+            activeDropdown={activeDropdown}
+            toggleDropdown={toggleDropdown}
+            handleDelete={handleDeleteAddress}
+            setDropdownRef={(id) => (el) => (dropdownRefs.current[id] = el)}
+            onEditAddress={onEditAddress}
+          />
+        ))}
+        {!addresses.length && <EmptyAddress />}
 
-      <div className="flex justify-center mt-16">
-        <CustomIconButton
-          title="Add New Address"
-          iconColor="black"
-          classNames="bg-[#5AC12F] w-[content] px-4"
-          Icon={faPlus}
-          handleClick={() => {/* Add logic */}}
-        />
+        <div className="flex justify-center mt-16">
+          <CustomIconButton
+            title="Add New Address"
+            iconColor="black"
+            classNames="bg-[#5AC12F] w-[content] px-4"
+            Icon={faPlus}
+            handleClick={() => {
+              /* Add logic */
+            }}
+          />
+        </div>
       </div>
-    </div>
+
+      <UserAddressComponent
+        editAddress={editAddress}
+        visible={isUserAddressModalOpen}
+        onHide={() => setIsUserAddressModalOpen(false)}
+      />
+    </>
   );
 }

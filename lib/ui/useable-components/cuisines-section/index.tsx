@@ -7,8 +7,8 @@ import CuisinesSliderSkeleton from "@/lib/ui/useable-components/custom-skeletons
 // interface
 import { ICuisinesData } from "@/lib/utils/interfaces";
 
-function RestaurantCuisines({ title="Restaurant cuisines" } : {title?:string}) {
-  const { data, loading, error } = useGetCuisines();
+function CuisinesSection({ title, restaurant } : {title:string, restaurant:boolean}) {
+  const { loading, error, restaurantCuisinesData, groceryCuisinesData } = useGetCuisines();
 
   if (loading) {
     return <CuisinesSliderSkeleton />;
@@ -18,17 +18,13 @@ function RestaurantCuisines({ title="Restaurant cuisines" } : {title?:string}) {
     return;
   }
 
-  let restaurantCuisinesData: ICuisinesData[] = Array.isArray(data?.cuisines)
-    ? data.cuisines.filter(item => item.shopType.toLowerCase() === 'restaurant')
-    : [];
-
   return (
-    <CuisinesSliderCard
+    <CuisinesSliderCard<ICuisinesData>
       title={title}
-      data={restaurantCuisinesData || []}
+      data={restaurant ? restaurantCuisinesData : groceryCuisinesData || []}
       cuisines={true}
     />
   );
 }
 
-export default RestaurantCuisines;
+export default CuisinesSection;
