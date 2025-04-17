@@ -2,8 +2,11 @@ import React from 'react'
 
 // Assets
 import Image from "next/image";
+import { IOrderTrackingDetail } from '@/lib/utils/interfaces/order-tracking-detail.interface';
 
-function TrackingOrderDetails() {
+
+function TrackingOrderDetails({ orderTrackingDetails }: { orderTrackingDetails: IOrderTrackingDetail }) {
+    console.log("orderTrackingDetails", orderTrackingDetails);
     return (
         <div className="mt-8 space-y-6 flex-1 max-w-2xl md:w-auto w-full md:px-0 px-4">
             <div>

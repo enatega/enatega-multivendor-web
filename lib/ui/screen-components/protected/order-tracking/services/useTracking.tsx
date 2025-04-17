@@ -1,16 +1,23 @@
 "use client"
 import { useContext } from 'react'
 import UserContext from '@/lib/context/User/User.context';
+import { useQuery } from '@apollo/client';
+import { ORDER_TRACKING } from '@/lib/api/graphql/queries/order-tracking';
 
 function useTracking({ orderId }: { orderId: string }) {
-    const { orders } = useContext(UserContext);
+    const { data: orderTrackingDetails, loading: isOrderTrackingDetailsLoading } = useQuery(ORDER_TRACKING, {
+        fetchPolicy: "cache-and-network",
+        variables: {
+            orderDetailsId: orderId
+        }
+    });
 
-    const order = orders?.find((order) => order._id === orderId);
 
 
 
     return {
-        order
+        orderTrackingDetails: orderTrackingDetails?.orderDetails,
+        isOrderTrackingDetailsLoading
     }
 }
 

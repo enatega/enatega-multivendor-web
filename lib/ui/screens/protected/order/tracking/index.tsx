@@ -11,7 +11,7 @@ import useLocation from "../../../../screen-components/protected/order-tracking/
 import TrackingOrderDetails from "../../../../screen-components/protected/order-tracking/components/tracking-order-details";
 import TrackingHelpCard from "../../../../screen-components/protected/order-tracking/components/tracking-help-card";
 import useTracking from "../../../../screen-components/protected/order-tracking/services/useTracking";
-
+import TrackingOrderDetailsDummy from "../../../../screen-components/protected/order-tracking/components/tracking-order-details-dummy";
 interface IOrderTrackingScreenProps {
     orderId: string;
 }
@@ -19,9 +19,9 @@ interface IOrderTrackingScreenProps {
 export default function OrderTrackingScreen({ orderId }: IOrderTrackingScreenProps) {
 
     const { isLoaded, origin, destination, directions, directionsCallback } = useLocation();
-    const { order } = useTracking({ orderId: orderId });
+    const { orderTrackingDetails, isOrderTrackingDetailsLoading } = useTracking({ orderId: orderId });
 
-    console.log("order", order);
+    console.log("order", orderTrackingDetails);
 
     return (
         <>
@@ -33,7 +33,7 @@ export default function OrderTrackingScreen({ orderId }: IOrderTrackingScreenPro
                     <PaddingContainer>
                         <div className="bg-white py-4 md:py-8 flex md:flex-row flex-col md:items-start items-center justify-around gap-9 mx-auto">
                             {/* Order Details */}
-                            <TrackingOrderDetails />
+                            {isOrderTrackingDetailsLoading ? <TrackingOrderDetailsDummy /> : <TrackingOrderDetails orderTrackingDetails={orderTrackingDetails} />}
 
                             {/* Help Card */}
                             <TrackingHelpCard />
