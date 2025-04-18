@@ -5,8 +5,8 @@ import TranparentButton from "@/lib/ui/useable-components/Home-Buttons/Tranparen
 import riderImg from '@/public/assets/images/png/riderImg.webp'
 import reachNewCustomers from '@/public/assets/images/png/reachNewCustomers.jpg'
 const Info = () => {
-  const CourierButton = <TranparentButton text={"For couriers"} />;
-  const MerchantButton = <TranparentButton text={"For merhcants"} />;
+  const CourierButton = <TranparentButton text={"For riders"} link={"/rider"} />;
+  const MerchantButton = <TranparentButton text={"For restaurants" } link={"/restaurantInfo"}/>;
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
       <MoveableCard

@@ -22,7 +22,7 @@ const Rider = () => {
       <WhyChoose heading='Why Deliver with Enatgea' subHeading="As an Enatega Rider Partner, you can earn money by delivering orders to local customers. You can have a flexible schedule, so you deliver in the place or at the time that suits you the most. It's easy to start earning - no previous delivery experience is required!" />
       <WhyCardsList cards={cards}/>
       <hr  className='w-[30%] ml-12 border-4 border-green-400 my-12 rounded'/>
-      <EmailForm/>
+      <EmailForm heading={"Become a Rider "} role={"Driver Registration"}/>
     
     </div>
   )

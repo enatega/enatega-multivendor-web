@@ -16,6 +16,11 @@ import PhoneNumberInput from "./phoneNumberInput/PhoneNumberInput";
 
 import emailValidationSchema from "./validationSchema";
 
+interface formProps{
+  heading:string,
+  role:string,
+}
+
 const initialValues: VendorFormValues = {
   firstName: "",
   lastName: "",
@@ -26,7 +31,7 @@ const initialValues: VendorFormValues = {
   termsAccepted: false,
 };
 
-const EmailForm: React.FC = () => {
+const EmailForm: React.FC<formProps> = ({heading,role}) => {
   const [alert, setAlert] = useState({
     open: false,
     severity: "",
@@ -51,7 +56,7 @@ const EmailForm: React.FC = () => {
     
     const templateParams = {
       ...formData,
-      role: "Vendor Registration",
+      role: role,
       isRider: false,
     };
 
@@ -74,7 +79,7 @@ const EmailForm: React.FC = () => {
 
   return (
     <div className="p-6 max-w-2xl mx-auto bg-white shadow-lg rounded-m my-6">
-      <h2 className="text-2xl font-semibold mb-6">Become a Vendor</h2>
+      <h2 className="text-2xl font-semibold mb-6">{heading}</h2>
 
       <Formik
         initialValues={initialValues}

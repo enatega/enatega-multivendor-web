@@ -62,7 +62,7 @@ const Start: React.FC = () => {
         className="absolute bottom-0 left-0 w-full h-[100px]"
       >
         <path
-          d="M0,100 C500,50 500,50 1000,100 L1000,200 L0,200 Z"
+          d="M0,100 C500,60 500,60 1000,100 L1000,200 L0,200 Z"
           fill="white"
         />
       </svg>

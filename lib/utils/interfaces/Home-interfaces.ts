@@ -1,7 +1,8 @@
 import { StaticImageData } from "next/image";
 
 export interface buttonProps{
-    text:string
+    text:string,
+    link?:string
   }
   
  export interface HomeMiniCardProps{
@@ -17,7 +18,8 @@ export interface buttonProps{
     button?:React.ReactNode,
     image:string | StaticImageData ,
     middle?:boolean,
-    height?:string
+    height?:string,
+    link?:string
     }
 
   

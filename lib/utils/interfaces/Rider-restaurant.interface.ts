@@ -12,7 +12,7 @@ export interface WhyCardsListProps {
 }
 
 export interface sideCardProps{
-  image:string,
+  image:string | StaticImageData,
   heading:string,
   subHeading:string,
   right:boolean

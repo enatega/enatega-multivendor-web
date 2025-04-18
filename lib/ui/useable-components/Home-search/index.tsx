@@ -6,7 +6,8 @@ import { useRouter } from 'next/navigation';
 
 const CitySearch: React.FC = () => {
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const { setLocation } = useLocationContext();
+  const containerRef = useRef<HTMLDivElement | null>(null); // Added containerRef
+  const { setLocation,location } = useLocationContext();
   const { isLoaded } = useContext(GoogleMapsContext);
   const router = useRouter(); 
 
@@ -18,13 +19,9 @@ const CitySearch: React.FC = () => {
     if (!isLoaded || !window.google || !debouncedCityName) return;
 
     const autocompleteService = new window.google.maps.places.AutocompleteService();
-    console.log(autocompleteService)
     autocompleteService.getPlacePredictions(
       { input: debouncedCityName, types: ['(cities)'] },
-      (
-        predictions,
-        status
-      ) => {
+      (predictions, status) => {
         if (status === window.google.maps.places.PlacesServiceStatus.OK && predictions) {
           setSuggestions(predictions);
         } else {
@@ -62,8 +59,26 @@ const CitySearch: React.FC = () => {
     );
   };
 
+  // Added effect for outside click
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        setSuggestions([]);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
-    <div className="w-full max-w-md mx-auto p-2 rounded-md relative">
+    <div ref={containerRef} className="w-full max-w-md mx-auto p-2 rounded-md relative">
       <div className='flex justify-center items-center gap-4 rounded-full bg-white p-4'>
         <i className="pi pi-map-marker" style={{ fontSize: '1.5rem', color: "black" }}></i>
         <input
@@ -85,14 +100,14 @@ const CitySearch: React.FC = () => {
                   fontSize: '1.3rem',
                   color: 'black',
                   backgroundColor: '#ededee',
-                  padding: '10px',
+                  padding: '6px',
                   borderRadius: '50%',
                 }}
               ></i>
-              <div className='w-full'>
+              <div className='w-full flex '>
                 <li
                   onClick={() => handleSelect(suggestion.place_id, suggestion.description)}
-                  className="p-2 hover:text-red-300 cursor-pointer"
+                  className=" hover:text-[#94e469] px-5 hover:cursor-pointer"
                 >
                   {suggestion.description}
                 </li>

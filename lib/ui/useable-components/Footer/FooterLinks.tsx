@@ -1,36 +1,11 @@
-'use client';
-
 import React from 'react';
 import { Accordion, AccordionTab } from 'primereact/accordion';
 import FooterSection from './FooterSection';
 import FooterLinkItem from './FooterLinkItem';
 import 'primeicons/primeicons.css'; 
+import { FooterLinksProps } from '@/lib/utils/interfaces/footer.interface';
 
-interface Link {
-  label: string;
-  href?: string;
-}
-
-interface FooterSectionData {
-  title: string;
-  links: Link[];
-}
-
-interface FooterLinksProps {
-  section?: FooterSectionData;
-}
-
-const defaultFooterData: FooterSectionData = 
-  {
-    title: 'Company',
-    links: [
-      { label: 'About Us', href: '/about' },
-      { label: 'Careers', href: '/careers' },
-      { label: 'Blog', href: '/blog' },
-    ],
-  }
-
-const FooterLinks: React.FC<FooterLinksProps> = ({ section = defaultFooterData }) => {
+const FooterLinks: React.FC<FooterLinksProps> = ({ section }) => {
   return (
     <div className="w-full">
       {/* Grid for medium and up */}
@@ -50,7 +25,7 @@ const FooterLinks: React.FC<FooterLinksProps> = ({ section = defaultFooterData }
         >  
               <ul className="space-y-2">
                 {section.links.map((link) => (
-                  <FooterLinkItem key={link.label} label={link.label} href={link.href} />
+                  <FooterLinkItem key={link.label} label={link.label} link={link.link} internal={link.internal} />
                 ))}
               </ul>
             </AccordionTab>

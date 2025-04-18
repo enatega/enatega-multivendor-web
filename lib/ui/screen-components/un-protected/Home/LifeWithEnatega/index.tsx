@@ -1,11 +1,16 @@
 import HomeCard from "@/lib/ui/useable-components/Home-Card";
 import MoveableCard from "@/lib/ui/useable-components/Moveable-Card";
 import React from "react";
-import deliveryFee  from "@/public/assets/images/png/deliveryFee.webp"
-import freshGroceries  from "@/public/assets/images/png/freshGroceries.jpg"
-import DeliveringyHappines  from "@/public/assets/images/png/DeliveringHapiness.webp"
-import AwardWinning from "@/public/assets/images/png/AwardWinning.webp"
-import ZeroDelivery from "@/public/assets/images/png/0delivery.webp"
+import deliveryFee from "@/public/assets/images/png/deliveryFee.webp";
+import freshGroceries from "@/public/assets/images/png/freshGroceries.jpg";
+import DeliveringyHappines from "@/public/assets/images/png/DeliveringHapiness.webp";
+import AwardWinning from "@/public/assets/images/png/AwardWinning.webp";
+import ZeroDelivery from "@/public/assets/images/png/0delivery.webp";
+
+
+import RiderSection from "@/public/assets/images/svgs/RiderSection.svg";
+import RestaurantSection from "@/public/assets/images/svgs/RestuarantSection.svg";
+
 
 const EnategaInfo: React.FC = () => {
   return (
@@ -21,18 +26,14 @@ const EnategaInfo: React.FC = () => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 ">
         <MoveableCard
-          image={
-            deliveryFee
-          }
+          image={deliveryFee}
           heading={"Real support from real people"}
           subText={
             "Our world-class support team has your back, with friendly assistance and fast response times. "
           }
         />
         <MoveableCard
-          image={
-           ZeroDelivery
-          }
+          image={ZeroDelivery}
           heading={"0 € delivery fees with Enatega"}
           subText={
             "Enjoy zero delivery fees from the best restaurants and stores in your city."
@@ -41,21 +42,9 @@ const EnategaInfo: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-[30px] mb-[30px]">
-        <HomeCard
-          image={
-            freshGroceries
-          }
-        />
-        <HomeCard
-          image={
-            DeliveringyHappines
-          }
-        />
-        <HomeCard
-          image={
-            AwardWinning
-          }
-        />
+        <HomeCard image={'https://enatega.com/wp-content/uploads/2025/01/enatega-customer-app.webp'} />
+        <HomeCard image={RiderSection} />
+        <HomeCard image={RestaurantSection} />
       </div>
     </div>
   );

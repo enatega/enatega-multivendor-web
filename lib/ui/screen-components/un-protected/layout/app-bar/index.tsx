@@ -26,6 +26,8 @@ import useSetUserCurrentLocation from "@/lib/hooks/useSetUserCurrentLocation";
 import { useConfig } from "@/lib/context/configuration/configuration.context";
 
 const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
+
+
   // State for cart sidebar
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isUserAddressModalOpen, setIsUserAddressModalOpen] = useState(false);

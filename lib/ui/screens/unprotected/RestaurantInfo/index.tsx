@@ -1,4 +1,4 @@
-import MyForm from '@/lib/ui/useable-components/RiderandRestaurantsInfos/Form'
+import EmailForm from '@/lib/ui/useable-components/RiderandRestaurantsInfos/Form'
 import Heading from '@/lib/ui/useable-components/RiderandRestaurantsInfos/Heading/Heading'
 import SideContainers from '@/lib/ui/useable-components/RiderandRestaurantsInfos/SideContainers/SideCard'
 import WhyCardsList from '@/lib/ui/useable-components/RiderandRestaurantsInfos/WhyCards/WhyCardsList'
@@ -30,7 +30,8 @@ const RestInfo = () => {
     <WhyChoose heading='Why Deliver with Enatgea' subHeading="As an Enatega Rider Partner, you can earn money by delivering orders to local customers. You can have a flexible schedule, so you deliver in the place or at the time that suits you the most. It's easy to start earning - no previous delivery experience is required!" />
     <WhyCardsList cards={cards}/>
     <SideContainers sideCards={sideCards} />
-    <MyForm/>
+    <hr  className='w-[30%] ml-12 border-4 border-green-400 my-12 rounded'/>
+    <EmailForm heading={"Become a Restaurant"} role={"Vendor Registration"}/>
     
   
   </div>
