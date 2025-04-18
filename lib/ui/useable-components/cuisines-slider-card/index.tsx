@@ -1,16 +1,18 @@
 "use client";
-
+// core
 import React, { useEffect, useState } from "react";
 import { Carousel } from "primereact/carousel";
-
+// interfaces
 import { CuisinesSliderCardComponent } from "@/lib/utils/interfaces";
+// icons
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
-
+// router
 import { useRouter, usePathname } from "next/navigation";
-
+// ui component
 import SquareCard from "../square-card";
 import CustomButton from "../button";
+
 const responsiveOptions = [
   { breakpoint: "1280px", numVisible: 6, numScroll: 1 }, // If screen width is ≤ 1280px, show 6 items
   { breakpoint: "1024px", numVisible: 4, numScroll: 1 }, // If screen width is ≤ 1024px, show 4 items
