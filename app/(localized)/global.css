@@ -772,8 +772,26 @@ Discovery Caurousal
 .p-stepper-nav{
   display: none !important;
 }
+/* Change border color */
+.p-checkbox-box {
+  border: 2px solid #9ca3af !important; /* Tailwind's gray-400 */
+}
 
-.p-inputotp-input{
+/* Change border color when checked */
+.p-checkbox-box.p-highlight {
+  border-color: green !important; /* Tailwind's blue-500 */
+  background: green !important;
+}
+
+/* Optional: change the checkmark color */
+.p-checkbox-icon {
+  color: white !important;
+}
+
+.p-highlight{
+  background: green !important;
+  border-color:yellow !important;
+}.p-inputotp-input{
   border:1px solid lightgray;
   border-radius: 32px;
 }

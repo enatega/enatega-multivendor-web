@@ -1,5 +1,7 @@
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
+import Script from 'next/script';
+
 
 export default async function RootLayout({
   children,
@@ -14,6 +16,21 @@ export default async function RootLayout({
 
   return (
     <html lang={locale}>
+      <head>
+        <Script
+          src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"
+          strategy="beforeInteractive"
+        />
+        {/* <Script id="emailjs-init" strategy="beforeInteractive">
+          {`
+            (function(){
+              emailjs.init({
+                publicKey: "YOUR_PUBLIC_KEY"
+              });
+            })();
+          `}
+        </Script> */}
+      </head>
       <body>
         <NextIntlClientProvider messages={messages}>
           {children}

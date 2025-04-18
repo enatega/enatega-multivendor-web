@@ -3,6 +3,8 @@ import {
   STRIPE_ALLOWED_CURRENCIES,
 } from "../constants/currencies";
 import { OrderStatus } from "../interfaces";
+import emailjs from 'emailjs-com'
+
 
 export function formatDate(dateString?: string): string {
   if (!dateString) return "";
@@ -206,3 +208,14 @@ export const getDistanceFromLatLonInKm = (
 
   return R * c; // distance in km
 }
+
+
+
+export const sendEmail = (templateId : any, templateParams : any) => {
+  return emailjs.send(
+    "service_463sz1v",
+    templateId,
+    templateParams,
+    "kfOnsw1Kn8ZWu4l77"
+  );
+};

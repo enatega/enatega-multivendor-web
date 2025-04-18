@@ -27,6 +27,8 @@ import { useConfig } from "@/lib/context/configuration/configuration.context";
 import { useAuth } from "@/lib/context/auth/auth.context";
 
 const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
+
+
   // State for cart sidebar
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isUserAddressModalOpen, setIsUserAddressModalOpen] = useState(false);
