@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from "@/lib/context/auth/auth.context";
+import AuthGuard from "@/lib/hoc/auth.guard";
 import ProfileLayoutScreen from "@/lib/ui/layouts/protected/profile";
 import { usePathname, useRouter } from "next/navigation";
 import { useLayoutEffect } from "react";
@@ -38,5 +39,11 @@ export default function ProfileRootLayout({
     onHandleUserAuthenticate();
   }, [authToken]);
 
-  return <ProfileLayoutScreen>{children}</ProfileLayoutScreen>;
+  const ProtectedLayout = AuthGuard(
+    ({ children }: { children: React.ReactNode }) => {
+      return <ProfileLayoutScreen>{children}</ProfileLayoutScreen>;
+    }
+  );
+
+  return <ProtectedLayout>{children}</ProtectedLayout>;
 }
