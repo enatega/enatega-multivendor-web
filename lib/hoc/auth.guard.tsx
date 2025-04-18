@@ -1,19 +1,21 @@
 "use client";
 // Core
-import { useLayoutEffect } from "react";
+import { useLayoutEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
-// Hooks
-import { useAuth } from "../context/auth/auth.context";
+// Methods
+import { onUseLocalStorage } from "../utils/methods/local-storage";
 
 const AuthGuard = <T extends object>(Component: React.ComponentType<T>) => {
   const WrappedComponent = (props: T) => {
+    const [isNavigating, setIsNavigating] = useState(true);
     const router = useRouter();
     const pathname = usePathname();
-    const { authToken } = useAuth();
 
     const onHandleUserAuthenticate = () => {
       try {
+        const authToken = onUseLocalStorage("get", "token");
+
         if (!authToken) {
           const previousUrl = document.referrer;
           const isSameOrigin = previousUrl.startsWith(window.location.origin);
@@ -21,12 +23,17 @@ const AuthGuard = <T extends object>(Component: React.ComponentType<T>) => {
             isSameOrigin ? new URL(previousUrl).pathname : null;
 
           if (previousPath && previousPath !== pathname) {
+            setIsNavigating(false);
             router.back();
           } else {
+            setIsNavigating(false);
             router.push("/");
           }
         }
+        setIsNavigating(false);
       } catch (err) {
+        console.log(err);
+        setIsNavigating(false);
         router.replace("/");
       }
     };
@@ -36,7 +43,7 @@ const AuthGuard = <T extends object>(Component: React.ComponentType<T>) => {
       onHandleUserAuthenticate();
     }, []);
 
-    return !authToken ? <></> : <Component {...props} />;
+    return isNavigating ? <></> : <Component {...props} />;
   };
 
   return WrappedComponent;
