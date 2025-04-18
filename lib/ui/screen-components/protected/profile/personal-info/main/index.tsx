@@ -1,19 +1,15 @@
 "use client"
+import { GET_USER_PROFILE } from "@/lib/api/graphql";
 import ProfileDetailsSkeleton from "@/lib/ui/useable-components/custom-skeletons/profile.details.skelton";
 import TextComponent from "@/lib/ui/useable-components/text-field";
 import { getInitials } from "@/lib/utils/methods";
-import { gql, useQuery } from "@apollo/client";
-import { profile } from "@/lib/api/graphql/queries/profile";
+import { useQuery } from "@apollo/client";
 
-// Query
-const PROFILE = gql`
-  ${profile}
-`;
 
 export default function PersonalInfoMain() {
 
   // Get profile data by using the query
-    const { data:profileData,loading:profileLoading } = useQuery(PROFILE, {
+    const { data:profileData,loading:profileLoading } = useQuery(GET_USER_PROFILE, {
       fetchPolicy: "network-only",
     });
 

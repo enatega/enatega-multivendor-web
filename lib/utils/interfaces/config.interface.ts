@@ -15,4 +15,5 @@ export interface IConfigProps {
   CURRENCY_SYMBOL: string;
   DELIVERY_RATE: number;
   COST_TYPE: string;
+  TEST_OTP: string;
 }

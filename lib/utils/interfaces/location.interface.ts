@@ -1,3 +1,6 @@
+export interface ILocationPointCoordinates {
+    coordinates: number[];
+}
 import { IGlobalComponentProps } from "./global.interface";
 import { ILocation } from "./google.map.interface";
 import { IArea } from "./zone.interface";
