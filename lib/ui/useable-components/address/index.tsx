@@ -119,6 +119,7 @@ export default function UserAddressComponent(
 
   // Hook
   const { profile, loadingProfile } = useUser();
+
   const { getCurrentLocation } = useLocation();
   const { getAddress } = useGeocoding();
   const { userAddress, setUserAddress } = useUserAddress();
