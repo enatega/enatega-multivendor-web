@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 const CitySearch: React.FC = () => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null); // Added containerRef
-  const { setLocation,location } = useLocationContext();
+  const { setLocation } = useLocationContext();
   const { isLoaded } = useContext(GoogleMapsContext);
   const router = useRouter(); 
 
