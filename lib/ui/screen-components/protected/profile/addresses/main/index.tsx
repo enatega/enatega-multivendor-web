@@ -14,7 +14,7 @@ import AddressesSkeleton from "@/lib/ui/useable-components/custom-skeletons/addr
 import CustomDialog from "@/lib/ui/useable-components/delete-dialog";
 import EmptyAddress from "@/lib/ui/useable-components/empty-address";
 import AddressItem from "../main/address-listings";
-  
+
 //Interfaces
 import { ISingleAddress } from "@/lib/utils/interfaces/profile.interface";
 
@@ -22,7 +22,6 @@ import { IUserAddress } from "@/lib/utils/interfaces";
 //Icons
 import { GET_USER_PROFILE } from "@/lib/api/graphql";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-
 
 export default function AddressesMain() {
   // states
@@ -35,9 +34,12 @@ export default function AddressesMain() {
   const { showToast } = useToast();
 
   //Queries and Mutations
-  const { data: profileData, loading: profileLoading } = useQuery(GET_USER_PROFILE, {
-    fetchPolicy: "cache-and-network",
-  });
+  const { data: profileData, loading: profileLoading } = useQuery(
+    GET_USER_PROFILE,
+    {
+      fetchPolicy: "cache-and-network",
+    }
+  );
 
   const [
     mutate,
@@ -156,7 +158,7 @@ export default function AddressesMain() {
             classNames="bg-[#5AC12F] w-[content] px-4"
             Icon={faPlus}
             handleClick={() => {
-              /* Add logic */
+              setIsUserAddressModalOpen(true);
             }}
           />
         </div>
