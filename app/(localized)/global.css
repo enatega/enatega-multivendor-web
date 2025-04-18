@@ -769,6 +769,9 @@ Discovery Caurousal
   box-shadow: none !important;
 }
 
+.p-stepper-nav{
+  display: none !important;
+}
 /* Change border color */
 .p-checkbox-box {
   border: 2px solid #9ca3af !important; /* Tailwind's gray-400 */
@@ -788,4 +791,7 @@ Discovery Caurousal
 .p-highlight{
   background: green !important;
   border-color:yellow !important;
+}.p-inputotp-input{
+  border:1px solid lightgray;
+  border-radius: 32px;
 }

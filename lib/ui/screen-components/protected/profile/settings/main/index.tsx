@@ -1,18 +1,14 @@
 "use client";
 
-import type React from "react";
-import { useCallback, useState } from "react";
+import { GET_USER_PROFILE } from "@/lib/api/graphql";
+import CustomButton from "@/lib/ui/useable-components/button";
 import CustomInputSwitch from "@/lib/ui/useable-components/custom-input-switch";
-import { gql, useQuery } from "@apollo/client";
-import { profile } from "@/lib/api/graphql/queries/profile";
 import ProfileSettingsSkeleton from "@/lib/ui/useable-components/custom-skeletons/profile.settings.skelton";
 import TextComponent from "@/lib/ui/useable-components/text-field";
-import CustomButton from "@/lib/ui/useable-components/button";
+import { useQuery } from "@apollo/client";
+import type React from "react";
+import { useCallback, useState } from "react";
 import DeleteAccountDialog from "./delete-account";
-// Query
-const PROFILE = gql`
-  ${profile}
-`;
 
 export default function SettingsMain() {
   // States for current values
@@ -21,7 +17,7 @@ export default function SettingsMain() {
   const [isDeleting, setIsDeleting] = useState<boolean>(false)
   const [deleteReason, setDeleteReason] = useState<string>("")
   // Get profile data by using the query
-  const { data: profileData, loading: isProfileLoading } = useQuery(PROFILE, {
+  const { data: profileData, loading: isProfileLoading } = useQuery(GET_USER_PROFILE, {
     fetchPolicy: "cache-and-network",
   });
 

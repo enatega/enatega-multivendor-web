@@ -48,8 +48,8 @@ export const useSetupApollo = (): ApolloClient<NormalizedCacheObject> => {
     }
 
     if (graphQLErrors) {
-      graphQLErrors.forEach((error) =>
-        console.error("GraphQL Error:", error.message)
+      (graphQLErrors||[])?.forEach((error) =>
+        console.error("GraphQL Error:", error?.message)
       );
     }
   });
@@ -57,16 +57,14 @@ export const useSetupApollo = (): ApolloClient<NormalizedCacheObject> => {
   const request = async (operation: Operation): Promise<void> => {
     // const data = localStorage.getItem(`user-${APP_NAME}`);
     // Set This Token empty later...
-    let token =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzExNWE2YWFkYTFiMzAzNjc1MzlkMzUiLCJlbWFpbCI6ImRlbW8tY3VzdG9tZXJAZW5hdGVnYS5jb20iLCJpYXQiOjE3NDMwNTQ4NDl9.8fETYE_BfY-KftpbxC-9-iy5_jEkV0ZAPejiekfsCz4";
     // let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2U2OThjZDFkNmFkNmZkMmMyZTk5NWQiLCJlbWFpbCI6ImR1bW15Y3VzdG9tZXIwNkBnbWFpbC5jb20iLCJpYXQiOjE3NDMxNjU2NDV9.XcOHtJtdb55PK6Bgwf2WZnWPHzkuH4vgFwq4yi8RWbA";
-    // if (data) {
-    //   token = JSON.parse(data).token;
-    // }
-
+    const token = localStorage.getItem("token");
+    const userId = localStorage.getItem("userId");
     operation.setContext({
       headers: {
-        authorization: token ? `Bearer ${token}` : "",
+        authorization: (token??"") ? `Bearer ${(token??"")}` : "",
+        userId:userId??"",
+        isAuth:!!token
       },
     });
   };

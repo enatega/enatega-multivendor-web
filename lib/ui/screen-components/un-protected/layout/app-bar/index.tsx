@@ -24,6 +24,7 @@ import { useUserAddress } from "@/lib/context/address/address.context";
 import useLocation from "@/lib/hooks/useLocation";
 import useSetUserCurrentLocation from "@/lib/hooks/useSetUserCurrentLocation";
 import { useConfig } from "@/lib/context/configuration/configuration.context";
+import { useAuth } from "@/lib/context/auth/auth.context";
 
 const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
 
@@ -40,6 +41,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
   // Hooks
   const { getCurrentLocation } = useLocation();
   const { onSetUserLocation } = useSetUserCurrentLocation();
+  const { authToken, setIsAuthModalVisible } = useAuth();
 
   // Format subtotal for display
   const formattedSubtotal = cartCount > 0 ? `$${calculateSubtotal()}` : "$0";
@@ -61,6 +63,14 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
     }
   };
 
+  const onHandleAddressModelVisibility = () => {
+    if (authToken) {
+      setIsUserAddressModalOpen(true);
+    } else {
+      setIsAuthModalVisible(true);
+    }
+  };
+
   useEffect(() => {
     onInit();
   }, [GOOGLE_MAPS_KEY, profile]);
@@ -77,7 +87,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                 </Link>
                 <div
                   className="flex items-center"
-                  onClick={() => setIsUserAddressModalOpen(true)}
+                  onClick={onHandleAddressModelVisibility}
                 >
                   <div className="p-[4px] m-2 bg-gray-50 rounded-full">
                     <LocationSvg />

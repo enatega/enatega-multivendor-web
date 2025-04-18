@@ -27,7 +27,6 @@ export interface IProfileResponse extends IAddresses {
     isActive: boolean;
     isOrderNotification: boolean;
     isOfferNotification: boolean;
-
     favourite: string[];
   };
 }
@@ -50,3 +49,17 @@ export interface IDeleteAccountDialogProps {
   setDeleteReason?: (reason: string) => void;
   loading?: boolean;
 }
+
+
+export interface IUpdateUserPhoneArguments {
+  phone?: string;
+  name: string;
+  phoneIsVerified: boolean;
+}
+
+export interface IUpdateUserEmailArguments {
+    email: string;
+    name: string;
+    emailIsVerified: boolean;
+  }
+

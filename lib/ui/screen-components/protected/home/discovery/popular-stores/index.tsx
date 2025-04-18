@@ -21,6 +21,7 @@ function PopularStores() {
       data={groceriesData || []}
       showLogo={true}
       last={true}
+      cuisines={false}
     />
   );
 }

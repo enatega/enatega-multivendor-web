@@ -7,14 +7,20 @@ import {
 import { useQuery } from "@apollo/client";
 // interfaces
 import { ICuisinesResponse, ICuisinesData } from "@/lib/utils/interfaces";
+// context
+import { useLocationContext } from "../context/Location/Location.context";
 
 const useGetCuisines = (enabled = true) => {
+  const { location } = useLocationContext();
+  const userLatitude = Number(location?.latitude || "0")
+  const userLongitude = Number(location?.longitude || "0")
+
   const { data, loading, error, networkStatus } = useQuery<ICuisinesResponse>(
     NEAR_BY_RESTAURANTS_CUISINES,
     {
       variables: {
-        latitude: 33.6995,
-        longitude: 73.0363,
+        latitude: userLatitude,
+        longitude: userLongitude,
         shopType: null,
       },
       fetchPolicy: "cache-and-network",
@@ -22,7 +28,7 @@ const useGetCuisines = (enabled = true) => {
     }
   );
 
-  let queryData = data;
+  let queryData = data?.nearByRestaurantsCuisines;
 
   let restaurantCuisinesData: ICuisinesData[] = Array.isArray(
     data?.nearByRestaurantsCuisines
