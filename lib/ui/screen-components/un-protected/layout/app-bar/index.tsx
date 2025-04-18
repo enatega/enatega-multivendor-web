@@ -27,6 +27,7 @@ import { useConfig } from "@/lib/context/configuration/configuration.context";
 import { useAuth } from "@/lib/context/auth/auth.context";
 import Image from "next/image";
 import { Menu } from "primereact/menu";
+import { useRouter } from "next/navigation";
 
 const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
 
@@ -39,6 +40,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
   const menuRef = useRef<Menu>(null);
 
   // Hooks
+  const router = useRouter();
   const { GOOGLE_MAPS_KEY } = useConfig();
   const { cartCount, calculateSubtotal, profile, loadingProfile } = useUser();
   const { userAddress, setUserAddress } = useUserAddress();
@@ -148,6 +150,12 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                     <FontAwesomeIcon icon={faChevronDown} />
                     <Menu
                       model={[
+                        {
+                          label: "Profile",
+                          command: () => {
+                            router.push("/profile");
+                          },
+                        },
                         {
                           label: "Logout",
                           command: () => {
