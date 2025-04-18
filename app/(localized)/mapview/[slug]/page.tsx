@@ -1,6 +1,6 @@
 "use client"
 import useNearByRestaurantsPreview from "@/lib/hooks/useNearByRestaurantsPreview";
-import { FC, useMemo, useState } from "react";
+import { FC, useState } from "react";
 import Loader from "./components/Loader";
 import DisplayError from "./components/DisplayError";
 import { useConfig } from "@/lib/context/configuration/configuration.context";

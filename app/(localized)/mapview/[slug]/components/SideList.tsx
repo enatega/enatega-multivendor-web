@@ -17,7 +17,7 @@ interface SideListProps {
     onHover: (coordinates: { lat: number; lng: number } | null) => void;
 }
 
-const SideList: React.FC<SideListProps> = ({ data, slug, onHover }) => {
+const SideList: React.FC<SideListProps> = ({ data, onHover }) => {
     const router = useRouter();
 
     const getRedirectUrl = (item) => {
