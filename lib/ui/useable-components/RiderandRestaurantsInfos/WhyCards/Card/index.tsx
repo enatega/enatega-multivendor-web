@@ -14,7 +14,7 @@ const Card:React.FC<Cards> = ({image,heading,text,color}) => {
      
       <div className='flex items-center justify-center flex-col my-6'>
         <h1 className='text-[24px] font-bold my-[30px]'>{heading}</h1>
-        <p className='font-normal text-[22px] text-[#6d7073] mb-[20px]'>{text}</p>
+        <p className='font-normal text-[18px] text-[#6d7073] mb-[20px]'>{text}</p>
       </div>
     </div>
   )

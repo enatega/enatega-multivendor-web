@@ -1,24 +1,34 @@
 "use client";
 
+// formik imports
 import { Formik, Form, Field, ErrorMessage } from "formik";
+
+// Components from primeReact
 import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
 import { Checkbox } from "primereact/checkbox";
 import { Button } from "primereact/button";
 
+// libraries and utils
+import { useRouter } from "next/navigation";
 import { sendEmail } from "@/lib/utils/methods";
-import { useState, useRef, useEffect } from "react";
-import { Toast } from "primereact/toast";
-
 import "react-phone-input-2/lib/style.css";
+
+// interfcaes
 import { VendorFormValues } from "@/lib/utils/interfaces/Rider-restaurant.interface";
+
+// component
 import PhoneNumberInput from "./phoneNumberInput/PhoneNumberInput";
 
+// validation Schema
 import emailValidationSchema from "./validationSchema";
+ 
+// hooks
+import useToast from "@/lib/hooks/useToast";
 
-interface formProps{
-  heading:string,
-  role:string,
+interface formProps {
+  heading: string;
+  role: string;
 }
 
 const initialValues: VendorFormValues = {
@@ -31,50 +41,39 @@ const initialValues: VendorFormValues = {
   termsAccepted: false,
 };
 
-const EmailForm: React.FC<formProps> = ({heading,role}) => {
-  const [alert, setAlert] = useState({
-    open: false,
-    severity: "",
-    message: "",
-  });
-  const toastRef = useRef<Toast>(null);
-
-  useEffect(() => {
-    if (alert.open) {
-      toastRef.current?.show({
-        severity: alert.severity as any, // can be "success", "info", "warn", "error"
-        summary:
-          alert.severity.charAt(0).toUpperCase() + alert.severity.slice(1),
-        detail: alert.message,
-        life: 4000,
-      });
-      setAlert({ ...alert, open: false });
-    }
-  }, [alert]);
+const EmailForm: React.FC<formProps> = ({ heading, role }) => {
+  const { showToast } = useToast();
+  const router = useRouter();
 
   const handleSubmit = async (formData: VendorFormValues) => {
-    
     const templateParams = {
       ...formData,
       role: role,
       isRider: false,
     };
 
-    console.log(formData);
+    try {
+      const response = await sendEmail("template_eogfh2k", templateParams);
+      console.log("Email sent successfully!", response.status, response.text);
 
-    // try {
-    //   const response = await sendEmail("template_eogfh2k", templateParams);
-    //   console.log("Email sent successfully!", response.status, response.text);
-    //   setAlert({ open: true, severity: "success", message: "formSubmission" });
+      showToast({
+        type: "success",
+        title: "Success",
+        message: "Form submitted successfully!",
+        duration: 4000,
+      });
 
-    //   // Optionally reset form manually
-    //   router.push("/email-confirmation");
-    // } catch (error) {
-    //   console.error("Failed to send email:", error);
-    //   setAlert({ open: true, severity: "error", message: "notFormSubmission" });
-    // } finally {
-    //   setLoading(false);
-    // }
+      router.push("/");
+    } catch (error) {
+      console.error("Failed to send email:", error);
+
+      showToast({
+        type: "error",
+        title: "Error",
+        message: "Failed to submit the form. Please try again.",
+        duration: 4000,
+      });
+    }
   };
 
   return (
@@ -88,15 +87,15 @@ const EmailForm: React.FC<formProps> = ({heading,role}) => {
       >
         {({ values, setFieldValue, isSubmitting }) => (
           <Form className="grid gap-5">
-            {/* First Name */}
-            <div className="gap-4 flex w-[100%]  justify-between">
+            {/* First and Last Name */}
+            <div className="gap-4 flex w-[100%] justify-between">
               <div className="w-[50%]">
                 <Field name="firstName">
                   {({ field }: any) => (
                     <InputText
                       placeholder="First Name"
                       {...field}
-                      className="w-full border-2 border-gray-100 p-2  focus:outline-none focus:ring-0 active:outline-none rounded-lg"
+                      className="w-full border-2 border-gray-100 p-2 rounded-lg"
                     />
                   )}
                 </Field>
@@ -107,14 +106,13 @@ const EmailForm: React.FC<formProps> = ({heading,role}) => {
                 />
               </div>
 
-              {/* Last Name */}
               <div className="w-[50%]">
                 <Field name="lastName">
                   {({ field }: any) => (
                     <InputText
-                      {...field}
                       placeholder="Last Name"
-                      className="w-full border-2 border-gray-100 p-2 focus:outline-none focus:ring-0 active:outline-none rounded-lg"
+                      {...field}
+                      className="w-full border-2 border-gray-100 p-2 rounded-lg"
                     />
                   )}
                 </Field>
@@ -132,9 +130,9 @@ const EmailForm: React.FC<formProps> = ({heading,role}) => {
               <Field name="email">
                 {({ field }: any) => (
                   <InputText
-                    {...field}
                     placeholder="Email Address"
-                    className="w-full border-2 border-gray-100 p-2 focus:outline-none focus:ring-0 active:outline-none rounded-lg"
+                    {...field}
+                    className="w-full border-2 border-gray-100 p-2 rounded-lg"
                   />
                 )}
               </Field>
@@ -163,7 +161,7 @@ const EmailForm: React.FC<formProps> = ({heading,role}) => {
                     {...field}
                     placeholder="Password"
                     toggleMask
-                    className="w-full border-2 border-gray-100 p-2 focus:outline-none focus:ring-0 active:outline-none rounded-lg"
+                    className="w-full border-2 border-gray-100 p-2 rounded-lg"
                     feedback={false}
                   />
                 )}
@@ -181,10 +179,10 @@ const EmailForm: React.FC<formProps> = ({heading,role}) => {
               <Field name="confirmPassword">
                 {({ field }: any) => (
                   <Password
-                    placeholder="Confrim Password"
+                    placeholder="Confirm Password"
                     {...field}
                     toggleMask
-                    className="w-full border-2 border-gray-100 p-2 focus:outline-none focus:ring-0 active:outline-none rounded-lg"
+                    className="w-full border-2 border-gray-100 p-2 rounded-lg"
                     feedback={false}
                   />
                 )}
@@ -202,7 +200,7 @@ const EmailForm: React.FC<formProps> = ({heading,role}) => {
                 inputId="termsAccepted"
                 checked={values.termsAccepted}
                 onChange={(e) => setFieldValue("termsAccepted", e.checked)}
-                className={` border-gray-400 checked:bg-green-200`}
+                className="border-gray-400"
               />
               <label htmlFor="termsAccepted">
                 I accept the Terms and Conditions
@@ -214,22 +212,20 @@ const EmailForm: React.FC<formProps> = ({heading,role}) => {
               className="p-error"
             />
 
-            {/* Submit */}
+            {/* Submit Button */}
             <div className="flex justify-center items-center">
-            <Button
-              type="submit"
-              label="Send"
-              loading={isSubmitting}
-              className="mt-4 bg-[#94e469] w-[200px] p-2 rounded-md text-white text-[20px] hover:bg-[#81db51] transition-all"
-            />
+              <Button
+                type="submit"
+                label="Send"
+                loading={isSubmitting}
+                className="mt-4 bg-[#94e469] w-[200px] p-2 rounded-md text-white text-[20px] hover:bg-[#81db51] transition-all"
+              />
             </div>
           </Form>
         )}
       </Formik>
-      <Toast ref={toastRef} position="top-right" />
     </div>
   );
 };
 
 export default EmailForm;
-
