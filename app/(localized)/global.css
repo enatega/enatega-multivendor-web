@@ -774,23 +774,23 @@ Discovery Caurousal
 }
 /* Change border color */
 .p-checkbox-box {
-  border: 2px solid #9ca3af !important; /* Tailwind's gray-400 */
+  border: 2px solid #9ca3af !important;
 }
 
 /* Change border color when checked */
-.p-checkbox-box.p-highlight {
-  border-color: green !important; /* Tailwind's blue-500 */
+/* .p-checkbox-box.p-highlight {
+  border-color: green !important; 
   background: green !important;
-}
+} */
 
 /* Optional: change the checkmark color */
-.p-checkbox-icon {
+/* .p-checkbox-icon {
   color: white !important;
-}
+} */
 
 .p-highlight{
   background: green !important;
-  border-color:yellow !important;
+  border-color:rgb(224, 224, 100) !important;
 }.p-inputotp-input{
   border:1px solid lightgray;
   border-radius: 32px;

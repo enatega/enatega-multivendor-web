@@ -1,4 +1,7 @@
+// libraries
 import React from "react";
+
+//Componets
 import Start from "../../screen-components/un-protected/Home/Start";
 import Cities from "../../screen-components/un-protected/Home/Cities";
 import Info from "../../screen-components/un-protected/Home/Info";
@@ -17,8 +20,7 @@ const Main = () => {
         <Cities />
         <Info />
         <EnategaInfo />
-        <GrowBussiness
-        />
+        <GrowBussiness />
         <MiniCards />
         <div className="grid grid-cols-1 md:grid-cols-2 my-[40px] gap-8">
           <TinyTiles

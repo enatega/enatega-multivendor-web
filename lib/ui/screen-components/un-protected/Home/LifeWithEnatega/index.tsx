@@ -1,20 +1,20 @@
+// libraries
+import React from "react";
+
+// Components
 import HomeCard from "@/lib/ui/useable-components/Home-Card";
 import MoveableCard from "@/lib/ui/useable-components/Moveable-Card";
-import React from "react";
+
+// images
 import deliveryFee from "@/public/assets/images/png/deliveryFee.webp";
-import freshGroceries from "@/public/assets/images/png/freshGroceries.jpg";
-import DeliveringyHappines from "@/public/assets/images/png/DeliveringHapiness.webp";
-import AwardWinning from "@/public/assets/images/png/AwardWinning.webp";
 import ZeroDelivery from "@/public/assets/images/png/0delivery.webp";
-
-
 import RiderSection from "@/public/assets/images/svgs/RiderSection.svg";
 import RestaurantSection from "@/public/assets/images/svgs/RestuarantSection.svg";
 
 
 const EnategaInfo: React.FC = () => {
   return (
-    <div className="mt-[40px] mb-[40px]">
+    <div className="mt-[80px] mb-[80px]">
       <div className="flex flex-col justify-center items-center my-[20px]">
         <h1 className="text-[40px] md:[text-60px] font-extrabold m-4">
           LIFE TASTES BETTER WITH ENATEGA
@@ -42,9 +42,9 @@ const EnategaInfo: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-[30px] mb-[30px]">
-        <HomeCard image={'https://enatega.com/wp-content/uploads/2025/01/enatega-customer-app.webp'} />
-        <HomeCard image={RiderSection} />
-        <HomeCard image={RestaurantSection} />
+        <HomeCard image={'https://enatega.com/wp-content/uploads/2025/01/enatega-customer-app.webp'} heading={"Fresh Groceries Delivered"} subText={"Go to Enatega App"} link={""}/>
+        <HomeCard image={RiderSection} heading={"Restaurants Earn More"} subText={"Go to Enatega Restaurant App"} link={""} />
+        <HomeCard image={RestaurantSection} heading={"Riders Reaches Fast"} subText={"Go to Enatega Rider App"} link={""}/>
       </div>
     </div>
   );

@@ -5,17 +5,18 @@ import { StaticImageData } from 'next/image'
 interface HomeCardProps{
 image:string | StaticImageData,
 heading?:string,
-subText?:string
+subText?:string,
+link?:string,
 }
 
 
-const HomeCard:React.FC<HomeCardProps> = ({image}) => {
+const HomeCard:React.FC<HomeCardProps> = ({image,heading,subText}) => {
   return (
     <div>
       <MoveableCard image={image} height={"320px"}/>
-      <div className='my-4'>
-        <h1 className='font-extrabold text-[22px]'>Fresh Groceries ,delievered</h1>
-        <button className='text-[#03c3e8]'>Chech out Enatega Restaurant</button>
+      <div className='my-8'>
+        <h1 className='font-extrabold text-[22px] my-2'>{heading}</h1>
+        <button className='text-[#03c3e8] cursor-pointer'>{subText}</button>
       </div>
     </div>
   )
