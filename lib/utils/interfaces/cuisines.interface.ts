@@ -9,3 +9,10 @@ export interface ICuisinesData {
   image: string;
   shopType: string;
 }
+
+export interface ICuisinesSectionProps {
+  title: string;
+  data: ICuisinesData[];
+  loading: boolean;
+  error: boolean
+}

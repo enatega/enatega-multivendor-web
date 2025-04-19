@@ -18,6 +18,7 @@ function TopRatedVendors() {
       title="Our brands"
       data={queryData || []}
       showLogo={true}
+      cuisines={false}
     />
   );
 }

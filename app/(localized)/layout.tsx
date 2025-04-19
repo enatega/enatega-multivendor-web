@@ -25,7 +25,6 @@ import { UserProvider } from "@/lib/context/User/User.context";
 // Layout
 import AppLayout from "@/lib/ui/layouts/global";
 import { FontawesomeConfig } from "@/lib/config";
-
 import { LocationProvider } from "@/lib/context/Location/Location.context";
 import { UserAddressProvider } from "@/lib/context/address/address.context";
 

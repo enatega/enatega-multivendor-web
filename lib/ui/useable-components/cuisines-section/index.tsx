@@ -1,15 +1,15 @@
 // cuisines slider card
 import CuisinesSliderCard from "@/lib/ui/useable-components/cuisines-slider-card";
 // hook
-import useGetCuisines from "@/lib/hooks/useGetCuisines";
+// import useGetCuisines from "@/lib/hooks/useGetCuisines";
 // loading skeleton
 import CuisinesSliderSkeleton from "@/lib/ui/useable-components/custom-skeletons/cuisines.slider.skeleton";
 // interface
-import { ICuisinesData } from "@/lib/utils/interfaces";
+import { ICuisinesData, ICuisinesSectionProps } from "@/lib/utils/interfaces";
 
-function CuisinesSection({ title, restaurant } : {title:string, restaurant:boolean}) {
-  const { loading, error, restaurantCuisinesData, groceryCuisinesData } = useGetCuisines();
+function CuisinesSection({ title, data, loading, error }: ICuisinesSectionProps) {
 
+  
   if (loading) {
     return <CuisinesSliderSkeleton />;
   }
@@ -17,11 +17,11 @@ function CuisinesSection({ title, restaurant } : {title:string, restaurant:boole
   if (error) {
     return;
   }
-
+  
   return (
     <CuisinesSliderCard<ICuisinesData>
       title={title}
-      data={restaurant ? restaurantCuisinesData : groceryCuisinesData || []}
+      data={data || []}
       cuisines={true}
     />
   );

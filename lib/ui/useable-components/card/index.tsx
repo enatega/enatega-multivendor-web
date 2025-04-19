@@ -52,10 +52,11 @@ const Card: React.FC<ICardProps> = ({ item }) => {
             </p>
           </div>
           {/* Delivery Time */}
-          <div className="bg-[#F3FFEE] rounded-md flex items-center justify-center p-2 w-[60px] h-[50px]">
+          <div className="bg-[#F3FFEE] rounded-md flex items-center justify-center px-2 py-2">
             <p className="text-xs text-[#5AC12F] font-light lg:font-normal text-center">
-              {`${item?.deliveryTime > 5 ? item?.deliveryTime - 5 : item?.deliveryTime} - ${item?.deliveryTime + 5}`}{" "}
-              <br /> min
+              {`${item?.deliveryTime}`}{" "}min
+              {/* {`${item?.deliveryTime > 5 ? item?.deliveryTime - 5 : item?.deliveryTime} - ${item?.deliveryTime + 5}`}{" "} */}
+              {/* <br /> min */}
             </p>
           </div>
         </div>

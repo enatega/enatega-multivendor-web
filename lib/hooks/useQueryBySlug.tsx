@@ -1,7 +1,7 @@
 import useMostOrderedRestaurants from "./useMostOrderedRestaurants";
 import useNearByRestaurantsPreview from "./useNearByRestaurantsPreview";
 import useRecentOrderRestaurants from "./useRecentOrderRestaurants";
-import useGetCuisines from "./useGetCuisines";
+// import useGetCuisines from "./useGetCuisines";
 import { IRestaurant } from "../utils/interfaces/restaurants.interface";
 import { ApolloError } from "@apollo/client";
 import { ICuisinesData } from "../utils/interfaces";
@@ -15,8 +15,8 @@ const SLUG_TO_DATA_KEY_MAP: Record<string, { type: 'mostOrdered' | 'nearby' | 'r
   "restaurants-near-you": { type: 'nearby', key: 'queryData' },
   "grocery-list": { type: 'nearby', key: 'groceriesData' },
   "order-it-again": { type: 'recent', key: 'queryData' },
-  'restaurant-cuisines': {type: 'cuisines', key: 'restaurantCuisinesData'},
-  'grocery-cuisines': { type: 'cuisines', key: 'groceryCuisinesData' },
+  // 'restaurant-cuisines': {type: 'cuisines', key: 'restaurantCuisinesData'},
+  // 'grocery-cuisines': { type: 'cuisines', key: 'groceryCuisinesData' },
   'our-brands': { type: 'ourBrands', key: 'queryData' }
 };
 
@@ -32,7 +32,7 @@ export default function useQueryBySlug(slug: string):UseQueryBySlugResult {
   const mostOrdered = useMostOrderedRestaurants(!!config && config.type === 'mostOrdered');
   const nearby = useNearByRestaurantsPreview(!!config && config.type === 'nearby');
   const recentOrdered = useRecentOrderRestaurants(!!config && config.type === 'recent');
-  const cuisines = useGetCuisines(!!config && config.type === 'cuisines')
+  // const cuisines = useGetCuisines(!!config && config.type === 'cuisines')
   const ourBrands = useTopRatedVendors(!!config && config.type === 'ourBrands')
 
   if (!config) {
@@ -71,14 +71,14 @@ export default function useQueryBySlug(slug: string):UseQueryBySlugResult {
     };
   }
 
-  if (type === "cuisines") {
-    const data = cuisines[key as keyof typeof cuisines];
-    return {
-      data: Array.isArray(data) ? (data as ICuisinesData[]) : [],
-      loading: cuisines.loading,
-      error: cuisines.error,
-    };
-  }
+  // if (type === "cuisines") {
+  //   const data = cuisines[key as keyof typeof cuisines];
+  //   return {
+  //     data: Array.isArray(data) ? (data as ICuisinesData[]) : [],
+  //     loading: cuisines.loading,
+  //     error: cuisines.error,
+  //   };
+  // }
 
   if (type === "ourBrands") {
     const data = ourBrands.queryData;
