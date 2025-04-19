@@ -3,11 +3,9 @@ import CuisinesSliderCard from "@/lib/ui/useable-components/cuisines-slider-card
 import useMostOrderedRestaurants from "@/lib/hooks/useMostOrderedRestaurants";
 // loading skeleton
 import CuisinesSliderSkeleton from "@/lib/ui/useable-components/custom-skeletons/cuisines.slider.skeleton";
-// interfaces
-import { IRestaurant } from "@/lib/utils/interfaces";
 
 function PopularStores() {
-  const { data, error, loading } = useMostOrderedRestaurants();
+  const { error, loading, groceriesData } = useMostOrderedRestaurants();
 
   if (loading) {
     return <CuisinesSliderSkeleton />;
@@ -17,17 +15,13 @@ function PopularStores() {
     return;
   }
 
-  let popularRestaurants: IRestaurant[] =
-    data?.mostOrderedRestaurantsPreview?.filter(
-      (item) => item?.shopType?.toLowerCase() === "grocery"
-    ) || [];
-
   return (
     <CuisinesSliderCard
       title="Popular stores"
-      data={popularRestaurants || []}
+      data={groceriesData || []}
       showLogo={true}
       last={true}
+      cuisines={false}
     />
   );
 }

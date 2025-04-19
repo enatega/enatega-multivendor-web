@@ -2,7 +2,7 @@
 
 // Core
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Sidebar } from "primereact/sidebar";
 
 // Components
@@ -13,20 +13,78 @@ import Cart from "@/lib/ui/useable-components/cart";
 import useUser from "@/lib/hooks/useUser";
 
 // Icons
-import { CartSvg } from "@/lib/utils/assets/svg";
+import { CartSvg, LocationSvg } from "@/lib/utils/assets/svg";
 
 // Interface
 import { IAppBarProps } from "@/lib/utils/interfaces/auth.interface";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
+import UserAddressComponent from "@/lib/ui/useable-components/address";
+import { useUserAddress } from "@/lib/context/address/address.context";
+import useLocation from "@/lib/hooks/useLocation";
+import useSetUserCurrentLocation from "@/lib/hooks/useSetUserCurrentLocation";
+import { useConfig } from "@/lib/context/configuration/configuration.context";
+import { useAuth } from "@/lib/context/auth/auth.context";
+import Image from "next/image";
+import { Menu } from "primereact/menu";
+import { useRouter } from "next/navigation";
 
 const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
+
+
   // State for cart sidebar
   const [isCartOpen, setIsCartOpen] = useState(false);
-  
-  // Access user context for cart information
-  const { cartCount, calculateSubtotal } = useUser();
-  
+  const [isUserAddressModalOpen, setIsUserAddressModalOpen] = useState(false);
+
+  // REf
+  const menuRef = useRef<Menu>(null);
+
+  // Hooks
+  const router = useRouter();
+  const { GOOGLE_MAPS_KEY } = useConfig();
+  const { cartCount, calculateSubtotal, profile, loadingProfile } = useUser();
+  const { userAddress, setUserAddress } = useUserAddress();
+
+  const { getCurrentLocation } = useLocation();
+  const { onSetUserLocation } = useSetUserCurrentLocation();
+  const { authToken, setIsAuthModalVisible, setAuthToken } = useAuth();
+
   // Format subtotal for display
   const formattedSubtotal = cartCount > 0 ? `$${calculateSubtotal()}` : "$0";
+
+  // Handlers
+  const onInit = () => {
+    const selectedAddress = profile?.addresses.find(
+      (address) => address.selected
+    );
+
+    // ✅ If there's a selected address, use that
+    if (selectedAddress) {
+      setUserAddress(selectedAddress);
+    } else {
+      // 🚀 Otherwise, get current location if profile is loaded and maps key exists
+      if (!loadingProfile && GOOGLE_MAPS_KEY) {
+        getCurrentLocation(onSetUserLocation);
+      }
+    }
+  };
+
+  const onHandleAddressModelVisibility = () => {
+    if (authToken) {
+      setIsUserAddressModalOpen(true);
+    } else {
+      setIsAuthModalVisible(true);
+    }
+  };
+
+  const onLogout = () => {
+    setAuthToken("");
+    localStorage.clear();
+  };
+
+  useEffect(() => {
+    onInit();
+  }, [GOOGLE_MAPS_KEY, profile]);
 
   return (
     <>
@@ -34,19 +92,84 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
         <div className="w-full">
           <PaddingContainer>
             <div className="flex flex-row items-center justify-between w-full h-16">
-              <Link href="/" className="text-xl font-bold text-gray-900">
-                Enatega
-              </Link>
-              <div className="flex justify-end items-center space-x-4">
+              <div className="flex gap-x-2 items-center cursor-pointer">
+                <Link href="/" className="text-xl font-bold text-gray-900">
+                  Enatega
+                </Link>
+                <div
+                  className="flex items-center"
+                  onClick={onHandleAddressModelVisibility}
+                >
+                  <div className="p-[4px] m-2 bg-gray-50 rounded-full">
+                    <LocationSvg />
+                  </div>
+                  {/* Show on medium and up */}
+                  <span className="hidden md:inline text-xs sm:text-sm md:text-base text-gray-500 font-inter font-normal leading-6 tracking-normal mr-2">
+                    {userAddress?.deliveryAddress}
+                  </span>
+
+                  {/* Show on small screens only */}
+                  <span className="inline md:hidden text-xs sm:text-sm md:text-base text-gray-500 font-inter font-normal leading-6 tracking-normal mr-2">
+                    {userAddress?.details}
+                  </span>
+
+                  <div className="hidden sm:flex items-center">
+                    <FontAwesomeIcon icon={faChevronDown} />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex w-fit justify-end items-center space-x-4">
                 {/* Login Button */}
-                {handleModalToggle && (
-                  <button 
+                {!authToken ?
+                  <button
+                    className="w-20 h-fit bg-transparent text-gray-900 py-2 border border-black rounded-full text-base lg:text-[14px]"
                     onClick={handleModalToggle}
-                    className="text-gray-700 hover:text-gray-900"
                   >
-                    Login
+                    <span>Login</span>
                   </button>
-                )}
+                : <div
+                    className="flex items-center space-x-2 rounded-md p-2 hover:bg-[#d8d8d837]"
+                    onClick={(event) => menuRef.current?.toggle(event)}
+                    aria-controls="popup_menu_right"
+                    aria-haspopup
+                  >
+                    <Image
+                      src={
+                        /*  user?.image
+                      ? user.image
+                      : */ "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png"
+                      }
+                      alt={"profile-image.png"}
+                      height={32}
+                      width={32}
+                      className="h-8 w-8 select-none rounded-full"
+                    />
+                    <span>{profile?.name || ""}</span>
+
+                    <FontAwesomeIcon icon={faChevronDown} />
+                    <Menu
+                      model={[
+                        {
+                          label: "Profile",
+                          command: () => {
+                            router.push("/profile");
+                          },
+                        },
+                        {
+                          label: "Logout",
+                          command: () => {
+                            onLogout();
+                          },
+                        },
+                      ]}
+                      popup
+                      ref={menuRef}
+                      id="popup_menu_right"
+                      popupAlignment="right"
+                    />
+                  </div>
+                }
 
                 {/* Cart Button */}
                 <div className="p-1">
@@ -72,7 +195,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
 
                   {/* Cart icon with badge for small screens or empty cart */}
                   <div
-                    className={`${cartCount > 0 ? 'sm:hidden' : ''} flex items-center justify-center rounded-full w-10 h-10 bg-gray-100 relative`}
+                    className={`${cartCount > 0 ? "sm:hidden" : ""} flex items-center justify-center rounded-full w-10 h-10 bg-gray-100 relative`}
                     onClick={() => setIsCartOpen(true)}
                   >
                     <CartSvg color="black" width={24} height={24} />
@@ -99,6 +222,11 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
       >
         <Cart onClose={() => setIsCartOpen(false)} />
       </Sidebar>
+
+      <UserAddressComponent
+        visible={isUserAddressModalOpen}
+        onHide={() => setIsUserAddressModalOpen(false)}
+      />
     </>
   );
 };

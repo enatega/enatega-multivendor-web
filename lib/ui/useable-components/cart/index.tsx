@@ -18,7 +18,7 @@ interface CartProps {
 export default function Cart({ onClose }: CartProps) {
   // Access user context for cart functionality
   const { cart, cartCount, updateItemQuantity, calculateSubtotal } = useUser();
-
+  
   const router = useRouter();
 
   // Format subtotal for display
@@ -79,22 +79,13 @@ export default function Cart({ onClose }: CartProps) {
                 {item.variationTitle && `${item.variationTitle}`}
               </p>
 
-              {/* Add-ons */}
-              {item.addons && item.addons.length > 0 && (
+              {item.optionTitles && item.optionTitles.length > 0 && (
                 <div className="mt-1">
-                  <p className="text-xs text-gray-500">
-                    {item.addons.map((addon, index) => (
-                      <span key={addon._id}>
-                        {addon.options.map((option, optIndex) => (
-                          <span key={option._id}>
-                            {option.title || ""}
-                            {optIndex < addon.options.length - 1 && ", "}
-                          </span>
-                        ))}
-                        {index < (item.addons?.length ?? 0) - 1 && ", "}
-                      </span>
-                    ))}
-                  </p>
+                  {item.optionTitles.map((title, index) => (
+                   <p key={index} className="text-xs text-gray-500">
+                     +{title}
+                    </p>
+                   ))}
                 </div>
               )}
 
@@ -114,13 +105,19 @@ export default function Cart({ onClose }: CartProps) {
             {/* Quantity Controls */}
             <div className="flex items-center space-x-2">
               <button
-                onClick={() => updateItemQuantity(item.key, -1)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  updateItemQuantity(item.key, -1);
+                }}
                 className="bg-gray-200 text-gray-600 rounded-full w-6 h-6 flex items-center justify-center"
                 type="button"
               >
-                {item.quantity === 1 ?
+                {item.quantity === 1 ? (
                   <FontAwesomeIcon icon={faTrash} size="xs" />
-                : <FontAwesomeIcon icon={faMinus} size="xs" />}
+                ) : (
+                  <FontAwesomeIcon icon={faMinus} size="xs" />
+                )}
               </button>
 
               <span className="text-gray-900 w-6 text-center">
@@ -128,7 +125,11 @@ export default function Cart({ onClose }: CartProps) {
               </span>
 
               <button
-                onClick={() => updateItemQuantity(item.key, 1)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  updateItemQuantity(item.key, 1);
+                }}
                 className="bg-[#0EA5E9] text-white rounded-full w-6 h-6 flex items-center justify-center"
                 type="button"
               >

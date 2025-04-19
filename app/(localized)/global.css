@@ -70,7 +70,7 @@ body {
 }
 
 .layout-main-container {
-  height: 92%;
+  /* height: 92%; */
   display: flex;
   overflow: hidden;
 }
@@ -83,6 +83,7 @@ body {
   display: flex;
   gap: 10px;
 }
+
 
 /* Text Component */
 .custom-text {
@@ -621,6 +622,10 @@ Discovery Caurousal
 }
 
 /* Navigation Buttons */
+.discovery-carousel{
+  position: relative;
+}
+
 .discovery-carousel .p-carousel-prev,
 .discovery-carousel .p-carousel-next {
   background: #f9fafb;
@@ -635,35 +640,27 @@ Discovery Caurousal
   box-shadow:
     0px 4px 6px -2px rgba(0, 0, 0, 0.5),
     0px 10px 15px -3px rgba(0, 0, 0, 0.1);
+    position: absolute;
 }
 
 /* Adjust navigation button positions for responsiveness */
 .discovery-carousel .p-carousel-prev {
-  left: 20px;
+  left: -10px;
 }
 
 .discovery-carousel .p-carousel-next {
-  right: 30px;
+  right: -10px;
 }
 
-/* Reduce button size on smaller screens */
+/* Remove button on smaller screens */
 @media (max-width: 768px) {
   .discovery-carousel .p-carousel-prev,
   .discovery-carousel .p-carousel-next {
-    width: 35px;
-    height: 35px;
-    /* background: #000; */
-    visibility: hidden;
+    display: none;
   }
 }
 
-@media (max-width: 480px) {
-  .discovery-carousel .p-carousel-prev,
-  .discovery-carousel .p-carousel-next {
-    width: 30px;
-    height: 30px;
-  }
-}
+
 
 /* Reduce height for carousel items on smaller screens */
 .discovery-carousel .p-carousel-items .p-carousel-item {
@@ -726,6 +723,38 @@ Discovery Caurousal
   border-radius: 8px;
 }
 
+/* styles/globals.css */
+@layer components {
+  /* Make Accordion container, header, and content transparent */
+  .custom-accordion .p-accordion,
+  .custom-accordion .p-accordion-header,
+  .custom-accordion .p-accordion-content {
+    background-color: transparent !important;
+    box-shadow: none !important; /* Remove shadows */
+    border: none !important; /* Remove borders if desired */
+    padding-left: 0;
+  
+  }
+
+  /* Make AccordionTab header (the one inside each AccordionTab) transparent */
+  .custom-accordion .p-accordion-header {
+    background-color: transparent !important;
+    box-shadow: none !important; /* Remove any shadow on the header */
+  }
+
+  .custom-accordion .p-accordion-header-link
+  {
+    background-color: transparent !important;
+    padding: 0;
+    color: white;
+  }
+
+  .custom-accordion .p-accordion-header .p-accordion-toggle-icon {
+    display: none;
+  }
+
+}
+
 /* Panel Menu */
 
 .p-panelmenu .p-panelmenu-header.p-highlight .p-menuitem-text,
@@ -738,4 +767,31 @@ Discovery Caurousal
   background: transparent !important;
   color: inherit !important;
   box-shadow: none !important;
+}
+
+.p-stepper-nav{
+  display: none !important;
+}
+/* Change border color */
+.p-checkbox-box {
+  border: 2px solid #9ca3af !important;
+}
+
+/* Change border color when checked */
+/* .p-checkbox-box.p-highlight {
+  border-color: green !important; 
+  background: green !important;
+} */
+
+/* Optional: change the checkmark color */
+/* .p-checkbox-icon {
+  color: white !important;
+} */
+
+.p-highlight{
+  background: green !important;
+  border-color:rgb(224, 224, 100) !important;
+}.p-inputotp-input{
+  border:1px solid lightgray;
+  border-radius: 32px;
 }

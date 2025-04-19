@@ -3,6 +3,8 @@ import {
   STRIPE_ALLOWED_CURRENCIES,
 } from "../constants/currencies";
 import { OrderStatus } from "../interfaces";
+import emailjs from 'emailjs-com'
+
 
 export function formatDate(dateString?: string): string {
   if (!dateString) return "";
@@ -85,6 +87,30 @@ export function getStatusColor(
   }
 }
 
+
+export function loadGoogleMapsScript(key: string): Promise<void>{
+  return new Promise((resolve, reject) => {
+    if (typeof window.google === 'object' && window.google.maps) {
+      resolve(); // already loaded
+      return;
+    }
+    const scriptId = 'google-maps-script';
+    if (document.getElementById(scriptId)) {
+      resolve(); // already injected
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.id = scriptId;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places`;
+    script.async = true;
+    script.defer = true;
+    script.onload = () => resolve();
+    script.onerror = () => reject('Google Maps script failed to load.');
+    document.head.appendChild(script);
+  });
+}
+
 // Format date from timestamp
 export const formatDateForCreatedAt = (timestamp: string) => {
   try {
@@ -159,4 +185,37 @@ export const getCurrentDay = (day: string) => {
     default:
       return "";
   }
+};
+
+export const getDistanceFromLatLonInKm = (
+  lat1: number,
+  lon1: number,
+  lat2: number,
+  lon2: number
+): number => {
+  const R = 6371; // Radius of Earth in km
+  const dLat = (lat2 - lat1) * (Math.PI / 180);
+  const dLon = (lon2 - lon1) * (Math.PI / 180);
+
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * (Math.PI / 180)) *
+      Math.cos(lat2 * (Math.PI / 180)) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return R * c; // distance in km
+}
+
+
+
+export const sendEmail = (templateId : any, templateParams : any) => {
+  return emailjs.send(
+    "service_463sz1v",
+    templateId,
+    templateParams,
+    "kfOnsw1Kn8ZWu4l77"
+  );
 };

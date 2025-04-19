@@ -70,6 +70,14 @@ const nextConfig = {
         protocol: "https",
         hostname: "cdn-icons-png.flaticon.com",
       },
+      {
+        protocol: 'https',
+        hostname: 'images.ctfassets.net',
+      },
+      {
+        protocol:'https',
+        hostname:'flagcdn.com'
+      }
     ], // Add placehold.co as an allowed domain
   },
 };

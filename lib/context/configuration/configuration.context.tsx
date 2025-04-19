@@ -31,9 +31,7 @@ export const ConfigurationProvider = ({
   const PAYPAL_KEY = configuration.clientId;
   const GOOGLE_MAPS_KEY = configuration.googleApiKey;
   const AMPLITUDE_API_KEY = configuration.webAmplitudeApiKey;
-  const LIBRARIES = "places,drawing,geometry,localContext,visualization".split(
-    ","
-  ) as Libraries;
+  const LIBRARIES = "places,drawing,geometry".split(",") as Libraries;
   const COLORS = {
     GOOGLE: configuration.googleColor as string,
   };
@@ -44,6 +42,7 @@ export const ConfigurationProvider = ({
   const CURRENCY_SYMBOL = configuration.currencySymbol;
   const DELIVERY_RATE = configuration.deliveryRate;
   const COST_TYPE = configuration.costType;
+  const TEST_OTP = configuration.testOtp;
 
   return (
     <ConfigurationContext.Provider
@@ -62,6 +61,7 @@ export const ConfigurationProvider = ({
         CURRENCY_SYMBOL,
         DELIVERY_RATE,
         COST_TYPE,
+        TEST_OTP
       }}
     >
       {children}

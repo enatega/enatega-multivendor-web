@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useParams } from "next/navigation";
 import { Skeleton } from "primereact/skeleton";
-import { Dialog } from "primereact/dialog";
 
 // Context & Hooks
 import useUser from "@/lib/hooks/useUser";
@@ -20,6 +19,7 @@ import { PaddingContainer } from "@/lib/ui/useable-components/containers";
 import CustomIconTextField from "@/lib/ui/useable-components/input-icon-field";
 import FoodItemDetail from "@/lib/ui/useable-components/item-detail";
 import FoodCategorySkeleton from "@/lib/ui/useable-components/custom-skeletons/food-items.skeleton";
+import ClearCartModal from "@/lib/ui/useable-components/clear-cart-modal";
 
 // Interface
 import { ICategory, IFood } from "@/lib/utils/interfaces";
@@ -29,21 +29,28 @@ import { toSlug } from "@/lib/utils/methods";
 import ChatSvg from "@/lib/utils/assets/svg/chat";
 import ReviewsModal from "@/lib/ui/useable-components/reviews-modal";
 import InfoModal from "@/lib/ui/useable-components/info-modal";
+import CustomDialog from "@/lib/ui/useable-components/custom-dialog";
 
 export default function RestaurantDetailsScreen() {
   // Access the UserContext via our custom hook
-  const { cart, transformCartWithFoodInfo, updateCart } = useUser();
+  const { 
+    cart, 
+    transformCartWithFoodInfo, 
+    updateCart, 
+    restaurant: cartRestaurant, 
+    clearCart 
+  } = useUser();
 
   // Params from route
   const { id, slug }: { id: string; slug: string } = useParams();
-
-
 
   // State
   const [filter, setFilter] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [selectedFood, setSelectedFood] = useState<IFood | null>(null);
+  const [showClearCartModal, setShowClearCartModal] = useState<boolean>(false);
+  const [pendingRestaurantAction, setPendingRestaurantAction] = useState<any>(null);
 
   // Fetch restaurant data
   const { data, loading } = useRestaurant(id, decodeURIComponent(slug));
@@ -56,7 +63,7 @@ export default function RestaurantDetailsScreen() {
         updateCart(transformedCart);
       }
     }
-  }, [data?.restaurant, cart.length]); // Only re-run when restaurant data or cart length changes
+  }, [data?.restaurant, cart?.length, transformCartWithFoodInfo, updateCart]);
 
   // Filter food categories based on search term
   const allDeals = data?.restaurant?.categories?.filter(
@@ -123,7 +130,7 @@ export default function RestaurantDetailsScreen() {
   };
 
   const restaurantInfoModalProps={
-    _id: data?.restaurant._id ?? "",
+    _id: data?.restaurant?._id ?? "",
     name: data?.restaurant?.name ?? "...",
     username: data?.restaurant?.username ?? "N/A",
     phone: data?.restaurant?.phone ?? "N/A",
@@ -140,6 +147,40 @@ export default function RestaurantDetailsScreen() {
   const [headerHeight, setHeaderHeight] = useState("64px"); // Default for desktop
   const [showReviews, setShowReviews] = useState<boolean>(false);
   const [showMoreInfo, setShowMoreInfo] = useState<boolean>(false);
+
+  // Function to handle clicking on a restaurant item
+  const handleRestaurantClick = (food: IFood) => {
+    // Check if there's a different restaurant in the cart
+    if (cartRestaurant && id !== cartRestaurant) {
+      // Store the action we want to perform after cart confirmation
+      setPendingRestaurantAction({
+        type: 'foodModal',
+        payload: food
+      });
+      // Show clear cart confirmation
+      setShowClearCartModal(true);
+    } else {
+      // No conflict, open food modal directly
+      handleOpenFoodModal(food);
+    }
+  };
+
+  // Function to handle clear cart confirmation
+  const handleClearCartConfirm = async () => {
+    await clearCart();
+    
+    // Execute the pending action
+    if (pendingRestaurantAction) {
+      if (pendingRestaurantAction.type === 'foodModal') {
+        handleOpenFoodModal(pendingRestaurantAction.payload);
+      }
+      // Reset the pending action
+      setPendingRestaurantAction(null);
+    }
+    
+    // Hide the modal
+    setShowClearCartModal(false);
+  };
 
   // Handlers
   const handleScroll = (id: string) => {
@@ -159,23 +200,22 @@ export default function RestaurantDetailsScreen() {
     }
   };
 
-    // Function to handle opening the food item modal
-    const handleOpenFoodModal = (food: IFood) => {
-      // Add restaurant ID to the food item
-      setSelectedFood({
-        ...food,
-        restaurant: restaurantInfo._id
-      });
-      setShowDialog(true);
-    };
+  // Function to handle opening the food item modal
+  const handleOpenFoodModal = (food: IFood) => {
+    // Add restaurant ID to the food item
+    setSelectedFood({
+      ...food,
+      restaurant: restaurantInfo._id
+    });
+    setShowDialog(true);
+  };
   
-    // Function to close the food item modal
-    const handleCloseFoodModal = () => {
-      setShowDialog(false);
-      setSelectedFood(null);
-    };
+  // Function to close the food item modal
+  const handleCloseFoodModal = () => {
+    setShowDialog(false);
+    setSelectedFood(null);
+  };
 
-  // Adjust UI based on screen size
   // Function to handle the logic for seeing reviews
   const handleSeeReviews = () => {
     setShowReviews(true);
@@ -185,7 +225,6 @@ export default function RestaurantDetailsScreen() {
   const handleSeeMoreInfo = () => {
     setShowMoreInfo(true);
   }
-
 
   // Function to show all categories
   useEffect(() => {
@@ -224,19 +263,28 @@ export default function RestaurantDetailsScreen() {
 
   return (
     <>
-           {/* Reviews Modal  */}
-            <ReviewsModal
-              restaurantId={id}
-              visible={showReviews && !loading}
-              onHide={() => setShowReviews(false)}
-            />
-            {/* See More  Info Modal */}
-            <InfoModal
-             restaurantInfo={restaurantInfoModalProps}
-             // make sure data is not loading because if configuration data is not available it can cause error on google map due to unavailability of api key
-             visible={showMoreInfo && !loading }
-             onHide={() => setShowMoreInfo(false)}
-            />
+      {/* Reviews Modal */}
+      <ReviewsModal
+        restaurantId={id}
+        visible={showReviews && !loading}
+        onHide={() => setShowReviews(false)}
+      />
+            
+      {/* See More Info Modal */}
+      <InfoModal
+        restaurantInfo={restaurantInfoModalProps}
+        // make sure data is not loading because if configuration data is not available it can cause error on google map due to unavailability of api key
+        visible={showMoreInfo && !loading}
+        onHide={() => setShowMoreInfo(false)}
+      />
+      
+      {/* Clear Cart Modal */}
+      <ClearCartModal
+        isVisible={showClearCartModal}
+        onHide={() => setShowClearCartModal(false)}
+        onConfirm={handleClearCartConfirm}
+      />
+
       <div className="w-screen h-screen flex flex-col pb-20">
         <div className="scrollable-container flex-1 overflow-auto">
           {/* Banner */}
@@ -468,7 +516,7 @@ export default function RestaurantDetailsScreen() {
                         <div className="absolute top-2 right-2">
                           <button
                             className="bg-[#0EA5E9] rounded-full shadow-md w-6 h-6 flex items-center justify-center"
-                            onClick={() => handleOpenFoodModal(meal)}
+                            onClick={() => handleRestaurantClick(meal)}
                             type="button"
                           >
                             <FontAwesomeIcon icon={faPlus} color="white" />
@@ -485,7 +533,7 @@ export default function RestaurantDetailsScreen() {
       </div>
 
       {/* Food Item Detail Modal */}
-      <Dialog
+      <CustomDialog
         visible={showDialog}
         className="mx-4 md:mx-0" // Adds margin on small screens
         onHide={handleCloseFoodModal}
@@ -498,7 +546,7 @@ export default function RestaurantDetailsScreen() {
             onClose={handleCloseFoodModal}
           />
         )}
-      </Dialog>
+      </CustomDialog>
     </>
   );
 }

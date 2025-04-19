@@ -1,53 +1,70 @@
 "use client";
-
+// core
 import React, { useEffect, useState } from "react";
 import { Carousel } from "primereact/carousel";
-
-import { ICuisinesSliderCardComponentProps } from "@/lib/utils/interfaces";
+// interfaces
+import { CuisinesSliderCardComponent } from "@/lib/utils/interfaces";
+// icons
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
-
+// router
+import { useRouter, usePathname } from "next/navigation";
+// ui component
 import SquareCard from "../square-card";
+import CustomButton from "../button";
+
 const responsiveOptions = [
-  { breakpoint: "1024px", numVisible: 6, numScroll: 1 }, // If screen width is ≤ 1024px, show 4 items
-  { breakpoint: "768px", numVisible: 4, numScroll: 1 }, // If screen width is ≤ 768px, show 3 items
-  { breakpoint: "425px", numVisible: 2, numScroll: 1 }, // If screen width is ≤ 425px, show 1 item
+  { breakpoint: "1280px", numVisible: 6, numScroll: 1 }, // If screen width is ≤ 1280px, show 6 items
+  { breakpoint: "1024px", numVisible: 4, numScroll: 1 }, // If screen width is ≤ 1024px, show 4 items
+  { breakpoint: "640px", numVisible: 3, numScroll: 1 }, // If screen width is ≤ 640px, show 3 item
+  { breakpoint: "425px", numVisible: 2, numScroll: 1 }, // If screen width is ≤ 425px, show 2 item
   { breakpoint: "320px", numVisible: 1, numScroll: 1 }, // If screen width is ≤ 320px, show 1 item
 ];
 
-const CuisinesSliderCard = <T,>({
+const CuisinesSliderCard: CuisinesSliderCardComponent = ({
   title,
   data,
   last,
   showLogo,
   cuisines,
-}: ICuisinesSliderCardComponentProps<T>) => {
+}) => {
   const [page, setPage] = useState(0);
   const [numVisible, setNumVisible] = useState(getNumVisible());
 
+  const router = useRouter();
+  const pathname = usePathname();
+
+  // Revised function to get number of visible items
   function getNumVisible() {
-    if (typeof window === "undefined") return;
-    // Get the current screen width
+    if (typeof window === "undefined") return 6; // Default value
+
     const width = window.innerWidth;
 
-    // Find the matching responsive option
-    const option =
-      responsiveOptions.find((opt) => width <= parseInt(opt.breakpoint)) ||
-      responsiveOptions[0];
+    // For screens wider than 1280px, still show 6
+    if (width > 1280) return 6;
 
-    return option.numVisible || 0;
+    // Find the matching responsive option
+    const option = responsiveOptions.find(
+      (opt) => width <= parseInt(opt.breakpoint)
+    );
+    return option ? option.numVisible : 6;
   }
 
+  // Updated page navigation logic
+  const numScroll = 1;
+  const totalItems = data?.length || 0;
+  // const totalPages = Math.max(1, Math.ceil(totalItems / numScroll)); // Ensure we have at least 1 page
+
   const next = () => {
-    setPage((prevPage) =>
-      prevPage < totalPages - 1 ? prevPage + numScroll : 0
-    ); // Reset to first page at the end
+    // Calculate the next page, ensuring we wrap around properly
+    const maxPage = totalItems - numVisible;
+    setPage((prevPage) => (prevPage < maxPage ? prevPage + numScroll : 0));
   };
 
   const prev = () => {
-    setPage((prevPage) =>
-      prevPage > 0 ? prevPage - numScroll : totalPages - 1
-    ); // Go to last page if at start
+    // Calculate the previous page, ensuring we wrap around properly
+    const maxPage = totalItems - numVisible;
+    setPage((prevPage) => (prevPage > 0 ? prevPage - numScroll : maxPage));
   };
 
   // Effects
@@ -71,23 +88,27 @@ const CuisinesSliderCard = <T,>({
     };
   }, []);
 
-  const numScroll = 1; // Scroll by 1 item
-  const totalPages =
-    Math.ceil((data?.length - (numVisible || 0)) / numScroll) + 1; // Total pages
+  // see all click handler
+  const onSeeAllClick = () => {
+    router.push(`/${title?.toLocaleLowerCase().replace(/\s/g, "-")}`);
+  };
 
   return (
     data?.length > 0 && (
-      <div className={`ml-8 mr-10 md:ml-12 md:mr-14 ${last && "mb-20"}`}>
-        <div className="flex justify-between">
-          <span className="font-inter font-bold text-2xl leading-8 tracking-normal text-gray-900">
+      <div className={`${last && "mb-20"}`}>
+        <div className="flex justify-between mx-[6px]">
+          <span className="font-inter font-bold text-xl sm:text-2xl leading-8 tracking-normal text-gray-900">
             {title}
           </span>
           <div className="flex items-center justify-end gap-x-2 mb-2">
-            {/* "See all" Button */}
-
-            <span className="text-blue-500 text-sm font-inter font-medium tracking-[0px]">
-              See All
-            </span>
+            {/* See All Button */}
+            {pathname !== "/store" && pathname !== "/restaurants" && cuisines==false && (
+              <CustomButton
+                label="See all"
+                onClick={onSeeAllClick}
+                className="text-[#0EA5E9] transition-colors duration-200 text-sm md:text-base "
+              />
+            )}
 
             {/* Navigation Buttons */}
             <div className="gap-x-2 hidden md:flex">
@@ -107,20 +128,38 @@ const CuisinesSliderCard = <T,>({
           </div>
         </div>
 
-        <Carousel
-          value={data}
-          style={{ width: "100%" }}
-          itemTemplate={(item) => (
-            <SquareCard item={item} showLogo={showLogo} cuisines={cuisines} />
+        <div
+          className={`${data?.length < numVisible ? "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-0" : ""}`}
+        >
+          {data.length < numVisible ? (
+            // Render cards in a grid if fewer items than visible
+            data.map((item, index) => (
+              <div key={index}>
+                <SquareCard
+                  item={item}
+                  showLogo={showLogo}
+                  cuisines={cuisines}
+                />
+              </div>
+            ))
+          ) : (
+            // Use carousel for normal case
+            <Carousel
+              value={data}
+              className="w-[100%] h-[100%]"
+              itemTemplate={(item) => (
+                  <SquareCard item={item} showLogo={showLogo} cuisines={cuisines} />
+              )}
+              numVisible={numVisible}
+              numScroll={1}
+              circular={true}
+              responsiveOptions={responsiveOptions}
+              showIndicators={false}
+              showNavigators={false}
+              page={page}
+            />
           )}
-          numVisible={numVisible}
-          numScroll={1}
-          circular
-          responsiveOptions={responsiveOptions}
-          showIndicators={false}
-          showNavigators={false}
-          page={page}
-        />
+        </div>
       </div>
     )
   );

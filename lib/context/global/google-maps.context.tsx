@@ -64,13 +64,14 @@ export const GoogleMapsProvider: React.FC<IGoogleMapsProviderProps> = ({
       unloadGoogleMapsScript(); // Unload the previous script if any
       loadGoogleMapsScript(apiKey)
         .then(() => {})
-        .catch(() =>
+        .catch((err) => {
+          console.log(err);
           showToast({
             type: "error",
             title: "Google Maps",
             message: "Failed to load Google Maps script.",
-          })
-        );
+          });
+        });
     }
   }, [apiKey]);
 

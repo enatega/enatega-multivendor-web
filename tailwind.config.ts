@@ -26,7 +26,7 @@ const config = {
         none: "none",
       },
       colors: {
-        "primary-color": "#b1c748",
+        "primary-color": "#5AC12F",
         "secondary-color": "#d8e3a3",
         "secondary-border-color": "#111827",
         sky: {
@@ -49,6 +49,9 @@ const config = {
       },
       fontFamily: {
         inter: ["Inter", "sans-serif"],
+      },
+      scale: {
+        102: '1.02',
       },
     },
   },

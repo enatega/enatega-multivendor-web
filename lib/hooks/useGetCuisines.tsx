@@ -1,15 +1,59 @@
 // Queries
-import { GET_CUISINES } from "../api/graphql/queries";
+import {
+  // GET_CUISINES,
+  NEAR_BY_RESTAURANTS_CUISINES,
+} from "../api/graphql/queries";
 // useQuery
 import { useQuery } from "@apollo/client";
 // interfaces
-import { ICuisinesData } from "../utils/interfaces/cuisines.interface";
+import { ICuisinesResponse, ICuisinesData } from "@/lib/utils/interfaces";
+// context
+import { useLocationContext } from "../context/Location/Location.context";
 
-const useGetCuisines = () => {
-    const {data, loading, error, networkStatus} = useQuery<ICuisinesData>(GET_CUISINES, {fetchPolicy: 'cache-and-network'})
-    return {
-        data, loading, error, networkStatus
+const useGetCuisines = (enabled = true) => {
+  const { location } = useLocationContext();
+  const userLatitude = Number(location?.latitude || "0")
+  const userLongitude = Number(location?.longitude || "0")
+
+  const { data, loading, error, networkStatus } = useQuery<ICuisinesResponse>(
+    NEAR_BY_RESTAURANTS_CUISINES,
+    {
+      variables: {
+        latitude: userLatitude,
+        longitude: userLongitude,
+        shopType: null,
+      },
+      fetchPolicy: "cache-and-network",
+      skip: !enabled,
     }
-}
+  );
+
+  let queryData = data?.nearByRestaurantsCuisines;
+
+  let restaurantCuisinesData: ICuisinesData[] = Array.isArray(
+    data?.nearByRestaurantsCuisines
+  )
+    ? data.nearByRestaurantsCuisines.filter(
+        (item) => item.shopType.toLowerCase() === "restaurant"
+      )
+    : [];
+
+  let groceryCuisinesData: ICuisinesData[] = Array.isArray(
+    data?.nearByRestaurantsCuisines
+  )
+    ? data.nearByRestaurantsCuisines.filter(
+        (item) => item.shopType.toLowerCase() === "grocery"
+      )
+    : [];
+
+  return {
+    queryData,
+    loading,
+    error,
+    networkStatus,
+    restaurantCuisinesData,
+    groceryCuisinesData,
+  };
+};
 
 export default useGetCuisines;

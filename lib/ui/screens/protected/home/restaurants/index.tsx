@@ -1,16 +1,20 @@
-// heading section
-import HomeHeadingSection from "@/lib/ui/useable-components/home-heading-section";
-// restaurant cuisines component
-import RestaurantCuisines from "@/lib/ui/useable-components/restaurant-cuisines";
-// restaurants main section
-import { RestaurantsMainSection } from "@/lib/ui/screen-components/protected/home/restaurants";
+import useNearByRestaurantsPreview from "@/lib/hooks/useNearByRestaurantsPreview";
+import useGetCuisines from "@/lib/hooks/useGetCuisines";
+import GenericListingComponent from "@/lib/ui/screen-components/protected/home/GenericListingComponent";
 
 export default function RestaurantsScreen() {
+  const { loading, error, restaurantsData } = useNearByRestaurantsPreview();
+  const { restaurantCuisinesData } = useGetCuisines();
+
   return (
-    <>
-      <HomeHeadingSection title={"Restaurants near you"}/>
-      <RestaurantCuisines title={"Browse categories"} />
-      <RestaurantsMainSection />
-    </>
+    <GenericListingComponent
+      headingTitle="Restaurants near you"
+      cuisineSectionTitle="Browse categories"
+      mainSectionTitle="All Restaurants"
+      mainData={restaurantsData}
+      cuisineDataFromHook={restaurantCuisinesData}
+      loading={loading}
+      error={!!error}
+    />
   );
 }

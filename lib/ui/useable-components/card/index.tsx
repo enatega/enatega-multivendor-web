@@ -3,9 +3,7 @@
 // core
 import Image from "next/image";
 import React from "react";
-import { useRouter } from "next/navigation";
-// tailwind css merge
-import { twMerge } from "tailwind-merge";
+import { useRouter, usePathname } from "next/navigation";
 
 // Assets
 import { ClockSvg, CycleSvg, FaceSvg } from "@/lib/utils/assets/svg";
@@ -14,21 +12,13 @@ import IconWithTitle from "../icon-with-title";
 // Interface
 import { ICardProps } from "@/lib/utils/interfaces";
 
-const Card: React.FC<ICardProps> = ({ item, isDiscovery = false }) => {
-  const router = useRouter();
 
-  const cardClass = twMerge(
-    `rounded-md shadow-md m-2 cursor-pointer 
-     hover:scale-105 hover:opacity-95 hover:shadow-lg 
-     transition-transform duration-500`,
-    isDiscovery
-      ? "mb-6 max-w-[402px] max-h-[272px] md:w-[185px] lg:w-[188px] xl:w-[276px] 2xl:w-[402px]"
-      : "mb-2 max-h-[272px] w-[94%] sm:w-[80%] md:w-[94%]"
-  );
+const Card: React.FC<ICardProps> = ({ item }) => {
+  const router = useRouter();
+  const pathname = usePathname();
 
   return (
-    <div
-      className={cardClass}
+    <div className={`rounded-md shadow-md cursor-pointer hover:scale-102 hover:opacity-95 transition-transform duration-500 max-h-[272px] w-[96%] ml-[2%] ${pathname === '/restaurants' || pathname === '/store' ? 'my-[2%]' : 'my-[4%]'}`}
       onClick={() => {
         // const params = new URLSearchParams({ name: item?.name, id: item._id });
         // router.push(`/restaurant?${params.toString()}`);
@@ -39,12 +29,13 @@ const Card: React.FC<ICardProps> = ({ item, isDiscovery = false }) => {
       }}
     >
       {/* Image Container */}
-      <div className="relative w-full h-[140px]">
+      <div className="relative w-full h-[160px]">
         <Image
           src={item?.image}
           alt={item?.name}
           fill
           className="object-cover rounded-t-md"
+          unoptimized
         />
       </div>
 
@@ -61,16 +52,17 @@ const Card: React.FC<ICardProps> = ({ item, isDiscovery = false }) => {
             </p>
           </div>
           {/* Delivery Time */}
-          <div className="bg-[#F3FFEE] rounded-md flex items-center justify-center p-2 w-[60px] h-[50px]">
+          <div className="bg-[#F3FFEE] rounded-md flex items-center justify-center px-2 py-2">
             <p className="text-xs text-[#5AC12F] font-light lg:font-normal text-center">
-              {`${item?.deliveryTime > 5 ? item?.deliveryTime - 5 : item?.deliveryTime} - ${item?.deliveryTime + 5}`}{" "}
-              <br /> min
+              {`${item?.deliveryTime}`}{" "}min
+              {/* {`${item?.deliveryTime > 5 ? item?.deliveryTime - 5 : item?.deliveryTime} - ${item?.deliveryTime + 5}`}{" "} */}
+              {/* <br /> min */}
             </p>
           </div>
         </div>
 
         {/* Icons Section */}
-        <div className="flex flex-row justify-between w-[80%] sm:w-[100%] lg:w-[70%] pt-1">
+        <div className="flex flex-row justify-between w-[80%] sm:w-[100%] lg:w-[75%] pt-1">
           <IconWithTitle
             logo={() => <ClockSvg isBlue={true} />}
             title={item?.deliveryTime + " mins"}

@@ -7,20 +7,34 @@ import {
   TopRatedVendors,
   PopularRestaurants,
   PopularStores,
-  OrderItAgain
+  OrderItAgain,
 } from "@/lib/ui/screen-components/protected/home";
-import GroceryCuisines from "@/lib/ui/useable-components/grocery-cuisines";
-import RestaurantCuisines from "@/lib/ui/useable-components/restaurant-cuisines";
+// ui componnet
+import CuisinesSection from "@/lib/ui/useable-components/cuisines-section";
+// hooks
+import useGetCuisines from "@/lib/hooks/useGetCuisines";
 
 export default function DiscoveryScreen() {
+  const { restaurantCuisinesData, groceryCuisinesData, error, loading } =
+    useGetCuisines();
   return (
     <>
       <DiscoveryBannerSection />
       <OrderItAgain />
       <MostOrderedRestaurants />
-      <RestaurantCuisines />
+      <CuisinesSection
+        title={"Restaurant cuisines"}
+        data={restaurantCuisinesData}
+        loading={loading}
+        error={!!error}
+      />
       <RestaurantsNearYou />
-      <GroceryCuisines />
+      <CuisinesSection
+        title={"Grocery cuisines"}
+        data={groceryCuisinesData}
+        loading={loading}
+        error={!!error}
+      />
       <GroceryList />
       <TopGroceryPicks />
       <TopRatedVendors />

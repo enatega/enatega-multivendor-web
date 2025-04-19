@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import { useState } from "react";
+import { useEffect } from "react";
 // Components
 import AppTopbar from "@/lib/ui/screen-components/un-protected/layout/app-bar";
 
@@ -9,17 +9,26 @@ import AppTopbar from "@/lib/ui/screen-components/un-protected/layout/app-bar";
 import { IProvider } from "@/lib/utils/interfaces";
 
 // Google OAuth
+import { useConfig } from "@/lib/context/configuration/configuration.context";
+import { GoogleMapsProvider } from "@/lib/context/global/google-maps.context";
 import AuthModal from "@/lib/ui/screen-components/un-protected/authentication";
+import AppFooter from "../../screen-components/un-protected/layout/app-footer";
+
+// Hooks
+import { useAuth } from "@/lib/context/auth/auth.context";
 
 const AppLayout = ({ children }: IProvider) => {
-  // States
-  const [isAuthModalVisible, setIsAuthModalVisible] = useState(false);
+  // Hooks
+ const { isAuthModalVisible, setIsAuthModalVisible } = useAuth();
 
-  // Handlers
+  // Hook
+  const { GOOGLE_MAPS_KEY, LIBRARIES } = useConfig();
+
   const handleModalToggle = () => {
     setIsAuthModalVisible((prev) => !prev);
   };
-  return (
+
+  const UI = (
     <div className="layout-main">
       <div className="layout-top-container">
         <AppTopbar handleModalToggle={handleModalToggle} />
@@ -27,12 +36,23 @@ const AppLayout = ({ children }: IProvider) => {
       <div className="layout-main-container">
         <div className="layout-main">{children}</div>
       </div>
+      <div>
+        <AppFooter />
+      </div>
       <AuthModal
         handleModalToggle={handleModalToggle}
         isAuthModalVisible={isAuthModalVisible}
       />
     </div>
   );
+
+  useEffect(() => {}, [GOOGLE_MAPS_KEY]);
+
+  return GOOGLE_MAPS_KEY ?
+      <GoogleMapsProvider apiKey={GOOGLE_MAPS_KEY} libraries={LIBRARIES}>
+        <>{UI}</>
+      </GoogleMapsProvider>
+    : <>{UI}</>;
 };
 
 export default AppLayout;

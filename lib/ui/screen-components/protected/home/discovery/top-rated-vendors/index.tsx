@@ -1,25 +1,12 @@
-// Queries
-import { TOP_RATED_VENDORS } from "@/lib/api/graphql";
-// useQuery
-import { useQuery } from "@apollo/client";
-// interfaces
-import { ITopRatedVendorData } from "@/lib/utils/interfaces";
 // card
 import CuisinesSliderCard from "@/lib/ui/useable-components/cuisines-slider-card";
 // loading skeleton
 import CuisinesSliderSkeleton from "@/lib/ui/useable-components/custom-skeletons/cuisines.slider.skeleton";
+// hook
+import useTopRatedVendors from "@/lib/hooks/useTopRatedVendors";
 
 function TopRatedVendors() {
-  const { loading, error, data } = useQuery<ITopRatedVendorData>(
-    TOP_RATED_VENDORS,
-    {
-      variables: {
-        latitude: 33.6995,
-        longitude: 73.0363,
-      },
-      fetchPolicy: "cache-and-network",
-    }
-  );
+  const { queryData, error, loading } = useTopRatedVendors();
   if (error) {
     return;
   }
@@ -29,8 +16,9 @@ function TopRatedVendors() {
   return (
     <CuisinesSliderCard
       title="Our brands"
-      data={data?.topRatedVendorsPreview || []}
+      data={queryData || []}
       showLogo={true}
+      cuisines={false}
     />
   );
 }
