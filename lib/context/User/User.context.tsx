@@ -7,6 +7,8 @@ import { orderStatusChanged } from "@/lib/api/graphql/subscription";
 import {
   ApolloError,
   gql,
+  LazyQueryExecFunction,
+  OperationVariables,
   useApolloClient,
   useLazyQuery,
   useMutation,
@@ -184,6 +186,7 @@ export interface UserContextType {
     cartItems: CartItem[],
     foodsData: IRestaurant
   ) => CartItem[];
+  fetchProfile:LazyQueryExecFunction<any, OperationVariables>
 }
 
 const UserContext = createContext<UserContextType>({} as UserContextType);
@@ -792,6 +795,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
         removeItem,
         calculateSubtotal,
         transformCartWithFoodInfo,
+        fetchProfile
       }}
     >
       {props.children}

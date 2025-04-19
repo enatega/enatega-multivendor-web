@@ -61,6 +61,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   const [otp, setOtp] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
+  const [refetchProfileData, setRefetchProfileData] = useState(false)
 
   // Refs
   const otpFrom = useRef<string | null>(null);
@@ -186,6 +187,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       });
     } finally {
       setIsLoading(false);
+      setRefetchProfileData(true)
     }
   };
 
@@ -234,7 +236,6 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         });
         localStorage.setItem("token", userData.data.createUser.token);
         localStorage.setItem("userId", userData.data.createUser.userId);
-        console.log("🚀 ~ AuthProvider ~ userData.data.createUser.token:", userData.data.createUser.token)
         return userData.data.createUser as ICreateUserData;
       } else {
         return {} as ICreateUserData;
@@ -251,6 +252,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       return {} as ICreateUserData;
     } finally {
       setIsLoading(false);
+      setRefetchProfileData(true)
     }
   };
 
@@ -446,6 +448,8 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
           isLoading,
           isRegistering,
           setIsRegistering,
+          refetchProfileData,
+          setRefetchProfileData
         }}
       >
         {children}

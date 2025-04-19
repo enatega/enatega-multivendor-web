@@ -46,11 +46,11 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
   // Hooks
   const router = useRouter();
   const { GOOGLE_MAPS_KEY } = useConfig();
-  const { cartCount, calculateSubtotal, profile, loadingProfile } = useUser();
+  const { cartCount, calculateSubtotal, profile, loadingProfile, fetchProfile } = useUser();
   const { userAddress, setUserAddress } = useUserAddress();
   const { getCurrentLocation } = useLocation();
   const { onSetUserLocation } = useSetUserCurrentLocation();
-  const { authToken, setIsAuthModalVisible, setAuthToken } = useAuth();
+  const { authToken, setIsAuthModalVisible, setAuthToken, refetchProfileData, setRefetchProfileData } = useAuth();
 
   // Format subtotal for display
   const formattedSubtotal = cartCount > 0 ? `$${calculateSubtotal()}` : "$0";
@@ -86,10 +86,18 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
     localStorage.clear();
   };
 
+  // UseEffects
   useEffect(() => {
     onInit();
   }, [GOOGLE_MAPS_KEY, profile]);
 
+useEffect(()=>{
+  if(refetchProfileData){
+    fetchProfile(); // this one is not working when a refetch is required, kindly check this whoever is working on this module
+    onInit()
+    setRefetchProfileData(false)
+  }
+},[refetchProfileData])
   return (
     <>
       <nav className="w-full bg-white shadow-sm">
