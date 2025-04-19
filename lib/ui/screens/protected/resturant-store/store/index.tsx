@@ -43,12 +43,10 @@ import { toSlug } from "@/lib/utils/methods";
 import ReviewsModal from "@/lib/ui/useable-components/reviews-modal";
 import InfoModal from "@/lib/ui/useable-components/info-modal";
 import ChatSvg from "@/lib/utils/assets/svg/chat";
-import { useConfig } from "@/lib/context/configuration/configuration.context";
 
 export default function StoreDetailsScreen() {
   // Access the UserContext via our custom hook
   const { cart, transformCartWithFoodInfo, updateCart } = useUser();
-  const {GOOGLE_MAPS_KEY} = useConfig();
 
   // Params
   const { id, slug }: { id: string; slug: string } = useParams();
@@ -327,7 +325,7 @@ export default function StoreDetailsScreen() {
       <InfoModal
         restaurantInfo={restaurantInfoModalProps}
         // make sure data is not loading because if configuration data is not available it can cause error on google map due to unavailability of api key
-        visible={showMoreInfo && !loading && !!GOOGLE_MAPS_KEY}
+        visible={showMoreInfo && !loading }
         onHide={() => setShowMoreInfo(false)}
       />
       <div className="w-screen h-screen flex flex-col pb-20">
