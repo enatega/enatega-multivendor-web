@@ -79,6 +79,8 @@ export interface IAuthContextProps {
   handleCreateUser: (user: ICreateUserArguments) => Promise<ICreateUserData>;
   isRegistering: boolean;
   setIsRegistering: Dispatch<SetStateAction<boolean>>;
+  isLoading: boolean;
+  setIsLoading: Dispatch<SetStateAction<boolean>>;
 }
 export interface ILoginProfile {
   userId?: string;
@@ -144,6 +146,10 @@ export interface IUserAddress {
   label: string;
   selected?: boolean;
 }
+export interface IUserAddressProps {
+  userAddress: IUserAddress | null;
+  setUserAddress: (address: IUserAddress | null) => void;
+}
 
 export interface IEnterPasswordProps {
   handleChangePanel: (index: number) => void;
@@ -153,6 +159,7 @@ export interface IEnterPasswordProps {
 }
 
 export interface IUserAddressComponentProps {
+  editAddress?: IUserAddress | null;
   visible: boolean;
   onHide: () => void;
 }

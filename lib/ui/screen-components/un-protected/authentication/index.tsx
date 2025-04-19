@@ -18,6 +18,7 @@ import { Stepper } from "primereact/stepper";
 import { StepperPanel } from "primereact/stepperpanel";
 
 // Components
+import { useConfig } from "@/lib/context/configuration/configuration.context";
 import useToast from "@/lib/hooks/useToast";
 import EmailVerification from "./email-verification";
 import EnterPassword from "./enter-password";
@@ -42,6 +43,7 @@ export default function AuthModal({
     phone: "",
   });
 
+
   // Refs
   const authenticationPanelRef = useRef(null);
 
@@ -52,29 +54,33 @@ export default function AuthModal({
     setActivePanel,
     setUser,
     setIsAuthModalVisible,
+    setIsLoading
   } = useAuth();
   const { showToast } = useToast();
+  const {SKIP_EMAIL_VERIFICATION, SKIP_MOBILE_VERIFICATION} = useConfig();
 
   // Login With Google
   const googleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
+      setIsLoading(true)
       const userInfo = await fetch(
         "https://www.googleapis.com/oauth2/v3/userinfo",
         { headers: { Authorization: `Bearer ${tokenResponse.access_token}` } },
       );
       const userData = await userInfo.json();
-
+      
       const userLoginResponse = await handleUserLogin({
         type: "google",
         email: userData.email,
         name: userData.name,
         notificationToken: "",
       });
+      console.log("🚀 ~ onSuccess: ~ userData google:", userLoginResponse?.login)
       if (userLoginResponse) {
         setUser(userLoginResponse.login as ILoginProfile);
-        if (!userLoginResponse.login.emailIsVerified) {
+        if (!userLoginResponse.login.emailIsVerified&&SKIP_EMAIL_VERIFICATION) {
           setActivePanel(5);
-        } else if (!userLoginResponse.login.phoneIsVerified) {
+        } else if (!userLoginResponse.login.phoneIsVerified&&SKIP_MOBILE_VERIFICATION) {
           setActivePanel(4);
         } else {
           setActivePanel(0);
@@ -85,6 +91,7 @@ export default function AuthModal({
             message:"You have logged in successfully"
           });
         }
+      setIsLoading(false)
       }
     },
 

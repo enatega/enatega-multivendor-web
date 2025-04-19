@@ -11,10 +11,11 @@ export interface ICuisinesSliderCardComponentProps<T> extends IGlobalComponentPr
 export interface ICuisinesSliderCardItemProps {
   _id: string;
   name: string;
-  description: string;
+  description?: string;
   image: string;
   shopType: string;
   logo?: string;
+  slug?: string
 }
 
 export interface ICuisinesCardProps {
@@ -22,3 +23,7 @@ export interface ICuisinesCardProps {
   cuisines?: boolean
   showLogo?:boolean
 }
+
+export type CuisinesSliderCardComponent = <T extends ICuisinesSliderCardItemProps>(
+  props: ICuisinesSliderCardComponentProps<T>
+) => React.ReactNode;

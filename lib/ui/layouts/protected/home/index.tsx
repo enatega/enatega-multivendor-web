@@ -37,10 +37,10 @@ export default function HomeLayout({
   return (
     <div className="w-screen h-screen flex flex-col">
       {/* Sticky Top Tabs */}
-      <div className="sticky top-0 left-0 w-full bg-white z-50 pt-4 pb-4">
-        <div className="flex justify-center items-center space-x-2 md:space-x-4 p-2 md:p-4 overflow-x-auto">
+      <div className="sm:sticky sm:top-0 sm:left-0 fixed bottom-0 left-0 w-full bg-white z-50 pt-2 pb-2 sm:pt-3 sm:pb-3">
+        <div className="flex justify-center items-center space-x-4 md:space-x-6 p-2 md:p-4 overflow-x-auto">
           <div
-            className="flex items-center gap-x-1 p-2 md:pt-2 md:pb-2 md:pl-4 md:pr-4 text-gray-500 rounded-full cursor-pointer transition-all duration-300 whitespace-nowrap"
+            className="flex flex-col sm:flex-row items-center gap-x-1 p-2 md:pt-2 md:pb-2 md:pl-4 md:pr-4 text-gray-500 rounded-full cursor-pointer transition-all duration-300 whitespace-nowrap"
             style={{
               backgroundColor: isDiscovery ? "#0EA5E9" : "white",
               color: isDiscovery ? "#FFFFFF" : "#6B7280",
@@ -48,13 +48,13 @@ export default function HomeLayout({
             onClick={() => onChangeScreen("Discovery")}
           >
             <HomeSvg color={isDiscovery ? "#FFFFFF" : "#6B7280"} />
-            <span className="font-inter font-medium text-sm md:text-[14px] hidden sm:inline">
+            <span className="font-inter font-medium text-[12px] md:text-sm sm:inline">
               Discovery
             </span>
           </div>
 
           <div
-            className="flex items-center gap-x-1 p-2 md:pt-2 md:pb-2 md:pl-4 md:pr-4 text-gray-500 rounded-full cursor-pointer transition-all duration-300 whitespace-nowrap"
+            className="flex flex-col sm:flex-row items-center gap-x-1 p-2 md:pt-2 md:pb-2 md:pl-4 md:pr-4 text-gray-500 rounded-full cursor-pointer transition-all duration-300 whitespace-nowrap"
             style={{
               backgroundColor: isRestaurants ? "#0EA5E9" : "white",
               color: isRestaurants ? "#FFFFFF" : "#6B7280",
@@ -62,13 +62,13 @@ export default function HomeLayout({
             onClick={() => onChangeScreen("Restaurants")}
           >
             <CutlerySvg color={isRestaurants ? "#FFFFFF" : "#6B7280"} />
-            <span className="font-inter font-medium text-sm md:text-[14px] hidden sm:inline">
+            <span className="font-inter font-medium text-[12px] md:text-sm sm:inline">
               Restaurants
             </span>
           </div>
 
           <div
-            className="flex items-center gap-x-1 p-2 md:pt-2 md:pb-2 md:pl-4 md:pr-4 text-gray-500 rounded-full cursor-pointer transition-all duration-300 whitespace-nowrap"
+            className="flex flex-col sm:flex-row items-center gap-x-1 p-2 md:pt-2 md:pb-2 md:pl-4 md:pr-4 text-gray-500 rounded-full cursor-pointer transition-all duration-300 whitespace-nowrap"
             style={{
               backgroundColor: isStore ? "#0EA5E9" : "white",
               color: isStore ? "#FFFFFF" : "#6B7280",
@@ -76,7 +76,7 @@ export default function HomeLayout({
             onClick={() => onChangeScreen("Store")}
           >
             <StoreSvg color={isStore ? "#FFFFFF" : "#6B7280"} />
-            <span className="font-inter font-medium text-sm md:text-[14px] hidden sm:inline">
+            <span className="font-inter font-medium text-[12px] md:text-sm sm:inline">
               Store
             </span>
           </div>
@@ -84,7 +84,7 @@ export default function HomeLayout({
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto pb-[33%] sm:pb-0">
         <PaddingContainer>{children}</PaddingContainer>
       </div>
     </div>

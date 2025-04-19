@@ -59,6 +59,8 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<ILoginProfile | null>(null);
   const [isAuthModalVisible, setIsAuthModalVisible] = useState(false);
   const [otp, setOtp] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false);
 
   // Refs
   const otpFrom = useRef<string | null>(null);
@@ -74,7 +76,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   const t = useTranslations();
   const router = useRouter();
   const { profile } = useUser();
-  const [isRegistering, setIsRegistering] = useState(false);
+
   // Mutations
   const [mutateEmailCheck] = useMutation<
     IEmailExistsResponse,
@@ -100,6 +102,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   // Checkers
   async function checkEmailExists(email: string): Promise<IEmailExists> {
     try {
+      setIsLoading(true);
       const emailResponse = await mutateEmailCheck({
         variables: { email: email },
       });
@@ -115,11 +118,14 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
           t("An error occurred while checking the email"),
       });
       return {} as IEmailExists;
+    } finally {
+      setIsLoading(false);
     }
   }
 
   async function checkPhoneExists(phone: string) {
     try {
+      setIsLoading(true);
       const phoneResponse = await mutatePhoneCheck({
         variables: { phone: phone },
       });
@@ -147,15 +153,19 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
           error.cause?.message ||
           t("An error occurred while checking the phone"),
       });
+    } finally {
+      setIsLoading(false);
     }
   }
 
   // handlers
   const handleUserLogin = async (user: IUserLoginArguments) => {
     try {
+      setIsLoading(true);
       const userResponse = await mutateLogin({
         variables: { ...user },
       });
+      console.log("🚀 ~ handleUserLogin ~ userResponse:", userResponse.data?.login)
       const { data } = userResponse;
       localStorage.setItem("userId", data?.login.userId ?? "");
       localStorage.setItem("token", data?.login.token ?? "");
@@ -174,6 +184,8 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         message:
           error.cause?.message || t("An error occurred while logging in"),
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -181,13 +193,13 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     user: ICreateUserArguments,
   ): Promise<ICreateUserData> => {
     try {
-      setIsRegistering(true);
+      setIsLoading(true);
       const userData = await createUser({
         variables: {
           ...user,
         },
       });
-      if (userData.data?.createUser.userId) {
+      if (userData.data?.createUser && userData.data.createUser.userId) {
         localStorage.setItem("token", userData.data.createUser.token);
         localStorage.setItem("userId", userData.data.createUser.userId);
         const {
@@ -201,7 +213,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
           isNewUser,
           picture,
           userTypeId,
-        } = userData.data?.createUser;
+        } = userData.data.createUser;
         setUser(() => ({
           userId,
           email,
@@ -214,12 +226,15 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
           picture,
           userTypeId,
         }));
-        console.log(".....", user)
+        console.log(".....", user);
         showToast({
           type: "success",
           title: t("Create User"),
           message: t("You have successfully registered"),
         });
+        localStorage.setItem("token", userData.data.createUser.token);
+        localStorage.setItem("userId", userData.data.createUser.userId);
+        console.log("🚀 ~ AuthProvider ~ userData.data.createUser.token:", userData.data.createUser.token)
         return userData.data.createUser as ICreateUserData;
       } else {
         return {} as ICreateUserData;
@@ -233,8 +248,9 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         message:
           error.cause?.message || t("An error occured while creating the user"),
       });
-      setIsRegistering(false);
       return {} as ICreateUserData;
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -242,7 +258,8 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   function onLoginCompleted(data: ILoginProfileResponse) {
     try {
       setUser(data.login);
-      console.log({ loginDataOnCompleted: data.login });
+      localStorage.setItem("token", data?.login?.token ?? "");
+      localStorage.setItem("userId", data?.login?.userId??"");
       if (!data.login.emailIsVerified) {
         setActivePanel(5);
       } else if (!data.login.phoneIsVerified) {
@@ -290,6 +307,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   // OTP Handlers
   async function sendOtpToEmailAddress(email: string) {
     try {
+      setIsLoading(true);
       if (SKIP_EMAIL_VERIFICATION) {
         setOtp(TEST_OTP);
         setActivePanel(5);
@@ -329,11 +347,14 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
           error.cause?.message ||
           t("An error occurred while sending the OTP to email"),
       });
+    } finally {
+      setIsLoading(false);
     }
   }
 
   async function sendOtpToPhoneNumber(phone: string) {
     try {
+      setIsLoading(true);
       if (SKIP_MOBILE_VERIFICATION) {
         console.log("🚀 ~ sendOtpToPhoneNumber ~ SKIP_MOBILE_VERIFICATION:", {
           SKIP_MOBILE_VERIFICATION,
@@ -375,6 +396,8 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
           error.cause?.message ||
           t("An error occurred while sending the OTP to phone"),
       });
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -419,8 +442,10 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
           sendOtpToEmailAddress,
           sendOtpToPhoneNumber,
           handleCreateUser,
-          setIsRegistering,
+          setIsLoading,
+          isLoading,
           isRegistering,
+          setIsRegistering,
         }}
       >
         {children}

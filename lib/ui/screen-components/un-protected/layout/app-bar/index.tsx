@@ -2,12 +2,12 @@
 
 // Core
 import Link from "next/link";
-import { useState } from "react";
 import { Sidebar } from "primereact/sidebar";
+import { useEffect, useState } from "react";
 
 // Components
-import { PaddingContainer } from "@/lib/ui/useable-components/containers";
 import Cart from "@/lib/ui/useable-components/cart";
+import { PaddingContainer } from "@/lib/ui/useable-components/containers";
 
 // Hook
 import useUser from "@/lib/hooks/useUser";
@@ -16,11 +16,14 @@ import useUser from "@/lib/hooks/useUser";
 import { CartSvg, LocationSvg } from "@/lib/utils/assets/svg";
 
 // Interface
-import { IAppBarProps } from "@/lib/utils/interfaces/auth.interface";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
-import UserAddressComponent from "@/lib/ui/useable-components/address";
 import { useUserAddress } from "@/lib/context/address/address.context";
+import { useConfig } from "@/lib/context/configuration/configuration.context";
+import useLocation from "@/lib/hooks/useLocation";
+import useSetUserCurrentLocation from "@/lib/hooks/useSetUserCurrentLocation";
+import UserAddressComponent from "@/lib/ui/useable-components/address";
+import { IAppBarProps } from "@/lib/utils/interfaces/auth.interface";
+import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
   // State for cart sidebar
@@ -28,11 +31,38 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
   const [isUserAddressModalOpen, setIsUserAddressModalOpen] = useState(false);
 
   // Access user context for cart information
-  const { cartCount, calculateSubtotal } = useUser();
-  const { userAddress } = useUserAddress();
+  const { GOOGLE_MAPS_KEY } = useConfig();
+  const { cartCount, calculateSubtotal, profile, loadingProfile } = useUser();
+  const { userAddress, setUserAddress } = useUserAddress();
+  
+  console.log("🚀 ~ AppTopbar ~ profile:", profile)
+  // Hooks
+  const { getCurrentLocation } = useLocation();
+  const { onSetUserLocation } = useSetUserCurrentLocation();
 
   // Format subtotal for display
   const formattedSubtotal = cartCount > 0 ? `$${calculateSubtotal()}` : "$0";
+
+  // Handlers
+  const onInit = () => {
+    const selectedAddress = profile?.addresses.find(
+      (address) => address.selected
+    );
+
+    // ✅ If there's a selected address, use that
+    if (selectedAddress) {
+      setUserAddress(selectedAddress);
+    } else {
+      // 🚀 Otherwise, get current location if profile is loaded and maps key exists
+      if (!loadingProfile && GOOGLE_MAPS_KEY) {
+        getCurrentLocation(onSetUserLocation);
+      }
+    }
+  };
+
+  useEffect(() => {
+    onInit();
+  }, [GOOGLE_MAPS_KEY, profile]);
 
   return (
     <>
@@ -40,21 +70,30 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
         <div className="w-full">
           <PaddingContainer>
             <div className="flex flex-row items-center justify-between w-full h-16">
-              <div
-                className="flex gap-x-2 items-center cursor-pointer"
-                onClick={() => setIsUserAddressModalOpen(true)}
-              >
+              <div className="flex gap-x-2 items-center cursor-pointer">
                 <Link href="/" className="text-xl font-bold text-gray-900">
                   Enatega
                 </Link>
-                <div className="flex items-center">
+                <div
+                  className="flex items-center"
+                  onClick={() => setIsUserAddressModalOpen(true)}
+                >
                   <div className="p-[4px] m-2 bg-gray-50 rounded-full">
                     <LocationSvg />
                   </div>
-                  <span className="text-gray-900 font-inter font-normal text-base leading-6 tracking-normal mr-2">
+                  {/* Show on medium and up */}
+                  <span className="hidden md:inline text-xs sm:text-sm md:text-base text-gray-500 font-inter font-normal leading-6 tracking-normal mr-2">
                     {userAddress?.deliveryAddress}
                   </span>
-                  <FontAwesomeIcon icon={faChevronDown} />
+
+                  {/* Show on small screens only */}
+                  <span className="inline md:hidden text-xs sm:text-sm md:text-base text-gray-500 font-inter font-normal leading-6 tracking-normal mr-2">
+                    {userAddress?.details}
+                  </span>
+
+                  <div className="hidden sm:flex items-center">
+                    <FontAwesomeIcon icon={faChevronDown} />
+                  </div>
                 </div>
               </div>
               <div className="flex justify-end items-center space-x-4">

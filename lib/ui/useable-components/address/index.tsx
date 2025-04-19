@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 "use client";
@@ -40,6 +41,8 @@ import { useLocationContext } from "@/lib/context/Location/Location.context";
 // Hook
 import useUser from "@/lib/hooks/useUser";
 import useLocation from "@/lib/hooks/useLocation";
+import useGeocoding from "@/lib/hooks/useGeocoding";
+import useToast from "@/lib/hooks/useToast";
 import useSetUserCurrentLocation from "@/lib/hooks/useSetUserCurrentLocation";
 
 // Interface
@@ -56,12 +59,6 @@ import {
   EDIT_ADDRESS,
   SELECT_ADDRESS,
 } from "@/lib/api/graphql";
-import useGeocoding from "@/lib/hooks/useGeocoding";
-import useToast from "@/lib/hooks/useToast";
-
-// Components
-
-/////
 
 const variants = {
   enter: (direction: number) => ({
@@ -80,7 +77,7 @@ const variants = {
 
 const LOCATIONT_TYPE = [
   {
-    name: "Home",
+    name: "House",
     icon: (color?: string) => <HomeSvg color={color || "#0F172A"} />,
   },
   {
@@ -105,7 +102,7 @@ export default function UserAddressComponent(
   props: IUserAddressComponentProps
 ) {
   // Props
-  const { visible, onHide } = props;
+  const { visible, onHide, editAddress } = props;
 
   // States
   const [modifiyingId, setModifyingId] = useState("");
@@ -135,7 +132,7 @@ export default function UserAddressComponent(
   // API
   const [changeUserSelectedAddress, { loading }] = useMutation(SELECT_ADDRESS);
   const [mutate, { loading: modifyingAddressLoading }] = useMutation(
-    userAddress?._id ? EDIT_ADDRESS : CREATE_ADDRESS,
+    editAddress?._id ? EDIT_ADDRESS : CREATE_ADDRESS,
     {
       onCompleted,
       onError,
@@ -162,6 +159,18 @@ export default function UserAddressComponent(
   );
 
   // Handlers
+  const onHandleEditAddressInit = () => {
+    if (!editAddress) return;
+
+    setSelectedLocationType(editAddress?.label || "");
+    setInputValue(editAddress?.deliveryAddress || "");
+    setSelectedCity(
+      cities_dropdown?.find((city) => city.label === editAddress?.details) ||
+        null
+    );
+    paginate(1);
+  };
+
   const onHandleSelectAddress = async (address: IUserAddress) => {
     setModifyingId(address._id);
     changeUserSelectedAddress({
@@ -227,15 +236,17 @@ export default function UserAddressComponent(
 
   const onHandleCreateAddress = () => {
     const addressInput = {
+      ...(editAddress?._id ? { _id: editAddress?._id } : {}),
       longitude: `${userAddress?.location?.coordinates[0]}`,
       latitude: `${userAddress?.location?.coordinates[1]}`,
       deliveryAddress: userAddress?.deliveryAddress || "",
-      details: userAddress?.deliveryAddress,
+      details: selectedCity?.label,
       label: selectedLocationType,
     };
-    // if (locationData.id) {
-    //   addressInput._id = locationData.id
-    // }
+
+    if (editAddress?._id) {
+      addressInput["_id"] = editAddress?._id;
+    }
     mutate({ variables: { addressInput } });
   };
 
@@ -255,6 +266,7 @@ export default function UserAddressComponent(
       },
     });
 
+    setIndex([0, 0]);
     onHide();
   }
 
@@ -500,7 +512,10 @@ export default function UserAddressComponent(
         <div className="w-full flex justify-between gap-x-2">
           <button
             className="w-full  h-fit bg-transparent text-gray-900 py-2 border border-black rounded-full text-base lg:text-[14px]"
-            onClick={() => onHide()}
+            onClick={() => {
+              setIndex([0, 0]);
+              onHide();
+            }}
           >
             <span>Cancel</span>
           </button>
@@ -520,7 +535,187 @@ export default function UserAddressComponent(
     </div>
   );
 
-  const COMPONENTS_LIST = [CHOOSE_ADDRESS, ADD_ADDRESS];
+  const EDIT_ADDRESS_UI = (
+    <div className="w-full space-y-2">
+      {/* Header */}
+      <div className="w-full">
+        <span className="font-inter font-semibold text-[18px] tracking-normal">
+          Add new address
+        </span>
+      </div>
+      {/* Google Maps */}
+      {isLoaded && (
+        <div className="w-full">
+          <GoogleMap
+            mapContainerStyle={{
+              width: "100%",
+              height: "400px",
+            }}
+            center={{
+              lat: Number(editAddress?.location?.coordinates[1]) || 0,
+              lng: Number(editAddress?.location?.coordinates[0]) || 0,
+            }}
+            zoom={13}
+            onCenterChanged={() => {}}
+          >
+            {editAddress?.location?.coordinates && (
+              <Marker
+                position={{
+                  lat: Number(editAddress?.location?.coordinates[1]) || 0,
+                  lng: Number(editAddress?.location?.coordinates[0]) || 0,
+                }}
+              />
+            )}
+          </GoogleMap>
+        </div>
+      )}
+
+      <div className="w-full flex flex-col items-center gap-y-2">
+        <div className="w-full space-y-2">
+          <CustomDropdownComponent
+            name="City"
+            placeholder={"Select City"}
+            selectedItem={selectedCity}
+            setSelectedItem={async (key: string, item: IDropdownSelectItem) => {
+              setSelectedCity(item);
+
+              const { coords } = JSON.parse(item.code || "");
+
+              const { formattedAddress } = await getAddress(
+                coords[1],
+                coords[0]
+              );
+
+              setInputValue(formattedAddress);
+
+              setUserAddress({
+                _id: "",
+                deliveryAddress: formattedAddress,
+                location: { coordinates: [coords[0], coords[1]] },
+                label: "Home",
+              });
+            }}
+            options={cities_dropdown}
+          />
+
+          <AutoComplete
+            id="google-map"
+            disabled={false}
+            className={`mr-4 h-11 w-full border border-gray-300 px-2 text-sm focus:shadow-none focus:outline-none`}
+            value={inputValue}
+            completeMethod={(event) => {
+              setSearch(event.query);
+            }}
+            onChange={(e) => {
+              if (typeof e.value === "string") handleInputChange(e.value);
+            }}
+            onSelect={onHandlerAutoCompleteSelectionChange}
+            suggestions={options}
+            forceSelection={false}
+            dropdown={false}
+            multiple={false}
+            loadingIcon={undefined}
+            placeholder="Enter full address"
+            style={{ width: "100%" }}
+            itemTemplate={(item) => {
+              const matches =
+                item.structured_formatting?.main_text_matched_substrings;
+              let parts: { text: string; highlight: boolean }[] | null = null;
+              if (matches) {
+                parts = parse(
+                  item.structured_formatting.main_text,
+                  matches.map((match: { offset: number; length: number }) => [
+                    match.offset,
+                    match.offset + match.length,
+                  ])
+                );
+              }
+
+              return (
+                <div className="flex flex-col">
+                  <div className="flex items-center">
+                    <FontAwesomeIcon icon={faMapMarker} className="mr-2" />
+                    {parts &&
+                      parts?.map((part, index) => (
+                        <span
+                          key={index}
+                          style={{
+                            fontWeight: part.highlight ? 700 : 400,
+                            color: "black",
+                            marginRight: "2px",
+                          }}
+                        >
+                          {part.text}
+                        </span>
+                      ))}
+                  </div>
+                  <small>{item.structured_formatting?.secondary_text}</small>
+                </div>
+              );
+            }}
+          />
+        </div>
+
+        <div className="w-full">
+          <div className="w-full">
+            <span className="font-inter font-semibold text-[12px] tracking-normal">
+              Location Type
+            </span>
+          </div>
+          <div className="w-full grid grid-cols-2 gap-4">
+            {LOCATIONT_TYPE.map((item) => (
+              <div
+                key={item.name}
+                className="p-2 cursor-pointer flex items-center gap-x-2 shadow rounded"
+                onClick={() => setSelectedLocationType(item.name)}
+              >
+                <div>
+                  {item.icon(
+                    selectedLocationType === item.name ? "#0EA5E9" : undefined
+                  )}
+                </div>
+                <div className="flex flex-col gap-y-[2px]">
+                  <span
+                    className={`font-inter font-medium text-sm leading-5 tracking-normal ${selectedLocationType === item.name ? "text-sky-500" : "text-gray-500"}`}
+                  >
+                    {item.name}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="w-full flex justify-between gap-x-2">
+          <button
+            className="w-full  h-fit bg-transparent text-gray-900 py-2 border border-black rounded-full text-base lg:text-[14px]"
+            onClick={() => {
+              setIndex([0, 0]);
+              onHide();
+            }}
+          >
+            <span>Cancel</span>
+          </button>
+          <button
+            className="w-full h-fit bg-[#5AC12F] text-gray-900 py-2 rounded-full text-base lg:text-[14px]"
+            onClick={() => onHandleCreateAddress()}
+          >
+            {modifyingAddressLoading ?
+              <FontAwesomeIcon
+                icon={faSpinner}
+                spin={modifyingAddressLoading}
+              />
+            : <span>Save</span>}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  const COMPONENTS_LIST = [
+    CHOOSE_ADDRESS,
+    editAddress ? EDIT_ADDRESS_UI : ADD_ADDRESS,
+  ];
 
   // Effects
   useEffect(() => {
@@ -557,10 +752,17 @@ export default function UserAddressComponent(
     };
   }, [selectedPlaceObject, search, fetch]);
 
+  useEffect(() => {
+    onHandleEditAddressInit();
+  }, [editAddress]);
+
   return (
     <Dialog
       visible={visible}
-      onHide={onHide}
+      onHide={() => {
+        setIndex([0, 0]);
+        onHide();
+      }}
       className="lg:w-1/3 w-full h-auto m-4"
       header={
         index !== 0 ?
