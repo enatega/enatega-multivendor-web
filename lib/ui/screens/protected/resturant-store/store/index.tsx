@@ -325,7 +325,7 @@ export default function StoreDetailsScreen() {
       <InfoModal
         restaurantInfo={restaurantInfoModalProps}
         // make sure data is not loading because if configuration data is not available it can cause error on google map due to unavailability of api key
-        visible={showMoreInfo && !loading }
+        visible={showMoreInfo && !loading}
         onHide={() => setShowMoreInfo(false)}
       />
       <div className="w-screen h-screen flex flex-col pb-20">
