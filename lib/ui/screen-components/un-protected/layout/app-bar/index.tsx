@@ -3,28 +3,34 @@
 // Core
 import Link from "next/link";
 import { Sidebar } from "primereact/sidebar";
-import { useEffect, useRef, useState } from "react";
 
 // Components
+import UserAddressComponent from "@/lib/ui/useable-components/address";
 import Cart from "@/lib/ui/useable-components/cart";
 import { PaddingContainer } from "@/lib/ui/useable-components/containers";
 
 // Hook
-import useUser from "@/lib/hooks/useUser";
-
-// Icons
-import { CartSvg, LocationSvg } from "@/lib/utils/assets/svg";
-
-// Interface
 import { useUserAddress } from "@/lib/context/address/address.context";
 import { useAuth } from "@/lib/context/auth/auth.context";
 import { useConfig } from "@/lib/context/configuration/configuration.context";
 import useLocation from "@/lib/hooks/useLocation";
 import useSetUserCurrentLocation from "@/lib/hooks/useSetUserCurrentLocation";
+import useUser from "@/lib/hooks/useUser";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+
+// Icons
+import { CartSvg, LocationSvg } from "@/lib/utils/assets/svg";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+// Interface
+import { IAppBarProps } from "@/lib/utils/interfaces";
+
+// Next
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+
+// Prime React
 import { Menu } from "primereact/menu";
 
 const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
@@ -75,6 +81,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
   };
 
   const onLogout = () => {
+    router.replace("/")
     setAuthToken("");
     localStorage.clear();
   };
