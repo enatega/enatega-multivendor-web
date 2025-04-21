@@ -157,6 +157,7 @@ export default function AddressesMain() {
             iconColor="black"
             classNames="bg-[#5AC12F] w-[content] px-4"
             Icon={faPlus}
+            loading={false}
             handleClick={() => {
               setIsUserAddressModalOpen(true);
             }}

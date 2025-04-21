@@ -1,15 +1,23 @@
 // Icons
-import { useAuth } from "@/lib/context/auth/auth.context";
-import useToast from "@/lib/hooks/useToast";
+import PersonIcon from "@/lib/utils/assets/svg/person";
+
+// Components
 import CustomButton from "@/lib/ui/useable-components/button";
 import CustomTextField from "@/lib/ui/useable-components/input-field";
 import CustomPasswordTextField from "@/lib/ui/useable-components/password-input-field";
 import CustomPhoneTextField from "@/lib/ui/useable-components/phone-input-field";
-import PersonIcon from "@/lib/utils/assets/svg/person";
+
+// Interfaces
 import { ILoginWithEmailProps } from "@/lib/utils/interfaces";
 
 // Hooks
+import { useAuth } from "@/lib/context/auth/auth.context";
+import { useConfig } from "@/lib/context/configuration/configuration.context";
+import useToast from "@/lib/hooks/useToast";
 import { useTranslations } from "next-intl";
+
+// Apollo
+import { ApolloError } from "@apollo/client";
 
 export default function SignUpWithEmail({
   handleChangePanel,
@@ -23,13 +31,19 @@ export default function SignUpWithEmail({
     setUser,
     sendOtpToEmailAddress,
     sendOtpToPhoneNumber,
-    user,
+    isLoading,
+    setIsLoading,
+    setIsRegistering,
+    setIsAuthModalVisible,
   } = useAuth();
   const { showToast } = useToast();
+  const { SKIP_EMAIL_VERIFICATION, SKIP_MOBILE_VERIFICATION } = useConfig();
 
   // Handlers
   const handleSubmit = async () => {
     try {
+      setIsLoading(true);
+      setIsRegistering(true);
       if (Object.values(formData).some((val) => !val)) {
         return showToast({
           type: "error",
@@ -43,26 +57,53 @@ export default function SignUpWithEmail({
           name: formData.name,
           password: formData.password,
         });
-        console.log("🚀 ~ handleSubmit ~ userData:", user);
 
-        if (!userData.emailIsVerified && userData.email) {
+        if (
+          !userData.emailIsVerified &&
+          userData.email &&
+          !SKIP_EMAIL_VERIFICATION
+        ) {
           setUser((prev) => ({
             ...prev,
             email: userData.email,
           }));
           sendOtpToEmailAddress(userData.email);
+          // Verify email OTP
           handleChangePanel(3);
-        } else if (!userData.phoneIsVerified && userData.phone) {
+        } else if (
+          !userData.phoneIsVerified &&
+          userData.phone &&
+          !SKIP_MOBILE_VERIFICATION
+        ) {
           setUser((prev) => ({
             ...prev,
             phone: userData.phone,
           }));
           sendOtpToPhoneNumber(userData.phone);
+          // Verify Phone OTP
           handleChangePanel(6);
+        }else if(userData.userId&&SKIP_EMAIL_VERIFICATION&&SKIP_MOBILE_VERIFICATION){
+          // Navigate to first modal
+          handleChangePanel(0);
+          setIsAuthModalVisible(false);
+          showToast({
+            type:"success",
+            title:t("Register"),
+            message:t("Successfully registered your account") // put an exclamation mark at the end of this sentence in the translations
+          })
         }
       }
-    } catch (error) {
+    } catch (err) {
+      const error = err as ApolloError;
       console.error("An error occured while registering a new user", error);
+      showToast({
+        type: "error",
+        title: t("Register"),
+        message:
+          error?.cause?.message || t("An error occured while registering"),
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
   return (
@@ -124,6 +165,7 @@ export default function SignUpWithEmail({
         label={t("Continue")}
         className={`bg-[#5AC12F] flex items-center justify-center gap-x-4 px-3 rounded-full border border-gray-300 p-3 m-auto w-72`}
         onClick={handleSubmit}
+        loading={isLoading}
       />
     </div>
   );

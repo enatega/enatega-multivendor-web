@@ -20,7 +20,7 @@ export default function LoginWithEmail({
 }: ILoginWithEmailProps) {
   // Hooks
   const t = useTranslations();
-  const { setUser, checkEmailExists } = useAuth();
+  const { setUser, checkEmailExists, isLoading } = useAuth();
   const { showToast } = useToast();
 
   // Handlers
@@ -34,7 +34,7 @@ export default function LoginWithEmail({
     } else {
       // Check if the email exits
       const emailExists = await checkEmailExists(formData?.email);
-      if (emailExists.userType !== "default") {
+      if (emailExists._id && emailExists.userType !== "default") {
         showToast({
           type: "warn",
           title: t("Login"),
@@ -86,6 +86,7 @@ export default function LoginWithEmail({
       </div>
       <CustomButton
         label={t("Continue")}
+        loading={isLoading}
         onClick={handleSubmit}
         className={`bg-[#5AC12F] flex items-center justify-center gap-x-4 px-3 rounded-full border border-gray-300 p-3 m-auto w-72`}
       />
