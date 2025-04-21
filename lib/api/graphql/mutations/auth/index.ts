@@ -134,3 +134,14 @@ export const UPDATE_USER = gql`
     }
   }
 `;
+
+export const DEACTIVATE_USER = gql`
+  mutation DeactivateUser($isActive: Boolean!, $email: String!) {
+    Deactivate(isActive: $isActive, email: $email) {
+      _id,
+      name,
+      email,
+      isActive
+    }
+  }
+`;

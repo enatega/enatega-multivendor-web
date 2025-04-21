@@ -3,8 +3,8 @@ import type React from "react";
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 // Api
-import { GET_USER_PROFILE } from "@/lib/api/graphql";
-import { useQuery } from "@apollo/client";
+import { DEACTIVATE_USER, GET_USER_PROFILE } from "@/lib/api/graphql";
+import { useMutation, useQuery } from "@apollo/client";
 // Components
 import CustomButton from "@/lib/ui/useable-components/button";
 import CustomInputSwitch from "@/lib/ui/useable-components/custom-input-switch";
@@ -32,10 +32,30 @@ export default function SettingsMain() {
   const { setAuthToken } = useAuth();
   const router = useRouter();
    const { showToast } = useToast();
+
+   // Queries and Mutations
   // Get profile data by using the query
   const { data: profileData, loading: isProfileLoading } = useQuery(GET_USER_PROFILE, {
     fetchPolicy: "cache-and-network",
   });
+   // Update user muattion 
+  const [Deactivate] = useMutation(DEACTIVATE_USER, {
+    onCompleted: () => {
+        showToast({
+            type: "success",
+            title: "Success",
+            message: "User Account Has Been Deleted Successfully",
+        });
+    },
+    onError: (error) => {
+      showToast({
+        type: "error",
+        title: "Error",
+        message: error.message,
+      });
+    },
+  });
+
 
   // Handle send receipts toggle
   const handleSendReceiptsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,13 +84,21 @@ export default function SettingsMain() {
 
   const handleConfirmDelete = () => {
     setIsDeleting(true)
-
     // Simulate API call
     setTimeout(() => {
       // Actual Mutation Delete Logic implement here
+      Deactivate({
+      variables: {
+        isActive: false,
+        email: profileData?.profile?.email,
+      },
+    });
+      // Clear auth token and local storage
+      setAuthToken("");
+      localStorage.clear();
       setIsDeleting(false)
       setDeleteAccount(false)
-      // Show success message or redirect
+      router.push("/");
     }, 1500)
   }
 

@@ -115,7 +115,7 @@ export default function NameUpdateModal({
           </div>
           <div className="w-full">
             <div className="">
-              <h2 className="text-2xl font-extrabold mb-10">Name</h2>
+              <h2 className="text-2xl font-extrabold mb-10 text-black">Name</h2>
               <div className="p-float-label mb-6">
                 <InputText
                   id="firstName"
