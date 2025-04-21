@@ -13,6 +13,8 @@ import { useTranslations } from "next-intl";
 // Next
 import Link from "next/link";
 
+// Font Awesome
+
 export default function LoginWithGoogle({
   googleLogin,
   handleChangePanel,
@@ -31,6 +33,7 @@ export default function LoginWithGoogle({
           handleClick={googleLogin}
         />
       </div>
+
       <div className="flex items-center justify-between w-full">
         <Divider color="border-gray-200" />
         <span className="mx-1">or</span>

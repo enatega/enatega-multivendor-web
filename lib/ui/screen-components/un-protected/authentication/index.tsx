@@ -27,6 +27,8 @@ import PhoneVerification from "./phone-verification";
 import SaveEmailAddress from "./save-email-address";
 import SavePhoneNumber from "./save-phone-number";
 import SignUpWithEmail from "./signup-with-email";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
 export default function AuthModal({
   isAuthModalVisible,
@@ -80,9 +82,9 @@ export default function AuthModal({
           setActivePanel(0);
           setIsAuthModalVisible(false);
           showToast({
-            type:"success",
-            title:"Login",
-            message:"You have logged in successfully"
+            type: "success",
+            title: "Login",
+            message: "You have logged in successfully"
           });
         }
       }
@@ -106,7 +108,6 @@ export default function AuthModal({
   };
   return (
     <Dialog
-      showHeader={true}
       visible={isAuthModalVisible}
       onHide={handleModalToggle}
       closable={activePanel <= 3}
@@ -114,15 +115,21 @@ export default function AuthModal({
         padding: "22px",
         borderBottomLeftRadius: "12px",
         borderBottomRightRadius: "12px",
+        borderTopLeftRadius: '4px', borderTopRightRadius: '4px'
       }}
       headerStyle={{
         borderTopLeftRadius: "12px",
         borderTopRightRadius: "12px",
         height: "fit-content",
       }}
-      className="lg:w-1/3 w-full h-auto"
+      className={activePanel == 6 || activePanel == 3 || activePanel == 4 ? "lg:w-1/2 w-full h-auto" : "lg:w-1/3 w-full max-w-[400px] h-auto"}
       closeOnEscape={activePanel <= 3}
+      showHeader={false}
     >
+      {/* close icon to close the modal */}
+      <button onClick={handleModalToggle} className="absolute top-3 right-0 transition-all duration-300 rounded-full p-2">
+        <FontAwesomeIcon size="lg" icon={faXmark} className="text-black" width={30} height={30} />
+      </button>
       <Stepper
         ref={authenticationPanelRef}
         activeStep={activePanel}

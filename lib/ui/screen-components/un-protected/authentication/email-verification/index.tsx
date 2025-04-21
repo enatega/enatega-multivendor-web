@@ -196,7 +196,7 @@ export default function EmailVerification({
         {t("We have sent OTP code to")}&nbsp;
         <span className="font-bold">{user?.email ?? "example@email.com"}</span>
       </p>
-      <p className="font-light text-sm">{t("Please check your inbox")}</p>
+      <p className="font-light mb-3 text-sm">{t("Please check your inbox")}</p>
       <InputOtp
         value={emailOtp}
         onChange={(e) => setEmailOtp(String(e.value))}
@@ -205,12 +205,13 @@ export default function EmailVerification({
         mask
         maxLength={6}
         length={6}
-        className="w-full h-20 my-2"
+        className="w-full h-20 my-2 "
       />
-
+      {/* create a span and give a margin top */}
+      <span className="mt-4"></span>
       <CustomButton
         label={t("Continue")}
-        className={`bg-[#5AC12F] flex items-center justify-center gap-x-4 px-3 rounded-full border border-gray-300 p-3 m-auto w-72 my-1`}
+        className={`bg-[#5AC12F]  flex items-center justify-center gap-x-4 px-3 rounded-full border border-gray-300 p-3 m-auto w-72 my-1`}
         onClick={handleSubmit}
       />
       <CustomButton
