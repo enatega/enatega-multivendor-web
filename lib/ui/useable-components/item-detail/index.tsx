@@ -12,15 +12,18 @@ import {
 import Divider from "../custom-divider";
 import { ItemDetailSection } from "./item-section";
 import ClearCartModal from "../clear-cart-modal";
+import Image from "next/image";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
 export default function FoodItemDetail(props: IFoodItemDetalComponentProps) {
   const { foodItem, addons, options, onClose } = props;
 
   // Access user context for cart functionality
-  const { 
-    addItem, 
-    restaurant: cartRestaurant, 
-    clearCart 
+  const {
+    addItem,
+    restaurant: cartRestaurant,
+    clearCart
   } = useUser();
 
   // State for selected variation
@@ -188,12 +191,18 @@ export default function FoodItemDetail(props: IFoodItemDetalComponentProps) {
   };
 
   return (
-    <div className="bg-white max-w-md w-full p-2">
+    <div className="bg-white max-w-md w-full p-2 relative">
+      {/* close icon to close the modal */}
+      <button onClick={onClose} className="absolute top-3 right-0 bg-slate-400 hover:bg-slate-500 transition-all duration-300 rounded-full p-2">
+        <FontAwesomeIcon icon={faXmark} className="text-white" width={23} height={18} />
+      </button>
       <div className="text-center mb-4">
-        <img
-          alt={foodItem?.title}
-          className="w-full h-[150px] object-cover mx-auto"
-          src={foodItem?.image}
+        <Image
+          alt={foodItem?.title ?? ""}
+          className="max-w-md w-[400px] h-[170px] mx-auto object-cover object-center rounded-md mt-4"
+          src={foodItem?.image ?? ""}
+          width={400}
+          height={170}
         />
       </div>
 
@@ -252,7 +261,7 @@ export default function FoodItemDetail(props: IFoodItemDetalComponentProps) {
               onSingleSelect={
                 isSingleSelect
                   ? (option) =>
-                      handleAddonSelection(addon._id ?? "", false, option as Option)
+                    handleAddonSelection(addon._id ?? "", false, option as Option)
                   : undefined
               }
               multiSelected={
@@ -263,14 +272,14 @@ export default function FoodItemDetail(props: IFoodItemDetalComponentProps) {
               onMultiSelect={
                 !isSingleSelect
                   ? (updateFn) => {
-                      const current =
-                        (selectedAddonOptions[addon._id ?? ""] as Option[]) ||
-                        [];
-                      if (typeof updateFn === "function") {
-                        const updated = updateFn(current);
-                        handleAddonSelection(addon._id ?? "", true, updated as Option[]);
-                      }
+                    const current =
+                      (selectedAddonOptions[addon._id ?? ""] as Option[]) ||
+                      [];
+                    if (typeof updateFn === "function") {
+                      const updated = updateFn(current);
+                      handleAddonSelection(addon._id ?? "", true, updated as Option[]);
                     }
+                  }
                   : undefined
               }
               options={addonOptions as Option[]}

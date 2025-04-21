@@ -39,4 +39,4 @@ function useTracking({ orderId }: { orderId: string }) {
     }
 }
 
-export default useTracking
+export default useTracking;

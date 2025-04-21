@@ -186,7 +186,7 @@ export interface UserContextType {
     cartItems: CartItem[],
     foodsData: IRestaurant
   ) => CartItem[];
-  fetchProfile:LazyQueryExecFunction<any, OperationVariables>
+  fetchProfile: LazyQueryExecFunction<any, OperationVariables>
 }
 
 const UserContext = createContext<UserContextType>({} as UserContextType);
@@ -483,6 +483,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
       const updatedCart = [...prevCart];
       const cartIndex = updatedCart.findIndex((c) => c.key === key);
 
+
       if (cartIndex !== -1) {
         // Important: Set the exact new quantity instead of adding to prevent potential double-increments
         updatedCart[cartIndex].quantity =
@@ -493,6 +494,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
           localStorage.setItem("cartItems", JSON.stringify(updatedCart));
         }
       }
+
 
       return updatedCart;
     });
@@ -652,14 +654,19 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
 
   const updateItemQuantity = useCallback(
     async (key: string, changeAmount: number) => {
+      console.log(`[UserContext] updateItemQuantity start: key=${key}, change=${changeAmount}`);
+
       // Force change to be exactly +1 or -1
       const safeChange = changeAmount > 0 ? 1 : -1;
+      console.log(`[UserContext] Using safe change value: ${safeChange}`);
 
       // Use a local variable that will be unique to each function call
       // This ensures the flag is reset for each new click
       let updateApplied = false;
 
       setCart((prevCart) => {
+        console.log(`[UserContext] setCart callback executing`);
+
         // If we've already applied an update in this callback invocation, don't do it again
         if (updateApplied) {
           return prevCart;
@@ -674,6 +681,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
 
         const currentItem = updatedCart[cartIndex];
         const currentQuantity = currentItem.quantity;
+        console.log(`[UserContext] Current quantity for ${key}: ${currentQuantity}`);
 
         // For decrement
         if (safeChange < 0) {
@@ -708,8 +716,11 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
           }
         }
 
+        console.log(`[UserContext] Returning updated cart:`, updatedCart);
         return updatedCart;
       });
+
+      console.log(`[UserContext] updateItemQuantity completed`);
     },
     []
   );
@@ -730,13 +741,13 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
   }, [cart]);
 
   // UseEffects
-  useEffect(()=>{
+  useEffect(() => {
     const token = localStorage.getItem("token");
     const userId = localStorage.getItem("userId");
     if(token&&userId){
-      fetchProfile
+      fetchProfile()
     }
-  },[])
+  }, [])
   // Initialize from local storage
   useEffect(() => {
     if (typeof window !== "undefined") {

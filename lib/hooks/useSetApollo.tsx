@@ -48,7 +48,7 @@ export const useSetupApollo = (): ApolloClient<NormalizedCacheObject> => {
     }
 
     if (graphQLErrors) {
-      (graphQLErrors||[])?.forEach((error) =>
+      (graphQLErrors || [])?.forEach((error) =>
         console.error("GraphQL Error:", error?.message)
       );
     }
@@ -62,9 +62,9 @@ export const useSetupApollo = (): ApolloClient<NormalizedCacheObject> => {
     const userId = localStorage.getItem("userId");
     operation.setContext({
       headers: {
-        authorization: (token??"") ? `Bearer ${(token??"")}` : "",
-        userId:userId??"",
-        isAuth:!!token
+        authorization: (token ?? "") ? `Bearer ${token ?? ""}` : "",
+        userId: userId ?? "",
+        isAuth: !!token,
       },
     });
   };

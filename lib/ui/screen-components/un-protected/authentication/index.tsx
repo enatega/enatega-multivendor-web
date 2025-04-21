@@ -28,6 +28,8 @@ import PhoneVerification from "./phone-verification";
 import SaveEmailAddress from "./save-email-address";
 import SavePhoneNumber from "./save-phone-number";
 import SignUpWithEmail from "./signup-with-email";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
 export default function AuthModal({
   isAuthModalVisible,
@@ -57,7 +59,7 @@ export default function AuthModal({
     setIsLoading
   } = useAuth();
   const { showToast } = useToast();
-  const {SKIP_EMAIL_VERIFICATION, SKIP_MOBILE_VERIFICATION} = useConfig();
+  const { SKIP_EMAIL_VERIFICATION, SKIP_MOBILE_VERIFICATION } = useConfig();
 
   // Login With Google
   const googleLogin = useGoogleLogin({
@@ -68,7 +70,7 @@ export default function AuthModal({
         { headers: { Authorization: `Bearer ${tokenResponse.access_token}` } }
       );
       const userData = await userInfo.json();
-      
+
       const userLoginResponse = await handleUserLogin({
         type: "google",
         email: userData.email,
@@ -78,9 +80,9 @@ export default function AuthModal({
       console.log("🚀 ~ onSuccess: ~ userData google:", userLoginResponse?.login)
       if (userLoginResponse) {
         setUser(userLoginResponse.login as ILoginProfile);
-        if (!userLoginResponse.login.emailIsVerified&&SKIP_EMAIL_VERIFICATION) {
+        if (!userLoginResponse.login.emailIsVerified && SKIP_EMAIL_VERIFICATION) {
           setActivePanel(5);
-        } else if (!userLoginResponse.login.phoneIsVerified&&SKIP_MOBILE_VERIFICATION) {
+        } else if (!userLoginResponse.login.phoneIsVerified && SKIP_MOBILE_VERIFICATION) {
           setActivePanel(4);
         } else {
           setActivePanel(0);
@@ -88,10 +90,10 @@ export default function AuthModal({
           showToast({
             type: "success",
             title: "Login",
-            message: "You have logged in successfully",
+            message: "You have logged in successfully"
           });
         }
-      setIsLoading(false)
+        setIsLoading(false)
       }
     },
 
@@ -113,7 +115,6 @@ export default function AuthModal({
   };
   return (
     <Dialog
-      showHeader={true}
       visible={isAuthModalVisible}
       onHide={handleModalToggle}
       closable={activePanel <= 3}
@@ -121,16 +122,25 @@ export default function AuthModal({
         padding: "22px",
         borderBottomLeftRadius: "12px",
         borderBottomRightRadius: "12px",
+        borderTopLeftRadius: '4px', borderTopRightRadius: '4px'
       }}
       headerStyle={{
         borderTopLeftRadius: "12px",
         borderTopRightRadius: "12px",
         height: "fit-content",
       }}
-      className="lg:w-1/3 w-full h-auto"
+      className={activePanel == 6 || activePanel == 3 || activePanel == 4 ? "lg:w-1/2 w-full h-auto" : "lg:w-1/3 w-full max-w-[400px] h-auto"}
       closeOnEscape={activePanel <= 3}
+      showHeader={false}
     >
-      <Stepper ref={authenticationPanelRef} activeStep={activePanel}>
+      {/* close icon to close the modal */}
+      <button onClick={handleModalToggle} className="absolute top-3 right-0 transition-all duration-300 rounded-full p-2">
+        <FontAwesomeIcon size="lg" icon={faXmark} className="text-black" width={30} height={30} />
+      </button>
+      <Stepper
+        ref={authenticationPanelRef}
+        activeStep={activePanel}
+      >
         <StepperPanel>
           <LoginWithGoogle
             googleLogin={googleLogin}

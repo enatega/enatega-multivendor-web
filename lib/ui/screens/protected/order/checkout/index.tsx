@@ -181,7 +181,7 @@ export default function OrderCheckoutScreen() {
               _id,
               options: options.map(({ _id }) => _id),
             }))
-          : [],
+            : [],
         specialInstructions: food.specialInstructions,
       };
     });
@@ -896,7 +896,13 @@ export default function OrderCheckoutScreen() {
                         <button
                           key={index}
                           className={`text-[12px] text-${selectedTip === tip ? "white" : "[#0EA5E9]"} bg-${selectedTip === tip ? "[#0EA5E9]" : "white"} border border-[#0EA5E9] px-4 py-2 rounded-full w-full`}
-                          onClick={() => setSelectedTip(tip)}
+                          onClick={() => {
+                            if (selectedTip === tip) {
+                              setSelectedTip("")
+                            } else {
+                              setSelectedTip(tip)
+                            }
+                          }}
                         >
                           {tip !== "Other" ? CURRENCY_SYMBOL : ""}
                           {tip}
