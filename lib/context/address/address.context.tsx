@@ -18,8 +18,6 @@ export const UserAddressProvider = ({ children }: { children: ReactNode }) => {
     setUserAddress,
   };
 
-  console.log(userAddress);
-
   return (
     <UserAddressContext.Provider value={value}>
       {children}
