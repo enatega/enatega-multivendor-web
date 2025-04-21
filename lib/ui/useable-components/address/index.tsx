@@ -112,6 +112,7 @@ export default function UserAddressComponent(
   const [selectedCity, setSelectedCity] = useState<IDropdownSelectItem | null>(
     null
   );
+  const [newDraggedCenter, setNewDraggedCenter] = useState({ lat: 0, lng: 0 });
   const [selectedLocationType, setSelectedLocationType] = useState<string>("");
   const [search, setSearch] = useState<string>("");
   const [inputValue, setInputValue] = useState<string>("");
@@ -244,6 +245,45 @@ export default function UserAddressComponent(
       );
       setSelectedPlaceObject(selectedOption);
     }
+  };
+
+  const onCenterDraggedHandler = async (e?: google.maps.MapMouseEvent) => {
+    const new_center = {
+      lat: e?.latLng?.lat() || newDraggedCenter.lat || 0,
+      lng: e?.latLng?.lng() || newDraggedCenter.lng || 0,
+    };
+
+    if (new_center.lat === 0 && new_center.lng === 0) return;
+
+    const { formattedAddress } = await getAddress(
+      new_center.lat,
+      new_center.lng
+    );
+
+    if (!formattedAddress) {
+      showToast({
+        type: "error",
+        title: "Error",
+        message: "Failed to fetch address",
+      });
+      return;
+    }
+
+    setInputValue(formattedAddress);
+
+    setUserAddress({
+      _id: "",
+      deliveryAddress: formattedAddress,
+      location: { coordinates: [new_center.lng, new_center.lat] },
+      label: "Home",
+    });
+  };
+
+  const onClickGoogleMaps = (e: google.maps.MapMouseEvent) => {
+    setNewDraggedCenter({
+      lat: e?.latLng?.lat() ?? 0,
+      lng: e?.latLng?.lng() ?? 0,
+    });
   };
 
   const onHandleCreateAddress = () => {
@@ -397,7 +437,7 @@ export default function UserAddressComponent(
               lng: Number(userAddress?.location?.coordinates[0]) || 0,
             }}
             zoom={13}
-            onCenterChanged={() => {}}
+            onClick={onClickGoogleMaps}
           >
             {userAddress?.location?.coordinates && (
               <Marker
@@ -405,6 +445,8 @@ export default function UserAddressComponent(
                   lat: Number(userAddress?.location?.coordinates[1]) || 0,
                   lng: Number(userAddress?.location?.coordinates[0]) || 0,
                 }}
+                draggable
+                onDragEnd={onCenterDraggedHandler}
               />
             )}
           </GoogleMap>
@@ -441,7 +483,7 @@ export default function UserAddressComponent(
 
           <AutoComplete
             id="google-map"
-            disabled={false}
+            disabled={!selectedCity}
             className={`mr-4 h-11 w-full border border-gray-300 px-2 text-sm focus:shadow-none focus:outline-none`}
             value={inputValue}
             completeMethod={(event) => {
@@ -769,6 +811,10 @@ export default function UserAddressComponent(
       autocompleteService.current = null;
     };
   }, [selectedPlaceObject, search, fetch]);
+
+  useEffect(() => {
+    onCenterDraggedHandler();
+  }, [newDraggedCenter]);
 
   useEffect(() => {
     onHandleEditAddressInit();
