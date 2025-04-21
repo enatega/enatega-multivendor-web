@@ -43,6 +43,7 @@ import { toSlug } from "@/lib/utils/methods";
 import ReviewsModal from "@/lib/ui/useable-components/reviews-modal";
 import InfoModal from "@/lib/ui/useable-components/info-modal";
 import ChatSvg from "@/lib/utils/assets/svg/chat";
+import Image from "next/image";
 
 export default function StoreDetailsScreen() {
   // Access the UserContext via our custom hook
@@ -166,6 +167,7 @@ export default function StoreDetailsScreen() {
           const subCategoryGroups = subCats
             .map((subCat: ISubCategory) => {
               const foods = groupedFoods[subCat._id] || [];
+
               return foods.length > 0 ?
                   {
                     _id: subCat._id,
@@ -175,10 +177,10 @@ export default function StoreDetailsScreen() {
                 : null;
             })
             .filter(Boolean) as {
-            _id: string;
-            title: string;
-            foods: IFood[];
-          }[];
+              _id: string;
+              title: string;
+              foods: IFood[];
+            }[];
 
           // Add uncategorized group if it has foods
           if (groupedFoods["uncategorized"]?.length > 0) {
@@ -561,17 +563,20 @@ export default function StoreDetailsScreen() {
 
           {/* Main Section */}
           <PaddingContainer>
+
             {loading || categoriesSubCategoriesLoading || subcategoriesLoading ?
+
               <FoodCategorySkeleton />
             : <div className="flex flex-col md:flex-row w-full">
                 <div className="hidden md:block md:w-1/5 p-3 h-screen z-10  sticky top-0 left-0">
                   <div className="h-full overflow-hidden group">
                     <div
+
                       className={`h-full overflow-y-auto transition-all duration-300 ${
                         isScrolling ?
                           "scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
                         : "overflow-hidden"
-                      }`}
+
                       onScroll={handleMouseEnterCategoryPanel}
                     >
                       <PanelMenu
@@ -633,11 +638,13 @@ export default function StoreDetailsScreen() {
                                     </div>
 
                                     {/* Image */}
-                                    <div className="flex-shrink-0 w-24 h-24 md:w-28 md:h-28">
-                                      <img
+                                    <div className="flex-shrink-0 w-24 h-24 md:w-28 md:h-28 ">
+                                      <Image
                                         alt={meal.title}
-                                        className="w-full h-full object-contain mx-auto md:mx-0"
+                                        className="w-full h-full rounded-md object-cover mx-auto md:mx-0 "
                                         src={meal.image}
+                                        width={100}
+                                        height={100}
                                       />
                                     </div>
 
@@ -677,6 +684,10 @@ export default function StoreDetailsScreen() {
         visible={!!showDialog}
         className="mx-3 sm:mx-4 md:mx-0" // Adds margin on small screens
         onHide={handleCloseFoodModal}
+        showHeader={false}
+        contentStyle={{ borderTopLeftRadius: '4px', borderTopRightRadius: '4px' }} // Rounds top corners
+        style={{ borderRadius: '1rem' }} // Rounds full box including top corners
+
       >
         {showDialog && (
           <FoodItemDetail
