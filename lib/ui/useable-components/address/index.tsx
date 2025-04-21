@@ -186,7 +186,17 @@ export default function UserAddressComponent(
     changeUserSelectedAddress({
       variables: { id: address._id },
       onCompleted: () => {
-        setUserAddress(address);
+        const new_address = {
+          ...address,
+          location: {
+            coordinates: [
+              +(address.location?.coordinates[0] || "0"),
+              +(address.location?.coordinates[1] || "0"),
+            ] as [number, number],
+          },
+        };
+
+        setUserAddress(new_address);
         onUseLocalStorage("delete", USER_CURRENT_LOCATION_LS_KEY);
         setModifyingId("");
         onHide();
@@ -314,7 +324,10 @@ export default function UserAddressComponent(
       deliveryAddress: address_response.deliveryAddress,
 
       location: {
-        coordinates: address_response.location?.coordinates || [0, 0],
+        coordinates: [
+          +(address_response.location?.coordinates[0] || "0"),
+          +(address_response.location?.coordinates[1] || "0"),
+        ],
       },
     });
 
