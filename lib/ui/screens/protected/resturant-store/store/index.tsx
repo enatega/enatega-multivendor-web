@@ -177,10 +177,10 @@ export default function StoreDetailsScreen() {
                 : null;
             })
             .filter(Boolean) as {
-              _id: string;
-              title: string;
-              foods: IFood[];
-            }[];
+            _id: string;
+            title: string;
+            foods: IFood[];
+          }[];
 
           // Add uncategorized group if it has foods
           if (groupedFoods["uncategorized"]?.length > 0) {
@@ -502,13 +502,13 @@ export default function StoreDetailsScreen() {
                         <li key={index} className="shrink-0">
                           <button
                             className={`bg-${
-                              selectedCategory === _slug
-                                ? "[#F3FFEE]"
-                                : "gray-100"
+                              selectedCategory === _slug ? "[#F3FFEE]" : (
+                                "gray-100"
+                              )
                             } text-${
-                              selectedCategory === _slug
-                                ? "[#5AC12F]"
-                                : "gray-600"
+                              selectedCategory === _slug ? "[#5AC12F]" : (
+                                "gray-600"
+                              )
                             } rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap`}
                             onClick={() => handleScroll(_slug, true, 130)}
                           >
@@ -539,13 +539,13 @@ export default function StoreDetailsScreen() {
                           <li key={index} className="shrink-0">
                             <button
                               className={`bg-${
-                                selectedSubCategory === _slug
-                                  ? "[#F3FFEE]"
-                                  : "gray-100"
+                                selectedSubCategory === _slug ? "[#F3FFEE]" : (
+                                  "gray-100"
+                                )
                               } text-${
-                                selectedSubCategory === _slug
-                                  ? "[#5AC12F]"
-                                  : "gray-600"
+                                selectedSubCategory === _slug ? "[#5AC12F]" : (
+                                  "gray-600"
+                                )
                               } rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap`}
                               onClick={() => handleScroll(_slug, false, 170)}
                             >
@@ -563,20 +563,17 @@ export default function StoreDetailsScreen() {
 
           {/* Main Section */}
           <PaddingContainer>
-
             {loading || categoriesSubCategoriesLoading || subcategoriesLoading ?
-
               <FoodCategorySkeleton />
             : <div className="flex flex-col md:flex-row w-full">
                 <div className="hidden md:block md:w-1/5 p-3 h-screen z-10  sticky top-0 left-0">
                   <div className="h-full overflow-hidden group">
                     <div
-
                       className={`h-full overflow-y-auto transition-all duration-300 ${
                         isScrolling ?
                           "scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
                         : "overflow-hidden"
-
+                      }`}
                       onScroll={handleMouseEnterCategoryPanel}
                     >
                       <PanelMenu
@@ -685,9 +682,11 @@ export default function StoreDetailsScreen() {
         className="mx-3 sm:mx-4 md:mx-0" // Adds margin on small screens
         onHide={handleCloseFoodModal}
         showHeader={false}
-        contentStyle={{ borderTopLeftRadius: '4px', borderTopRightRadius: '4px' }} // Rounds top corners
-        style={{ borderRadius: '1rem' }} // Rounds full box including top corners
-
+        contentStyle={{
+          borderTopLeftRadius: "4px",
+          borderTopRightRadius: "4px",
+        }} // Rounds top corners
+        style={{ borderRadius: "1rem" }} // Rounds full box including top corners
       >
         {showDialog && (
           <FoodItemDetail
