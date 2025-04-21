@@ -5,11 +5,13 @@ export default function getEnv(env: "DEV" | "PROD") {
       // WS_SERVER_URL: "wss://enatega-multivendor-revamp.up.railway.app/",
       SERVER_URL: "https://enatega-multivendor.up.railway.app/graphql",
       WS_SERVER_URL: "wss://enatega-multivendor.up.railway.app/",
+      // SERVER_URL: "http://localhost:8001/",
+      // WS_SERVER_URL: "ws://localhost:8001/",
     };
   } else {
     return {
-      SERVER_URL: "http://192.168.0.141:8001/",
-      WS_SERVER_URL: "ws://192.168.0.141:8001/",
+      SERVER_URL: "http://10.97.32.196:8001/",
+      WS_SERVER_URL: "ws://10.97.32.196:8001/",
     };
   }
 }

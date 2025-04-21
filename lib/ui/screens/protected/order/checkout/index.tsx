@@ -34,16 +34,17 @@ import { PaddingContainer } from "@/lib/ui/useable-components/containers";
 import Divider from "@/lib/ui/useable-components/custom-divider";
 import UserAddressComponent from "@/lib/ui/useable-components/address";
 
-import { GoogleMapsContext } from "@/lib/context/global/google-maps.context";
 // Context
+import { GoogleMapsContext } from "@/lib/context/global/google-maps.context";
 import { CartItem } from "@/lib/context/User/User.context";
-import { useLocationContext } from "@/lib/context/Location/Location.context";
 import { useConfig } from "@/lib/context/configuration/configuration.context";
 
 // Hooks
 import useUser from "@/lib/hooks/useUser";
 import useToast from "@/lib/hooks/useToast";
 import useRestaurant from "@/lib/hooks/useRestaurant";
+import { useUserAddress } from "@/lib/context/address/address.context";
+import { useAuth } from "@/lib/context/auth/auth.context";
 
 // Asssets
 import { InfoSvg } from "@/lib/utils/assets/svg";
@@ -56,7 +57,7 @@ import { PAYMENT_METHOD_LIST, TIPS } from "@/lib/utils/constants";
 import { PLACE_ORDER, VERIFY_COUPON, ORDERS } from "@/lib/api/graphql";
 
 // Interfaces
-import { ICoupon, ILocation, IOrder } from "@/lib/utils/interfaces";
+import { ICoupon, IOrder } from "@/lib/utils/interfaces";
 
 // Types
 import { OrderTypes } from "@/lib/utils/types/order";
@@ -71,9 +72,8 @@ import {
 // Asets
 import HomeIcon from "../../../../../assets/home_icon.png";
 import RestIcon from "../../../../../assets/rest_icon.png";
-import { useUserAddress } from "@/lib/context/address/address.context";
-import { useAuth } from "@/lib/context/auth/auth.context";
 import getEnv from "@/environment";
+import { useLocationContext } from "@/lib/context/Location/Location.context";
 
 
 // import RiderIcon from "../../../../../assets/rider_icon.png";
@@ -96,6 +96,7 @@ export default function OrderCheckoutScreen() {
     useState<google.maps.DirectionsResult | null>(null);
 
   const { SERVER_URL } = getEnv("DEV");
+  const {authToken, setIsAuthModalVisible } = useAuth();
 
   // Coupon
   const [isCouponApplied, setIsCouponApplied] = useState(false);
@@ -103,7 +104,6 @@ export default function OrderCheckoutScreen() {
   const [coupon, setCoupon] = useState<ICoupon>({} as ICoupon);
 
   // Hooks
-  const { authToken, setIsAuthModalVisible } = useAuth();
   const router = useRouter();
   const { showToast } = useToast();
   const { CURRENCY_SYMBOL, CURRENCY, DELIVERY_RATE, COST_TYPE } = useConfig();
@@ -151,10 +151,10 @@ export default function OrderCheckoutScreen() {
   };
 
   const onInitDeliveryCharges = () => {
-    const latOrigin = Number(restaurantData?.restaurant?.location?.coordinates[1]);
-    const lonOrigin = Number(restaurantData?.restaurant?.location?.coordinates[0]);
-    const latDest = Number(location?.latitude || "0");
-    const longDest = Number(location?.longitude || "0");
+    const latOrigin = Number(restaurantData.restaurant.location.coordinates[1]);
+    const lonOrigin = Number(restaurantData.restaurant.location.coordinates[0]);
+    const latDest = userAddress?.location?.coordinates[1] || 0;
+    const longDest = userAddress?.location?.coordinates[0] || 0;
     const distance = calculateDistance(latOrigin, lonOrigin, latDest, longDest);
     setDistance(distance.toFixed(2));
 
@@ -232,10 +232,6 @@ export default function OrderCheckoutScreen() {
   }
 
   function couponOnError() {
-    console.log({
-      type: "error",
-      message: "Invalid Coupon.",
-    });
     showToast({
       type: "error",
       title: "Invalid Coupon",
@@ -326,6 +322,7 @@ export default function OrderCheckoutScreen() {
 
   function validateOrder() {
     if (!restaurantData?.restaurant?.isAvailable || !onCheckIsOpen()) {
+      // toggleCloseModal();
       showToast({
         title: "Restaurant",
         message: "Restaurant is not available right now.",
@@ -408,7 +405,7 @@ export default function OrderCheckoutScreen() {
       });
 
       setTimeout(() => {
-        router.replace("/phone-number");
+        // router.replace("/phone-number");
       }, 1000);
 
       return false;
@@ -422,7 +419,7 @@ export default function OrderCheckoutScreen() {
       });
 
       setTimeout(() => {
-        router.replace("/phone-number");
+        // router.replace("/phone-number");
       }, 1000);
 
       return false;
@@ -487,13 +484,14 @@ export default function OrderCheckoutScreen() {
   }
 
   async function onCompleted(data: { placeOrder: IOrder }) {
-    if (paymentMethod === "CASH") {
+    if (paymentMethod === "COD") {
       clearCart();
       router.replace(`/order/${data.placeOrder._id}/tracking`);
     } else if (paymentMethod === "PAYPAL") {
       router.replace(`/paypal?id=${data.placeOrder._id}`);
-    } else if (paymentMethod === "CARD") {
-      router.replace(`${SERVER_URL}stripe/create-checkout-session?id=${data.placeOrder._id}&platform=web`);
+    } else if (paymentMethod === "STRIPE") {
+      router.replace(`${SERVER_URL}stripe/create-checkout-session?id=${data?.placeOrder?.orderId}&platform=web`);
+      // console.log("🚀 ~ onCompleted ~ data:", data)
     }
   }
 
@@ -588,7 +586,7 @@ export default function OrderCheckoutScreen() {
     onInit();
   }, [restaurantData]);
 
-  useEffect(() => {
+  /*  useEffect(() => {
     if (!location) {
       const localStorageLocation = JSON.parse(
         localStorage.getItem("location") || "null"
@@ -597,7 +595,7 @@ export default function OrderCheckoutScreen() {
         setLocation(localStorageLocation);
       }
     }
-  }, []);
+  }, []); */
 
   const origin = {
     lat: Number(restaurantData?.restaurant?.location.coordinates[1]) || 0,
@@ -605,8 +603,8 @@ export default function OrderCheckoutScreen() {
   };
 
   const destination = {
-    lat: Number(location?.latitude) || 0,
-    lng: Number(location?.longitude) || 0,
+    lat: Number(userAddress?.location?.coordinates[1]) || 0,
+    lng: Number(userAddress?.location?.coordinates[0]) || 0,
   };
 
   return (
@@ -756,7 +754,7 @@ export default function OrderCheckoutScreen() {
                         <span className="font-semibold">Delivery </span>
                         <span className="font-normal">in 10-20 min </span>
                         <span className="font-semibold">
-                          {location?.deliveryAddress}
+                          {userAddress?.deliveryAddress}
                         </span>
                       </p>
                     </div>

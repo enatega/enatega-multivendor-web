@@ -1,4 +1,5 @@
 // Components
+import { useAuth } from "@/lib/context/auth/auth.context";
 import CustomButton from "@/lib/ui/useable-components/button";
 import Divider from "@/lib/ui/useable-components/custom-divider";
 import CustomIconButton from "@/lib/ui/useable-components/custom-icon-button";
@@ -17,15 +18,19 @@ export default function LoginWithGoogle({
   googleLogin,
   handleChangePanel,
 }: ILoginWithGoogleProps) {
+  // Hooks
   const t = useTranslations();
+  const {isLoading} = useAuth();
+  
   return (
     <div>
       <div className="flex flex-col gap-y-2  left-0">
-        <h3 className="font-bold">{t("Welcome")}!</h3>
+        <h3 className="font-semibold text-xl">{t("Welcome")}!</h3>
         <p className="font-normal">{t("Sign up or log in to continue")}</p>
       </div>
       <div className="my-4">
         <CustomIconButton
+          loading={isLoading}
           SvgIcon={GoogleLogo}
           title={t("Sign In With Google")}
           handleClick={googleLogin}
