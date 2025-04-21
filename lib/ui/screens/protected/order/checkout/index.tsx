@@ -73,6 +73,8 @@ import HomeIcon from "../../../../../assets/home_icon.png";
 import RestIcon from "../../../../../assets/rest_icon.png";
 import { useUserAddress } from "@/lib/context/address/address.context";
 import { useAuth } from "@/lib/context/auth/auth.context";
+import getEnv from "@/environment";
+
 
 // import RiderIcon from "../../../../../assets/rider_icon.png";
 
@@ -92,6 +94,8 @@ export default function OrderCheckoutScreen() {
   const [taxValue, setTaxValue] = useState();
   const [directions, setDirections] =
     useState<google.maps.DirectionsResult | null>(null);
+
+  const { SERVER_URL } = getEnv("DEV");
 
   // Coupon
   const [isCouponApplied, setIsCouponApplied] = useState(false);
@@ -147,8 +151,8 @@ export default function OrderCheckoutScreen() {
   };
 
   const onInitDeliveryCharges = () => {
-    const latOrigin = Number(restaurantData.restaurant.location.coordinates[1]);
-    const lonOrigin = Number(restaurantData.restaurant.location.coordinates[0]);
+    const latOrigin = Number(restaurantData?.restaurant?.location?.coordinates[1]);
+    const lonOrigin = Number(restaurantData?.restaurant?.location?.coordinates[0]);
     const latDest = Number(location?.latitude || "0");
     const longDest = Number(location?.longitude || "0");
     const distance = calculateDistance(latOrigin, lonOrigin, latDest, longDest);
@@ -188,7 +192,7 @@ export default function OrderCheckoutScreen() {
     const day = date.getDay();
     const hours = date.getHours();
     const minutes = date.getMinutes();
-    const todaysTimings = restaurantData.restaurant.openingTimes.find(
+    const todaysTimings = restaurantData?.restaurant?.openingTimes?.find(
       (o: any) => o.day === DAYS[day]
     );
     const times = todaysTimings.times.filter(
@@ -321,7 +325,7 @@ export default function OrderCheckoutScreen() {
   // This is the fixed validateOrder function inside your OrderCheckoutScreen.js file
 
   function validateOrder() {
-    if (!restaurantData.restaurant.isAvailable || !onCheckIsOpen()) {
+    if (!restaurantData?.restaurant?.isAvailable || !onCheckIsOpen()) {
       showToast({
         title: "Restaurant",
         message: "Restaurant is not available right now.",
@@ -488,8 +492,8 @@ export default function OrderCheckoutScreen() {
       router.replace(`/order/${data.placeOrder._id}/tracking`);
     } else if (paymentMethod === "PAYPAL") {
       router.replace(`/paypal?id=${data.placeOrder._id}`);
-    } else if (paymentMethod === "STRIPE") {
-      router.replace(`/stripe?id=${data.placeOrder._id}`);
+    } else if (paymentMethod === "CARD") {
+      router.replace(`${SERVER_URL}stripe/create-checkout-session?id=${data.placeOrder._id}&platform=web`);
     }
   }
 
