@@ -285,7 +285,7 @@ export default function OrderCheckoutScreen() {
       });
 
       setTimeout(() => {
-        router.replace("/phone-number");
+        // router.replace("/phone-number");
       }, 1000);
 
       return false;
@@ -299,7 +299,7 @@ export default function OrderCheckoutScreen() {
       });
 
       setTimeout(() => {
-        router.replace("/phone-number");
+        // router.replace("/phone-number");
       }, 1000);
 
       return false;
@@ -331,7 +331,7 @@ export default function OrderCheckoutScreen() {
         variables: {
           restaurant: restaurantId,
           orderInput: items,
-          paymentMethod: paymentMethod,
+          paymentMethod: paymentMethod === "Cash" ? "COD" : "STRIPE",
           couponCode: coupon ? coupon.title : null,
           tipping: +selectedTip,
           taxationAmount: +taxCalculation(),
