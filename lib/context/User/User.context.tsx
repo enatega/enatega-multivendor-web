@@ -143,7 +143,6 @@ export interface UserContextType {
   loadingProfile: boolean;
   errorProfile: ApolloError | undefined;
   profile: ProfileType | null;
-  fetchProfile: () => void;  // Add this line
   setTokenAsync: (token: string, cb?: () => void) => Promise<void>;
   logout: () => Promise<void>;
   loadingOrders: boolean;
@@ -815,7 +814,6 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
         removeItem,
         calculateSubtotal,
         transformCartWithFoodInfo,
-        fetchProfile
       }}
     >
       {props.children}
