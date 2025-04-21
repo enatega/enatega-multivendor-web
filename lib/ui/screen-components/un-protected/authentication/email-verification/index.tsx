@@ -15,7 +15,7 @@ import useToast from "@/lib/hooks/useToast";
 import useUser from "@/lib/hooks/useUser";
 import { ApolloError, useMutation } from "@apollo/client";
 import { useTranslations } from "next-intl";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 // GQL
 import { UPDATE_USER } from "@/lib/api/graphql";
@@ -28,6 +28,9 @@ export default function EmailVerification({
   emailOtp,
   setEmailOtp,
 }: IEmailVerificationProps) {
+  // States
+  const [isResendingOtp, setIsResendingOtp] = useState(false);
+
   // Hooks
   const t = useTranslations();
   const { SKIP_EMAIL_VERIFICATION, TEST_OTP } = useConfig();
@@ -38,6 +41,7 @@ export default function EmailVerification({
     setOtp,
     sendOtpToEmailAddress,
     sendOtpToPhoneNumber,
+    isLoading,
   } = useAuth();
   const { showToast } = useToast();
   const { profile } = useUser();
@@ -149,7 +153,9 @@ export default function EmailVerification({
 
   const handleOtpResend = async () => {
     if (user?.email) {
+      setIsResendingOtp(true);
       await sendOtpToEmailAddress(user?.email);
+      setIsResendingOtp(false);
     } else {
       showToast({
         type: "error",
@@ -208,11 +214,13 @@ export default function EmailVerification({
 
       <CustomButton
         label={t("Continue")}
+        loading={isLoading}
         className={`bg-[#5AC12F] flex items-center justify-center gap-x-4 px-3 rounded-full border border-gray-300 p-3 m-auto w-72 my-1`}
         onClick={handleSubmit}
       />
       <CustomButton
         label={t("Resend OTP")}
+        loading={isResendingOtp}
         className={`bg-[#fff] flex items-center justify-center gap-x-4 px-3 rounded-full border border-gray-300 p-3 m-auto w-72 my-1`}
         onClick={handleOtpResend}
       />

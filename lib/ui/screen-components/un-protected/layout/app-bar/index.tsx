@@ -2,33 +2,37 @@
 
 // Core
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
 import { Sidebar } from "primereact/sidebar";
+import Image from "next/image";
+import { Menu } from "primereact/menu";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
 // Components
-import { PaddingContainer } from "@/lib/ui/useable-components/containers";
 import Cart from "@/lib/ui/useable-components/cart";
+import UserAddressComponent from "@/lib/ui/useable-components/address";
+import { PaddingContainer } from "@/lib/ui/useable-components/containers";
 
 // Hook
+import { useUserAddress } from "@/lib/context/address/address.context";
+import { useAuth } from "@/lib/context/auth/auth.context";
+import { useConfig } from "@/lib/context/configuration/configuration.context";
+import useLocation from "@/lib/hooks/useLocation";
+import useSetUserCurrentLocation from "@/lib/hooks/useSetUserCurrentLocation";
 import useUser from "@/lib/hooks/useUser";
 
 // Icons
 import { CartSvg, LocationSvg } from "@/lib/utils/assets/svg";
+import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 // Interface
-import { IAppBarProps } from "@/lib/utils/interfaces/auth.interface";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
-import UserAddressComponent from "@/lib/ui/useable-components/address";
-import { useUserAddress } from "@/lib/context/address/address.context";
-import useLocation from "@/lib/hooks/useLocation";
-import useSetUserCurrentLocation from "@/lib/hooks/useSetUserCurrentLocation";
-import { useConfig } from "@/lib/context/configuration/configuration.context";
-import { useAuth } from "@/lib/context/auth/auth.context";
-import Image from "next/image";
-import { Menu } from "primereact/menu";
-import { useRouter } from "next/navigation";
+import { IAppBarProps } from "@/lib/utils/interfaces";
+
+// Methods
 import { onUseLocalStorage } from "@/lib/utils/methods/local-storage";
+
+// Constnats
 import { USER_CURRENT_LOCATION_LS_KEY } from "@/lib/utils/constants";
 
 const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
@@ -42,12 +46,23 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
   // Hooks
   const router = useRouter();
   const { GOOGLE_MAPS_KEY } = useConfig();
-  const { cartCount, calculateSubtotal, profile, loadingProfile } = useUser();
+  const {
+    cartCount,
+    calculateSubtotal,
+    profile,
+    loadingProfile,
+    fetchProfile,
+  } = useUser();
   const { userAddress, setUserAddress } = useUserAddress();
-
   const { getCurrentLocation } = useLocation();
   const { onSetUserLocation } = useSetUserCurrentLocation();
-  const { authToken, setIsAuthModalVisible, setAuthToken } = useAuth();
+  const {
+    authToken,
+    setIsAuthModalVisible,
+    setAuthToken,
+    refetchProfileData,
+    setRefetchProfileData,
+  } = useAuth();
 
   // Format subtotal for display
   const formattedSubtotal = cartCount > 0 ? `$${calculateSubtotal()}` : "$0";
@@ -90,14 +105,23 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
   };
 
   const onLogout = () => {
+    router.replace("/");
     setAuthToken("");
     localStorage.clear();
   };
 
+  // UseEffects
   useEffect(() => {
     onInit();
   }, [GOOGLE_MAPS_KEY, profile]);
 
+  useEffect(() => {
+    if (refetchProfileData) {
+      fetchProfile(); // this one is not working when a refetch is required, kindly check this whoever is working on this module
+      onInit();
+      setRefetchProfileData(false);
+    }
+  }, [refetchProfileData]);
   return (
     <>
       <nav className="w-full bg-white shadow-sm">

@@ -20,7 +20,7 @@ export default function SaveEmailAddress({
   // Hooks
   const t = useTranslations();
   const {showToast} = useToast();
-  const { setUser, user, sendOtpToEmailAddress, setIsAuthModalVisible} = useAuth();
+  const { setUser, user, sendOtpToEmailAddress, setIsAuthModalVisible, isLoading} = useAuth();
   const {profile} = useUser();
 
   // Handlers
@@ -88,6 +88,7 @@ export default function SaveEmailAddress({
       </div>
       <CustomButton
         label={t("Continue")}
+        loading={isLoading}
         onClick={handleSubmit}
         className={`bg-[#5AC12F] flex items-center justify-center gap-x-4 px-3 rounded-full border border-gray-300 p-3 m-auto w-72`}
       />

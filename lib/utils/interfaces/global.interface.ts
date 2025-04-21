@@ -1,7 +1,6 @@
 import { ApolloError } from "@apollo/client";
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
-import React from "react";
-import { ReactNode } from "react";
+import React, { ReactNode } from "react";
 
 export interface IGlobalProps {
   children?: React.ReactNode;
@@ -31,6 +30,7 @@ export interface IGlobalButtonProps {
   iconColor?: string;
   classNames?: string;
   handleClick: () => void;
+  loading:boolean;
   SvgIcon?: (props: React.SVGProps<SVGSVGElement>) => React.JSX.Element;
 }
 

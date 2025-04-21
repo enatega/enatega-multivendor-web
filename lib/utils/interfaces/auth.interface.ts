@@ -79,6 +79,10 @@ export interface IAuthContextProps {
   handleCreateUser: (user: ICreateUserArguments) => Promise<ICreateUserData>;
   isRegistering: boolean;
   setIsRegistering: Dispatch<SetStateAction<boolean>>;
+  isLoading: boolean;
+  setIsLoading: Dispatch<SetStateAction<boolean>>;
+  refetchProfileData: boolean;
+  setRefetchProfileData: Dispatch<SetStateAction<boolean>>;
 }
 export interface ILoginProfile {
   userId?: string;
