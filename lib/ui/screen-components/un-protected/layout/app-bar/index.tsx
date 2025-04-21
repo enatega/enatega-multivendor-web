@@ -28,10 +28,10 @@ import { useAuth } from "@/lib/context/auth/auth.context";
 import Image from "next/image";
 import { Menu } from "primereact/menu";
 import { useRouter } from "next/navigation";
+import { onUseLocalStorage } from "@/lib/utils/methods/local-storage";
+import { USER_CURRENT_LOCATION_LS_KEY } from "@/lib/utils/constants";
 
 const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
-
-
   // State for cart sidebar
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isUserAddressModalOpen, setIsUserAddressModalOpen] = useState(false);
@@ -54,6 +54,18 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
 
   // Handlers
   const onInit = () => {
+    const current_location_ls = onUseLocalStorage(
+      "get",
+      USER_CURRENT_LOCATION_LS_KEY
+    );
+    const user_current_location =
+      current_location_ls ? JSON.parse(current_location_ls) : null;
+
+    if (user_current_location) {
+      setUserAddress(user_current_location);
+      return;
+    }
+
     const selectedAddress = profile?.addresses.find(
       (address) => address.selected
     );

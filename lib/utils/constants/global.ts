@@ -65,3 +65,5 @@ export const PAYMENT_METHOD_LIST = [
     icon: faCreditCard,
   },
 ];
+
+export const USER_CURRENT_LOCATION_LS_KEY = "user-current-location";
