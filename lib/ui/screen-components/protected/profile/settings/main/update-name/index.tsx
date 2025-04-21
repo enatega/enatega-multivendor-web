@@ -1,185 +1,157 @@
-"use client"
+"use client";
 
-import type React from "react"
-
-import { useState } from "react"
-import { InputText } from "primereact/inputtext"
-import { Button } from "primereact/button"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faSave, faTimes } from "@fortawesome/free-solid-svg-icons"
-import { useMutation } from "@apollo/client"
-import { gql } from "@apollo/client"
-import { Checkbox } from "primereact/checkbox"
-import { Card } from "primereact/card"
-import { Toast } from "primereact/toast"
-import { useRef } from "react"
-import { UPDATE_USER } from "@/lib/api/graphql"
-
-
+import type React from "react";
+import { useEffect, useState } from "react";
+import { InputText } from "primereact/inputtext";
+// Api
+import { useLazyQuery, useMutation } from "@apollo/client";
+import { GET_USER_PROFILE, UPDATE_USER } from "@/lib/api/graphql";
+// Components
+import CustomDialog from "@/lib/ui/useable-components/custom-dialog";
+import CustomButton from "@/lib/ui/useable-components/button";
+// Icons
+import { LaptopSvg } from "@/lib/utils/assets/svg";
+// Hooks
+import useToast from "@/lib/hooks/useToast";
 interface UserFormData {
-  firstName: string
-  lastName: string
-  phone: string
-  phoneIsVerified: boolean
-  emailIsVerified: boolean
+  firstName: string;
+  lastName: string;
 }
 
-export default function UserProfileForm() {
-  const toast = useRef<Toast>(null)
-  const [formData, setFormData] = useState<UserFormData>({
-    firstName: "John",
-    lastName: "Smith",
-    phone: "",
-    phoneIsVerified: false,
-    emailIsVerified: false,
-  })
+export default function NameUpdateModal({
+  isUpdateNameModalVisible,
+  handleUpdateNameModal,
+  existedName
+}: {
+  isUpdateNameModalVisible: boolean;
+  handleUpdateNameModal: () => void;
+  existedName: string;
+}) {
 
-  const [updateUser, { loading }] = useMutation(UPDATE_USER, {
+    // States
+    const [firstName, lastName] = existedName?.split(" ") || ["", ""];
+    const [formData, setFormData] = useState<UserFormData>({
+        firstName: "",
+        lastName: "",
+    });
+
+// Hooks    
+    const { showToast } = useToast();
+
+    // Queries and Mutations
+    
+   // refetch user profile after updating phone number
+     const [
+        fetchProfile
+      ] = useLazyQuery(GET_USER_PROFILE, {
+        fetchPolicy: "network-only",
+      });
+     
+   // Update user muattion 
+  const [updateUser] = useMutation(UPDATE_USER, {
     onCompleted: () => {
-      toast.current?.show({
-        severity: "success",
-        summary: "Success",
-        detail: "User profile updated successfully",
-        life: 3000,
-      })
+        fetchProfile()
+        showToast({
+            type: "success",
+            title: "Success",
+            message: "User profile updated successfully",
+        });
+        handleUpdateNameModal?.();
     },
     onError: (error) => {
-      toast.current?.show({
-        severity: "error",
-        summary: "Error",
-        detail: error.message,
-        life: 3000,
-      })
+      showToast({
+        type: "error",
+        title: "Error",
+        message: error.message,
+      });
     },
-  })
-
+  });
+   
+  // handlers
+  // Handle input change
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
-
-  const handleCheckboxChange = (e: { checked: boolean; name: string }) => {
-    const { name, checked } = e
-    setFormData((prev) => ({ ...prev, [name]: checked }))
-  }
-
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+  
+  // handle submit
   const handleSubmit = () => {
-    const fullName = `${formData.firstName} ${formData.lastName}`.trim()
-
+    const fullName = `${formData.firstName} ${formData.lastName}`.trim();
     updateUser({
       variables: {
         name: fullName,
-        phone: formData.phone || null,
-        phoneIsVerified: formData.phoneIsVerified,
-        emailIsVerified: formData.emailIsVerified,
       },
-    })
-  }
+    });
+  };
 
+  // Handle cancel
   const handleCancel = () => {
     // Reset form or navigate back
     setFormData({
-      firstName: "John",
-      lastName: "Smith",
-      phone: "",
-      phoneIsVerified: false,
-      emailIsVerified: false,
-    })
-  }
+      firstName: firstName || "",
+      lastName: lastName || "",
+    });
+    handleUpdateNameModal?.()
+  };
 
+  // useeffects
+   
+  useEffect(() => { 
+    setFormData({
+      firstName: firstName || "",
+      lastName: lastName || "",
+    });
+  }, [existedName]);
+   
   return (
-    <div className="w-full max-w-3xl">
-      <Toast ref={toast} />
-
-      <Card className="shadow-lg">
-        <div className="flex flex-col md:flex-row items-center mb-8">
-          <div className="w-full md:w-1/2 flex justify-center mb-6 md:mb-0">
-            <img src="/placeholder.svg?height=300&width=300" alt="Profile illustration" className="w-64 h-64" />
+    <CustomDialog
+      visible={isUpdateNameModalVisible}
+      onHide={handleUpdateNameModal}
+      width="600px"
+    > 
+        <div className="flex flex-col  items-center  p-4">
+          <div className=" flex items-center justify-center">
+            <LaptopSvg width={250} height={250} />
           </div>
-          <div className="w-full md:w-1/2">
-            <h1 className="text-3xl font-bold mb-6">User Profile</h1>
-
-            <div className="mb-6">
-              <h2 className="text-2xl font-semibold mb-4">Name</h2>
-              <div className="p-float-label mb-4">
+          <div className="w-full">
+            <div className="">
+              <h2 className="text-2xl font-extrabold mb-10">Name</h2>
+              <div className="p-float-label mb-6">
                 <InputText
                   id="firstName"
                   name="firstName"
                   value={formData.firstName}
                   onChange={handleInputChange}
-                  className="w-full p-3"
+                  className="w-full p-3 border-2 border-gray-300 rounded-md"
                 />
                 <label htmlFor="firstName">First name</label>
               </div>
-
               <div className="p-float-label">
                 <InputText
                   id="lastName"
                   name="lastName"
                   value={formData.lastName}
                   onChange={handleInputChange}
-                  className="w-full p-3"
+                  className="w-full p-3 border-2 border-gray-300 rounded-md"
                 />
                 <label htmlFor="lastName">Last name</label>
               </div>
             </div>
-
-            <div className="mb-6">
-              <h2 className="text-2xl font-semibold mb-4">Contact</h2>
-              <div className="p-float-label mb-4">
-                <InputText
-                  id="phone"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  className="w-full p-3"
-                />
-                <label htmlFor="phone">Phone</label>
-              </div>
-
-              <div className="flex items-center mb-2">
-                <Checkbox
-                  inputId="phoneIsVerified"
-                  name="phoneIsVerified"
-                  checked={formData.phoneIsVerified}
-                  onChange={(e) => handleCheckboxChange({ name: "phoneIsVerified", checked: e.checked || false })}
-                />
-                <label htmlFor="phoneIsVerified" className="ml-2">
-                  Phone verified
-                </label>
-              </div>
-
-              <div className="flex items-center">
-                <Checkbox
-                  inputId="emailIsVerified"
-                  name="emailIsVerified"
-                  checked={formData.emailIsVerified}
-                  onChange={(e) => handleCheckboxChange({ name: "emailIsVerified", checked: e.checked || false })}
-                />
-                <label htmlFor="emailIsVerified" className="ml-2">
-                  Email verified
-                </label>
-              </div>
-            </div>
           </div>
         </div>
-
-        <div className="flex flex-col sm:flex-row justify-end gap-4">
-          <Button
-            label="Cancel"
-            icon={<FontAwesomeIcon icon={faTimes} className="mr-2" />}
-            className="p-button-outlined p-button-secondary flex-1 sm:flex-none"
+        <div className="flex flex-row w-full justify-between  gap-2 md:gap-0 px-4 ">
+          <CustomButton
+            label={"Cancel"}
+             className="bg-white flex items-center justify-center rounded-full border border-gray-300 p-3 w-full md:w-[268px] h-14 text-lg font-medium"
             onClick={handleCancel}
           />
-          <Button
-            label="Save"
-            icon={<FontAwesomeIcon icon={faSave} className="mr-2" />}
-            className="p-button-success flex-1 sm:flex-none"
-            loading={loading}
+
+          <CustomButton
+            label={"Save"}
+           className="bg-[#5AC12F] text-white flex items-center justify-center rounded-full p-3 w-full md:w-[268px] mb-4 h-14 text-lg font-medium"
             onClick={handleSubmit}
           />
         </div>
-      </Card>
-    </div>
-  )
+    </CustomDialog>
+  );
 }

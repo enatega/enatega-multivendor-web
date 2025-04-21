@@ -16,6 +16,7 @@ import UpdatePhoneModal from "./update-phone";
 import { useAuth } from "@/lib/context/auth/auth.context";
 // Hooks
 import useToast from "@/lib/hooks/useToast";
+import NameUpdateModal from "./update-name";
 
 export default function SettingsMain() {
 
@@ -25,6 +26,7 @@ export default function SettingsMain() {
   const [isDeleting, setIsDeleting] = useState<boolean>(false)
   const [deleteReason, setDeleteReason] = useState<string>("")
   const [isUpdatePhoneModalVisible, setIsUpdatePhoneModalVisible] = useState<boolean>(false)
+  const [isUpdateNameModalVisible, setIsUpdateNameModalVisible] = useState<boolean>(false)
 
   // Hooks
   const { setAuthToken } = useAuth();
@@ -81,7 +83,9 @@ export default function SettingsMain() {
     const handleUpdatePhoneModal = () => {
       setIsUpdatePhoneModalVisible(!isUpdatePhoneModalVisible)
     }
-
+    const handleUpdateNameModal = () => {
+    setIsUpdateNameModalVisible(!isUpdateNameModalVisible);
+    }
 
   if (isProfileLoading) {
     return <ProfileSettingsSkeleton />;
@@ -121,7 +125,14 @@ export default function SettingsMain() {
       <div className="py-4 border-b">
         <div className="flex justify-between items-center">
         <TextComponent text="Name" className="font-normal text-gray-700 text-lg md:text-xl lg:text-2xl" />
-        <TextComponent text={profileData?.profile?.name || "N/A"} className="font-medium text-gray-700 text-lg md:text-xl lg:text-2xl" />
+        {/* <TextComponent text={profileData?.profile?.name || "N/A"} className="font-medium text-gray-700 text-lg md:text-xl lg:text-2xl" /> */}
+        <h1
+        title="Update Name"
+        onClick={handleUpdateNameModal}
+        className="font-medium text-blue-700 text-lg md:text-xl lg:text-2xl cursor-pointer"
+        >
+          {profileData?.profile?.name || "N/A"}
+        </h1>
         </div>
       </div>
 
@@ -148,9 +159,18 @@ export default function SettingsMain() {
           />
         </div>
       </div>
+
+      {/* Update Phone Modal */}
        <UpdatePhoneModal
           handleUpdatePhoneModal={handleUpdatePhoneModal}
           isUpdatePhoneModalVisible={isUpdatePhoneModalVisible}
+        />
+
+        {/* Upate Name MOdal */}
+        <NameUpdateModal 
+         handleUpdateNameModal={handleUpdateNameModal}
+        isUpdateNameModalVisible={isUpdateNameModalVisible}
+        existedName={profileData?.profile?.name}
         />
 
       {/* Logout */}

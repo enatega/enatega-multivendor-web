@@ -8,16 +8,16 @@ import {
 // Hooks
 import { useAuth } from "@/lib/context/auth/auth.context";
 import { useState } from "react";
-// import { useTranslations } from "next-intl";
 
 // Components
 import useToast from "@/lib/hooks/useToast";
 import CustomDialog from "@/lib/ui/useable-components/custom-dialog";
-import { useTranslations } from "next-intl";
-import { GET_USER_PROFILE, UPDATE_USER } from "@/lib/api/graphql";
-import { ApolloError, useLazyQuery, useMutation } from "@apollo/client";
 import PhoneEntry from "./phone";
 import VerificationPhone from "./verification-phone";
+
+// Api
+import { GET_USER_PROFILE, UPDATE_USER } from "@/lib/api/graphql";
+import { ApolloError, useLazyQuery, useMutation } from "@apollo/client";
 
 export interface IUpdatePhoneModalProps {
   isUpdatePhoneModalVisible: boolean
@@ -34,7 +34,6 @@ export default function UpdatePhoneModal({
   const [activeStep, setActiveStep] = useState(0);
 
     // Hooks
-  const t = useTranslations();
   const { sendOtpToPhoneNumber, setUser, user, otp, setOtp, checkPhoneExists } = useAuth();
   const { showToast } = useToast();
 
@@ -62,6 +61,7 @@ export default function UpdatePhoneModal({
         });
       },
     });
+    
 
   // Handlers
   const handleChange = (val:string) => {
@@ -76,7 +76,7 @@ export default function UpdatePhoneModal({
       if(!user?.phone || user?.phone.length < 7) {
         showToast({
           type: "error",
-          title: t("Error"),
+          title: "Error",
           message: "Please enter a valid phone number",
         });
         return;
