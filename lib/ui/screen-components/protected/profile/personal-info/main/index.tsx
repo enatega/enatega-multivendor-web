@@ -1,21 +1,31 @@
-"use client"
+"use client";
 import { GET_USER_PROFILE } from "@/lib/api/graphql";
 import ProfileDetailsSkeleton from "@/lib/ui/useable-components/custom-skeletons/profile.details.skelton";
 import TextComponent from "@/lib/ui/useable-components/text-field";
 import { getInitials } from "@/lib/utils/methods";
 import { useQuery } from "@apollo/client";
-
+import UpdatePhoneModal from "../../settings/main/update-phone";
+import { useState } from "react";
 
 export default function PersonalInfoMain() {
+  const [isUpdatePhoneModalVisible, setIsUpdatePhoneModalVisible] =
+    useState<boolean>(false);
 
   // Get profile data by using the query
-    const { data:profileData,loading:profileLoading } = useQuery(GET_USER_PROFILE, {
+  const { data: profileData, loading: profileLoading } = useQuery(
+    GET_USER_PROFILE,
+    {
       fetchPolicy: "network-only",
-    });
+    }
+  );
 
   // Get initials from the name
   const initials = getInitials(profileData?.profile?.name);
-  
+
+  const handleUpdatePhoneModal = () => {
+    setIsUpdatePhoneModalVisible(!isUpdatePhoneModalVisible);
+  };
+
   if (!profileLoading) {
     return (
       <div className="p-6 w-full bg-white rounded-lg border border-gray-200 shadow-sm">
@@ -26,11 +36,17 @@ export default function PersonalInfoMain() {
               {initials}
             </div>
           </div>
-          <TextComponent text={profileData?.profile?.name || "N/A"} className="text-2xl md:text-3xl font-semibold text-gray-900" />
+          <TextComponent
+            text={profileData?.profile?.name || "N/A"}
+            className="text-2xl md:text-3xl font-semibold text-gray-900"
+          />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
           <div>
-            <TextComponent text="Email" className="text-black font-semibold text-xl md:text-2xl" />
+            <TextComponent
+              text="Email"
+              className="text-black font-semibold text-xl md:text-2xl"
+            />
             <TextComponent
               text={profileData?.profile?.email || "N/A"}
               className="font-normal text-lg md:text-xl"
@@ -41,12 +57,19 @@ export default function PersonalInfoMain() {
               text="Phone number"
               className="text-black font-semibold text-xl md:text-2xl"
             />
-            <TextComponent
-              text={profileData?.profile?.phone || "N/A"}
-              className="font-normal text-lg md:text-xl"
-            />
+            <h1
+              onClick={handleUpdatePhoneModal}
+              title="Update phone number"
+              className=" text-blue-700 font-normal text-lg md:text-xl cursor-pointer"
+            >
+              {profileData?.profile?.phone}
+            </h1>
           </div>
         </div>
+        <UpdatePhoneModal
+          handleUpdatePhoneModal={handleUpdatePhoneModal}
+          isUpdatePhoneModalVisible={isUpdatePhoneModalVisible}
+        />
       </div>
     );
   } else {
