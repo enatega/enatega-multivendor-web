@@ -64,8 +64,6 @@ export default function EmailVerification({
 
   // Handlers
   const handleSubmit = async () => {
-    console.log("user data --- from email verification", { user });
-
     try {
       if (SKIP_EMAIL_VERIFICATION) {
         if (profile?.phoneIsVerified) {

@@ -609,24 +609,16 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
 
   const updateItemQuantity = useCallback(
     async (key: string, changeAmount: number) => {
-      console.log(
-        `[UserContext] updateItemQuantity start: key=${key}, change=${changeAmount}`
-      );
-
       // Force change to be exactly +1 or -1
       const safeChange = changeAmount > 0 ? 1 : -1;
-      console.log(`[UserContext] Using safe change value: ${safeChange}`);
 
       // Use a local variable that will be unique to each function call
       // This ensures the flag is reset for each new click
       let updateApplied = false;
 
       setCart((prevCart) => {
-        console.log(`[UserContext] setCart callback executing`);
-
         // If we've already applied an update in this callback invocation, don't do it again
         if (updateApplied) {
-          console.log(`[UserContext] Preventing double update`);
           return prevCart;
         }
 
@@ -634,27 +626,17 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
         const cartIndex = updatedCart.findIndex((c) => c.key === key);
 
         if (cartIndex === -1) {
-          console.log(`[UserContext] Item with key ${key} not found in cart`);
           return prevCart;
         }
 
         const currentItem = updatedCart[cartIndex];
         const currentQuantity = currentItem.quantity;
-        console.log(
-          `[UserContext] Current quantity for ${key}: ${currentQuantity}`
-        );
 
         // For decrement
         if (safeChange < 0) {
           if (currentQuantity <= 1) {
-            console.log(
-              `[UserContext] Removing item with key ${key} from cart`
-            );
             updatedCart.splice(cartIndex, 1);
           } else {
-            console.log(
-              `[UserContext] Decreasing quantity for ${key} from ${currentQuantity} to ${currentQuantity + safeChange}`
-            );
             updatedCart[cartIndex] = {
               ...currentItem,
               quantity: currentQuantity + safeChange,
@@ -663,9 +645,6 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
         }
         // For increment
         else {
-          console.log(
-            `[UserContext] Increasing quantity for ${key} from ${currentQuantity} to ${currentQuantity + safeChange}`
-          );
           updatedCart[cartIndex] = {
             ...currentItem,
             quantity: currentQuantity + safeChange,
@@ -686,11 +665,8 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
           }
         }
 
-        console.log(`[UserContext] Returning updated cart:`, updatedCart);
         return updatedCart;
       });
-
-      console.log(`[UserContext] updateItemQuantity completed`);
     },
     []
   );
