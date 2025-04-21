@@ -23,7 +23,6 @@ export default function SignUpWithEmail({
     setUser,
     sendOtpToEmailAddress,
     sendOtpToPhoneNumber,
-    user,
   } = useAuth();
   const { showToast } = useToast();
 
@@ -43,7 +42,6 @@ export default function SignUpWithEmail({
           name: formData.name,
           password: formData.password,
         });
-        console.log("🚀 ~ handleSubmit ~ userData:", user);
 
         if (!userData.emailIsVerified && userData.email) {
           setUser((prev) => ({
