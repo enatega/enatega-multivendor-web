@@ -22,7 +22,7 @@ import PhoneNumberInput from "./phoneNumberInput/PhoneNumberInput";
 
 // validation Schema
 import emailValidationSchema from "./validationSchema";
- 
+
 // hooks
 import useToast from "@/lib/hooks/useToast";
 
@@ -53,8 +53,7 @@ const EmailForm: React.FC<formProps> = ({ heading, role }) => {
     };
 
     try {
-      const response = await sendEmail("template_eogfh2k", templateParams);
-      console.log("Email sent successfully!", response.status, response.text);
+      await sendEmail("template_eogfh2k", templateParams);
 
       showToast({
         type: "success",

@@ -129,8 +129,8 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
           title: t("Phone Check Error"),
           message: t(
             t(
-              "This phone number is already registered please enter a different one",
-            ), // put a ","m after "registered" and "." at the end of the sentence in the translation
+              "This phone number is already registered please enter a different one"
+            ) // put a ","m after "registered" and "." at the end of the sentence in the translation
           ),
         });
         return true;
@@ -166,7 +166,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         "An error occured while performing login of type:",
         user.type,
         "ERROR:",
-        error,
+        error
       );
       showToast({
         type: "error",
@@ -178,7 +178,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const handleCreateUser = async (
-    user: ICreateUserArguments,
+    user: ICreateUserArguments
   ): Promise<ICreateUserData> => {
     try {
       setIsRegistering(true);
@@ -214,7 +214,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
           picture,
           userTypeId,
         }));
-        console.log(".....", user)
+
         showToast({
           type: "success",
           title: t("Create User"),
@@ -242,13 +242,12 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   function onLoginCompleted(data: ILoginProfileResponse) {
     try {
       setUser(data.login);
-      console.log({ loginDataOnCompleted: data.login });
+
       if (!data.login.emailIsVerified) {
         setActivePanel(5);
       } else if (!data.login.phoneIsVerified) {
         setActivePanel(4);
       } else {
-        router.push("/");
         if (profile?.phoneIsVerified && profile?.emailIsVerified) {
           setActivePanel(0);
           setIsAuthModalVisible(false);
@@ -260,6 +259,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         } else {
           setActivePanel(4);
         }
+        router.push("/");
       }
     } catch (err) {
       const error = err as ApolloError;
@@ -306,7 +306,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
             type: "info",
             title: t("Email Verification"),
             message: t(
-              `An OTP is sent at ${email} please verify your email address`,
+              `An OTP is sent at ${email} please verify your email address`
             ),
           });
           return;
@@ -335,9 +335,6 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   async function sendOtpToPhoneNumber(phone: string) {
     try {
       if (SKIP_MOBILE_VERIFICATION) {
-        console.log("🚀 ~ sendOtpToPhoneNumber ~ SKIP_MOBILE_VERIFICATION:", {
-          SKIP_MOBILE_VERIFICATION,
-        });
         setOtp(TEST_OTP);
         setActivePanel(6);
         return;
@@ -359,7 +356,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
             type: "info",
             title: t("Phone Verification"),
             message: t(
-              `An OTP is sent at ${phone} please verify your phone number`,
+              `An OTP is sent at ${phone} please verify your phone number`
             ),
           });
           setActivePanel(6);

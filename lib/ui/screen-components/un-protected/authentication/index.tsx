@@ -60,7 +60,7 @@ export default function AuthModal({
     onSuccess: async (tokenResponse) => {
       const userInfo = await fetch(
         "https://www.googleapis.com/oauth2/v3/userinfo",
-        { headers: { Authorization: `Bearer ${tokenResponse.access_token}` } },
+        { headers: { Authorization: `Bearer ${tokenResponse.access_token}` } }
       );
       const userData = await userInfo.json();
 
@@ -80,9 +80,9 @@ export default function AuthModal({
           setActivePanel(0);
           setIsAuthModalVisible(false);
           showToast({
-            type:"success",
-            title:"Login",
-            message:"You have logged in successfully"
+            type: "success",
+            title: "Login",
+            message: "You have logged in successfully",
           });
         }
       }
@@ -123,10 +123,7 @@ export default function AuthModal({
       className="lg:w-1/3 w-full h-auto"
       closeOnEscape={activePanel <= 3}
     >
-      <Stepper
-        ref={authenticationPanelRef}
-        activeStep={activePanel}
-      >
+      <Stepper ref={authenticationPanelRef} activeStep={activePanel}>
         <StepperPanel>
           <LoginWithGoogle
             googleLogin={googleLogin}
