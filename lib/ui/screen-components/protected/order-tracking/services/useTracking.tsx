@@ -11,9 +11,7 @@ function useTracking({ orderId }: { orderId: string }) {
             orderDetailsId: orderId
         }
     });
-
-
-
+    console.log("🚀 ~ useTracking ~ orderTrackingDetails:", orderTrackingDetails)
 
     return {
         orderTrackingDetails: orderTrackingDetails?.orderDetails,

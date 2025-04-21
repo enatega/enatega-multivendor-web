@@ -8,8 +8,8 @@ export default function getEnv(env: "DEV" | "PROD") {
     };
   } else {
     return {
-      SERVER_URL: "http://10.97.37.172:8001/",
-      WS_SERVER_URL: "ws://10.97.37.172:8001/",
+      SERVER_URL: "http://10.97.37.183:8001/",
+      WS_SERVER_URL: "ws://10.97.37.183:8001/",
     };
   }
 }

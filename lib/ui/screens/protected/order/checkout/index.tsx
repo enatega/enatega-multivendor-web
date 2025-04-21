@@ -477,7 +477,7 @@ export default function OrderCheckoutScreen() {
   async function onCompleted(data: { placeOrder: IOrder }) {
     if (paymentMethod === "CASH") {
       clearCart();
-      router.replace(`/order-detail/${data.placeOrder._id}`);
+      router.replace(`/order/${data.placeOrder._id}/tracking`);
     } else if (paymentMethod === "PAYPAL") {
       router.replace(`/paypal?id=${data.placeOrder._id}`);
     } else if (paymentMethod === "STRIPE") {
