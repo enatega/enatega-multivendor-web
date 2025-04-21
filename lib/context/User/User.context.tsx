@@ -700,8 +700,8 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     const userId = localStorage.getItem("userId");
-    if (token && userId) {
-      fetchProfile
+    if(token&&userId){
+      fetchProfile()
     }
   }, [])
   // Initialize from local storage
