@@ -8,12 +8,12 @@ import { useQuery } from "@apollo/client";
 // interfaces
 import { ICuisinesResponse, ICuisinesData } from "@/lib/utils/interfaces";
 // context
-import { useLocationContext } from "../context/Location/Location.context";
+import { useUserAddress } from "../context/address/address.context";
 
 const useGetCuisines = (enabled = true) => {
-  const { location } = useLocationContext();
-  const userLatitude = Number(location?.latitude || "0")
-  const userLongitude = Number(location?.longitude || "0")
+  const { userAddress } = useUserAddress();
+  const userLongitude = userAddress?.location?.coordinates[0] || 0
+  const userLatitude = userAddress?.location?.coordinates[1] || 0
 
   const { data, loading, error, networkStatus } = useQuery<ICuisinesResponse>(
     NEAR_BY_RESTAURANTS_CUISINES,

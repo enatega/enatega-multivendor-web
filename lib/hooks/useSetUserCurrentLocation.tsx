@@ -9,6 +9,8 @@ import { useUserAddress } from "../context/address/address.context";
 
 // Types
 import { LocationNameSpace } from "../utils/types/location";
+import { onUseLocalStorage } from "../utils/methods/local-storage";
+import { USER_CURRENT_LOCATION_LS_KEY } from "../utils/constants";
 
 export default function useSetUserCurrentLocation() {
   // States
@@ -65,6 +67,22 @@ export default function useSetUserCurrentLocation() {
         setIsLocationFetching(false);
       } else {
         setIsLocationFetching(false);
+        onUseLocalStorage(
+          "save",
+          USER_CURRENT_LOCATION_LS_KEY,
+          JSON.stringify({
+            label: "Home",
+            location: {
+              coordinates: [
+                currrent_location.longitude,
+                currrent_location.latitude,
+              ],
+            },
+            _id: "",
+
+            deliveryAddress: address,
+          })
+        );
         setUserAddress({
           label: "Home",
           location: {

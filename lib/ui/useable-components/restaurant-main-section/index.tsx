@@ -17,7 +17,7 @@ function MainSection({ title, data, error, loading }: IMainSectionProps) {
 
   return (
     <div className="mb-20">
-      <div className="mx-[6px]">
+      <div className="mx-[6px] flex items-center gap-4">
         <span className="font-inter font-bold text-xl sm:text-2xl leading-8 tracking-normal text-gray-900">
           {title}
         </span>

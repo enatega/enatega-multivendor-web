@@ -1,16 +1,23 @@
-'use client';
+"use client";
 
-import React from 'react';
+import React from "react";
+import { useRouter } from "next/navigation";
+import { Link } from "@/lib/utils/interfaces/footer.interface";
 
-interface FooterLinkItemProps {
-  label: string;
-  href?: string;
-}
+const FooterLinkItem: React.FC<Link> = ({ label, link, internal }) => {
+  const router = useRouter();
 
-const FooterLinkItem: React.FC<FooterLinkItemProps> = ({ label, href = '#' }) => {
+  function navigate() {
+    if (internal) {
+      router.push(link);
+    } else {
+      window.open(link, "_blank");
+    }
+  }
+
   return (
     <li className="text-md text-white hover:underline cursor-pointer">
-      <a href={href}>{label}</a>
+      <button onClick={navigate}>{label}</button>
     </li>
   );
 };

@@ -59,6 +59,8 @@ import {
   EDIT_ADDRESS,
   SELECT_ADDRESS,
 } from "@/lib/api/graphql";
+import { onUseLocalStorage } from "@/lib/utils/methods/local-storage";
+import { USER_CURRENT_LOCATION_LS_KEY } from "@/lib/utils/constants";
 
 const variants = {
   enter: (direction: number) => ({
@@ -110,6 +112,7 @@ export default function UserAddressComponent(
   const [selectedCity, setSelectedCity] = useState<IDropdownSelectItem | null>(
     null
   );
+  const [newDraggedCenter, setNewDraggedCenter] = useState({ lat: 0, lng: 0 });
   const [selectedLocationType, setSelectedLocationType] = useState<string>("");
   const [search, setSearch] = useState<string>("");
   const [inputValue, setInputValue] = useState<string>("");
@@ -119,6 +122,7 @@ export default function UserAddressComponent(
 
   // Hook
   const { profile, loadingProfile } = useUser();
+
   const { getCurrentLocation } = useLocation();
   const { getAddress } = useGeocoding();
   const { userAddress, setUserAddress } = useUserAddress();
@@ -137,6 +141,12 @@ export default function UserAddressComponent(
       onCompleted,
       onError,
     }
+  );
+
+  // Locatl Storage Constaints
+  const hasCurrentLocation = !!onUseLocalStorage(
+    "get",
+    USER_CURRENT_LOCATION_LS_KEY
   );
 
   // Memo
@@ -176,7 +186,20 @@ export default function UserAddressComponent(
     changeUserSelectedAddress({
       variables: { id: address._id },
       onCompleted: () => {
-        setUserAddress(address);
+        const new_address = {
+          ...address,
+          location: {
+            coordinates: [
+              +(address.location?.coordinates[0] || "0"),
+              +(address.location?.coordinates[1] || "0"),
+            ] as [number, number],
+          },
+        };
+
+        setUserAddress(new_address);
+        onUseLocalStorage("delete", USER_CURRENT_LOCATION_LS_KEY);
+        setModifyingId("");
+        onHide();
       },
     });
   };
@@ -234,6 +257,45 @@ export default function UserAddressComponent(
     }
   };
 
+  const onCenterDraggedHandler = async (e?: google.maps.MapMouseEvent) => {
+    const new_center = {
+      lat: e?.latLng?.lat() || newDraggedCenter.lat || 0,
+      lng: e?.latLng?.lng() || newDraggedCenter.lng || 0,
+    };
+
+    if (new_center.lat === 0 && new_center.lng === 0) return;
+
+    const { formattedAddress } = await getAddress(
+      new_center.lat,
+      new_center.lng
+    );
+
+    if (!formattedAddress) {
+      showToast({
+        type: "error",
+        title: "Error",
+        message: "Failed to fetch address",
+      });
+      return;
+    }
+
+    setInputValue(formattedAddress);
+
+    setUserAddress({
+      _id: "",
+      deliveryAddress: formattedAddress,
+      location: { coordinates: [new_center.lng, new_center.lat] },
+      label: "Home",
+    });
+  };
+
+  const onClickGoogleMaps = (e: google.maps.MapMouseEvent) => {
+    setNewDraggedCenter({
+      lat: e?.latLng?.lat() ?? 0,
+      lng: e?.latLng?.lng() ?? 0,
+    });
+  };
+
   const onHandleCreateAddress = () => {
     const addressInput = {
       ...(editAddress?._id ? { _id: editAddress?._id } : {}),
@@ -262,7 +324,10 @@ export default function UserAddressComponent(
       deliveryAddress: address_response.deliveryAddress,
 
       location: {
-        coordinates: address_response.location?.coordinates || [0, 0],
+        coordinates: [
+          +(address_response.location?.coordinates[0] || "0"),
+          +(address_response.location?.coordinates[1] || "0"),
+        ],
       },
     });
 
@@ -318,22 +383,28 @@ export default function UserAddressComponent(
             >
               <div className="w-full flex items-center gap-x-2">
                 <div className="p-2 bg-gray-50 rounded-full">
-                  <OfficeSvg color={address.selected ? "#0EA5E9" : undefined} />
+                  <OfficeSvg
+                    color={
+                      address.selected && !hasCurrentLocation ?
+                        "#0EA5E9"
+                      : undefined
+                    }
+                  />
                 </div>
                 <div className="w-full flex flex-col gap-y-[2px]">
                   <span
-                    className={`font-inter font-medium text-sm leading-5 tracking-normal ${address.selected ? "text-sky-500" : "text-gray-500"}`}
+                    className={`font-inter font-medium text-sm leading-5 tracking-normal ${address.selected && !hasCurrentLocation ? "text-sky-500" : "text-gray-500"}`}
                   >
                     {address.label}
                   </span>
                   <span
-                    className={`font-inter font-normal text-xs leading-4 tracking-normal ${address.selected ? "text-sky-400" : "text-gray-400"}`}
+                    className={`font-inter font-normal text-xs leading-4 tracking-normal ${address.selected && !hasCurrentLocation ? "text-sky-400" : "text-gray-400"}`}
                   >
                     {address.deliveryAddress}
                   </span>
                 </div>
               </div>
-              {!address.selected && (
+              {(!address.selected || hasCurrentLocation) && (
                 <div>
                   <CustomButton
                     label="Choose"
@@ -379,7 +450,7 @@ export default function UserAddressComponent(
               lng: Number(userAddress?.location?.coordinates[0]) || 0,
             }}
             zoom={13}
-            onCenterChanged={() => {}}
+            onClick={onClickGoogleMaps}
           >
             {userAddress?.location?.coordinates && (
               <Marker
@@ -387,6 +458,8 @@ export default function UserAddressComponent(
                   lat: Number(userAddress?.location?.coordinates[1]) || 0,
                   lng: Number(userAddress?.location?.coordinates[0]) || 0,
                 }}
+                draggable
+                onDragEnd={onCenterDraggedHandler}
               />
             )}
           </GoogleMap>
@@ -423,7 +496,7 @@ export default function UserAddressComponent(
 
           <AutoComplete
             id="google-map"
-            disabled={false}
+            disabled={!selectedCity}
             className={`mr-4 h-11 w-full border border-gray-300 px-2 text-sm focus:shadow-none focus:outline-none`}
             value={inputValue}
             completeMethod={(event) => {
@@ -751,6 +824,10 @@ export default function UserAddressComponent(
       autocompleteService.current = null;
     };
   }, [selectedPlaceObject, search, fetch]);
+
+  useEffect(() => {
+    onCenterDraggedHandler();
+  }, [newDraggedCenter]);
 
   useEffect(() => {
     onHandleEditAddressInit();

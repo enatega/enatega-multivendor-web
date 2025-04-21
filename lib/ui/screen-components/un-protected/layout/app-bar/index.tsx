@@ -2,50 +2,85 @@
 
 // Core
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { Sidebar } from "primereact/sidebar";
+import Image from "next/image";
+import { Menu } from "primereact/menu";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
 // Components
-import { PaddingContainer } from "@/lib/ui/useable-components/containers";
 import Cart from "@/lib/ui/useable-components/cart";
+import UserAddressComponent from "@/lib/ui/useable-components/address";
+import { PaddingContainer } from "@/lib/ui/useable-components/containers";
 
 // Hook
+import { useUserAddress } from "@/lib/context/address/address.context";
+import { useAuth } from "@/lib/context/auth/auth.context";
+import { useConfig } from "@/lib/context/configuration/configuration.context";
+import useLocation from "@/lib/hooks/useLocation";
+import useSetUserCurrentLocation from "@/lib/hooks/useSetUserCurrentLocation";
 import useUser from "@/lib/hooks/useUser";
 
 // Icons
 import { CartSvg, LocationSvg } from "@/lib/utils/assets/svg";
+import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 // Interface
-import { IAppBarProps } from "@/lib/utils/interfaces/auth.interface";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
-import UserAddressComponent from "@/lib/ui/useable-components/address";
-import { useUserAddress } from "@/lib/context/address/address.context";
-import useLocation from "@/lib/hooks/useLocation";
-import useSetUserCurrentLocation from "@/lib/hooks/useSetUserCurrentLocation";
-import { useConfig } from "@/lib/context/configuration/configuration.context";
-import { useAuth } from "@/lib/context/auth/auth.context";
+import { IAppBarProps } from "@/lib/utils/interfaces";
+
+// Methods
+import { onUseLocalStorage } from "@/lib/utils/methods/local-storage";
+
+// Constnats
+import { USER_CURRENT_LOCATION_LS_KEY } from "@/lib/utils/constants";
 
 const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
   // State for cart sidebar
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isUserAddressModalOpen, setIsUserAddressModalOpen] = useState(false);
 
-  // Access user context for cart information
-  const { GOOGLE_MAPS_KEY } = useConfig();
-  const { cartCount, calculateSubtotal, profile, loadingProfile } = useUser();
-  const { userAddress, setUserAddress } = useUserAddress();
+  // REf
+  const menuRef = useRef<Menu>(null);
 
   // Hooks
+  const router = useRouter();
+  const { GOOGLE_MAPS_KEY } = useConfig();
+  const {
+    cartCount,
+    calculateSubtotal,
+    profile,
+    loadingProfile,
+    fetchProfile,
+  } = useUser();
+  const { userAddress, setUserAddress } = useUserAddress();
   const { getCurrentLocation } = useLocation();
   const { onSetUserLocation } = useSetUserCurrentLocation();
-  const { authToken, setIsAuthModalVisible } = useAuth();
+  const {
+    authToken,
+    setIsAuthModalVisible,
+    setAuthToken,
+    refetchProfileData,
+    setRefetchProfileData,
+  } = useAuth();
 
   // Format subtotal for display
   const formattedSubtotal = cartCount > 0 ? `$${calculateSubtotal()}` : "$0";
 
   // Handlers
   const onInit = () => {
+    const current_location_ls = onUseLocalStorage(
+      "get",
+      USER_CURRENT_LOCATION_LS_KEY
+    );
+    const user_current_location =
+      current_location_ls ? JSON.parse(current_location_ls) : null;
+
+    if (user_current_location) {
+      setUserAddress(user_current_location);
+      return;
+    }
+
     const selectedAddress = profile?.addresses.find(
       (address) => address.selected
     );
@@ -69,10 +104,24 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
     }
   };
 
+  const onLogout = () => {
+    router.replace("/");
+    setAuthToken("");
+    localStorage.clear();
+  };
+
+  // UseEffects
   useEffect(() => {
     onInit();
   }, [GOOGLE_MAPS_KEY, profile]);
 
+  useEffect(() => {
+    if (refetchProfileData) {
+      fetchProfile(); // this one is not working when a refetch is required, kindly check this whoever is working on this module
+      onInit();
+      setRefetchProfileData(false);
+    }
+  }, [refetchProfileData]);
   return (
     <>
       <nav className="w-full bg-white shadow-sm">
@@ -105,16 +154,58 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                   </div>
                 </div>
               </div>
-              <div className="flex justify-end items-center space-x-4">
+
+              <div className="flex w-fit justify-end items-center space-x-4">
                 {/* Login Button */}
-                {handleModalToggle && (
+                {!authToken ?
                   <button
+                    className="w-20 h-fit bg-transparent text-gray-900 py-2 border border-black rounded-full text-base lg:text-[14px]"
                     onClick={handleModalToggle}
-                    className="text-gray-700 hover:text-gray-900"
                   >
-                    Login
+                    <span>Login</span>
                   </button>
-                )}
+                : <div
+                    className="flex items-center space-x-2 rounded-md p-2 hover:bg-[#d8d8d837]"
+                    onClick={(event) => menuRef.current?.toggle(event)}
+                    aria-controls="popup_menu_right"
+                    aria-haspopup
+                  >
+                    <Image
+                      src={
+                        /*  user?.image
+                      ? user.image
+                      : */ "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png"
+                      }
+                      alt={"profile-image.png"}
+                      height={32}
+                      width={32}
+                      className="h-8 w-8 select-none rounded-full"
+                    />
+                    <span>{profile?.name || ""}</span>
+
+                    <FontAwesomeIcon icon={faChevronDown} />
+                    <Menu
+                      model={[
+                        {
+                          label: "Profile",
+                          command: () => {
+                            router.push("/profile");
+                          },
+                        },
+                        {
+                          label: "Logout",
+                          command: () => {
+                            onLogout();
+                          },
+                        },
+                      ]}
+                      popup
+                      ref={menuRef}
+                      id="popup_menu_right"
+                      popupAlignment="right"
+                    />
+                  </div>
+                }
 
                 {/* Cart Button */}
                 <div className="p-1">

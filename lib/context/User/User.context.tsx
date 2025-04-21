@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 "use client";
 
 import { GET_USER_PROFILE, ORDERS } from "@/lib/api/graphql";
@@ -6,6 +7,8 @@ import { orderStatusChanged } from "@/lib/api/graphql/subscription";
 import {
   ApolloError,
   gql,
+  LazyQueryExecFunction,
+  OperationVariables,
   useApolloClient,
   useLazyQuery,
   useMutation,
@@ -183,6 +186,7 @@ export interface UserContextType {
     cartItems: CartItem[],
     foodsData: IRestaurant
   ) => CartItem[];
+  fetchProfile: LazyQueryExecFunction<any, OperationVariables>
 }
 
 const UserContext = createContext<UserContextType>({} as UserContextType);
@@ -304,7 +308,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
   const onInit = async (isSubscribed: true) => {
     const _token = localStorage.getItem("token") || null;
 
-    if (_token) return;
+    if (!_token) return;
 
     setToken(localStorage.getItem("token") || null);
 
@@ -321,51 +325,6 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
       localStorage.setItem("restaurant", id);
     }
   }, []);
-
-  // Initialize from local storage
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedRestaurant = localStorage.getItem("restaurant");
-      const storedCart = localStorage.getItem("cartItems");
-
-      if (storedRestaurant) {
-        setRestaurant(storedRestaurant);
-      }
-
-      if (storedCart) {
-        try {
-          setCart(JSON.parse(storedCart));
-        } catch (error) {
-          console.error("Error parsing cart items from localStorage:", error);
-          setCart([]);
-        }
-      }
-    }
-
-    setIsLoading(false);
-  }, []);
-
-  // Load user profile and orders
-  useEffect(() => {
-    let isSubscribed = true;
-
-    onInit(isSubscribed);
-
-    if (!token) {
-      setIsLoading(false);
-      return;
-    }
-
-    return () => {
-      isSubscribed = false;
-    };
-  }, [token, fetchProfile, fetchOrders]);
-
-  // Setup subscription when profile is loaded
-  useEffect(() => {
-    if (!dataProfile) return;
-    subscribeOrders();
-  }, [dataProfile]);
 
   function onProfileCompleted(data: IProfileResponse) {
     if (data.profile) {
@@ -481,6 +440,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
       const updatedCart = [...prevCart];
       const cartIndex = updatedCart.findIndex((c) => c.key === key);
 
+
       if (cartIndex !== -1) {
         // Important: Set the exact new quantity instead of adding to prevent potential double-increments
         updatedCart[cartIndex].quantity = updatedCart[cartIndex].quantity + quantity;
@@ -490,6 +450,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
           localStorage.setItem("cartItems", JSON.stringify(updatedCart));
         }
       }
+
 
       return updatedCart;
     });
@@ -664,7 +625,6 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
 
         // If we've already applied an update in this callback invocation, don't do it again
         if (updateApplied) {
-          console.log(`[UserContext] Preventing double update`);
           return prevCart;
         }
 
@@ -672,7 +632,6 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
         const cartIndex = updatedCart.findIndex((c) => c.key === key);
 
         if (cartIndex === -1) {
-          console.log(`[UserContext] Item with key ${key} not found in cart`);
           return prevCart;
         }
 
@@ -683,22 +642,19 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
         // For decrement
         if (safeChange < 0) {
           if (currentQuantity <= 1) {
-            console.log(`[UserContext] Removing item with key ${key} from cart`);
             updatedCart.splice(cartIndex, 1);
           } else {
-            console.log(`[UserContext] Decreasing quantity for ${key} from ${currentQuantity} to ${currentQuantity + safeChange}`);
             updatedCart[cartIndex] = {
               ...currentItem,
-              quantity: currentQuantity + safeChange
+              quantity: currentQuantity + safeChange,
             };
           }
         }
         // For increment
         else {
-          console.log(`[UserContext] Increasing quantity for ${key} from ${currentQuantity} to ${currentQuantity + safeChange}`);
           updatedCart[cartIndex] = {
             ...currentItem,
-            quantity: currentQuantity + safeChange
+            quantity: currentQuantity + safeChange,
           };
         }
 
@@ -740,6 +696,59 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
       .toFixed(2);
   }, [cart]);
 
+  // UseEffects
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const userId = localStorage.getItem("userId");
+    if (token && userId) {
+      fetchProfile
+    }
+  }, [])
+  // Initialize from local storage
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedRestaurant = localStorage.getItem("restaurant");
+      const storedCart = localStorage.getItem("cartItems");
+
+      if (storedRestaurant) {
+        setRestaurant(storedRestaurant);
+      }
+
+      if (storedCart) {
+        try {
+          setCart(JSON.parse(storedCart));
+        } catch (error) {
+          console.error("Error parsing cart items from localStorage:", error);
+          setCart([]);
+        }
+      }
+    }
+
+    setIsLoading(false);
+  }, []);
+
+  // Load user profile and orders
+  useEffect(() => {
+    let isSubscribed = true;
+
+    onInit(isSubscribed);
+
+    if (!token) {
+      setIsLoading(false);
+      return;
+    }
+
+    return () => {
+      isSubscribed = false;
+    };
+  }, [token, fetchProfile, fetchOrders]);
+
+  // Setup subscription when profile is loaded
+  useEffect(() => {
+    if (!dataProfile) return;
+    subscribeOrders();
+  }, [dataProfile]);
+
   return (
     <UserContext.Provider
       value={{
@@ -772,6 +781,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
         removeItem,
         calculateSubtotal,
         transformCartWithFoodInfo,
+        fetchProfile
       }}
     >
       {props.children}

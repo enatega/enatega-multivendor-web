@@ -15,7 +15,7 @@ import { useConfig } from "@/lib/context/configuration/configuration.context";
 import useToast from "@/lib/hooks/useToast";
 import useUser from "@/lib/hooks/useUser";
 import { useTranslations } from "next-intl";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 // Prime React
 import { InputOtp } from "primereact/inputotp";
@@ -28,6 +28,9 @@ export default function PhoneVerification({
   setPhoneOtp,
   handleChangePanel,
 }: IPhoneVerificationProps) {
+  // States
+  const [isResendingOtp, setIsResendingOtp] = useState(false);
+
   // Hooks
   const { SKIP_MOBILE_VERIFICATION, TEST_OTP } = useConfig();
   const t = useTranslations();
@@ -38,6 +41,9 @@ export default function PhoneVerification({
     sendOtpToPhoneNumber,
     setIsAuthModalVisible,
     isRegistering,
+    setIsRegistering,
+    isLoading,
+    setIsLoading,
   } = useAuth();
   const { showToast } = useToast();
   const { profile } = useUser();
@@ -61,15 +67,19 @@ export default function PhoneVerification({
   // Handlers
   const handleSubmit = async () => {
     try {
+      setIsLoading(true);
       if (String(phoneOtp) === String(otp) && !!user?.phone) {
-        const args = isRegistering ? {
-          name: user?.name ?? "",
-          phoneIsVerified: true,
-        } : {
-          phone: user?.phone,
-          name: user?.name ?? "",
-          phoneIsVerified: true,
-        };
+        const args =
+          isRegistering ?
+            {
+              name: user?.name ?? "",
+              phoneIsVerified: true,
+            }
+            : {
+              phone: user?.phone,
+              name: user?.name ?? "",
+              phoneIsVerified: true,
+            };
 
         const userData = await updateUser({
           variables: args,
@@ -101,17 +111,22 @@ export default function PhoneVerification({
         "Error while updating user and phone otp verification:",
         error,
       );
+    } finally {
+      setIsLoading(false);
+      setIsRegistering(false);
     }
   };
 
-  const handleResendPhoneOtp = () => {
+  const handleResendPhoneOtp = async () => {
     if (user?.phone) {
-      sendOtpToPhoneNumber(user?.phone);
+      setIsResendingOtp(true);
+      await sendOtpToPhoneNumber(user?.phone);
       showToast({
         type: "success",
         title: t("OTP Resent"),
         message: t("We have resent the OTP code to your phone"),
       });
+      setIsResendingOtp(false);
     } else {
       showToast({
         type: "error",
@@ -170,6 +185,7 @@ export default function PhoneVerification({
       <span className="mt-4"></span>
       <CustomButton
         label={t("Continue")}
+        loading={isLoading}
         className={`bg-[#5AC12F] flex items-center justify-center gap-x-4 px-3 rounded-full border border-gray-300 p-3 m-auto w-72 my-1`}
         onClick={handleSubmit}
       />
@@ -177,6 +193,7 @@ export default function PhoneVerification({
         label={t("Resend OTP")}
         className={`bg-[#fff] flex items-center justify-center gap-x-4 px-3 rounded-full border border-gray-300 p-3 m-auto w-72 my-1`}
         onClick={handleResendPhoneOtp}
+        loading={isResendingOtp}
       />
     </div>
   );
