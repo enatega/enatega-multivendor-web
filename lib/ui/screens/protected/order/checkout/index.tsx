@@ -782,7 +782,7 @@ export default function OrderCheckoutScreen() {
                           className={`text-[12px] text-${selectedTip === tip ? "white" : "[#0EA5E9]"} bg-${selectedTip === tip ? "[#0EA5E9]" : "white"} border border-[#0EA5E9] px-4 py-2 rounded-full w-full`}
                           onClick={() => {
                             if (selectedTip === tip) {
-                              setSelectedTip(null)
+                              setSelectedTip("")
                             } else {
                               setSelectedTip(tip)
                             }
