@@ -59,6 +59,8 @@ import {
   EDIT_ADDRESS,
   SELECT_ADDRESS,
 } from "@/lib/api/graphql";
+import { onUseLocalStorage } from "@/lib/utils/methods/local-storage";
+import { USER_CURRENT_LOCATION_LS_KEY } from "@/lib/utils/constants";
 
 const variants = {
   enter: (direction: number) => ({
@@ -140,6 +142,12 @@ export default function UserAddressComponent(
     }
   );
 
+  // Locatl Storage Constaints
+  const hasCurrentLocation = !!onUseLocalStorage(
+    "get",
+    USER_CURRENT_LOCATION_LS_KEY
+  );
+
   // Memo
   const cities_dropdown = useMemo(() => {
     return cities?.map((city) => {
@@ -178,6 +186,9 @@ export default function UserAddressComponent(
       variables: { id: address._id },
       onCompleted: () => {
         setUserAddress(address);
+        onUseLocalStorage("delete", USER_CURRENT_LOCATION_LS_KEY);
+        setModifyingId("");
+        onHide();
       },
     });
   };
@@ -319,22 +330,28 @@ export default function UserAddressComponent(
             >
               <div className="w-full flex items-center gap-x-2">
                 <div className="p-2 bg-gray-50 rounded-full">
-                  <OfficeSvg color={address.selected ? "#0EA5E9" : undefined} />
+                  <OfficeSvg
+                    color={
+                      address.selected && !hasCurrentLocation ?
+                        "#0EA5E9"
+                      : undefined
+                    }
+                  />
                 </div>
                 <div className="w-full flex flex-col gap-y-[2px]">
                   <span
-                    className={`font-inter font-medium text-sm leading-5 tracking-normal ${address.selected ? "text-sky-500" : "text-gray-500"}`}
+                    className={`font-inter font-medium text-sm leading-5 tracking-normal ${address.selected && !hasCurrentLocation ? "text-sky-500" : "text-gray-500"}`}
                   >
                     {address.label}
                   </span>
                   <span
-                    className={`font-inter font-normal text-xs leading-4 tracking-normal ${address.selected ? "text-sky-400" : "text-gray-400"}`}
+                    className={`font-inter font-normal text-xs leading-4 tracking-normal ${address.selected && !hasCurrentLocation ? "text-sky-400" : "text-gray-400"}`}
                   >
                     {address.deliveryAddress}
                   </span>
                 </div>
               </div>
-              {!address.selected && (
+              {(!address.selected || hasCurrentLocation) && (
                 <div>
                   <CustomButton
                     label="Choose"
