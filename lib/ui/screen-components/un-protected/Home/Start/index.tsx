@@ -1,38 +1,21 @@
 "use client";
 
 import React from "react";
-import HomeSearch from "@/lib/ui/useable-components/Home-search";
-import { useLocationContext } from "@/lib/context/Location/Location.context";
 import { useRouter } from "next/navigation";
+
+// Components
+import HomeSearch from "@/lib/ui/useable-components/Home-search";
 import TextFlyingAnimation from "@/lib/ui/useable-components/FlyingText";
 
+// Hooks
+import useLocation from "@/lib/hooks/useLocation";
+import useSetUserCurrentLocation from "@/lib/hooks/useSetUserCurrentLocation";
+
 const Start: React.FC = () => {
-  const { setLocation } = useLocationContext();
+  // Hooks
   const router = useRouter();
-
-  const handleShareLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-
-          setLocation({
-            label: "Current Location",
-            latitude,
-            longitude,
-            deliveryAddress: "Using current location",
-          });
-
-          router.push("/restaurants");
-        },
-        (error) => {
-          console.error("Geolocation error:", error.message);
-        }
-      );
-    } else {
-      alert("Geolocation is not supported by your browser.");
-    }
-  };
+  const { getCurrentLocation } = useLocation();
+  const { onSetUserLocation } = useSetUserCurrentLocation();
 
   return (
     <div className="h-screen bg-cover bg-center flex items-center justify-center bg-[#94e469] relative">
@@ -48,8 +31,14 @@ const Start: React.FC = () => {
               className="pi pi-map-marker"
               style={{ fontSize: "1rem", color: "white" }}
             ></i>
-            <button className="me-2 underline" onClick={handleShareLocation}>
-              Share Location
+            <button
+              className="me-2 underline"
+              onClick={() => {
+                getCurrentLocation(onSetUserLocation);
+                router.push("/restaurants");
+              }}
+            >
+              Current Location
             </button>
           </div>
           <button className="underline">Login for saved address</button>
