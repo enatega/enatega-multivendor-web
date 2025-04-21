@@ -106,7 +106,9 @@ export default function StoreDetailsScreen() {
         onClick={() => handleScroll(_url ?? "", true)}
       >
         <span
-          className={`mx-2 ${item.items && "font-semibold"} text-${isClicked ? "[#5AC12F]" : "gray-600"}`}
+          className={`mx-2 ${item.items && "font-semibold"} text-${
+            isClicked ? "[#5AC12F]" : "gray-600"
+          }`}
         >
           {item.label}
         </span>
@@ -119,11 +121,15 @@ export default function StoreDetailsScreen() {
 
     return (
       <div
-        className={`flex align-items-center px-3 py-2 cursor-pointer bg-${isClicked ? "[#F3FFEE]" : ""}`}
+        className={`flex align-items-center px-3 py-2 cursor-pointer bg-${
+          isClicked ? "[#F3FFEE]" : ""
+        }`}
         onClick={() => handleScroll(_url ?? "", false, 80)}
       >
         <span
-          className={`mx-2 ${item.items && "font-semibold"} text-${isClicked ? "[#5AC12F]" : "gray-600"}`}
+          className={`mx-2 ${item.items && "font-semibold"} text-${
+            isClicked ? "[#5AC12F]" : "gray-600"
+          }`}
         >
           {item.label}
         </span>
@@ -314,6 +320,46 @@ export default function StoreDetailsScreen() {
     setShowMoreInfo(true);
   };
 
+  // Effect to select the first category on page load
+  useEffect(() => {
+    if (menuItems?.length > 0) {
+      const firstCategorySlug = toSlug(menuItems[0].label);
+      setSelectedCategory(firstCategorySlug);
+      selectedCategoryRefs.current = firstCategorySlug;
+    }
+  }, [menuItems]);
+
+  // Effect to update selected category during scrolling
+  useEffect(() => {
+    const handleScrollUpdate = () => {
+      const container = document.querySelector(".scrollable-container");
+      if (!container) return;
+
+      let selected = "";
+      deals.forEach((category) => {
+        const element = document.getElementById(toSlug(category.title));
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          if (rect.top >= 0 && rect.top <= window.innerHeight / 2) {
+            selected = toSlug(category.title);
+          }
+        }
+      });
+
+      if (selected && selected !== selectedCategoryRefs.current) {
+        setSelectedCategory(selected);
+        selectedCategoryRefs.current = selected;
+      }
+    };
+
+    const container = document.querySelector(".scrollable-container");
+    container?.addEventListener("scroll", handleScrollUpdate);
+
+    return () => {
+      container?.removeEventListener("scroll", handleScrollUpdate);
+    };
+  }, [deals]);
+
   return (
     <>
       {/* Reviews Modal  */}
@@ -453,7 +499,15 @@ export default function StoreDetailsScreen() {
                       return (
                         <li key={index} className="shrink-0">
                           <button
-                            className={`bg-${selectedCategory === _slug ? "[#F3FFEE]" : "gray-100"} text-${selectedCategory === _slug ? "[#5AC12F]" : "gray-600"} rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap`}
+                            className={`bg-${
+                              selectedCategory === _slug
+                                ? "[#F3FFEE]"
+                                : "gray-100"
+                            } text-${
+                              selectedCategory === _slug
+                                ? "[#5AC12F]"
+                                : "gray-600"
+                            } rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap`}
                             onClick={() => handleScroll(_slug, true, 130)}
                           >
                             {category.label}
@@ -482,7 +536,15 @@ export default function StoreDetailsScreen() {
                         return (
                           <li key={index} className="shrink-0">
                             <button
-                              className={`bg-${selectedSubCategory === _slug ? "[#F3FFEE]" : "gray-100"} text-${selectedSubCategory === _slug ? "[#5AC12F]" : "gray-600"} rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap`}
+                              className={`bg-${
+                                selectedSubCategory === _slug
+                                  ? "[#F3FFEE]"
+                                  : "gray-100"
+                              } text-${
+                                selectedSubCategory === _slug
+                                  ? "[#5AC12F]"
+                                  : "gray-600"
+                              } rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap`}
                               onClick={() => handleScroll(_slug, false, 170)}
                             >
                               {sub_category.label}
@@ -613,7 +675,7 @@ export default function StoreDetailsScreen() {
       {/* Food Item Detail Modal */}
       <Dialog
         visible={!!showDialog}
-        className="mx-4 md:mx-0" // Adds margin on small screens
+        className="mx-3 sm:mx-4 md:mx-0" // Adds margin on small screens
         onHide={handleCloseFoodModal}
       >
         {showDialog && (

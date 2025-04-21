@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useParams } from "next/navigation";
 import { Skeleton } from "primereact/skeleton";
@@ -44,9 +44,12 @@ export default function RestaurantDetailsScreen() {
   // Params from route
   const { id, slug }: { id: string; slug: string } = useParams();
 
+  // Refs
+  const categoryRefs = useRef<Record<string, HTMLElement | null>>({});
+  const selectedCategoryRef = useRef<string>("");
+
   // State
   const [filter, setFilter] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [selectedFood, setSelectedFood] = useState<IFood | null>(null);
   const [showClearCartModal, setShowClearCartModal] = useState<boolean>(false);
@@ -104,6 +107,15 @@ export default function RestaurantDetailsScreen() {
         .filter((c: ICategory) => c.foods.length > 0) || []
     );
   }, [allDeals, filter]);
+
+  const [selectedCategory, setSelectedCategory] = useState('');
+
+  useEffect(() => {
+    if (deals.length > 0 && !selectedCategory) {
+      setSelectedCategory(toSlug(deals[0]?.title)); // first category selected by default
+    }
+  }, [deals, selectedCategory]);
+
 
   // Restaurant info
   const headerData = {
@@ -185,6 +197,7 @@ export default function RestaurantDetailsScreen() {
   // Handlers
   const handleScroll = (id: string) => {
     setSelectedCategory(id);
+    selectedCategoryRef.current = id;
     const element = document.getElementById(id);
     const container = document.querySelector(".scrollable-container");
 
@@ -260,6 +273,37 @@ export default function RestaurantDetailsScreen() {
       window.removeEventListener("resize", updateHeight);
     };
   }, []);
+
+  // Highlight categories on scroll observer
+  useEffect(() => {
+    const handleScrollUpdate = () => {
+      const container = document.querySelector(".scrollable-container");
+      if (!container) return;
+
+      let selected = "";
+      deals.forEach((category) => {
+        const element = document.getElementById(toSlug(category.title));
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          if (rect.top >= 0 && rect.top <= window.innerHeight / 2) {
+            selected = toSlug(category.title);
+          }
+        }
+      });
+
+      if (selected && selected !== selectedCategoryRef.current) {
+        setSelectedCategory(selected);
+        selectedCategoryRef.current = selected;
+      }
+    };
+
+    const container = document.querySelector(".scrollable-container");
+    container?.addEventListener("scroll", handleScrollUpdate);
+
+    return () => {
+      container?.removeEventListener("scroll", handleScrollUpdate);
+    };
+  }, [deals]);
 
   return (
     <>
@@ -470,63 +514,71 @@ export default function RestaurantDetailsScreen() {
             {loading ? (
               <FoodCategorySkeleton />
             ) : (
-              deals.map((category: ICategory, catIndex: number) => (
-                <div
-                  key={catIndex}
-                  className="mb-4 p-3"
-                  id={toSlug(category.title)}
-                >
-                  <h2 className="mb-4 font-inter text-gray-900 font-bold text-2xl sm:text-xl leading-snug tracking-tight">
-                    {category.title}
-                  </h2>
+              deals.map((category: ICategory, catIndex: number) => {
+                const categorySlug = toSlug(category.title);
 
-                  <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                    {category.foods.map((meal: IFood, mealIndex) => (
-                      <div
-                        key={mealIndex}
-                        className="flex items-center gap-4 rounded-lg border border-gray-300 shadow-sm bg-white p-3 relative"
-                      >
-                        {/* Text Content */}
-                        <div className="flex-grow text-left md:text-left space-y-2">
-                          <h3 className="text-gray-900 text-lg font-semibold font-inter">
-                            {meal.title}
-                          </h3>
-
-                          <p className="text-gray-500 text-sm">
-                            {meal.description}
-                          </p>
-
-                          <div className="flex items-center gap-2">
-                            <span className="text-[#0EA5E9] text-lg font-semibold">
-                              Rs. {meal.variations[0].price}
-                            </span>
+                return (
+                  <div
+                    key={catIndex}
+                    className="mb-4 p-3"
+                    id={categorySlug}
+                    data-category-id={categorySlug}
+                    ref={(el) => {
+                      categoryRefs.current[categorySlug] = el
+                    }}
+                  >
+                    <h2 className="mb-4 font-inter text-gray-900 font-bold text-2xl sm:text-xl leading-snug tracking-tight">
+                      {category.title}
+                    </h2>
+  
+                    <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                      {category.foods.map((meal: IFood, mealIndex) => (
+                        <div
+                          key={mealIndex}
+                          className="flex items-center gap-4 rounded-lg border border-gray-300 shadow-sm bg-white p-3 relative"
+                        >
+                          {/* Text Content */}
+                          <div className="flex-grow text-left md:text-left space-y-2">
+                            <h3 className="text-gray-900 text-lg font-semibold font-inter">
+                              {meal.title}
+                            </h3>
+  
+                            <p className="text-gray-500 text-sm">
+                              {meal.description}
+                            </p>
+  
+                            <div className="flex items-center gap-2">
+                              <span className="text-[#0EA5E9] text-lg font-semibold">
+                                Rs. {meal.variations[0].price}
+                              </span>
+                            </div>
+                          </div>
+  
+                          {/* Image */}
+                          <div className="flex-shrink-0 w-24 h-24 md:w-28 md:h-28">
+                            <img
+                              alt={meal.title}
+                              className="w-full h-full object-contain mx-auto md:mx-0"
+                              src={meal.image}
+                            />
+                          </div>
+  
+                          {/* Add Button */}
+                          <div className="absolute top-2 right-2">
+                            <button
+                              className="bg-[#0EA5E9] rounded-full shadow-md w-6 h-6 flex items-center justify-center"
+                              onClick={() => handleRestaurantClick(meal)}
+                              type="button"
+                            >
+                              <FontAwesomeIcon icon={faPlus} color="white" />
+                            </button>
                           </div>
                         </div>
-
-                        {/* Image */}
-                        <div className="flex-shrink-0 w-24 h-24 md:w-28 md:h-28">
-                          <img
-                            alt={meal.title}
-                            className="w-full h-full object-contain mx-auto md:mx-0"
-                            src={meal.image}
-                          />
-                        </div>
-
-                        {/* Add Button */}
-                        <div className="absolute top-2 right-2">
-                          <button
-                            className="bg-[#0EA5E9] rounded-full shadow-md w-6 h-6 flex items-center justify-center"
-                            onClick={() => handleRestaurantClick(meal)}
-                            type="button"
-                          >
-                            <FontAwesomeIcon icon={faPlus} color="white" />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ))
+                )
+              })
             )}
           </PaddingContainer>
         </div>
