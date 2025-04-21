@@ -21,7 +21,7 @@ export default function LoginWithGoogle({
   return (
     <div>
       <div className="flex flex-col gap-y-2  left-0">
-        <h3 className="font-bold">{t("Welcome")}!</h3>
+        <h3 className="font-medium text-2xl text-black">{t("Welcome")}!</h3>
         <p className="font-normal">{t("Sign up or log in to continue")}</p>
       </div>
       <div className="my-4">
