@@ -75,7 +75,7 @@ export default function PhoneVerification({
               name: user?.name ?? "",
               phoneIsVerified: true,
             }
-          : {
+            : {
               phone: user?.phone,
               name: user?.name ?? "",
               phoneIsVerified: true,
@@ -154,13 +154,16 @@ export default function PhoneVerification({
       }
     }
   }, [SKIP_MOBILE_VERIFICATION]);
+
+
+
   return (
-    <div className="flex flex-col justify-between item-center self-center">
+    <div className=" flex flex-col justify-between item-center self-center">
       <p>
         {t("We have sent OTP code to")}
         <span className="font-bold">{user?.phone}</span>
       </p>
-      <p className="font-light text-sm">{t("Please check your inbox")}</p>
+      <p className="font-light text-sm mb-2">{t("Please check your inbox")}</p>
       <InputOtp
         value={phoneOtp}
         onChange={(e) => setPhoneOtp(String(e.value))}
@@ -169,15 +172,17 @@ export default function PhoneVerification({
         mask
         maxLength={6}
         length={6}
-        className="w-full h-20 my-2"
+        className=" w-full h-20 my-2"
         onPaste={(e) =>
           setPhoneOtp(
             String(e.clipboardData.items[0].getAsString((data) => data)),
           )
         }
+
         placeholder="12314"
       />
-
+      {/* create a span and give a margin top */}
+      <span className="mt-4"></span>
       <CustomButton
         label={t("Continue")}
         loading={isLoading}

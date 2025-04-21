@@ -469,7 +469,7 @@ body {
   outline: none;
   box-shadow: none;
   border: 1px solid lightgray;
-  border-right: 0;
+  /* border-right: 0; */
 }
 
 .p-autocomplete-panel {

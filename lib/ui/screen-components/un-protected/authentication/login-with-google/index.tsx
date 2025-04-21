@@ -14,18 +14,20 @@ import { useTranslations } from "next-intl";
 // Next
 import Link from "next/link";
 
+// Font Awesome
+
 export default function LoginWithGoogle({
   googleLogin,
   handleChangePanel,
 }: ILoginWithGoogleProps) {
   // Hooks
   const t = useTranslations();
-  const {isLoading} = useAuth();
-  
+  const { isLoading } = useAuth();
+
   return (
     <div>
       <div className="flex flex-col gap-y-2  left-0">
-        <h3 className="font-semibold text-xl">{t("Welcome")}!</h3>
+        <h3 className="font-medium text-2xl text-black">{t("Welcome")}!</h3>
         <p className="font-normal">{t("Sign up or log in to continue")}</p>
       </div>
       <div className="my-4">
@@ -36,6 +38,7 @@ export default function LoginWithGoogle({
           handleClick={googleLogin}
         />
       </div>
+
       <div className="flex items-center justify-between w-full">
         <Divider color="border-gray-200" />
         <span className="mx-1">or</span>
