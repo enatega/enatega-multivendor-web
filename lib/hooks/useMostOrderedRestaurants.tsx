@@ -7,13 +7,19 @@ import {
   IMostOrderedRestaurantsData,
   IRestaurant,
 } from "../utils/interfaces/restaurants.interface";
+// context
+import { useLocationContext } from "../context/Location/Location.context";
 
 const useMostOrderedRestaurants = (enabled = true) => {
+  const { location } = useLocationContext();
+  const userLatitude = Number(location?.latitude || "0")
+  const userLongitude = Number(location?.longitude || "0")
+
   const { data, loading, error, networkStatus } =
     useQuery<IMostOrderedRestaurantsData>(MOST_ORDER_RESTAURANTS, {
       variables: {
-        latitude: 33.6995,
-        longitude: 73.0363,
+        latitude: userLatitude,
+        longitude: userLongitude,
       },
       fetchPolicy: "cache-and-network",
       skip: !enabled,

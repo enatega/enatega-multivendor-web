@@ -21,6 +21,7 @@ function PopularRestaurants() {
       title="Popular restaurants"
       data={restaurantsData || []}
       showLogo={true}
+      cuisines={false}
     />
   );
 }
