@@ -4,7 +4,10 @@ import { useCallback, type FC } from "react";
 import { Rating } from "primereact/rating";
 import Image from "next/image";
 import { twMerge } from "tailwind-merge";
-import { IOrder, IOrderCardProps } from "@/lib/utils/interfaces/orders.interface";
+import {
+  IOrder,
+  IOrderCardProps,
+} from "@/lib/utils/interfaces/orders.interface";
 import {
   formatDate,
   formatDateAndTime,
@@ -15,26 +18,29 @@ import CustomIconButton from "../custom-icon-button";
 // import OrderItemsWithImages from "../order-items-with-images";
 import OrderItems from "../order-items";
 
-
-
-const OrderCard: FC<IOrderCardProps> = ({ order, type, className,handleTrackOrderClicked,handleReOrderClicked,handleRateOrderClicked }) => {
-
-  const handleTrackOrder = (order:IOrder) => {
+const OrderCard: FC<IOrderCardProps> = ({
+  order,
+  type,
+  className,
+  handleTrackOrderClicked,
+  handleReOrderClicked,
+  handleRateOrderClicked,
+}) => {
+  const handleTrackOrder = (order: IOrder) => {
     // Implement tracking functionality
     // The ?. (optional chaining) operator is used to safely call the function handleTrackOrderClicked only if it is defined.
-    handleTrackOrderClicked?.(order?._id)
+    handleTrackOrderClicked?.(order?._id);
   };
 
   const handleReorder = useCallback((order: IOrder) => {
-  // Implement reorder functionality
-  // pass restaurant id of that order
-  handleReOrderClicked?.(order?.restaurant?._id)
-  
-}, []);
+    // Implement reorder functionality
+    // pass restaurant id of that order
+    handleReOrderClicked?.(order?.restaurant?._id);
+  }, []);
 
   const handleRateOrder = () => {
     // Implement rating functionality
-    handleRateOrderClicked?.(order?._id)
+    handleRateOrderClicked?.(order?._id);
   };
 
   return (
@@ -53,12 +59,12 @@ const OrderCard: FC<IOrderCardProps> = ({ order, type, className,handleTrackOrde
           </div>
           <div className="flex-1">
             <h3 className="font-semibold text-lg">{order?.restaurant?.name}</h3>
-           {
-            type === "active" && (
-              <h1 className="text-gray-600 text-sm">{(order?.items && order?.items[0]?.title) || ""}</h1>
-            )
-           }
-            {type === "active" ? (
+            {type === "active" && (
+              <h1 className="text-gray-600 text-sm">
+                {(order?.items && order?.items[0]?.title) || ""}
+              </h1>
+            )}
+            {type === "active" ?
               <>
                 <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
                   <i className="fa-solid fa-clock text-gray-400"></i>
@@ -69,25 +75,24 @@ const OrderCard: FC<IOrderCardProps> = ({ order, type, className,handleTrackOrde
                   className="mt-2"
                 /> */}
               </>
-            ) : (
-              <>
+            : <>
                 <div className="flex items-center  text-sm text-gray-600 mt-1">
                   <i className="fa-solid fa-calendar-alt text-gray-400"></i>
                   <span>
-                    {order?.deliveredAt
-                      ? `Delivered on ${formatDateAndTime(order.deliveredAt)}`
-                      : order?.cancelledAt
-                        ? `Cancelled on ${formatDate(order.cancelledAt)}`
-                        : "Cancelled"}
+                    {order?.deliveredAt ?
+                      `Delivered on ${formatDateAndTime(order.deliveredAt)}`
+                    : order?.cancelledAt ?
+                      `Cancelled on ${formatDate(order.cancelledAt)}`
+                    : "Cancelled"}
                   </span>
                 </div>
                 <div className="text-sm text-gray-600 mt-1">
                   Order #{order.orderId?.substring(0, 8)}
                 </div>
                 {/* order list without images */}
-                <OrderItems order={order}/>
+                <OrderItems order={order} />
               </>
-            )}
+            }
           </div>
         </div>
 
@@ -99,21 +104,25 @@ const OrderCard: FC<IOrderCardProps> = ({ order, type, className,handleTrackOrde
 
           {(type === "active" || type === "past") && (
             <CustomIconButton
-              title={type=== "active" ? "Track your order" : "Select item to reorder"}
+              title={
+                type === "active" ? "Track your order" : (
+                  "Select item to reorder"
+                )
+              }
               iconColor="black"
               classNames="bg-[#5AC12F] w-[content] px-4 gap-x-0 text-[12px] font-medium m-0"
               handleClick={
-                type === "active"
-                  ? ()=> handleTrackOrder(order)
-                  : () => handleReorder(order)
+                type === "active" ?
+                  () => handleTrackOrder(order)
+                : () => handleReorder(order)
               }
+              loading={false}
             />
           )}
         </div>
       </div>
 
-
-     {/* Another variant for order items list with images */}
+      {/* Another variant for order items list with images */}
       {/* Order Items with images */}
       {/* <OrderItemsWithImages order={order} /> */}
 

@@ -172,7 +172,7 @@ export default function OrderCheckoutScreen() {
               _id,
               options: options.map(({ _id }) => _id),
             }))
-          : [],
+            : [],
         specialInstructions: food.specialInstructions,
       };
     });
@@ -548,7 +548,7 @@ export default function OrderCheckoutScreen() {
                   />
                 )}
               </GoogleMap>
-            : <>
+              : <>
                 <img
                   alt="Map showing delivery route"
                   className="w-full h-64 object-cover"
@@ -774,7 +774,13 @@ export default function OrderCheckoutScreen() {
                         <button
                           key={index}
                           className={`text-[12px] text-${selectedTip === tip ? "white" : "[#0EA5E9]"} bg-${selectedTip === tip ? "[#0EA5E9]" : "white"} border border-[#0EA5E9] px-4 py-2 rounded-full w-full`}
-                          onClick={() => setSelectedTip(tip)}
+                          onClick={() => {
+                            if (selectedTip === tip) {
+                              setSelectedTip("")
+                            } else {
+                              setSelectedTip(tip)
+                            }
+                          }}
                         >
                           {tip !== "Other" ? CURRENCY_SYMBOL : ""}
                           {tip}
@@ -794,7 +800,7 @@ export default function OrderCheckoutScreen() {
                       severity="success"
                       text="Coupon has been applied successfully"
                     />
-                  : <>
+                    : <>
                       <p className="text-gray-500 mb-4 leading-5 sm:leading-5 tracking-normal font-inter text-xs sm:text-sm md:text-sm align-middle mt-2">
                         If you have a promo code enter it below to claim your
                         benefit!
@@ -814,7 +820,7 @@ export default function OrderCheckoutScreen() {
                         >
                           {couponLoading ?
                             <FontAwesomeIcon icon={faSpinner} spin />
-                          : <span>Submit</span>}
+                            : <span>Submit</span>}
                         </button>
                       </div>
                     </>
@@ -922,7 +928,7 @@ export default function OrderCheckoutScreen() {
                   >
                     {loadingOrderMutation ?
                       <FontAwesomeIcon icon={faSpinner} spin />
-                    : <span> Click to order</span>}
+                      : <span> Click to order</span>}
                   </button>
                 </div>
               </div>
@@ -1032,7 +1038,7 @@ export default function OrderCheckoutScreen() {
                       >
                         {loadingOrderMutation ?
                           <FontAwesomeIcon icon={faSpinner} spin />
-                        : <span> Click to order</span>}
+                          : <span> Click to order</span>}
                       </button>
                     </motion.div>
                   )}

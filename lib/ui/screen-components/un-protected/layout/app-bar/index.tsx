@@ -3,10 +3,14 @@
 // Core
 import Link from "next/link";
 import { Sidebar } from "primereact/sidebar";
+import Image from "next/image";
+import { Menu } from "primereact/menu";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
 // Components
-import UserAddressComponent from "@/lib/ui/useable-components/address";
 import Cart from "@/lib/ui/useable-components/cart";
+import UserAddressComponent from "@/lib/ui/useable-components/address";
 import { PaddingContainer } from "@/lib/ui/useable-components/containers";
 
 // Hook
@@ -16,8 +20,6 @@ import { useConfig } from "@/lib/context/configuration/configuration.context";
 import useLocation from "@/lib/hooks/useLocation";
 import useSetUserCurrentLocation from "@/lib/hooks/useSetUserCurrentLocation";
 import useUser from "@/lib/hooks/useUser";
-import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
 
 // Icons
 import { CartSvg, LocationSvg } from "@/lib/utils/assets/svg";
@@ -27,15 +29,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 // Interface
 import { IAppBarProps } from "@/lib/utils/interfaces";
 
-// Next
-import Image from "next/image";
+// Methods
+import { onUseLocalStorage } from "@/lib/utils/methods/local-storage";
 
-// Prime React
-import { Menu } from "primereact/menu";
+// Constnats
+import { USER_CURRENT_LOCATION_LS_KEY } from "@/lib/utils/constants";
 
 const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
-
-
   // State for cart sidebar
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isUserAddressModalOpen, setIsUserAddressModalOpen] = useState(false);
@@ -46,17 +46,41 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
   // Hooks
   const router = useRouter();
   const { GOOGLE_MAPS_KEY } = useConfig();
-  const { cartCount, calculateSubtotal, profile, loadingProfile, fetchProfile } = useUser();
+  const {
+    cartCount,
+    calculateSubtotal,
+    profile,
+    loadingProfile,
+    fetchProfile,
+  } = useUser();
   const { userAddress, setUserAddress } = useUserAddress();
   const { getCurrentLocation } = useLocation();
   const { onSetUserLocation } = useSetUserCurrentLocation();
-  const { authToken, setIsAuthModalVisible, setAuthToken, refetchProfileData, setRefetchProfileData } = useAuth();
+  const {
+    authToken,
+    setIsAuthModalVisible,
+    setAuthToken,
+    refetchProfileData,
+    setRefetchProfileData,
+  } = useAuth();
 
   // Format subtotal for display
   const formattedSubtotal = cartCount > 0 ? `$${calculateSubtotal()}` : "$0";
 
   // Handlers
   const onInit = () => {
+    const current_location_ls = onUseLocalStorage(
+      "get",
+      USER_CURRENT_LOCATION_LS_KEY
+    );
+    const user_current_location =
+      current_location_ls ? JSON.parse(current_location_ls) : null;
+
+    if (user_current_location) {
+      setUserAddress(user_current_location);
+      return;
+    }
+
     const selectedAddress = profile?.addresses.find(
       (address) => address.selected
     );
@@ -81,7 +105,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
   };
 
   const onLogout = () => {
-    router.replace("/")
+    router.replace("/");
     setAuthToken("");
     localStorage.clear();
   };
@@ -91,13 +115,13 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
     onInit();
   }, [GOOGLE_MAPS_KEY, profile]);
 
-useEffect(()=>{
-  if(refetchProfileData){
-    fetchProfile(); // this one is not working when a refetch is required, kindly check this whoever is working on this module
-    onInit()
-    setRefetchProfileData(false)
-  }
-},[refetchProfileData])
+  useEffect(() => {
+    if (refetchProfileData) {
+      fetchProfile(); // this one is not working when a refetch is required, kindly check this whoever is working on this module
+      onInit();
+      setRefetchProfileData(false);
+    }
+  }, [refetchProfileData]);
   return (
     <>
       <nav className="w-full bg-white shadow-sm">
