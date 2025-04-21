@@ -143,3 +143,10 @@ export interface ICategoryDetailsResponse {
   items?: ICategoryDetailsResponse[];
   __typename: string;
 }
+
+export interface IMainSectionProps {
+  title: string;
+  data: IRestaurant[];
+  loading: boolean;
+  error: boolean;
+}

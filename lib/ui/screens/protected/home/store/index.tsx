@@ -1,17 +1,20 @@
-// heading section
-import HomeHeadingSection from "@/lib/ui/useable-components/home-heading-section";
-// restaurant cuisines component
-import CuisinesSection from "@/lib/ui/useable-components/cuisines-section";
-// restaurants main section
-import { StoreMainSection } from "@/lib/ui/screen-components/protected/home/store";
-
+import useNearByRestaurantsPreview from "@/lib/hooks/useNearByRestaurantsPreview";
+import useGetCuisines from "@/lib/hooks/useGetCuisines";
+import GenericListingComponent from "@/lib/ui/screen-components/protected/home/GenericListingComponent";
 
 export default function StoreScreen() {
+  const { loading, error, groceriesData } = useNearByRestaurantsPreview();
+  const { groceryCuisinesData } = useGetCuisines();
+
   return (
-    <>
-      <HomeHeadingSection title={"Stores and groceries near you"} />
-      <CuisinesSection restaurant={false} title={"Browse categories"} />
-      <StoreMainSection />
-    </>
+    <GenericListingComponent
+      headingTitle="Stores and groceries near you"
+      cuisineSectionTitle="Browse categories"
+      mainSectionTitle="All Stores"
+      mainData={groceriesData}
+      cuisineDataFromHook={groceryCuisinesData}
+      loading={loading}
+      error={!!error}
+    />
   );
 }

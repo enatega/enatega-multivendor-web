@@ -1,1 +1,0 @@
-export {default as RestaurantsMainSection} from './main'

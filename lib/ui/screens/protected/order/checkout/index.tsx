@@ -72,6 +72,7 @@ import {
 import HomeIcon from "../../../../../assets/home_icon.png";
 import RestIcon from "../../../../../assets/rest_icon.png";
 import { useUserAddress } from "@/lib/context/address/address.context";
+import { useAuth } from "@/lib/context/auth/auth.context";
 
 // import RiderIcon from "../../../../../assets/rider_icon.png";
 
@@ -98,6 +99,7 @@ export default function OrderCheckoutScreen() {
   const [coupon, setCoupon] = useState<ICoupon>({} as ICoupon);
 
   // Hooks
+  const { authToken, setIsAuthModalVisible } = useAuth();
   const router = useRouter();
   const { showToast } = useToast();
   const { CURRENCY_SYMBOL, CURRENCY, DELIVERY_RATE, COST_TYPE } = useConfig();
@@ -426,6 +428,12 @@ export default function OrderCheckoutScreen() {
   }
 
   async function onPlaceOrder() {
+    // Check if user is autenticated
+    if (!authToken) {
+      setIsAuthModalVisible(true);
+      return;
+    }
+
     if (!validateOrder()) {
       return;
     }

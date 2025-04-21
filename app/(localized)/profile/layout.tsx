@@ -1,5 +1,8 @@
 "use client";
 
+import AuthGuard from "@/lib/hoc/auth.guard";
+
+// Layout
 import ProfileLayoutScreen from "@/lib/ui/layouts/protected/profile";
 
 export default function ProfileRootLayout({
@@ -7,5 +10,11 @@ export default function ProfileRootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <ProfileLayoutScreen>{children}</ProfileLayoutScreen>;
+  const ProtectedLayout = AuthGuard(
+    ({ children }: { children: React.ReactNode }) => {
+      return <ProfileLayoutScreen>{children}</ProfileLayoutScreen>;
+    }
+  );
+
+  return <ProtectedLayout>{children}</ProtectedLayout>;
 }

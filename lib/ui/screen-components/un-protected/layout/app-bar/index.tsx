@@ -2,7 +2,7 @@
 
 // Core
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Sidebar } from "primereact/sidebar";
 
 // Components
@@ -24,20 +24,30 @@ import { useUserAddress } from "@/lib/context/address/address.context";
 import useLocation from "@/lib/hooks/useLocation";
 import useSetUserCurrentLocation from "@/lib/hooks/useSetUserCurrentLocation";
 import { useConfig } from "@/lib/context/configuration/configuration.context";
+import { useAuth } from "@/lib/context/auth/auth.context";
+import Image from "next/image";
+import { Menu } from "primereact/menu";
+import { useRouter } from "next/navigation";
 
 const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
+
+
   // State for cart sidebar
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isUserAddressModalOpen, setIsUserAddressModalOpen] = useState(false);
 
-  // Access user context for cart information
+  // REf
+  const menuRef = useRef<Menu>(null);
+
+  // Hooks
+  const router = useRouter();
   const { GOOGLE_MAPS_KEY } = useConfig();
   const { cartCount, calculateSubtotal, profile, loadingProfile } = useUser();
   const { userAddress, setUserAddress } = useUserAddress();
 
-  // Hooks
   const { getCurrentLocation } = useLocation();
   const { onSetUserLocation } = useSetUserCurrentLocation();
+  const { authToken, setIsAuthModalVisible, setAuthToken } = useAuth();
 
   // Format subtotal for display
   const formattedSubtotal = cartCount > 0 ? `$${calculateSubtotal()}` : "$0";
@@ -59,6 +69,19 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
     }
   };
 
+  const onHandleAddressModelVisibility = () => {
+    if (authToken) {
+      setIsUserAddressModalOpen(true);
+    } else {
+      setIsAuthModalVisible(true);
+    }
+  };
+
+  const onLogout = () => {
+    setAuthToken("");
+    localStorage.clear();
+  };
+
   useEffect(() => {
     onInit();
   }, [GOOGLE_MAPS_KEY, profile]);
@@ -75,7 +98,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                 </Link>
                 <div
                   className="flex items-center"
-                  onClick={() => setIsUserAddressModalOpen(true)}
+                  onClick={onHandleAddressModelVisibility}
                 >
                   <div className="p-[4px] m-2 bg-gray-50 rounded-full">
                     <LocationSvg />
@@ -95,16 +118,58 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                   </div>
                 </div>
               </div>
-              <div className="flex justify-end items-center space-x-4">
+
+              <div className="flex w-fit justify-end items-center space-x-4">
                 {/* Login Button */}
-                {handleModalToggle && (
+                {!authToken ?
                   <button
+                    className="w-20 h-fit bg-transparent text-gray-900 py-2 border border-black rounded-full text-base lg:text-[14px]"
                     onClick={handleModalToggle}
-                    className="text-gray-700 hover:text-gray-900"
                   >
-                    Login
+                    <span>Login</span>
                   </button>
-                )}
+                : <div
+                    className="flex items-center space-x-2 rounded-md p-2 hover:bg-[#d8d8d837]"
+                    onClick={(event) => menuRef.current?.toggle(event)}
+                    aria-controls="popup_menu_right"
+                    aria-haspopup
+                  >
+                    <Image
+                      src={
+                        /*  user?.image
+                      ? user.image
+                      : */ "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png"
+                      }
+                      alt={"profile-image.png"}
+                      height={32}
+                      width={32}
+                      className="h-8 w-8 select-none rounded-full"
+                    />
+                    <span>{profile?.name || ""}</span>
+
+                    <FontAwesomeIcon icon={faChevronDown} />
+                    <Menu
+                      model={[
+                        {
+                          label: "Profile",
+                          command: () => {
+                            router.push("/profile");
+                          },
+                        },
+                        {
+                          label: "Logout",
+                          command: () => {
+                            onLogout();
+                          },
+                        },
+                      ]}
+                      popup
+                      ref={menuRef}
+                      id="popup_menu_right"
+                      popupAlignment="right"
+                    />
+                  </div>
+                }
 
                 {/* Cart Button */}
                 <div className="p-1">
