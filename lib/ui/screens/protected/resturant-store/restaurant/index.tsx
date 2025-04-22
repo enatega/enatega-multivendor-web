@@ -531,6 +531,7 @@ export default function RestaurantDetailsScreen() {
                         <div
                           key={mealIndex}
                           className="flex items-center gap-4 rounded-lg border border-gray-300 shadow-sm bg-white p-3 relative"
+                          onClick={() => handleRestaurantClick(meal)}
                         >
                           {/* Text Content */}
                           <div className="flex-grow text-left md:text-left space-y-2">
