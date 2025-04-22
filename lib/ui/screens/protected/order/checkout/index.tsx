@@ -843,7 +843,10 @@ export default function OrderCheckoutScreen() {
                       </div>
                     );
                   })}
-                  <button className="text-gray-900 mt-2 font-semibold mb-2 text-sm sm:text-base md:text-[12px] lg:text-[12px] xl:text-[14px]">
+                  <button
+                    className="text-gray-900 mt-2 font-semibold mb-2 text-sm sm:text-base md:text-[12px] lg:text-[12px] xl:text-[14px]"
+                    onClick={() => router.back()}
+                  >
                     + Add more items
                   </button>
                 </div>
@@ -977,15 +980,17 @@ export default function OrderCheckoutScreen() {
                     </span>
                   </div>
 
-                  <div className="flex justify-between mb-1 text-xs lg:text-[12px]">
-                    <span className="font-inter text-gray-900 leading-5">
-                      Delivery ({distance} km)
-                    </span>
-                    <span className="font-inter text-gray-900 leading-5">
-                      {CURRENCY_SYMBOL}
-                      {deliveryCharges.toFixed()}
-                    </span>
-                  </div>
+                  {deliveryType === "Delivery" && (
+                    <div className="flex justify-between mb-1 text-xs lg:text-[12px]">
+                      <span className="font-inter text-gray-900 leading-5">
+                        Delivery ({distance} km)
+                      </span>
+                      <span className="font-inter text-gray-900 leading-5">
+                        {CURRENCY_SYMBOL}
+                        {deliveryCharges.toFixed()}
+                      </span>
+                    </div>
+                  )}
 
                   {selectedTip && (
                     <div className="flex justify-between mb-1 text-xs lg:text-[12px]">
