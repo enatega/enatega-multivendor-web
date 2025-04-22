@@ -13,7 +13,7 @@ const TranparentButton: React.FC<buttonProps> = ({ text, link }) => {
   return (
     <button
       onClick={navigate}
-      className="p-3 bg-white/20 rounded-3xl w-[180px] backdrop-blur-sm hover:bg-white/35 h-[50px] flex gap-2 items-center justify-center"
+      className="p-3 bg-white/20 rounded-3xl w-[180px] shadow-md backdrop-blur-sm hover:bg-white/35 h-[50px] flex gap-2 items-center justify-center"
     >
       <p className="text-white text-[16px]"> {text}</p>
       <i
