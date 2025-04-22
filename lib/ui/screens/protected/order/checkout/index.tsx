@@ -496,7 +496,6 @@ export default function OrderCheckoutScreen() {
       router.replace(
         `${SERVER_URL}stripe/create-checkout-session?id=${data?.placeOrder?.orderId}&platform=web`
       );
-
     }
   }
 
