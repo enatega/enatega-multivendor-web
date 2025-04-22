@@ -17,12 +17,15 @@ function CuisineSelectionSection() {
   const params = useParams();
   const slug = Array.isArray(params.slug) ? params.slug[0] : params.slug;
 
-  let slugWithSpaces = slug.replaceAll("-", " ")
-  let title = slugWithSpaces?.replace(/^./, (str) => str.toUpperCase()) + " near you";
-  
+  let slugWithSpaces = slug.replaceAll("-", " ");
+  let title =
+    slugWithSpaces?.replace(/^./, (str) => str.toUpperCase()) + " near you";
+
   const { queryData, loading, error } = useNearByRestaurantsPreview();
 
-  let getCuisinRestaurants = queryData?.filter(item => ( item?.cuisines.map(item=> item.toLowerCase()).includes(slugWithSpaces)))
+  let getCuisinRestaurants = queryData?.filter((item) =>
+    item?.cuisines.map((item) => item.toLowerCase()).includes(slugWithSpaces)
+  );
 
   if (loading) {
     return <SliderSkeleton />;
@@ -31,7 +34,6 @@ function CuisineSelectionSection() {
     return;
   }
 
-    
   if (!queryData?.length) return <div>No items found</div>;
 
   return (
