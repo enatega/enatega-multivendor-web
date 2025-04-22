@@ -7,6 +7,7 @@ import { Skeleton } from "primereact/skeleton";
 import { useMutation } from "@apollo/client";
 import { ADD_FAVOURITE_RESTAURANT } from "@/lib/api/graphql/mutations/restaurant";
 import { GET_USER_PROFILE } from "@/lib/api/graphql";
+import { useQuery } from "@apollo/client";
 
 // Context & Hooks
 import useUser from "@/lib/hooks/useUser";
@@ -35,6 +36,10 @@ import ChatSvg from "@/lib/utils/assets/svg/chat";
 import ReviewsModal from "@/lib/ui/useable-components/reviews-modal";
 import InfoModal from "@/lib/ui/useable-components/info-modal";
 import CustomDialog from "@/lib/ui/useable-components/custom-dialog";
+import { onUseLocalStorage } from "@/lib/utils/methods/local-storage";
+
+// Queries
+import { GET_POPULAR_SUB_CATEGORIES_LIST } from "@/lib/api/graphql";
 
 export default function RestaurantDetailsScreen() {
   // Access the UserContext via our custom hook
@@ -70,6 +75,16 @@ export default function RestaurantDetailsScreen() {
   // Fetch restaurant data
   const { data, loading } = useRestaurant(id, decodeURIComponent(slug));
 
+  // fetch popular deals id
+  const { data: popularSubCategoriesList } = useQuery(
+    GET_POPULAR_SUB_CATEGORIES_LIST,
+    {
+      variables: {
+        restaurantId: id,
+      },
+    }
+  );
+
   // Transform cart items when restaurant data is loaded - only once when dependencies change
   useEffect(() => {
     if (data?.restaurant && cart.length > 0) {
@@ -93,14 +108,16 @@ export default function RestaurantDetailsScreen() {
     }
   }, [profile, id]);
 
+  const popularDealsIds = popularSubCategoriesList?.popularItems?.map(
+    (item: any) => item.id
+  );
+
   const deals = useMemo(() => {
-    return (
+    const filteredDeals =
       (allDeals || [])
         .filter((c: ICategory) => {
-          // Only apply filter logic if `filter` is not an empty string
-          if (filter.trim() === "") return true; // If filter is empty, don't filter, just map
+          if (filter.trim() === "") return true;
 
-          // Check if the category title or any food title contains the filter text
           const categoryMatches = c.title
             .toLowerCase()
             .includes(filter.toLowerCase());
@@ -108,7 +125,7 @@ export default function RestaurantDetailsScreen() {
             food.title.toLowerCase().includes(filter.toLowerCase())
           );
 
-          return categoryMatches || foodsMatch; // Keep category if it matches or any of the foods
+          return categoryMatches || foodsMatch;
         })
         .map((c: ICategory, index: number) => ({
           ...c,
@@ -125,9 +142,32 @@ export default function RestaurantDetailsScreen() {
             );
           }),
         }))
-        .filter((c: ICategory) => c.foods.length > 0) || []
+        .filter((c: ICategory) => c.foods.length > 0) || [];
+
+    // Flatten all foods from all categories
+    const allFoods = filteredDeals.flatMap((cat: ICategory) => cat.foods);
+
+    // Filter foods that are in popularDealsIds
+    const popularFoods = allFoods.filter((food: IFood) =>
+      popularDealsIds?.includes(food._id)
     );
-  }, [allDeals, filter]);
+
+    // Create a "Popular Deals" category if there are matching foods
+    const popularDealsCategory: ICategory | null =
+      popularFoods.length ?
+        {
+          _id: "popular-deals",
+          title: "Popular Deals",
+          foods: popularFoods,
+          // index can be used for custom ordering if needed
+        }
+      : null;
+
+    // Add the new category at the top
+    return popularDealsCategory ?
+        [popularDealsCategory, ...filteredDeals]
+      : filteredDeals;
+  }, [allDeals, filter, popularDealsIds]);
 
   const [selectedCategory, setSelectedCategory] = useState("");
 
@@ -247,6 +287,14 @@ export default function RestaurantDetailsScreen() {
       // Reset the pending action
       setPendingRestaurantAction(null);
     }
+
+    onUseLocalStorage("save", "restaurant", data?.restaurant?._id);
+    onUseLocalStorage("save", "restaurant-slug", data?.restaurant?.slug);
+    onUseLocalStorage(
+      "save",
+      "currentShopType",
+      data?.restaurant?.shopType === "restaurant" ? "restaurant" : "store"
+    );
 
     // Hide the modal
     setShowClearCartModal(false);
@@ -688,6 +736,7 @@ export default function RestaurantDetailsScreen() {
             foodItem={selectedFood}
             addons={data?.restaurant?.addons}
             options={data?.restaurant?.options}
+            restaurant={data?.restaurant}
             onClose={handleCloseFoodModal}
           />
         )}

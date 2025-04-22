@@ -15,22 +15,19 @@ import ClearCartModal from "../clear-cart-modal";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { onUseLocalStorage } from "@/lib/utils/methods/local-storage";
 
 export default function FoodItemDetail(props: IFoodItemDetalComponentProps) {
-  const { foodItem, addons, options, onClose } = props;
+  const { foodItem, addons, options, onClose, restaurant } = props;
 
   // Access user context for cart functionality
-  const {
-    addItem,
-    restaurant: cartRestaurant,
-    clearCart
-  } = useUser();
+  const { addItem, restaurant: cartRestaurant, clearCart } = useUser();
 
   // State for selected variation
   const [selectedVariation, setSelectedVariation] = useState(
-    foodItem?.variations && foodItem.variations.length > 0
-      ? foodItem.variations[0]
-      : null
+    foodItem?.variations && foodItem.variations.length > 0 ?
+      foodItem.variations[0]
+    : null
   );
 
   // State for quantity
@@ -90,9 +87,10 @@ export default function FoodItemDetail(props: IFoodItemDetalComponentProps) {
         }
         // For multi-select addons
         else {
-          const selectedCount = selected
-            ? Array.isArray(selected)
-              ? selected.length
+          const selectedCount =
+            selected ?
+              Array.isArray(selected) ?
+                selected.length
               : 1
             : 0;
           if (
@@ -133,8 +131,9 @@ export default function FoodItemDetail(props: IFoodItemDetalComponentProps) {
       .filter(([, value]) => value) // Filter out undefined/null values
       .map(([addonId, optionOrOptions]) => {
         // Handle both single and multi-select addons
-        const options = Array.isArray(optionOrOptions)
-          ? optionOrOptions.map((opt) => ({ _id: opt._id }))
+        const options =
+          Array.isArray(optionOrOptions) ?
+            optionOrOptions.map((opt) => ({ _id: opt._id }))
           : [{ _id: optionOrOptions._id }];
 
         return {
@@ -153,6 +152,15 @@ export default function FoodItemDetail(props: IFoodItemDetalComponentProps) {
       "" // Special instructions - could add a field for this
     );
 
+    // UPDAT4 STORAGE
+    onUseLocalStorage("save", "restaurant", restaurant?._id);
+    onUseLocalStorage("save", "restaurant-slug", restaurant?.slug);
+    onUseLocalStorage(
+      "save",
+      "currentShopType",
+      restaurant?.shopType === "restaurant" ? "restaurant" : "store"
+    );
+
     // Close the modal
     if (onClose) {
       onClose();
@@ -164,6 +172,14 @@ export default function FoodItemDetail(props: IFoodItemDetalComponentProps) {
     await clearCart();
     addItemToCart();
     setShowClearCartModal(false);
+
+    onUseLocalStorage("save", "restaurant", restaurant?._id);
+    onUseLocalStorage("save", "restaurant-slug", restaurant?.slug);
+    onUseLocalStorage(
+      "save",
+      "currentShopType",
+      restaurant?.shopType === "restaurant" ? "restaurant" : "store"
+    );
   };
 
   // Calculate total price
@@ -193,8 +209,16 @@ export default function FoodItemDetail(props: IFoodItemDetalComponentProps) {
   return (
     <div className="bg-white max-w-md w-full p-2 relative">
       {/* close icon to close the modal */}
-      <button onClick={onClose} className="absolute top-3 right-0 bg-slate-400 hover:bg-slate-500 transition-all duration-300 rounded-full p-2">
-        <FontAwesomeIcon icon={faXmark} className="text-white" width={23} height={18} />
+      <button
+        onClick={onClose}
+        className="absolute top-3 right-0 bg-slate-400 hover:bg-slate-500 transition-all duration-300 rounded-full p-2"
+      >
+        <FontAwesomeIcon
+          icon={faXmark}
+          className="text-white"
+          width={23}
+          height={18}
+        />
       </button>
       <div className="text-center mb-4">
         <Image
@@ -243,9 +267,9 @@ export default function FoodItemDetail(props: IFoodItemDetalComponentProps) {
 
           // Determine required/optional tag text
           const requiredTagText =
-            (addon.quantityMinimum ?? 0) > 0
-              ? `${addon.quantityMinimum} Required`
-              : "Optional";
+            (addon.quantityMinimum ?? 0) > 0 ?
+              `${addon.quantityMinimum} Required`
+            : "Optional";
 
           return (
             <ItemDetailSection
@@ -254,33 +278,40 @@ export default function FoodItemDetail(props: IFoodItemDetalComponentProps) {
               name={addon._id ?? "addon"}
               multiple={!isSingleSelect}
               singleSelected={
-                isSingleSelect
-                  ? (selectedAddonOptions[addon._id ?? ""] as Option)
-                  : null
+                isSingleSelect ?
+                  (selectedAddonOptions[addon._id ?? ""] as Option)
+                : null
               }
               onSingleSelect={
-                isSingleSelect
-                  ? (option) =>
-                    handleAddonSelection(addon._id ?? "", false, option as Option)
-                  : undefined
+                isSingleSelect ?
+                  (option) =>
+                    handleAddonSelection(
+                      addon._id ?? "",
+                      false,
+                      option as Option
+                    )
+                : undefined
               }
               multiSelected={
-                !isSingleSelect
-                  ? (selectedAddonOptions[addon._id ?? ""] as Option[]) || []
-                  : []
+                !isSingleSelect ?
+                  (selectedAddonOptions[addon._id ?? ""] as Option[]) || []
+                : []
               }
               onMultiSelect={
-                !isSingleSelect
-                  ? (updateFn) => {
+                !isSingleSelect ?
+                  (updateFn) => {
                     const current =
-                      (selectedAddonOptions[addon._id ?? ""] as Option[]) ||
-                      [];
+                      (selectedAddonOptions[addon._id ?? ""] as Option[]) || [];
                     if (typeof updateFn === "function") {
                       const updated = updateFn(current);
-                      handleAddonSelection(addon._id ?? "", true, updated as Option[]);
+                      handleAddonSelection(
+                        addon._id ?? "",
+                        true,
+                        updated as Option[]
+                      );
                     }
                   }
-                  : undefined
+                : undefined
               }
               options={addonOptions as Option[]}
               requiredTag={requiredTagText}
