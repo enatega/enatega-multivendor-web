@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useParams } from "next/navigation";
 import { Skeleton } from "primereact/skeleton";
+import { useQuery } from "@apollo/client";
 
 // Context & Hooks
 import useUser from "@/lib/hooks/useUser";
@@ -31,14 +32,17 @@ import ReviewsModal from "@/lib/ui/useable-components/reviews-modal";
 import InfoModal from "@/lib/ui/useable-components/info-modal";
 import CustomDialog from "@/lib/ui/useable-components/custom-dialog";
 
+// Queries
+import { GET_POPULAR_SUB_CATEGORIES_LIST } from "@/lib/api/graphql";
+
 export default function RestaurantDetailsScreen() {
   // Access the UserContext via our custom hook
-  const { 
-    cart, 
-    transformCartWithFoodInfo, 
-    updateCart, 
-    restaurant: cartRestaurant, 
-    clearCart 
+  const {
+    cart,
+    transformCartWithFoodInfo,
+    updateCart,
+    restaurant: cartRestaurant,
+    clearCart
   } = useUser();
 
   // Params from route
@@ -58,6 +62,17 @@ export default function RestaurantDetailsScreen() {
   // Fetch restaurant data
   const { data, loading } = useRestaurant(id, decodeURIComponent(slug));
 
+  // fetch popular deals id
+  const {
+    data: popularSubCategoriesList,
+    loading: popularSubCategoriesLoading,
+  } = useQuery(GET_POPULAR_SUB_CATEGORIES_LIST, {
+    variables: {
+      restaurantId: id,
+    },
+  });
+
+
   // Transform cart items when restaurant data is loaded - only once when dependencies change
   useEffect(() => {
     if (data?.restaurant && cart.length > 0) {
@@ -73,14 +88,16 @@ export default function RestaurantDetailsScreen() {
     (cat: ICategory) => cat.foods.length
   );
 
+  const popularDealsIds = popularSubCategoriesList?.popularItems?.map((item: any) => item.id);
+
   const deals = useMemo(() => {
-    return (
+
+
+    const filteredDeals =
       (allDeals || [])
         .filter((c: ICategory) => {
-          // Only apply filter logic if `filter` is not an empty string
-          if (filter.trim() === "") return true; // If filter is empty, don't filter, just map
+          if (filter.trim() === "") return true;
 
-          // Check if the category title or any food title contains the filter text
           const categoryMatches = c.title
             .toLowerCase()
             .includes(filter.toLowerCase());
@@ -88,25 +105,46 @@ export default function RestaurantDetailsScreen() {
             food.title.toLowerCase().includes(filter.toLowerCase())
           );
 
-          return categoryMatches || foodsMatch; // Keep category if it matches or any of the foods
+          return categoryMatches || foodsMatch;
         })
         .map((c: ICategory, index: number) => ({
           ...c,
           index,
           foods: c.foods.filter(food => {
-            // If filter is empty, include all foods
             if (filter.trim() === "") return true;
-            
-            // Include food if title or description matches filter
+
             return (
               food.title.toLowerCase().includes(filter.toLowerCase()) ||
-              (food.description && food.description.toLowerCase().includes(filter.toLowerCase()))
+              (food.description &&
+                food.description.toLowerCase().includes(filter.toLowerCase()))
             );
           }),
         }))
-        .filter((c: ICategory) => c.foods.length > 0) || []
+        .filter((c: ICategory) => c.foods.length > 0) || [];
+
+    // Flatten all foods from all categories
+    const allFoods = filteredDeals.flatMap((cat: ICategory) => cat.foods);
+
+    // Filter foods that are in popularDealsIds
+    const popularFoods = allFoods.filter((food: IFood) =>
+      popularDealsIds?.includes(food._id)
     );
-  }, [allDeals, filter]);
+
+    // Create a "Popular Deals" category if there are matching foods
+    const popularDealsCategory: ICategory | null = popularFoods.length
+      ? {
+        _id: "popular-deals",
+        title: "Popular Deals",
+        foods: popularFoods,
+        // index can be used for custom ordering if needed
+      }
+      : null;
+
+    // Add the new category at the top
+    return popularDealsCategory
+      ? [popularDealsCategory, ...filteredDeals]
+      : filteredDeals;
+  }, [allDeals, filter, popularDealsIds]);
 
   const [selectedCategory, setSelectedCategory] = useState('');
 
@@ -141,7 +179,7 @@ export default function RestaurantDetailsScreen() {
     openingTimes: data?.restaurant?.openingTimes ?? [],
   };
 
-  const restaurantInfoModalProps={
+  const restaurantInfoModalProps = {
     _id: data?.restaurant?._id ?? "",
     name: data?.restaurant?.name ?? "...",
     username: data?.restaurant?.username ?? "N/A",
@@ -180,7 +218,7 @@ export default function RestaurantDetailsScreen() {
   // Function to handle clear cart confirmation
   const handleClearCartConfirm = async () => {
     await clearCart();
-    
+
     // Execute the pending action
     if (pendingRestaurantAction) {
       if (pendingRestaurantAction.type === 'foodModal') {
@@ -189,7 +227,7 @@ export default function RestaurantDetailsScreen() {
       // Reset the pending action
       setPendingRestaurantAction(null);
     }
-    
+
     // Hide the modal
     setShowClearCartModal(false);
   };
@@ -222,7 +260,7 @@ export default function RestaurantDetailsScreen() {
     });
     setShowDialog(true);
   };
-  
+
   // Function to close the food item modal
   const handleCloseFoodModal = () => {
     setShowDialog(false);
@@ -252,7 +290,7 @@ export default function RestaurantDetailsScreen() {
         setVisibleItems(5); // Large screens
       }
     };
-    
+
     const updateHeight = () => {
       if (window.innerWidth >= 1024)
         setHeaderHeight("64px"); // lg (desktop)
@@ -313,7 +351,7 @@ export default function RestaurantDetailsScreen() {
         visible={showReviews && !loading}
         onHide={() => setShowReviews(false)}
       />
-            
+
       {/* See More Info Modal */}
       <InfoModal
         restaurantInfo={restaurantInfoModalProps}
@@ -321,7 +359,7 @@ export default function RestaurantDetailsScreen() {
         visible={showMoreInfo && !loading}
         onHide={() => setShowMoreInfo(false)}
       />
-      
+
       {/* Clear Cart Modal */}
       <ClearCartModal
         isVisible={showClearCartModal}
@@ -401,7 +439,7 @@ export default function RestaurantDetailsScreen() {
                 <a
                   className="flex items-center gap-2 text-[#0EA5E9] font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle"
                   href="#"
-                  onClick={(e)=>{
+                  onClick={(e) => {
                     e.preventDefault();
                     handleSeeMoreInfo();
                   }}
@@ -413,11 +451,11 @@ export default function RestaurantDetailsScreen() {
                     "See more information"
                   )}
                 </a>
-                 {/* Review Link */}
-                 <a
+                {/* Review Link */}
+                <a
                   className="flex items-center gap-2 text-[#0EA5E9] font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle"
                   href="#"
-                  onClick={(e)=>{
+                  onClick={(e) => {
                     e.preventDefault();
                     handleSeeReviews();
                   }}
@@ -425,7 +463,7 @@ export default function RestaurantDetailsScreen() {
                   <ChatSvg />
                   {loading ?
                     <Skeleton width="10rem" height="1.5rem" />
-                  : "See reviews"}
+                    : "See reviews"}
                 </a>
               </div>
             </PaddingContainer>
@@ -530,7 +568,7 @@ export default function RestaurantDetailsScreen() {
                     <h2 className="mb-4 font-inter text-gray-900 font-bold text-2xl sm:text-xl leading-snug tracking-tight">
                       {category.title}
                     </h2>
-  
+
                     <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                       {category.foods.map((meal: IFood, mealIndex) => (
                         <div
@@ -542,18 +580,18 @@ export default function RestaurantDetailsScreen() {
                             <h3 className="text-gray-900 text-lg font-semibold font-inter">
                               {meal.title}
                             </h3>
-  
+
                             <p className="text-gray-500 text-sm">
                               {meal.description}
                             </p>
-  
+
                             <div className="flex items-center gap-2">
                               <span className="text-[#0EA5E9] text-lg font-semibold">
                                 Rs. {meal.variations[0].price}
                               </span>
                             </div>
                           </div>
-  
+
                           {/* Image */}
                           <div className="flex-shrink-0 w-24 h-24 md:w-28 md:h-28">
                             <img
@@ -562,7 +600,7 @@ export default function RestaurantDetailsScreen() {
                               src={meal.image}
                             />
                           </div>
-  
+
                           {/* Add Button */}
                           <div className="absolute top-2 right-2">
                             <button
