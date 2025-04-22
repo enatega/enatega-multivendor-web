@@ -109,10 +109,10 @@ export default function OrderCheckoutScreen() {
   const { CURRENCY_SYMBOL, CURRENCY, DELIVERY_RATE, COST_TYPE } = useConfig();
   const { location, setLocation } = useLocationContext();
   console.log("🚀 ~ OrderCheckoutScreen ~ location:", location);
-  const { userAddress } = useUserAddress();
-  console.log("🚀 ~ OrderCheckoutScreen ~ userAddress:", userAddress);
   const { cart, restaurant: restaurantId, clearCart, profile, fetchProfile, loadingProfile } = useUser();
   console.log("🚀 ~ OrderCheckoutScreen ~ profile:", profile);
+  const { userAddress } = useUserAddress();
+
   const { data: restaurantData } = useRestaurant(restaurantId || "");
 
 
@@ -181,7 +181,7 @@ export default function OrderCheckoutScreen() {
               _id,
               options: options.map(({ _id }) => _id),
             }))
-            : [],
+          : [],
         specialInstructions: food.specialInstructions,
       };
     });
@@ -490,8 +490,9 @@ export default function OrderCheckoutScreen() {
     } else if (paymentMethod === "PAYPAL") {
       router.replace(`/paypal?id=${data.placeOrder._id}`);
     } else if (paymentMethod === "STRIPE") {
-      router.replace(`${SERVER_URL}stripe/create-checkout-session?id=${data?.placeOrder?.orderId}&platform=web`);
-      // console.log("🚀 ~ onCompleted ~ data:", data)
+      router.replace(
+        `${SERVER_URL}stripe/create-checkout-session?id=${data?.placeOrder?.orderId}&platform=web`
+      );
     }
   }
 
@@ -898,9 +899,9 @@ export default function OrderCheckoutScreen() {
                           className={`text-[12px] text-${selectedTip === tip ? "white" : "[#0EA5E9]"} bg-${selectedTip === tip ? "[#0EA5E9]" : "white"} border border-[#0EA5E9] px-4 py-2 rounded-full w-full`}
                           onClick={() => {
                             if (selectedTip === tip) {
-                              setSelectedTip("")
+                              setSelectedTip("");
                             } else {
-                              setSelectedTip(tip)
+                              setSelectedTip(tip);
                             }
                           }}
                         >

@@ -1,9 +1,8 @@
-"use client"
-import { useContext, useEffect } from 'react'
-import UserContext from '@/lib/context/User/User.context';
-import { useQuery, useSubscription } from '@apollo/client';
-import { ORDER_TRACKING } from '@/lib/api/graphql/queries/order-tracking';
-import { SUBSCRIPTION_ORDER } from '@/lib/api/graphql/subscription';
+"use client";
+import { useEffect } from "react";
+import { useQuery, useSubscription } from "@apollo/client";
+import { ORDER_TRACKING } from "@/lib/api/graphql/queries/order-tracking";
+import { SUBSCRIPTION_ORDER } from "@/lib/api/graphql/subscription";
 
 function useTracking({ orderId }: { orderId: string }) {
     const { data: orderTrackingDetails, loading: isOrderTrackingDetailsLoading, refetch } = useQuery(ORDER_TRACKING, {
@@ -32,11 +31,11 @@ function useTracking({ orderId }: { orderId: string }) {
         }
     }, [subscriptionData]);
 
-    return {
-        orderTrackingDetails: orderTrackingDetails?.orderDetails,
-        isOrderTrackingDetailsLoading,
-        subscriptionData: subscriptionData?.subscriptionOrder
-    }
+  return {
+    orderTrackingDetails: orderTrackingDetails?.orderDetails,
+    isOrderTrackingDetailsLoading,
+    subscriptionData: subscriptionData?.subscriptionOrder,
+  };
 }
 
 export default useTracking;

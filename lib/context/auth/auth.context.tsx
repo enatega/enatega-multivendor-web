@@ -61,7 +61,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   const [otp, setOtp] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
-  const [refetchProfileData, setRefetchProfileData] = useState(false)
+  const [refetchProfileData, setRefetchProfileData] = useState(false);
 
   // Refs
   const otpFrom = useRef<string | null>(null);
@@ -166,7 +166,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       const userResponse = await mutateLogin({
         variables: { ...user },
       });
-      console.log("🚀 ~ handleUserLogin ~ userResponse:", userResponse.data?.login)
+
       const { data } = userResponse;
       localStorage.setItem("userId", data?.login.userId ?? "");
       localStorage.setItem("token", data?.login.token ?? "");
@@ -187,7 +187,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       });
     } finally {
       setIsLoading(false);
-      setRefetchProfileData(true)
+      setRefetchProfileData(true);
     }
   };
 
@@ -251,7 +251,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       return {} as ICreateUserData;
     } finally {
       setIsLoading(false);
-      setRefetchProfileData(true)
+      setRefetchProfileData(true);
     }
   };
 
@@ -260,7 +260,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     try {
       setUser(data.login);
       localStorage.setItem("token", data?.login?.token ?? "");
-      localStorage.setItem("userId", data?.login?.userId??"");
+      localStorage.setItem("userId", data?.login?.userId ?? "");
 
       if (!data.login.emailIsVerified) {
         setActivePanel(5);
@@ -446,7 +446,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
           isRegistering,
           setIsRegistering,
           refetchProfileData,
-          setRefetchProfileData
+          setRefetchProfileData,
         }}
       >
         {children}

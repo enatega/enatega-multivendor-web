@@ -53,7 +53,6 @@ function SeeAllSection() {
       <HomeHeadingSection title={title} showFilter={false} />
       <div className="mb-20">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 mt-4 items-center">
-          
           {/* Render SquareCard for cuisine-related slugs */}
           {/* {Array.isArray(data) &&
             CUISINE_SLUGS.has(slug) &&
