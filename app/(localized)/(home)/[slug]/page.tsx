@@ -1,10 +1,10 @@
 "use client";
 
-import { SeeAllScreen } from '@/lib/ui/screens/protected/home'
-import React from 'react'
+import { SeeAllScreen } from "@/lib/ui/screens/protected/home";
+import React from "react";
 
-function page() {
-  return <SeeAllScreen />
+function SellAllPage() {
+  return <SeeAllScreen />;
 }
 
-export default page
+export default SellAllPage;
