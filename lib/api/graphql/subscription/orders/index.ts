@@ -1,3 +1,5 @@
+import { gql } from "@apollo/client";
+
 export const orderStatusChanged = `subscription OrderStatusChanged($userId:String!){
     orderStatusChanged(userId:$userId){
       userId
@@ -73,3 +75,16 @@ export const orderStatusChanged = `subscription OrderStatusChanged($userId:Strin
       }
     }
   }`;
+
+export const SUBSCRIPTION_ORDER = gql`
+  subscription SubscriptionOrder($id: String!) {
+    subscriptionOrder(id: $id) {
+      _id
+      orderStatus
+      rider {
+        _id
+      }
+      completionTime
+    }
+  }
+`;

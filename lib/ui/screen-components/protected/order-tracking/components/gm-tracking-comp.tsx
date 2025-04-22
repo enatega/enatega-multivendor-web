@@ -5,7 +5,7 @@ import React from 'react'
 import HomeIcon from "../../../../../assets/home_icon.png";
 import RestIcon from "../../../../../assets/rest_icon.png";
 import Image from "next/image";
-
+import TrackingRider from './trackingRider';
 
 interface IGoogleMapTrackingComponent {
   isLoaded: boolean,
@@ -18,10 +18,29 @@ interface IGoogleMapTrackingComponent {
     lng: number
   },
   directions: google.maps.DirectionsResult | null,
-  directionsCallback: (result: google.maps.DirectionsResult | null, status: string) => void
+  directionsCallback: (result: google.maps.DirectionsResult | null, status: string) => void,
+  orderStatus: string,
+  riderId?: string
 }
 
-function GoogleMapTrackingComponent({ isLoaded, origin, destination, directions, directionsCallback }: IGoogleMapTrackingComponent) {
+function GoogleMapTrackingComponent({ 
+  isLoaded, 
+  origin, 
+  destination, 
+  directions, 
+  directionsCallback,
+  orderStatus,
+  riderId 
+}: IGoogleMapTrackingComponent) {
+  
+  // Determine which markers to show based on order status
+  const showRestaurantMarker = ['PENDING', 'ACCEPTED', 'ASSIGNED'].includes(orderStatus);
+  const showRiderMarker = ['PICKED', 'DELIVERED'].includes(orderStatus);
+  
+  // Update origin and destination based on order status
+  const mapOrigin = showRiderMarker ? undefined : origin; // Will be provided by TrackingRider component
+  const mapDestination = destination; // Always show home location
+
   return (
     <div className="relative">
       {isLoaded ?
@@ -30,35 +49,40 @@ function GoogleMapTrackingComponent({ isLoaded, origin, destination, directions,
             width: "100%",
             height: "400px",
           }}
-          center={{
-            lat: 24.8607, // Example: Karachi
-            lng: 67.0011,
-          }}
+          center={mapOrigin || destination} // Center on restaurant or home
           zoom={13}
         >
-          {/* Custom Origin Marker */}
+          {/* Restaurant Marker - show only before rider pickup */}
+          {showRestaurantMarker && mapOrigin && (
+            <Marker
+              position={mapOrigin}
+              icon={{
+                url: RestIcon.src,
+                scaledSize: new window.google.maps.Size(40, 40),
+              }}
+            />
+          )}
+
+          {/* Home Marker - always show */}
           <Marker
-            position={origin}
+            position={mapDestination}
             icon={{
-              url: HomeIcon.src, // Replace with your icon path or external URL
+              url: HomeIcon.src,
               scaledSize: new window.google.maps.Size(40, 40),
             }}
           />
 
-          {/* Custom Destination Marker */}
-          <Marker
-            position={destination}
-            icon={{
-              url: RestIcon.src, // Replace with your icon path or external URL
-              scaledSize: new window.google.maps.Size(40, 40),
-            }}
-          />
+          {/* Rider Marker - show only after pickup */}
+          {showRiderMarker && riderId && (
+            <TrackingRider id={riderId} />
+          )}
 
-          {!directions && (
+          {/* Directions between appropriate points */}
+          {!directions && mapOrigin && (
             <DirectionsService
               options={{
-                destination,
-                origin,
+                destination: mapDestination,
+                origin: mapOrigin,
                 travelMode: google.maps.TravelMode.DRIVING,
               }}
               callback={directionsCallback}
@@ -71,9 +95,9 @@ function GoogleMapTrackingComponent({ isLoaded, origin, destination, directions,
                 directions,
                 suppressMarkers: true, // Hide default markers
                 polylineOptions: {
-                  strokeColor: "#5AC12F", // blue line
+                  strokeColor: "#5AC12F",
                   strokeOpacity: 0.8,
-                  strokeWeight: 3, // thickness
+                  strokeWeight: 3,
                   zIndex: 10,
                 },
               }}

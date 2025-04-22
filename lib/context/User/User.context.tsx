@@ -240,10 +240,9 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
       if (!foodsData || !cartItems.length) return cartItems;
 
       // Extract all foods from categories
-      const foods =
-        foodsData.categories ?
-          foodsData.categories.flatMap((c: ICategory) => c.foods)
-          : [];
+      const foods = foodsData.categories
+        ? foodsData.categories.flatMap((c: ICategory) => c.foods)
+        : [];
 
       // Get addons and options data
       const { addons, options } = foodsData;
@@ -305,17 +304,20 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
     []
   );
 
-  const onInit = async (isSubscribed: true) => {
+  const onInit = async (isSubscribed: boolean) => {
+    if (!isSubscribed) return;
+    
+    setIsLoading(true);
+    
     const _token = localStorage.getItem("token") || null;
-
-    if (!_token) return;
-
-    setToken(localStorage.getItem("token") || null);
-
-    isSubscribed && setIsLoading(true);
-    isSubscribed && (await fetchProfile());
-    isSubscribed && (await fetchOrders());
-    isSubscribed && setIsLoading(false);
+    setToken(_token);
+    
+    if (_token) {
+      await fetchProfile();
+      await fetchOrders();
+    }
+    
+    setIsLoading(false);
   };
 
   // Define setCartRestaurant before it's used in dependencies
@@ -325,6 +327,47 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
       localStorage.setItem("restaurant", id);
     }
   }, []);
+
+  // Initialize from local storage
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedRestaurant = localStorage.getItem("restaurant");
+      const storedCart = localStorage.getItem("cartItems");
+
+      if (storedRestaurant) {
+        setRestaurant(storedRestaurant);
+      }
+
+      if (storedCart) {
+        try {
+          setCart(JSON.parse(storedCart));
+        } catch (error) {
+          console.error("Error parsing cart items from localStorage:", error);
+          setCart([]);
+        }
+      }
+    }
+
+    setIsLoading(false);
+  }, []);
+
+  // Load user profile and orders
+  useEffect(() => {
+    let isSubscribed = true;
+
+    onInit(isSubscribed);
+
+    return () => {
+      isSubscribed = false;
+    };
+  // Important: Include token as a dependency to refetch when it changes
+  }, [token]);
+
+  // Setup subscription when profile is loaded
+  useEffect(() => {
+    if (!dataProfile) return;
+    subscribeOrders();
+  }, [dataProfile, subscribeToMoreOrders]);
 
   function onProfileCompleted(data: IProfileResponse) {
     if (data.profile) {
@@ -443,7 +486,8 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
 
       if (cartIndex !== -1) {
         // Important: Set the exact new quantity instead of adding to prevent potential double-increments
-        updatedCart[cartIndex].quantity = updatedCart[cartIndex].quantity + quantity;
+        updatedCart[cartIndex].quantity =
+          updatedCart[cartIndex].quantity + quantity;
 
         // Save to local storage
         if (typeof window !== "undefined") {
@@ -700,8 +744,8 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     const userId = localStorage.getItem("userId");
-    if (token && userId) {
-      fetchProfile
+    if(token&&userId){
+      fetchProfile()
     }
   }, [])
   // Initialize from local storage
@@ -755,8 +799,8 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
         isLoggedIn: !!token,
         loadingProfile: loadingProfile && calledProfile,
         errorProfile,
-        profile:
-          dataProfile && dataProfile.profile ? dataProfile.profile : null,
+        profile: dataProfile && dataProfile.profile ? dataProfile.profile : null,
+        fetchProfile, // Add this line
         setTokenAsync,
         logout,
         loadingOrders: loadingOrders && calledOrders,
@@ -781,7 +825,6 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
         removeItem,
         calculateSubtotal,
         transformCartWithFoodInfo,
-        fetchProfile
       }}
     >
       {props.children}
