@@ -13,6 +13,7 @@ import CustomButton from "@/lib/ui/useable-components/button";
 import { LaptopSvg } from "@/lib/utils/assets/svg";
 // Hooks
 import useToast from "@/lib/hooks/useToast";
+import useDebounceFunction from "@/lib/hooks/useDebounceForFunction";
 interface UserFormData {
   firstName: string;
   lastName: string;
@@ -75,14 +76,16 @@ export default function NameUpdateModal({
   };
   
   // handle submit
-  const handleSubmit = () => {
+  const handleSubmit = useDebounceFunction(() => {
     const fullName = `${formData.firstName} ${formData.lastName}`.trim();
     updateUser({
       variables: {
         name: fullName,
       },
     });
-  };
+  },
+  500 // Debounce time in milliseconds
+  );
 
   // Handle cancel
   const handleCancel = () => {
