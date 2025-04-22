@@ -1,5 +1,26 @@
 import { gql } from "@apollo/client";
 
+export const RELATED_ITEMS = gql`query RelatedItems($itemId: String!, $restaurantId: String!) {
+  relatedItems(itemId: $itemId, restaurantId: $restaurantId)
+}`
+
+export const FOOD = gql`fragment FoodItem on Food{
+  _id
+  title
+  image
+  description
+  subCategory
+  variations{
+    _id
+    title
+    price
+    discounted
+    addons
+
+  }
+}
+`
+
 export const RESTAURANTS_FRAGMENT = gql`
   fragment RestaurantPreviewFields on RestaurantPreview {
     _id

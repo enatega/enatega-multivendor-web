@@ -24,6 +24,7 @@ import FoodItemDetail from "@/lib/ui/useable-components/item-detail";
 import FoodCategorySkeleton from "@/lib/ui/useable-components/custom-skeletons/food-items.skeleton";
 import ClearCartModal from "@/lib/ui/useable-components/clear-cart-modal";
 import Confetti from "react-confetti";
+import { useConfig } from "@/lib/context/configuration/configuration.context";
 
 // Interface
 import { ICategory, IFood } from "@/lib/utils/interfaces";
@@ -61,6 +62,7 @@ export default function RestaurantDetailsScreen() {
     useState<any>(null);
   const [isLiked, setIsLiked] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
+  const { CURRENCY_SYMBOL } = useConfig();
 
   // Get user profile from context
   const { profile } = useUser();
@@ -622,7 +624,8 @@ export default function RestaurantDetailsScreen() {
                       {category.foods.map((meal: IFood, mealIndex) => (
                         <div
                           key={mealIndex}
-                          className="flex items-center gap-4 rounded-lg border border-gray-300 shadow-sm bg-white p-3 relative"
+                          className="flex items-center gap-4 rounded-lg border border-gray-300 shadow-sm bg-white p-3 relative cursor-pointer transition-transform duration-300 hover:scale-105 hover:shadow-lg"
+                          onClick={() => handleRestaurantClick(meal)}
                         >
                           {/* Text Content */}
                           <div className="flex-grow text-left md:text-left space-y-2">
@@ -636,7 +639,7 @@ export default function RestaurantDetailsScreen() {
 
                             <div className="flex items-center gap-2">
                               <span className="text-[#0EA5E9] text-lg font-semibold">
-                                Rs. {meal.variations[0].price}
+                                {CURRENCY_SYMBOL} {meal.variations[0].price}
                               </span>
                             </div>
                           </div>
@@ -654,7 +657,10 @@ export default function RestaurantDetailsScreen() {
                           <div className="absolute top-2 right-2">
                             <button
                               className="bg-[#0EA5E9] rounded-full shadow-md w-6 h-6 flex items-center justify-center"
-                              onClick={() => handleRestaurantClick(meal)}
+                              onClick={(e) => {
+                                e.stopPropagation(); // Prevent triggering parent onClick
+                                handleRestaurantClick(meal);
+                              }}
                               type="button"
                             >
                               <FontAwesomeIcon icon={faPlus} color="white" />

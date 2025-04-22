@@ -24,6 +24,7 @@ import FoodCategorySkeleton from "@/lib/ui/useable-components/custom-skeletons/f
 import { useMutation } from "@apollo/client";
 import { ADD_FAVOURITE_RESTAURANT } from "@/lib/api/graphql/mutations/restaurant";
 import { GET_USER_PROFILE } from "@/lib/api/graphql";
+import { useConfig } from "@/lib/context/configuration/configuration.context";
 import Confetti from "react-confetti";
 // API
 import {
@@ -65,6 +66,7 @@ export default function StoreDetailsScreen() {
   const [selectedSubCategory, setSelectedSubCategory] = useState("");
   const [isLiked, setIsLiked] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
+  const { CURRENCY_SYMBOL } = useConfig();
   const [subCategoriesForCategories, setSubCategoriesForCategories] = useState<
     ICategoryDetailsResponse[]
   >([]);
@@ -705,7 +707,8 @@ export default function StoreDetailsScreen() {
                                 (meal: IFood, mealIndex) => (
                                   <div
                                     key={mealIndex}
-                                    className="flex items-center gap-4 rounded-lg border border-gray-300 shadow-sm bg-white p-3 relative"
+                                    className="flex items-center gap-4 rounded-lg border border-gray-300 shadow-sm bg-white p-3 relative cursor-pointer transition-transform duration-300 hover:scale-105 hover:shadow-lg"
+                                    onClick={() => handleOpenFoodModal(meal)}
                                   >
                                     {/* Text Content */}
                                     <div className="flex-grow text-left md:text-left space-y-2">
@@ -719,19 +722,18 @@ export default function StoreDetailsScreen() {
 
                                       <div className="flex items-center gap-2">
                                         <span className="text-[#0EA5E9] text-lg font-semibold">
-                                          Rs. {meal.variations[0].price}
+                                          {CURRENCY_SYMBOL}{" "}
+                                          {meal.variations[0].price}
                                         </span>
                                       </div>
                                     </div>
 
                                     {/* Image */}
-                                    <div className="flex-shrink-0 w-24 h-24 md:w-28 md:h-28 ">
-                                      <Image
+                                    <div className="flex-shrink-0 w-24 h-24 md:w-28 md:h-28">
+                                      <img
                                         alt={meal.title}
-                                        className="w-full h-full rounded-md object-cover mx-auto md:mx-0 "
+                                        className="w-full h-full object-contain mx-auto md:mx-0"
                                         src={meal.image}
-                                        width={100}
-                                        height={100}
                                       />
                                     </div>
 
@@ -739,9 +741,10 @@ export default function StoreDetailsScreen() {
                                     <div className="absolute top-2 right-2">
                                       <button
                                         className="bg-[#0EA5E9] rounded-full shadow-md w-6 h-6 flex items-center justify-center"
-                                        onClick={() =>
-                                          handleOpenFoodModal(meal)
-                                        }
+                                        onClick={(e) => {
+                                          e.stopPropagation(); // Prevent triggering parent onClick
+                                          handleOpenFoodModal(meal);
+                                        }}
                                         type="button"
                                       >
                                         <FontAwesomeIcon
