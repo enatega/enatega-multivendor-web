@@ -4,6 +4,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useParams } from "next/navigation";
 import { Skeleton } from "primereact/skeleton";
+import { useMutation } from "@apollo/client";
+import { ADD_FAVOURITE_RESTAURANT } from "@/lib/api/graphql/mutations/restaurant";
+import { GET_USER_PROFILE } from "@/lib/api/graphql";
 
 // Context & Hooks
 import useUser from "@/lib/hooks/useUser";
@@ -20,6 +23,7 @@ import CustomIconTextField from "@/lib/ui/useable-components/input-icon-field";
 import FoodItemDetail from "@/lib/ui/useable-components/item-detail";
 import FoodCategorySkeleton from "@/lib/ui/useable-components/custom-skeletons/food-items.skeleton";
 import ClearCartModal from "@/lib/ui/useable-components/clear-cart-modal";
+import Confetti from "react-confetti";
 
 // Interface
 import { ICategory, IFood } from "@/lib/utils/interfaces";
@@ -33,12 +37,12 @@ import CustomDialog from "@/lib/ui/useable-components/custom-dialog";
 
 export default function RestaurantDetailsScreen() {
   // Access the UserContext via our custom hook
-  const { 
-    cart, 
-    transformCartWithFoodInfo, 
-    updateCart, 
-    restaurant: cartRestaurant, 
-    clearCart 
+  const {
+    cart,
+    transformCartWithFoodInfo,
+    updateCart,
+    restaurant: cartRestaurant,
+    clearCart,
   } = useUser();
 
   // Params from route
@@ -53,7 +57,13 @@ export default function RestaurantDetailsScreen() {
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [selectedFood, setSelectedFood] = useState<IFood | null>(null);
   const [showClearCartModal, setShowClearCartModal] = useState<boolean>(false);
-  const [pendingRestaurantAction, setPendingRestaurantAction] = useState<any>(null);
+  const [pendingRestaurantAction, setPendingRestaurantAction] =
+    useState<any>(null);
+  const [isLiked, setIsLiked] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+
+  // Get user profile from context
+  const { profile } = useUser();
 
   // Fetch restaurant data
   const { data, loading } = useRestaurant(id, decodeURIComponent(slug));
@@ -72,6 +82,14 @@ export default function RestaurantDetailsScreen() {
   const allDeals = data?.restaurant?.categories?.filter(
     (cat: ICategory) => cat.foods.length
   );
+
+  // Check if restaurant is favorited when profile is loaded
+  useEffect(() => {
+    if (profile?.favourite) {
+      const isFavorite = profile.favourite.includes(id);
+      setIsLiked(isFavorite);
+    }
+  }, [profile, id]);
 
   const deals = useMemo(() => {
     return (
@@ -93,14 +111,15 @@ export default function RestaurantDetailsScreen() {
         .map((c: ICategory, index: number) => ({
           ...c,
           index,
-          foods: c.foods.filter(food => {
+          foods: c.foods.filter((food) => {
             // If filter is empty, include all foods
             if (filter.trim() === "") return true;
-            
+
             // Include food if title or description matches filter
             return (
               food.title.toLowerCase().includes(filter.toLowerCase()) ||
-              (food.description && food.description.toLowerCase().includes(filter.toLowerCase()))
+              (food.description &&
+                food.description.toLowerCase().includes(filter.toLowerCase()))
             );
           }),
         }))
@@ -108,7 +127,7 @@ export default function RestaurantDetailsScreen() {
     );
   }, [allDeals, filter]);
 
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState("");
 
   useEffect(() => {
     if (deals.length > 0 && !selectedCategory) {
@@ -116,6 +135,41 @@ export default function RestaurantDetailsScreen() {
     }
   }, [deals, selectedCategory]);
 
+  const [addFavorite] = useMutation(ADD_FAVOURITE_RESTAURANT, {
+    onCompleted: () => {
+      const wasLiked = isLiked;
+      setIsLiked(!isLiked);
+
+      // Only show confetti when adding a favorite (not removing)
+      if (!wasLiked) {
+        console.log("Favorite added, triggering confetti!");
+        setShowConfetti(true);
+
+        // Reset confetti after a longer delay
+        setTimeout(() => {
+          setShowConfetti(false);
+        }, 5000); // Increased from 3000ms to 5000ms
+      }
+    },
+    onError: (error) => {
+      console.error("Error toggling favorite:", error);
+    },
+    refetchQueries: [{ query: GET_USER_PROFILE }],
+  });
+
+  const handleFavoriteClick = () => {
+    if (!profile) {
+      // Handle case where user is not logged in
+      console.log("Please login to add favorites");
+      return;
+    }
+
+    addFavorite({
+      variables: {
+        id: id,
+      },
+    });
+  };
 
   // Restaurant info
   const headerData = {
@@ -141,7 +195,7 @@ export default function RestaurantDetailsScreen() {
     openingTimes: data?.restaurant?.openingTimes ?? [],
   };
 
-  const restaurantInfoModalProps={
+  const restaurantInfoModalProps = {
     _id: data?.restaurant?._id ?? "",
     name: data?.restaurant?.name ?? "...",
     username: data?.restaurant?.username ?? "N/A",
@@ -150,8 +204,10 @@ export default function RestaurantDetailsScreen() {
     location: data?.restaurant?.location ?? "N/A",
     isAvailable: data?.restaurant?.isAvailable ?? true,
     openingTimes: data?.restaurant?.openingTimes ?? [],
-    description: data?.restaurant?.description ?? "Preservation of the authentic taste of all traditional foods is upheld here.",
-  }
+    description:
+      data?.restaurant?.description ??
+      "Preservation of the authentic taste of all traditional foods is upheld here.",
+  };
 
   // States
   const [visibleItems, setVisibleItems] = useState(10); // Default visible items
@@ -166,8 +222,8 @@ export default function RestaurantDetailsScreen() {
     if (cartRestaurant && id !== cartRestaurant) {
       // Store the action we want to perform after cart confirmation
       setPendingRestaurantAction({
-        type: 'foodModal',
-        payload: food
+        type: "foodModal",
+        payload: food,
       });
       // Show clear cart confirmation
       setShowClearCartModal(true);
@@ -180,16 +236,16 @@ export default function RestaurantDetailsScreen() {
   // Function to handle clear cart confirmation
   const handleClearCartConfirm = async () => {
     await clearCart();
-    
+
     // Execute the pending action
     if (pendingRestaurantAction) {
-      if (pendingRestaurantAction.type === 'foodModal') {
+      if (pendingRestaurantAction.type === "foodModal") {
         handleOpenFoodModal(pendingRestaurantAction.payload);
       }
       // Reset the pending action
       setPendingRestaurantAction(null);
     }
-    
+
     // Hide the modal
     setShowClearCartModal(false);
   };
@@ -218,11 +274,11 @@ export default function RestaurantDetailsScreen() {
     // Add restaurant ID to the food item
     setSelectedFood({
       ...food,
-      restaurant: restaurantInfo._id
+      restaurant: restaurantInfo._id,
     });
     setShowDialog(true);
   };
-  
+
   // Function to close the food item modal
   const handleCloseFoodModal = () => {
     setShowDialog(false);
@@ -232,12 +288,12 @@ export default function RestaurantDetailsScreen() {
   // Function to handle the logic for seeing reviews
   const handleSeeReviews = () => {
     setShowReviews(true);
-  }
+  };
 
   // Function to handle the logic for seeing more information
   const handleSeeMoreInfo = () => {
     setShowMoreInfo(true);
-  }
+  };
 
   // Function to show all categories
   useEffect(() => {
@@ -252,7 +308,7 @@ export default function RestaurantDetailsScreen() {
         setVisibleItems(5); // Large screens
       }
     };
-    
+
     const updateHeight = () => {
       if (window.innerWidth >= 1024)
         setHeaderHeight("64px"); // lg (desktop)
@@ -313,7 +369,7 @@ export default function RestaurantDetailsScreen() {
         visible={showReviews && !loading}
         onHide={() => setShowReviews(false)}
       />
-            
+
       {/* See More Info Modal */}
       <InfoModal
         restaurantInfo={restaurantInfoModalProps}
@@ -321,13 +377,40 @@ export default function RestaurantDetailsScreen() {
         visible={showMoreInfo && !loading}
         onHide={() => setShowMoreInfo(false)}
       />
-      
+
       {/* Clear Cart Modal */}
       <ClearCartModal
         isVisible={showClearCartModal}
         onHide={() => setShowClearCartModal(false)}
         onConfirm={handleClearCartConfirm}
       />
+      {showConfetti && (
+        <>
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              pointerEvents: "none",
+              zIndex: 10000, // Increased z-index
+            }}
+          >
+            <Confetti
+              width={window.innerWidth}
+              height={window.innerHeight}
+              recycle={false}
+              numberOfPieces={1000}
+              gravity={0.3}
+            />
+          </div>
+          {/* Backdrop overlay to ensure confetti is visible on all backgrounds */}
+        </>
+      )}
 
       <div className="w-screen h-screen flex flex-col pb-20">
         <div className="scrollable-container flex-1 overflow-auto">
@@ -367,12 +450,13 @@ export default function RestaurantDetailsScreen() {
                 </div>
               </div>
             )}
-
-            <div className="absolute top-4 right-4 md:bottom-4 md:right-4 md:top-auto rounded-full bg-white h-8 w-8 flex justify-center items-center">
-              <HeartSvg />
-            </div>
+            <button
+              onClick={handleFavoriteClick}
+              className="absolute top-4 right-4 md:bottom-4 md:right-4 md:top-auto rounded-full bg-white h-8 w-8 flex justify-center items-center transform transition-transform duration-300 hover:scale-110 active:scale-95"
+            >
+              <HeartSvg filled={isLiked} />
+            </button>
           </div>
-
           {/* Restaurant Info */}
           <div className="bg-gray-50 shadow-[0px_1px_3px_rgba(0,0,0,0.1)] p-3 h-[80px] flex justify-between items-center">
             <PaddingContainer>
@@ -401,7 +485,7 @@ export default function RestaurantDetailsScreen() {
                 <a
                   className="flex items-center gap-2 text-[#0EA5E9] font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle"
                   href="#"
-                  onClick={(e)=>{
+                  onClick={(e) => {
                     e.preventDefault();
                     handleSeeMoreInfo();
                   }}
@@ -413,19 +497,22 @@ export default function RestaurantDetailsScreen() {
                     "See more information"
                   )}
                 </a>
-                 {/* Review Link */}
-                 <a
+
+                {/* Review Link */}
+                <a
                   className="flex items-center gap-2 text-[#0EA5E9] font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle"
                   href="#"
-                  onClick={(e)=>{
+                  onClick={(e) => {
                     e.preventDefault();
                     handleSeeReviews();
                   }}
                 >
                   <ChatSvg />
-                  {loading ?
+                  {loading ? (
                     <Skeleton width="10rem" height="1.5rem" />
-                  : "See reviews"}
+                  ) : (
+                    "See reviews"
+                  )}
                 </a>
               </div>
             </PaddingContainer>
@@ -524,13 +611,13 @@ export default function RestaurantDetailsScreen() {
                     id={categorySlug}
                     data-category-id={categorySlug}
                     ref={(el) => {
-                      categoryRefs.current[categorySlug] = el
+                      categoryRefs.current[categorySlug] = el;
                     }}
                   >
                     <h2 className="mb-4 font-inter text-gray-900 font-bold text-2xl sm:text-xl leading-snug tracking-tight">
                       {category.title}
                     </h2>
-  
+
                     <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                       {category.foods.map((meal: IFood, mealIndex) => (
                         <div
@@ -542,18 +629,18 @@ export default function RestaurantDetailsScreen() {
                             <h3 className="text-gray-900 text-lg font-semibold font-inter">
                               {meal.title}
                             </h3>
-  
+
                             <p className="text-gray-500 text-sm">
                               {meal.description}
                             </p>
-  
+
                             <div className="flex items-center gap-2">
                               <span className="text-[#0EA5E9] text-lg font-semibold">
                                 Rs. {meal.variations[0].price}
                               </span>
                             </div>
                           </div>
-  
+
                           {/* Image */}
                           <div className="flex-shrink-0 w-24 h-24 md:w-28 md:h-28">
                             <img
@@ -562,7 +649,7 @@ export default function RestaurantDetailsScreen() {
                               src={meal.image}
                             />
                           </div>
-  
+
                           {/* Add Button */}
                           <div className="absolute top-2 right-2">
                             <button
@@ -577,7 +664,7 @@ export default function RestaurantDetailsScreen() {
                       ))}
                     </div>
                   </div>
-                )
+                );
               })
             )}
           </PaddingContainer>

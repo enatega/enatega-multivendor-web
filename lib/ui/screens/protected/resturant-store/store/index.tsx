@@ -21,7 +21,10 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { PaddingContainer } from "@/lib/ui/useable-components/containers";
 import FoodItemDetail from "@/lib/ui/useable-components/item-detail";
 import FoodCategorySkeleton from "@/lib/ui/useable-components/custom-skeletons/food-items.skeleton";
-
+import { useMutation } from "@apollo/client";
+import { ADD_FAVOURITE_RESTAURANT } from "@/lib/api/graphql/mutations/restaurant";
+import { GET_USER_PROFILE } from "@/lib/api/graphql";
+import Confetti from "react-confetti";
 // API
 import {
   GET_CATEGORIES_SUB_CATEGORIES_LIST,
@@ -47,7 +50,7 @@ import Image from "next/image";
 
 export default function StoreDetailsScreen() {
   // Access the UserContext via our custom hook
-  const { cart, transformCartWithFoodInfo, updateCart } = useUser();
+  const { cart, transformCartWithFoodInfo, updateCart, profile } = useUser();
 
   // Params
   const { id, slug }: { id: string; slug: string } = useParams();
@@ -60,6 +63,8 @@ export default function StoreDetailsScreen() {
   const [isScrolling, setIsScrolling] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedSubCategory, setSelectedSubCategory] = useState("");
+  const [isLiked, setIsLiked] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
   const [subCategoriesForCategories, setSubCategoriesForCategories] = useState<
     ICategoryDetailsResponse[]
   >([]);
@@ -90,6 +95,13 @@ export default function StoreDetailsScreen() {
       }
     }
   }, [data?.restaurant, cart.length, transformCartWithFoodInfo, updateCart]);
+
+  useEffect(() => {
+    if (profile?.favourite) {
+      const isFavorite = profile.favourite.includes(id);
+      setIsLiked(isFavorite);
+    }
+  }, [profile, id]);
 
   // Constants
   const allDeals = data?.restaurant?.categories?.filter(
@@ -168,8 +180,8 @@ export default function StoreDetailsScreen() {
             .map((subCat: ISubCategory) => {
               const foods = groupedFoods[subCat._id] || [];
 
-              return foods.length > 0 ?
-                  {
+              return foods.length > 0
+                ? {
                     _id: subCat._id,
                     title: subCat.title,
                     foods,
@@ -274,6 +286,28 @@ export default function StoreDetailsScreen() {
     setShowDialog(null);
   };
 
+  const [addFavorite] = useMutation(ADD_FAVOURITE_RESTAURANT, {
+    onCompleted: () => {
+      const wasLiked = isLiked;
+      setIsLiked(!isLiked);
+
+      // Only show confetti when adding a favorite (not removing)
+      if (!wasLiked) {
+        console.log("Favorite added, triggering confetti!");
+        setShowConfetti(true);
+
+        // Reset confetti after a longer delay
+        setTimeout(() => {
+          setShowConfetti(false);
+        }, 5000);
+      }
+    },
+    onError: (error) => {
+      console.error("Error toggling favorite:", error);
+    },
+    refetchQueries: [{ query: GET_USER_PROFILE }],
+  });
+
   // Constants
   const headerData = {
     name: data?.restaurant?.name ?? "...",
@@ -282,6 +316,20 @@ export default function StoreDetailsScreen() {
     isAvailable: data?.restaurant?.isAvailable ?? true,
     openingTimes: data?.restaurant?.openingTimes ?? [],
     deliveryTime: data?.restaurant?.deliveryTime,
+  };
+
+  const handleFavoriteClick = () => {
+    if (!profile) {
+      // Handle case where user is not logged in
+      console.log("Please login to add favorites");
+      return;
+    }
+
+    addFavorite({
+      variables: {
+        id: id,
+      },
+    });
   };
 
   const restaurantInfo = {
@@ -376,20 +424,49 @@ export default function StoreDetailsScreen() {
         visible={showMoreInfo && !loading}
         onHide={() => setShowMoreInfo(false)}
       />
+
+      {showConfetti && (
+        <>
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              pointerEvents: "none",
+              zIndex: 10000,
+            }}
+          >
+            <Confetti
+              width={window.innerWidth}
+              height={window.innerHeight}
+              recycle={false}
+              numberOfPieces={1000}
+              gravity={0.3}
+            />
+          </div>
+        </>
+      )}
+
       <div className="w-screen h-screen flex flex-col pb-20">
         <div className="scrollable-container flex-1 overflow-auto">
           {/* Banner */}
           <div className="relative">
-            {loading ?
+            {loading ? (
               <Skeleton width="100%" height="20rem" borderRadius="0" />
-            : <img
+            ) : (
+              <img
                 alt="McDonald's banner with a burger and fries"
                 className="w-full h-72 object-cover"
                 height="300"
                 src={restaurantInfo.image}
                 width="1200"
               />
-            }
+            )}
 
             {!loading && (
               <div className="absolute bottom-0 left-0 md:left-20 p-4">
@@ -414,9 +491,12 @@ export default function StoreDetailsScreen() {
               </div>
             )}
 
-            <div className="absolute top-4 right-4 md:bottom-4 md:right-4 md:top-auto rounded-full bg-white h-8 w-8 flex justify-center items-center">
-              <HeartSvg />
-            </div>
+            <button
+              onClick={handleFavoriteClick}
+              className="absolute top-4 right-4 md:bottom-4 md:right-4 md:top-auto rounded-full bg-white h-8 w-8 flex justify-center items-center transform transition-transform duration-300 hover:scale-110 active:scale-95"
+            >
+              <HeartSvg filled={isLiked} />
+            </button>
           </div>
 
           {/* Restaurant Info */}
@@ -428,18 +508,22 @@ export default function StoreDetailsScreen() {
                     {/* Time */}
                     <span className="flex items-center gap-2 text-gray-600 font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle">
                       <ClockSvg />
-                      {loading ?
+                      {loading ? (
                         <Skeleton width="2rem" height="1.5rem" />
-                      : headerData.deliveryTime}
+                      ) : (
+                        headerData.deliveryTime
+                      )}
                       mins
                     </span>
 
                     {/* Rating */}
                     <span className="flex items-center gap-2 text-gray-600 font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle">
                       <RatingSvg />
-                      {loading ?
+                      {loading ? (
                         <Skeleton width="2rem" height="1.5rem" />
-                      : headerData.averageReview}
+                      ) : (
+                        headerData.averageReview
+                      )}
                     </span>
 
                     {/* Info Link */}
@@ -452,9 +536,11 @@ export default function StoreDetailsScreen() {
                       }}
                     >
                       <InfoSvg />
-                      {loading ?
+                      {loading ? (
                         <Skeleton width="10rem" height="1.5rem" />
-                      : "See more information"}
+                      ) : (
+                        "See more information"
+                      )}
                     </a>
                     {/* Review Link */}
                     <a
@@ -466,9 +552,11 @@ export default function StoreDetailsScreen() {
                       }}
                     >
                       <ChatSvg />
-                      {loading ?
+                      {loading ? (
                         <Skeleton width="10rem" height="1.5rem" />
-                      : "See reviews"}
+                      ) : (
+                        "See reviews"
+                      )}
                     </a>
                   </div>
                 </div>
@@ -501,13 +589,13 @@ export default function StoreDetailsScreen() {
                         <li key={index} className="shrink-0">
                           <button
                             className={`bg-${
-                              selectedCategory === _slug ? "[#F3FFEE]" : (
-                                "gray-100"
-                              )
+                              selectedCategory === _slug
+                                ? "[#F3FFEE]"
+                                : "gray-100"
                             } text-${
-                              selectedCategory === _slug ? "[#5AC12F]" : (
-                                "gray-600"
-                              )
+                              selectedCategory === _slug
+                                ? "[#5AC12F]"
+                                : "gray-600"
                             } rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap`}
                             onClick={() => handleScroll(_slug, true, 130)}
                           >
@@ -538,13 +626,13 @@ export default function StoreDetailsScreen() {
                           <li key={index} className="shrink-0">
                             <button
                               className={`bg-${
-                                selectedSubCategory === _slug ? "[#F3FFEE]" : (
-                                  "gray-100"
-                                )
+                                selectedSubCategory === _slug
+                                  ? "[#F3FFEE]"
+                                  : "gray-100"
                               } text-${
-                                selectedSubCategory === _slug ? "[#5AC12F]" : (
-                                  "gray-600"
-                                )
+                                selectedSubCategory === _slug
+                                  ? "[#5AC12F]"
+                                  : "gray-600"
                               } rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap`}
                               onClick={() => handleScroll(_slug, false, 170)}
                             >
@@ -562,16 +650,19 @@ export default function StoreDetailsScreen() {
 
           {/* Main Section */}
           <PaddingContainer>
-            {loading || categoriesSubCategoriesLoading || subcategoriesLoading ?
+            {loading ||
+            categoriesSubCategoriesLoading ||
+            subcategoriesLoading ? (
               <FoodCategorySkeleton />
-            : <div className="flex flex-col md:flex-row w-full">
+            ) : (
+              <div className="flex flex-col md:flex-row w-full">
                 <div className="hidden md:block md:w-1/5 p-3 h-screen z-10  sticky top-0 left-0">
                   <div className="h-full overflow-hidden group">
                     <div
                       className={`h-full overflow-y-auto transition-all duration-300 ${
-                        isScrolling ?
-                          "scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
-                        : "overflow-hidden"
+                        isScrolling
+                          ? "scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
+                          : "overflow-hidden"
                       }`}
                       onScroll={handleMouseEnterCategoryPanel}
                     >
@@ -670,7 +761,7 @@ export default function StoreDetailsScreen() {
                   ))}
                 </div>
               </div>
-            }
+            )}
           </PaddingContainer>
         </div>
       </div>
