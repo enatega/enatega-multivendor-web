@@ -42,7 +42,7 @@ export default function RestaurantDetailsScreen() {
     transformCartWithFoodInfo,
     updateCart,
     restaurant: cartRestaurant,
-    clearCart
+    clearCart,
   } = useUser();
 
   // Params from route
@@ -57,7 +57,8 @@ export default function RestaurantDetailsScreen() {
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [selectedFood, setSelectedFood] = useState<IFood | null>(null);
   const [showClearCartModal, setShowClearCartModal] = useState<boolean>(false);
-  const [pendingRestaurantAction, setPendingRestaurantAction] = useState<any>(null);
+  const [pendingRestaurantAction, setPendingRestaurantAction] =
+    useState<any>(null);
 
   // Fetch restaurant data
   const { data, loading } = useRestaurant(id, decodeURIComponent(slug));
@@ -110,9 +111,11 @@ export default function RestaurantDetailsScreen() {
         .map((c: ICategory, index: number) => ({
           ...c,
           index,
-          foods: c.foods.filter(food => {
+          foods: c.foods.filter((food) => {
+            // If filter is empty, include all foods
             if (filter.trim() === "") return true;
 
+            // Include food if title or description matches filter
             return (
               food.title.toLowerCase().includes(filter.toLowerCase()) ||
               (food.description &&
@@ -146,14 +149,13 @@ export default function RestaurantDetailsScreen() {
       : filteredDeals;
   }, [allDeals, filter, popularDealsIds]);
 
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState("");
 
   useEffect(() => {
     if (deals.length > 0 && !selectedCategory) {
       setSelectedCategory(toSlug(deals[0]?.title)); // first category selected by default
     }
   }, [deals, selectedCategory]);
-
 
   // Restaurant info
   const headerData = {
@@ -188,8 +190,10 @@ export default function RestaurantDetailsScreen() {
     location: data?.restaurant?.location ?? "N/A",
     isAvailable: data?.restaurant?.isAvailable ?? true,
     openingTimes: data?.restaurant?.openingTimes ?? [],
-    description: data?.restaurant?.description ?? "Preservation of the authentic taste of all traditional foods is upheld here.",
-  }
+    description:
+      data?.restaurant?.description ??
+      "Preservation of the authentic taste of all traditional foods is upheld here.",
+  };
 
   // States
   const [visibleItems, setVisibleItems] = useState(10); // Default visible items
@@ -204,8 +208,8 @@ export default function RestaurantDetailsScreen() {
     if (cartRestaurant && id !== cartRestaurant) {
       // Store the action we want to perform after cart confirmation
       setPendingRestaurantAction({
-        type: 'foodModal',
-        payload: food
+        type: "foodModal",
+        payload: food,
       });
       // Show clear cart confirmation
       setShowClearCartModal(true);
@@ -221,7 +225,7 @@ export default function RestaurantDetailsScreen() {
 
     // Execute the pending action
     if (pendingRestaurantAction) {
-      if (pendingRestaurantAction.type === 'foodModal') {
+      if (pendingRestaurantAction.type === "foodModal") {
         handleOpenFoodModal(pendingRestaurantAction.payload);
       }
       // Reset the pending action
@@ -256,7 +260,7 @@ export default function RestaurantDetailsScreen() {
     // Add restaurant ID to the food item
     setSelectedFood({
       ...food,
-      restaurant: restaurantInfo._id
+      restaurant: restaurantInfo._id,
     });
     setShowDialog(true);
   };
@@ -270,12 +274,12 @@ export default function RestaurantDetailsScreen() {
   // Function to handle the logic for seeing reviews
   const handleSeeReviews = () => {
     setShowReviews(true);
-  }
+  };
 
   // Function to handle the logic for seeing more information
   const handleSeeMoreInfo = () => {
     setShowMoreInfo(true);
-  }
+  };
 
   // Function to show all categories
   useEffect(() => {
@@ -371,17 +375,16 @@ export default function RestaurantDetailsScreen() {
         <div className="scrollable-container flex-1 overflow-auto">
           {/* Banner */}
           <div className="relative">
-            {loading ? (
+            {loading ?
               <Skeleton width="100%" height="20rem" borderRadius="0" />
-            ) : (
-              <img
+              : <img
                 alt={`${restaurantInfo.name} banner`}
                 className="w-full h-72 object-cover"
                 height="300"
                 src={restaurantInfo.image}
                 width="1200"
               />
-            )}
+            }
 
             {!loading && (
               <div className="absolute bottom-0 left-0 md:left-20 p-4">
@@ -394,13 +397,13 @@ export default function RestaurantDetailsScreen() {
                     width="50"
                   />
 
-                  <div className="text-white space-y-2">
-                    <h1 className="font-inter font-extrabold text-[32px] leading-[100%] sm:text-[40px] md:text-[48px]">
+                  <div className="text-gray-800 space-y-2">
+                    <h1 className="bg-black/20  p-2 mb-4 text-white rounded font-inter font-extrabold text-[32px] leading-[100%] sm:text-[40px] md:text-[48px]">
                       {restaurantInfo.name}
                     </h1>
-                    <p className="font-inter font-medium text-[18px] leading-[28px] sm:text-[20px] sm:leading-[30px] md:text-[24px] md:leading-[32px]">
+                    <span className="bg-black/20 p-2 rounded  text-white font-inter font-medium text-[18px] sm:text-[20px] sm:leading-[30px] md:text-[24px] md:leading-[32px]">
                       {restaurantInfo.address}
-                    </p>
+                    </span>
                   </div>
                 </div>
               </div>
@@ -418,21 +421,17 @@ export default function RestaurantDetailsScreen() {
                 {/* Time */}
                 <span className="flex items-center gap-2 text-gray-600 font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle">
                   <ClockSvg />
-                  {loading ? (
+                  {loading ?
                     <Skeleton width="2rem" height="1.5rem" />
-                  ) : (
-                    `${headerData.deliveryTime} mins`
-                  )}
+                    : `${headerData.deliveryTime} mins`}
                 </span>
 
                 {/* Rating */}
                 <span className="flex items-center gap-2 text-gray-600 font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle">
                   <RatingSvg />
-                  {loading ? (
+                  {loading ?
                     <Skeleton width="2rem" height="1.5rem" />
-                  ) : (
-                    headerData.averageReview
-                  )}
+                    : headerData.averageReview}
                 </span>
 
                 {/* Info Link */}
@@ -445,11 +444,9 @@ export default function RestaurantDetailsScreen() {
                   }}
                 >
                   <InfoSvg />
-                  {loading ? (
+                  {loading ?
                     <Skeleton width="10rem" height="1.5rem" />
-                  ) : (
-                    "See more information"
-                  )}
+                    : "See more information"}
                 </a>
                 {/* Review Link */}
                 <a
@@ -549,10 +546,9 @@ export default function RestaurantDetailsScreen() {
 
           {/* Food Categories and Items */}
           <PaddingContainer>
-            {loading ? (
+            {loading ?
               <FoodCategorySkeleton />
-            ) : (
-              deals.map((category: ICategory, catIndex: number) => {
+              : deals.map((category: ICategory, catIndex: number) => {
                 const categorySlug = toSlug(category.title);
 
                 return (
@@ -562,7 +558,7 @@ export default function RestaurantDetailsScreen() {
                     id={categorySlug}
                     data-category-id={categorySlug}
                     ref={(el) => {
-                      categoryRefs.current[categorySlug] = el
+                      categoryRefs.current[categorySlug] = el;
                     }}
                   >
                     <h2 className="mb-4 font-inter text-gray-900 font-bold text-2xl sm:text-xl leading-snug tracking-tight">
@@ -615,9 +611,9 @@ export default function RestaurantDetailsScreen() {
                       ))}
                     </div>
                   </div>
-                )
+                );
               })
-            )}
+            }
           </PaddingContainer>
         </div>
       </div>

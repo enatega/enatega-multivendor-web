@@ -72,6 +72,9 @@ import {
 // Asets
 import HomeIcon from "../../../../../assets/home_icon.png";
 import RestIcon from "../../../../../assets/rest_icon.png";
+import getEnv from "@/environment";
+import { useLocationContext } from "@/lib/context/Location/Location.context";
+
 
 // import RiderIcon from "../../../../../assets/rider_icon.png";
 
@@ -92,6 +95,9 @@ export default function OrderCheckoutScreen() {
   const [directions, setDirections] =
     useState<google.maps.DirectionsResult | null>(null);
 
+  const { SERVER_URL } = getEnv("DEV");
+  const {authToken, setIsAuthModalVisible } = useAuth();
+
   // Coupon
   const [isCouponApplied, setIsCouponApplied] = useState(false);
   const [couponText, setCouponText] = useState("");
@@ -100,11 +106,15 @@ export default function OrderCheckoutScreen() {
   // Hooks
   const router = useRouter();
   const { showToast } = useToast();
-  const { userAddress } = useUserAddress();
-  const { authToken, setIsAuthModalVisible } = useAuth();
   const { CURRENCY_SYMBOL, CURRENCY, DELIVERY_RATE, COST_TYPE } = useConfig();
-  const { cart, restaurant: restaurantId, clearCart, profile } = useUser();
+  const { location, setLocation } = useLocationContext();
+  console.log("🚀 ~ OrderCheckoutScreen ~ location:", location);
+  const { cart, restaurant: restaurantId, clearCart, profile, fetchProfile, loadingProfile } = useUser();
+  console.log("🚀 ~ OrderCheckoutScreen ~ profile:", profile);
+  const { userAddress } = useUserAddress();
+
   const { data: restaurantData } = useRestaurant(restaurantId || "");
+
 
   // Context
   const { isLoaded } = useContext(GoogleMapsContext);
@@ -166,13 +176,12 @@ export default function OrderCheckoutScreen() {
         food: food._id,
         quantity: food.quantity,
         variation: food.variation._id,
-        addons:
-          food.addons ?
-            food.addons.map(({ _id, options }) => ({
+        addons: food.addons
+          ? food.addons.map(({ _id, options }) => ({
               _id,
               options: options.map(({ _id }) => _id),
             }))
-            : [],
+          : [],
         specialInstructions: food.specialInstructions,
       };
     });
@@ -183,7 +192,7 @@ export default function OrderCheckoutScreen() {
     const day = date.getDay();
     const hours = date.getHours();
     const minutes = date.getMinutes();
-    const todaysTimings = restaurantData.restaurant.openingTimes.find(
+    const todaysTimings = restaurantData?.restaurant?.openingTimes?.find(
       (o: any) => o.day === DAYS[day]
     );
     const times = todaysTimings.times.filter(
@@ -230,6 +239,87 @@ export default function OrderCheckoutScreen() {
     });
   }
 
+  // function validateOrder() {
+  //   if (!restaurantData.restaurant.isAvailable || !onCheckIsOpen()) {
+  //     // toggleCloseModal();
+  //     showToast({
+  //       title: "Restaurant",
+  //       message: "Restaurant is not available right now.",
+  //       type: "error",
+  //     });
+
+  //     return;
+  //   }
+  //   if (!cart.length) {
+  //     showToast({ title: "Cart", message: "Cart is empty", type: "error" });
+
+  //     return false;
+  //   }
+  //   const delivery = isPickUp ? 0 : deliveryCharges;
+  //   if (
+  //     Number(calculatePrice(delivery, true)) <
+  //     restaurantData?.restaurant?.minimumOrder
+  //   ) {
+  //     showToast({
+  //       title: "Minimum Amount",
+  //       message: `The minimum amount of (${CURRENCY_SYMBOL} ${restaurantData?.restaurant?.minimumOrder}) for your order has not been reached.`,
+  //       type: "warn",
+  //     });
+
+  //     return false;
+  //   }
+  //   if (!userAddress) {
+  //     showToast({
+  //       title: "Missing Address",
+  //       message: "Select your address.",
+  //       type: "warn",
+  //     });
+
+  //     return false;
+  //   }
+  //   if (!paymentMethod) {
+  //     showToast({
+  //       title: "Missing Payment Method",
+  //       message: "Set payment method before checkout",
+  //       type: "warn",
+  //     });
+
+  //     return false;
+  //   }
+  //   if ((profile?.phone?.length || 0) < 1) {
+  //     showToast({
+  //       title: "Missing Phone number",
+  //       message: "Phone number is missing.",
+  //       type: "warn",
+  //     });
+
+  //     setTimeout(() => {
+  //       router.replace("/phone-number");
+  //     }, 1000);
+
+  //     return false;
+  //   }
+  //   if (!profile?.phoneIsVerified) {
+  //     showToast({
+  //       title: "Unverified Phone number",
+  //       message: "Phone Number is not verified",
+
+  //       type: "warn",
+  //     });
+
+  //     setTimeout(() => {
+  //       router.replace("/phone-number");
+  //     }, 1000);
+
+  //     return false;
+  //   }
+  //   return true;
+  // }
+
+  // Order
+
+  // This is the fixed validateOrder function inside your OrderCheckoutScreen.js file
+
   function validateOrder() {
     if (!restaurantData?.restaurant?.isAvailable || !onCheckIsOpen()) {
       // toggleCloseModal();
@@ -238,14 +328,14 @@ export default function OrderCheckoutScreen() {
         message: "Restaurant is not available right now.",
         type: "error",
       });
-
-      return;
-    }
-    if (!cart.length) {
-      showToast({ title: "Cart", message: "Cart is empty", type: "error" });
-
       return false;
     }
+
+    if (!cart.length) {
+      showToast({ title: "Cart", message: "Cart is empty", type: "error" });
+      return false;
+    }
+
     const delivery = isPickUp ? 0 : deliveryCharges;
     if (
       Number(calculatePrice(delivery, true)) <
@@ -256,28 +346,58 @@ export default function OrderCheckoutScreen() {
         message: `The minimum amount of (${CURRENCY_SYMBOL} ${restaurantData?.restaurant?.minimumOrder}) for your order has not been reached.`,
         type: "warn",
       });
-
       return false;
     }
+
     if (!userAddress) {
       showToast({
         title: "Missing Address",
         message: "Select your address.",
         type: "warn",
       });
-
       return false;
     }
+
     if (!paymentMethod) {
       showToast({
         title: "Missing Payment Method",
         message: "Set payment method before checkout",
         type: "warn",
       });
+      return false;
+    }
+
+    // Check if the profile data is being loaded
+    if (loadingProfile) {
+      showToast({
+        title: "Loading Profile",
+        message: "Please wait while we load your profile information.",
+        type: "info",
+      });
+      return false;
+    }
+
+    // Check if profile exists
+    if (!profile) {
+      showToast({
+        title: "Missing Profile",
+        message:
+          "Your profile information couldn't be loaded. Please try again or login again.",
+        type: "error",
+      });
+
+      // Force fetch the profile
+      fetchProfile();
+
+      setTimeout(() => {
+        router.replace("/profile");
+      }, 1000);
 
       return false;
     }
-    if ((profile?.phone?.length || 0) < 1) {
+
+    // Now safely check for phone number and verification status
+    if (!profile.phone || profile.phone.length < 1) {
       showToast({
         title: "Missing Phone number",
         message: "Phone number is missing.",
@@ -290,11 +410,11 @@ export default function OrderCheckoutScreen() {
 
       return false;
     }
-    if (!profile?.phoneIsVerified) {
+
+    if (!profile.phoneIsVerified) {
       showToast({
         title: "Unverified Phone number",
         message: "Phone Number is not verified",
-
         type: "warn",
       });
 
@@ -304,10 +424,10 @@ export default function OrderCheckoutScreen() {
 
       return false;
     }
+
     return true;
   }
 
-  // Order
   async function onPlaceOrder() {
     // Check if user is autenticated
     if (!authToken) {
@@ -331,7 +451,7 @@ export default function OrderCheckoutScreen() {
         variables: {
           restaurant: restaurantId,
           orderInput: items,
-          paymentMethod: paymentMethod === "Cash" ? "COD" : "STRIPE",
+          paymentMethod: paymentMethod,
           couponCode: coupon ? coupon.title : null,
           tipping: +selectedTip,
           taxationAmount: +taxCalculation(),
@@ -364,13 +484,15 @@ export default function OrderCheckoutScreen() {
   }
 
   async function onCompleted(data: { placeOrder: IOrder }) {
+    clearCart();
     if (paymentMethod === "COD") {
-      clearCart();
-      router.replace(`/order-detail/${data.placeOrder._id}`);
+      router.replace(`/order/${data.placeOrder._id}/tracking`);
     } else if (paymentMethod === "PAYPAL") {
       router.replace(`/paypal?id=${data.placeOrder._id}`);
     } else if (paymentMethod === "STRIPE") {
-      router.replace(`/stripe?id=${data.placeOrder._id}`);
+      router.replace(
+        `${SERVER_URL}stripe/create-checkout-session?id=${data?.placeOrder?.orderId}&platform=web`
+      );
     }
   }
 
@@ -492,7 +614,7 @@ export default function OrderCheckoutScreen() {
         <div className="scrollable-container flex-1 overflow-auto">
           {/* <!-- Header with map and navigation --> */}
           <div className="relative">
-            {isLoaded ?
+            {isLoaded ? (
               <GoogleMap
                 mapContainerStyle={{
                   width: "100%",
@@ -548,7 +670,8 @@ export default function OrderCheckoutScreen() {
                   />
                 )}
               </GoogleMap>
-              : <>
+            ) : (
+              <>
                 <img
                   alt="Map showing delivery route"
                   className="w-full h-64 object-cover"
@@ -560,7 +683,7 @@ export default function OrderCheckoutScreen() {
                   H
                 </div>{" "}
               </>
-            }
+            )}
           </div>
           {/* <!-- Toggle Prices Button for Mobile --> */}
           <div className="sm:hidden fixed top-10 left-0 right-0 bg-transparent z-10 p-4">
@@ -776,9 +899,9 @@ export default function OrderCheckoutScreen() {
                           className={`text-[12px] text-${selectedTip === tip ? "white" : "[#0EA5E9]"} bg-${selectedTip === tip ? "[#0EA5E9]" : "white"} border border-[#0EA5E9] px-4 py-2 rounded-full w-full`}
                           onClick={() => {
                             if (selectedTip === tip) {
-                              setSelectedTip("")
+                              setSelectedTip("");
                             } else {
-                              setSelectedTip(tip)
+                              setSelectedTip(tip);
                             }
                           }}
                         >
@@ -795,12 +918,13 @@ export default function OrderCheckoutScreen() {
                   <h2 className="font-semibold text-gray-900 mb-2 text-base sm:text-lg md:text-[16px] lg:text-[18px]">
                     Promo code
                   </h2>
-                  {isCouponApplied ?
+                  {isCouponApplied ? (
                     <Message
                       severity="success"
                       text="Coupon has been applied successfully"
                     />
-                    : <>
+                  ) : (
+                    <>
                       <p className="text-gray-500 mb-4 leading-5 sm:leading-5 tracking-normal font-inter text-xs sm:text-sm md:text-sm align-middle mt-2">
                         If you have a promo code enter it below to claim your
                         benefit!
@@ -818,13 +942,15 @@ export default function OrderCheckoutScreen() {
                           className="bg-[#5AC12F] h-10 px-8 space-x-2 font-medium text-gray-900  tracking-normal font-inter text-sm sm:text-base md:text-[12px] lg:text-[14px] rounded-full"
                           onClick={onApplyCoupon}
                         >
-                          {couponLoading ?
+                          {couponLoading ? (
                             <FontAwesomeIcon icon={faSpinner} spin />
-                            : <span>Submit</span>}
+                          ) : (
+                            <span>Submit</span>
+                          )}
                         </button>
                       </div>
                     </>
-                  }
+                  )}
                 </div>
               </div>
 
@@ -926,9 +1052,11 @@ export default function OrderCheckoutScreen() {
                     className="bg-[#5AC12F] text-gray-900 w-full py-2 rounded-full text-xs lg:text-[12px]"
                     onClick={onPlaceOrder}
                   >
-                    {loadingOrderMutation ?
+                    {loadingOrderMutation ? (
                       <FontAwesomeIcon icon={faSpinner} spin />
-                      : <span> Click to order</span>}
+                    ) : (
+                      <span> Click to order</span>
+                    )}
                   </button>
                 </div>
               </div>
@@ -1036,9 +1164,11 @@ export default function OrderCheckoutScreen() {
                         className="bg-[#5AC12F] text-gray-900 w-full py-2 rounded-full text-sm"
                         onClick={onPlaceOrder}
                       >
-                        {loadingOrderMutation ?
+                        {loadingOrderMutation ? (
                           <FontAwesomeIcon icon={faSpinner} spin />
-                          : <span> Click to order</span>}
+                        ) : (
+                          <span> Click to order</span>
+                        )}
                       </button>
                     </motion.div>
                   )}
