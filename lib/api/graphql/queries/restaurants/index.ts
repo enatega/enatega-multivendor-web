@@ -211,6 +211,16 @@ export const GET_CATEGORIES_SUB_CATEGORIES_LIST = gql`
   }
 `;
 
+
+export const GET_POPULAR_SUB_CATEGORIES_LIST = gql`
+  query PopularItems($restaurantId: String!) {
+  popularItems(restaurantId: $restaurantId) {
+    id
+    count
+}
+  }
+`;
+
 export const GET_SUB_CATEGORIES = gql`
   query subCategories {
     subCategories {
