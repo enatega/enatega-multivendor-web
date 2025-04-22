@@ -12,7 +12,7 @@ import WhyChoose from '@/lib/ui/useable-components/RiderandRestaurantsInfos/WhyC
 import growth from "@/public/assets/images/png/Growth.png"
 import getMoreOrders from "@/public/assets/images/png/GetMoreOrders.png"
 import deliverMoreCustomers from "@/public/assets/images/png/deliverToCustomer.png"
-import riderBanner  from "@/public/assets/images/png/riderBanner.webp"
+import riderBanner  from "@/public/assets/images/png/new-rider-bg.png"
 import StartingImage from '@/lib/ui/useable-components/RiderandRestaurantsInfos/StartingImage/StartingImage'
 
 // cards Data
