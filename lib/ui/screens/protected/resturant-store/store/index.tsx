@@ -614,7 +614,7 @@ export default function StoreDetailsScreen() {
                                 (meal: IFood, mealIndex) => (
                                   <div
                                     key={mealIndex}
-                                    className="flex items-center gap-4 rounded-lg border border-gray-300 shadow-sm bg-white p-3 relative"
+                                    className="flex items-center gap-4 rounded-lg border border-gray-300 shadow-sm bg-white p-3 relative cursor-pointer"
                                   >
                                     {/* Text Content */}
                                     <div className="flex-grow text-left md:text-left space-y-2">
@@ -692,6 +692,7 @@ export default function StoreDetailsScreen() {
             foodItem={showDialog}
             addons={data?.restaurant?.addons}
             options={data?.restaurant?.options}
+            restaurant={data?.restaurant}
             onClose={handleCloseFoodModal}
           />
         )}

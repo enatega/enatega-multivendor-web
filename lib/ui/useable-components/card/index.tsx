@@ -12,13 +12,13 @@ import IconWithTitle from "../icon-with-title";
 // Interface
 import { ICardProps } from "@/lib/utils/interfaces";
 
-
 const Card: React.FC<ICardProps> = ({ item }) => {
   const router = useRouter();
   const pathname = usePathname();
 
   return (
-    <div className={`rounded-md shadow-md cursor-pointer hover:scale-102 hover:opacity-95 transition-transform duration-500 max-h-[272px] w-[96%] ml-[2%] ${pathname === '/restaurants' || pathname === '/store' ? 'my-[2%]' : 'my-[4%]'}`}
+    <div
+      className={`rounded-md shadow-md cursor-pointer hover:scale-102 hover:opacity-95 transition-transform duration-500 max-h-[272px] w-[96%] ml-[2%] ${pathname === "/restaurants" || pathname === "/store" ? "my-[2%]" : "my-[4%]"}`}
       onClick={() => {
         // const params = new URLSearchParams({ name: item?.name, id: item._id });
         // router.push(`/restaurant?${params.toString()}`);
@@ -26,6 +26,14 @@ const Card: React.FC<ICardProps> = ({ item }) => {
         router.push(
           `/${item.shopType === "restaurant" ? "restaurant" : "store"}/${item?.slug}/${item._id}`
         ); // the root route may change based on store or grocery
+
+        // onUseLocalStorage("save", "restaurant", item._id);
+        // onUseLocalStorage("save", "restaurant-slug", item.slug);
+        // onUseLocalStorage(
+        //   "save",
+        //   "currentShopType",
+        //   item.shopType === "restaurant" ? "restaurant" : "store"
+        // );
       }}
     >
       {/* Image Container */}
@@ -54,7 +62,7 @@ const Card: React.FC<ICardProps> = ({ item }) => {
           {/* Delivery Time */}
           <div className="bg-[#F3FFEE] rounded-md flex items-center justify-center px-2 py-2">
             <p className="text-xs text-[#5AC12F] font-light lg:font-normal text-center">
-              {`${item?.deliveryTime}`}{" "}min
+              {`${item?.deliveryTime}`} min
               {/* {`${item?.deliveryTime > 5 ? item?.deliveryTime - 5 : item?.deliveryTime} - ${item?.deliveryTime + 5}`}{" "} */}
               {/* <br /> min */}
             </p>
