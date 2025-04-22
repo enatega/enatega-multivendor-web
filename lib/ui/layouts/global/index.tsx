@@ -19,7 +19,7 @@ import { useAuth } from "@/lib/context/auth/auth.context";
 
 const AppLayout = ({ children }: IProvider) => {
   // Hooks
- const { isAuthModalVisible, setIsAuthModalVisible } = useAuth();
+  const { isAuthModalVisible, setIsAuthModalVisible } = useAuth();
 
   // Hook
   const { GOOGLE_MAPS_KEY, LIBRARIES } = useConfig();
