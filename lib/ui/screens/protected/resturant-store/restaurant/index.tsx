@@ -391,17 +391,17 @@ export default function RestaurantDetailsScreen() {
                 <div className="flex flex-col items-start">
                   <img
                     alt={`${restaurantInfo.name} logo`}
-                    className="w-12 h-12 mb-2"
+                    className="w-12 h-12 mb-2 rounded-xl"
                     height="50"
                     src={restaurantInfo.image}
                     width="50"
                   />
 
                   <div className="text-gray-800 space-y-2">
-                    <h1 className="bg-black/20  p-2 mb-4 text-white rounded font-inter font-extrabold text-[32px] leading-[100%] sm:text-[40px] md:text-[48px]">
+                    <h1 className="text-3d-effect p-2  text-white rounded font-inter font-extrabold text-[32px] leading-[100%] sm:text-[40px] md:text-[48px]">
                       {restaurantInfo.name}
                     </h1>
-                    <span className="bg-black/20 p-2 rounded  text-white font-inter font-medium text-[18px] sm:text-[20px] sm:leading-[30px] md:text-[24px] md:leading-[32px]">
+                    <span className="text-3d-effect p-2 rounded  text-white font-inter font-medium text-[18px] sm:text-[20px] sm:leading-[30px] md:text-[24px] md:leading-[32px]">
                       {restaurantInfo.address}
                     </span>
                   </div>
