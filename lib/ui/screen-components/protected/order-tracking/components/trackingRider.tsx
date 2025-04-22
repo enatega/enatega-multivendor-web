@@ -30,14 +30,15 @@ const TrackingRider = ({ id }: { id: string }) => {
 
   if (loading) return null;
   if (error) return null;
+  
   let riderCoordinates = {
     lat: parseFloat(data.rider.location.coordinates[1]),
     lng: parseFloat(data.rider.location.coordinates[0]),
   };
-
+  
   return (
-    <Marker
-      position={riderCoordinates}
+    <Marker 
+      position={riderCoordinates} 
       icon={{
         url: RiderMarker.src,
         scaledSize: new window.google.maps.Size(40, 40),

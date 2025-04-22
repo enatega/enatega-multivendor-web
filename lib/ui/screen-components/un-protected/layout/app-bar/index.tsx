@@ -23,6 +23,7 @@ import useUser from "@/lib/hooks/useUser";
 
 // Icons
 import { CartSvg, LocationSvg } from "@/lib/utils/assets/svg";
+// import AnimatedLogo from "@/lib/assets/gif/logo.gif";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -124,33 +125,51 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
   }, [refetchProfileData]);
   return (
     <>
-      <nav className="w-full bg-white shadow-sm">
+      <nav className="h-full w-full bg-white shadow-sm">
         <div className="w-full">
           <PaddingContainer>
-            <div className="flex flex-row items-center justify-between w-full h-16">
+            <div className="flex flex-row items-center justify-between w-full h-16 px-2">
               <div className="flex gap-x-2 items-center cursor-pointer">
                 <Link href="/" className="text-xl font-bold text-gray-900">
                   Enatega
+                  {/* <Image
+                    src={AnimatedLogo}
+                    alt="Funny GIF"
+                    width={100}
+                    height={50}
+                    unoptimized // 💥 Required to keep the animation
+                  /> */}
                 </Link>
                 <div
                   className="flex items-center"
                   onClick={onHandleAddressModelVisibility}
                 >
-                  <div className="p-[4px] m-2 bg-gray-50 rounded-full">
-                    <LocationSvg />
+                  {/* Show on small screens only */}
+                  <div className="block md:hidden p-[4px] m-2 bg-gray-50 rounded-full">
+                    <LocationSvg width={18} height={18} />
                   </div>
+
+                  {/* Show on large screens only */}
+                  <div className="hidden md:block p-[4px] m-2 bg-gray-50 rounded-full">
+                    <LocationSvg width={22} height={22} />
+                  </div>
+
                   {/* Show on medium and up */}
                   <span className="hidden md:inline text-xs sm:text-sm md:text-base text-gray-500 font-inter font-normal leading-6 tracking-normal mr-2">
                     {userAddress?.deliveryAddress}
                   </span>
 
                   {/* Show on small screens only */}
-                  <span className="inline md:hidden text-xs sm:text-sm md:text-base text-gray-500 font-inter font-normal leading-6 tracking-normal mr-2">
-                    {userAddress?.details}
+                  <span className="inline absolute top-2 left-[7.5rem] md:hidden text-[8px] sm:text-sm md:text-base text-gray-500 font-inter font-normal tracking-normal mr-2">
+                    {userAddress?.details || userAddress?.deliveryAddress}
                   </span>
 
                   <div className="hidden sm:flex items-center">
-                    <FontAwesomeIcon icon={faChevronDown} />
+                    <FontAwesomeIcon
+                      icon={faChevronDown}
+                      width={12}
+                      hanging={12}
+                    />
                   </div>
                 </div>
               </div>
@@ -179,11 +198,19 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                       alt={"profile-image.png"}
                       height={32}
                       width={32}
-                      className="h-8 w-8 select-none rounded-full"
+                      className="h-6 w-6 md:w-8 md:h-8 select-none rounded-full"
                     />
-                    <span>{profile?.name || ""}</span>
 
-                    <FontAwesomeIcon icon={faChevronDown} />
+                    {/* Show full name on large screens and up */}
+                    <span className="hidden lg:inline">
+                      {profile?.name || ""}
+                    </span>
+
+                    <FontAwesomeIcon
+                      icon={faChevronDown}
+                      width={12}
+                      hanging={12}
+                    />
                     <Menu
                       model={[
                         {
@@ -231,10 +258,19 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
 
                   {/* Cart icon with badge for small screens or empty cart */}
                   <div
-                    className={`${cartCount > 0 ? "sm:hidden" : ""} flex items-center justify-center rounded-full w-10 h-10 bg-gray-100 relative`}
+                    className={`${cartCount > 0 ? "sm:hidden" : ""} flex items-center justify-center rounded-full w-8 h-8 md:w-10 md:h-10 bg-gray-100 relative`}
                     onClick={() => setIsCartOpen(true)}
                   >
-                    <CartSvg color="black" width={24} height={24} />
+                    {/* <CartSvg color="black" width={22} height={22} /> */}
+                    {/* Show on small screens only */}
+                    <div className="block md:hidden">
+                      <CartSvg color="black" width={18} height={18} />
+                    </div>
+
+                    {/* Show on large screens only */}
+                    <div className="hidden md:block">
+                      <CartSvg color="black" width={22} height={22} />
+                    </div>
                     {/* Badge for item count */}
                     {cartCount > 0 && (
                       <div className="absolute -top-1 -right-1 bg-black text-[#5AC12F] text-[10px] w-5 h-5 rounded-full flex items-center justify-center">
