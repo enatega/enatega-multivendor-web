@@ -15,7 +15,7 @@ export default function SavePhoneNumber() {
 
   // Hooks
   const t = useTranslations();
-  const { sendOtpToPhoneNumber, setUser, user } = useAuth();
+  const { sendOtpToPhoneNumber, setUser, user, isLoading } = useAuth();
   const {profile}=useUser();
   const { showToast } = useToast();
 
@@ -80,6 +80,7 @@ export default function SavePhoneNumber() {
       <CustomButton
         className={`bg-[#5AC12F] flex items-center justify-center gap-x-4 px-3 rounded-full border border-gray-300 p-3 m-auto w-72 my-1`}
         onClick={handleSubmit}
+        loading={isLoading}
         label={t("Continue")}
       />
     </div>

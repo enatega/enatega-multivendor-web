@@ -1,9 +1,9 @@
 // Interfaces
-import { ICustomButtonProps } from '@/lib/utils/interfaces';
+import { ICustomButtonProps } from "@/lib/utils/interfaces";
 
 // Prime React
-import { Button } from 'primereact/button';
-import { twMerge } from 'tailwind-merge';
+import { Button } from "primereact/button";
+import { twMerge } from "tailwind-merge";
 
 // Updated Component and use Tailwind Merge, because Overriding classes were not working perfectly.
 //it will work same like before.
@@ -12,11 +12,13 @@ export default function CustomButton({
   className,
   label,
   type,
+  loading,
   ...props
 }: ICustomButtonProps) {
   return (
     <Button
-    className={twMerge("shadow-none text-sm",className)}
+      loading={loading}
+      className={twMerge("shadow-none text-sm", className)}
       // className={`${classes['btn-custom']} ${className}`}
       label={label}
       type={type}
