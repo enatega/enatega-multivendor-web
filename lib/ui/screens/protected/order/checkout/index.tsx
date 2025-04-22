@@ -68,11 +68,12 @@ import {
   calculateDistance,
   checkPaymentMethod,
 } from "@/lib/utils/methods";
-import getEnv from "@/environment";
 
 // Asets
 import HomeIcon from "../../../../../assets/home_icon.png";
 import RestIcon from "../../../../../assets/rest_icon.png";
+import getEnv from "@/environment";
+
 // import RiderIcon from "../../../../../assets/rider_icon.png";
 
 export default function OrderCheckoutScreen() {
@@ -105,6 +106,7 @@ export default function OrderCheckoutScreen() {
   const { showToast } = useToast();
   const { CURRENCY_SYMBOL, CURRENCY, DELIVERY_RATE, COST_TYPE } = useConfig();
   const { userAddress } = useUserAddress();
+
   const {
     cart,
     restaurant: restaurantId,
@@ -113,6 +115,7 @@ export default function OrderCheckoutScreen() {
     fetchProfile,
     loadingProfile,
   } = useUser();
+
   const { data: restaurantData } = useRestaurant(restaurantId || "");
 
   // Context

@@ -1,13 +1,7 @@
 import React from "react";
-import { useMutation } from "@apollo/client";
-
-// Prime React
 import { Dialog } from "primereact/dialog";
-
-// API
+import { useMutation } from "@apollo/client";
 import { ABORT_ORDER } from "@/lib/api/graphql";
-
-// Hooks
 import useToast from "@/lib/hooks/useToast";
 import { useAuth } from "@/lib/context/auth/auth.context";
 
@@ -22,7 +16,8 @@ function CancelOrderModal({ visible, onHide, orderId }: CancelOrderModalProps) {
   const { authToken } = useAuth(); // Get auth context for authentication
 
   const [abortOrder, { loading }] = useMutation(ABORT_ORDER, {
-    onCompleted: () => {
+    onCompleted: (data) => {
+      console.log("Order cancelled successfully:", data);
       showToast({
         type: "success",
         title: "Order Cancelled",
@@ -33,6 +28,12 @@ function CancelOrderModal({ visible, onHide, orderId }: CancelOrderModalProps) {
       window.location.reload();
     },
     onError: (error) => {
+      console.error("Abort order error:", error);
+      console.error("Error details:", {
+        message: error.message,
+        graphQLErrors: error.graphQLErrors,
+        networkError: error.networkError,
+      });
       showToast({
         type: "error",
         title: "Cancellation Failed",
@@ -57,6 +58,12 @@ function CancelOrderModal({ visible, onHide, orderId }: CancelOrderModalProps) {
       });
       return;
     }
+
+    console.log("Cancelling order:", {
+      orderId,
+      authToken: authToken ? "Present" : "Missing",
+      tokenLength: authToken?.length,
+    });
 
     abortOrder({
       variables: {

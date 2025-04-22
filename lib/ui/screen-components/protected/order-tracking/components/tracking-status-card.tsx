@@ -32,7 +32,6 @@ function TrackingStatusCard({ orderTrackingDetails }: TrackingStatusCardProps) {
   const getEstimatedDeliveryTime = () => {
     if (!orderTrackingDetails?.createdAt) return "20 - 30 min";
 
-    // const orderDate = new Date(orderTrackingDetails.createdAt);
     const expectedTime =
       orderTrackingDetails.expectedTime ?
         new Date(orderTrackingDetails.expectedTime)

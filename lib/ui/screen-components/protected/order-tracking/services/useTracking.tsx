@@ -20,6 +20,7 @@ function useTracking({ orderId }: { orderId: string }) {
   const { data: subscriptionData } = useSubscription(SUBSCRIPTION_ORDER, {
     variables: { id: orderId },
     onSubscriptionData: ({ subscriptionData }) => {
+      console.log("Order subscription data:", subscriptionData);
       // Refetch the order details when subscription data comes in
       if (subscriptionData.data) {
         refetch();

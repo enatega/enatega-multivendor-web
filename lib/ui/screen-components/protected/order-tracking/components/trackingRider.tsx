@@ -1,12 +1,8 @@
 import React, { useEffect } from "react";
 import { useQuery } from "@apollo/client";
 import { Marker } from "@react-google-maps/api";
-
-// API
-import { RIDER } from "@/lib/api/graphql/queries/rider";
 import { SUBSCRIPTION_RIDER_LOCATION } from "@/lib/api/graphql/subscription/riderLocation";
-
-//Assets
+import { RIDER } from "@/lib/api/graphql/queries/rider";
 import RiderMarker from "../../../../../assets/rider_icon.png";
 
 const TrackingRider = ({ id }: { id: string }) => {
