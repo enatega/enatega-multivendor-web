@@ -25,6 +25,7 @@ import FoodCategorySkeleton from "@/lib/ui/useable-components/custom-skeletons/f
 // API
 import {
   GET_CATEGORIES_SUB_CATEGORIES_LIST,
+  GET_POPULAR_SUB_CATEGORIES_LIST,
   GET_SUB_CATEGORIES,
 } from "@/lib/api/graphql";
 
@@ -78,6 +79,16 @@ export default function StoreDetailsScreen() {
       storeId: id,
     },
   });
+  const {
+    data: popularSubCategoriesList,
+    loading: popularSubCategoriesLoading,
+  } = useQuery(GET_POPULAR_SUB_CATEGORIES_LIST, {
+    variables: {
+      restaurantId: id,
+    },
+  });
+
+
   const { data: subcategoriesData, loading: subcategoriesLoading } =
     useQuery(GET_SUB_CATEGORIES);
 
@@ -101,15 +112,15 @@ export default function StoreDetailsScreen() {
     const _url = item.url?.slice(1);
     const isClicked = _url === selectedCategoryRefs.current;
 
+
     return (
       <div
         className="flex align-items-center px-3 py-2 cursor-pointer"
         onClick={() => handleScroll(_url ?? "", true)}
       >
         <span
-          className={`mx-2 ${item.items && "font-semibold"} text-${
-            isClicked ? "[#5AC12F]" : "gray-600"
-          }`}
+          className={`mx-2 ${item.items && "font-semibold"} text-${isClicked ? "[#5AC12F]" : "gray-600"
+            }`}
         >
           {item.label}
         </span>
@@ -122,15 +133,13 @@ export default function StoreDetailsScreen() {
 
     return (
       <div
-        className={`flex align-items-center px-3 py-2 cursor-pointer bg-${
-          isClicked ? "[#F3FFEE]" : ""
-        }`}
+        className={`flex align-items-center px-3 py-2 cursor-pointer bg-${isClicked ? "[#F3FFEE]" : ""
+          }`}
         onClick={() => handleScroll(_url ?? "", false, 80)}
       >
         <span
-          className={`mx-2 ${item.items && "font-semibold"} text-${
-            isClicked ? "[#5AC12F]" : "gray-600"
-          }`}
+          className={`mx-2 ${item.items && "font-semibold"} text-${isClicked ? "[#5AC12F]" : "gray-600"
+            }`}
         >
           {item.label}
         </span>
@@ -138,74 +147,100 @@ export default function StoreDetailsScreen() {
     );
   };
 
-  // Memo
   const deals = useMemo(() => {
     const subCategories = subcategoriesData?.subCategories;
     if (!allDeals || !subCategories) return [];
 
-    return (
-      allDeals
-        .map((category: ICategory, index: number) => {
-          // Get subCategories for this category
-          const subCats = subCategories.filter(
-            (sc: ISubCategory) => sc.parentCategoryId === category._id
-          );
+    const allDealCategories = allDeals
+      .map((category: ICategory, index: number) => {
+        const subCats = subCategories.filter(
+          (sc: ISubCategory) => sc.parentCategoryId === category._id
+        );
 
-          // Group foods by subCategoryId
-          const groupedFoods: Record<string, IFood[]> = {};
+        const groupedFoods: Record<string, IFood[]> = {};
 
-          category.foods.forEach((food) => {
-            const subCatId = food.subCategory || "uncategorized";
-            if (!groupedFoods[subCatId]) groupedFoods[subCatId] = [];
-            groupedFoods[subCatId].push({
-              ...food,
-              title: food.title.toLowerCase(),
-            });
+        category.foods.forEach((food) => {
+          const subCatId = food.subCategory || "uncategorized";
+          if (!groupedFoods[subCatId]) groupedFoods[subCatId] = [];
+          groupedFoods[subCatId].push({
+            ...food,
+            title: food.title.toLowerCase(),
           });
+        });
 
-          // Build sub-category groups with foods
-          const subCategoryGroups = subCats
-            .map((subCat: ISubCategory) => {
-              const foods = groupedFoods[subCat._id] || [];
+        const subCategoryGroups = subCats
+          .map((subCat: ISubCategory) => {
+            const foods = groupedFoods[subCat._id] || [];
 
-              return foods.length > 0 ?
-                  {
-                    _id: subCat._id,
-                    title: subCat.title,
-                    foods,
-                  }
-                : null;
-            })
-            .filter(Boolean) as {
+            return foods.length > 0
+              ? {
+                _id: subCat._id,
+                title: subCat.title,
+                foods,
+              }
+              : null;
+          })
+          .filter(Boolean) as {
             _id: string;
             title: string;
             foods: IFood[];
           }[];
 
-          // Add uncategorized group if it has foods
-          if (groupedFoods["uncategorized"]?.length > 0) {
-            subCategoryGroups.push({
-              _id: "uncategorized",
-              title: "Uncategorized",
-              foods: groupedFoods["uncategorized"],
-            });
+        if (groupedFoods["uncategorized"]?.length > 0) {
+          subCategoryGroups.push({
+            _id: "uncategorized",
+            title: "Uncategorized",
+            foods: groupedFoods["uncategorized"],
+          });
+        }
+
+        if (subCategoryGroups.length === 0) return null;
+
+        return {
+          ...category,
+          index,
+          subCategories: subCategoryGroups,
+        };
+      })
+      .filter(Boolean) || [];
+
+    // 🔥 Add "Popular Items" category
+    const popularItems = popularSubCategoriesList?.popularItems || [];
+
+    if (popularItems.length > 0) {
+      const popularFoods: IFood[] = [];
+
+      for (const popular of popularItems) {
+        for (const category of allDealCategories) {
+          for (const subCat of category.subCategories) {
+            const match = subCat.foods.find((food) => food._id === popular.id);
+            if (match && !popularFoods.find((f) => f._id === match._id)) {
+              popularFoods.push(match);
+            }
           }
+        }
+      }
 
-          // Only return category if it has at least one sub-category with foods
-          if (subCategoryGroups.length === 0) return null;
+      if (popularFoods.length > 0) {
+        allDealCategories.unshift({
+          _id: "popular-items",
+          title: "Popular Items",
+          foods: [],
+          subCategories: [
+            {
+              _id: "popular-items-sub",
+              foods: popularFoods,
+            },
+          ],
+        });
+      }
+    }
 
-          return {
-            ...category,
-            index,
-            subCategories: subCategoryGroups,
-          };
-        })
-        .filter(Boolean) || []
-    );
-  }, [allDeals, filter, subcategoriesData?.subCategories]);
+    return allDealCategories;
+  }, [allDeals, filter, subcategoriesData?.subCategories, popularSubCategoriesList?.popularItems]);
 
   const menuItems = useMemo(() => {
-    return categoriesSubCategoriesList?.fetchCategoryDetailsByStoreId.map(
+    const baseItems = categoriesSubCategoriesList?.fetchCategoryDetailsByStoreId?.map(
       (item: ICategoryDetailsResponse) => ({
         id: item.id,
         label: item.label,
@@ -216,15 +251,63 @@ export default function StoreDetailsScreen() {
             id: subItem.id,
             label: subItem.label,
             url: subItem.url,
-
             template: itemRenderer,
           })) || [],
       })
-    );
-  }, [categoriesSubCategoriesList?.fetchCategoryDetailsByStoreId]);
+    ) || [];
+
+    const popularItems = popularSubCategoriesList?.popularItems || [];
+
+    // If popularItems exist, map them to menu format by matching with 'deals'
+    if (popularItems.length > 0 && deals.length > 0) {
+      const matchedPopularFoods: {
+        id: string;
+        label: string;
+
+        url?: string;
+        template?: any;
+      }[] = [];
+
+      popularItems.forEach((popularItem: { id: string }) => {
+        // Loop through all deals -> subCategories -> foods
+        for (const dealCategory of deals) {
+          for (const subCat of dealCategory.subCategories) {
+            const matchedFood = subCat.foods.find((food) => food._id === popularItem.id);
+            if (matchedFood) {
+              matchedPopularFoods.push({
+                id: matchedFood._id,
+                label: matchedFood.title,
+
+                template: itemRenderer,
+              });
+              break;
+            }
+          }
+        }
+      });
+
+      if (matchedPopularFoods.length > 0) {
+        baseItems.unshift({
+          id: "popular-items",
+          label: "Popular Items",
+          title: "Popular Items",
+          url: "#popular-items",
+          template: parentItemRenderer,
+          items: matchedPopularFoods,
+        });
+      }
+    }
+
+    return baseItems;
+  }, [
+    categoriesSubCategoriesList?.fetchCategoryDetailsByStoreId,
+    popularSubCategoriesList?.popularItems,
+    deals,
+  ]);
 
   // Handlers
   const handleScroll = (id: string, isParent = true, offset: number = 120) => {
+    console.log("handleScrollId", id)
     if (isParent) {
       setSelectedCategory(id);
       selectedCategoryRefs.current = id || "";
@@ -323,7 +406,7 @@ export default function StoreDetailsScreen() {
 
   // Effect to select the first category on page load
   useEffect(() => {
-    if (menuItems?.length > 0) {
+    if (menuItems?.length > 0 && !selectedCategory) {
       const firstCategorySlug = toSlug(menuItems[0].label);
       setSelectedCategory(firstCategorySlug);
       selectedCategoryRefs.current = firstCategorySlug;
@@ -361,6 +444,7 @@ export default function StoreDetailsScreen() {
     };
   }, [deals]);
 
+
   return (
     <>
       {/* Reviews Modal  */}
@@ -382,7 +466,7 @@ export default function StoreDetailsScreen() {
           <div className="relative">
             {loading ?
               <Skeleton width="100%" height="20rem" borderRadius="0" />
-            : <img
+              : <img
                 alt="McDonald's banner with a burger and fries"
                 className="w-full h-72 object-cover"
                 height="300"
@@ -430,7 +514,7 @@ export default function StoreDetailsScreen() {
                       <ClockSvg />
                       {loading ?
                         <Skeleton width="2rem" height="1.5rem" />
-                      : headerData.deliveryTime}
+                        : headerData.deliveryTime}
                       mins
                     </span>
 
@@ -439,7 +523,7 @@ export default function StoreDetailsScreen() {
                       <RatingSvg />
                       {loading ?
                         <Skeleton width="2rem" height="1.5rem" />
-                      : headerData.averageReview}
+                        : headerData.averageReview}
                     </span>
 
                     {/* Info Link */}
@@ -454,7 +538,7 @@ export default function StoreDetailsScreen() {
                       <InfoSvg />
                       {loading ?
                         <Skeleton width="10rem" height="1.5rem" />
-                      : "See more information"}
+                        : "See more information"}
                     </a>
                     {/* Review Link */}
                     <a
@@ -468,7 +552,7 @@ export default function StoreDetailsScreen() {
                       <ChatSvg />
                       {loading ?
                         <Skeleton width="10rem" height="1.5rem" />
-                      : "See reviews"}
+                        : "See reviews"}
                     </a>
                   </div>
                 </div>
@@ -496,20 +580,17 @@ export default function StoreDetailsScreen() {
                   {menuItems?.map(
                     (category: ICategoryDetailsResponse, index: number) => {
                       const _slug = toSlug(category.label);
-
                       return (
                         <li key={index} className="shrink-0">
                           <button
-                            className={`bg-${
-                              selectedCategory === _slug ? "[#F3FFEE]" : (
-                                "gray-100"
-                              )
-                            } text-${
-                              selectedCategory === _slug ? "[#5AC12F]" : (
+                            className={`bg-${selectedCategory === _slug ? "[#F3FFEE]" : (
+                              "gray-100"
+                            )
+                              } text-${selectedCategory === _slug ? "[#5AC12F]" : (
                                 "gray-600"
                               )
-                            } rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap`}
-                            onClick={() => handleScroll(_slug, true, 130)}
+                              } rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap`}
+                            onClick={() => handleScroll(_slug, true, 100)}
                           >
                             {category.label}
                           </button>
@@ -537,15 +618,13 @@ export default function StoreDetailsScreen() {
                         return (
                           <li key={index} className="shrink-0">
                             <button
-                              className={`bg-${
-                                selectedSubCategory === _slug ? "[#F3FFEE]" : (
-                                  "gray-100"
-                                )
-                              } text-${
-                                selectedSubCategory === _slug ? "[#5AC12F]" : (
+                              className={`bg-${selectedSubCategory === _slug ? "[#F3FFEE]" : (
+                                "gray-100"
+                              )
+                                } text-${selectedSubCategory === _slug ? "[#5AC12F]" : (
                                   "gray-600"
                                 )
-                              } rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap`}
+                                } rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap`}
                               onClick={() => handleScroll(_slug, false, 170)}
                             >
                               {sub_category.label}
@@ -564,15 +643,14 @@ export default function StoreDetailsScreen() {
           <PaddingContainer>
             {loading || categoriesSubCategoriesLoading || subcategoriesLoading ?
               <FoodCategorySkeleton />
-            : <div className="flex flex-col md:flex-row w-full">
+              : <div className="flex flex-col md:flex-row w-full">
                 <div className="hidden md:block md:w-1/5 p-3 h-screen z-10  sticky top-0 left-0">
                   <div className="h-full overflow-hidden group">
                     <div
-                      className={`h-full overflow-y-auto transition-all duration-300 ${
-                        isScrolling ?
-                          "scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
+                      className={`h-full overflow-y-auto transition-all duration-300 ${isScrolling ?
+                        "scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
                         : "overflow-hidden"
-                      }`}
+                        }`}
                       onScroll={handleMouseEnterCategoryPanel}
                     >
                       <PanelMenu
@@ -586,8 +664,11 @@ export default function StoreDetailsScreen() {
                 </div>
 
                 <div className="w-full md:w-4/5 p-3 h-full overflow-y-auto">
-                  {deals.map((category: ICategoryV2, catIndex: number) => (
-                    <div
+                  {deals.map((category: ICategoryV2, catIndex: number) => {
+
+
+
+                    return <div
                       key={catIndex}
                       className="mb-4"
                       id={toSlug(category.title)}
@@ -667,7 +748,7 @@ export default function StoreDetailsScreen() {
                         )
                       )}
                     </div>
-                  ))}
+                  })}
                 </div>
               </div>
             }

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useParams } from "next/navigation";
 import { Skeleton } from "primereact/skeleton";
+import { useQuery } from "@apollo/client";
 
 // Context & Hooks
 import useUser from "@/lib/hooks/useUser";
@@ -30,6 +31,9 @@ import ChatSvg from "@/lib/utils/assets/svg/chat";
 import ReviewsModal from "@/lib/ui/useable-components/reviews-modal";
 import InfoModal from "@/lib/ui/useable-components/info-modal";
 import CustomDialog from "@/lib/ui/useable-components/custom-dialog";
+
+// Queries
+import { GET_POPULAR_SUB_CATEGORIES_LIST } from "@/lib/api/graphql";
 
 export default function RestaurantDetailsScreen() {
   // Access the UserContext via our custom hook
@@ -59,6 +63,17 @@ export default function RestaurantDetailsScreen() {
   // Fetch restaurant data
   const { data, loading } = useRestaurant(id, decodeURIComponent(slug));
 
+  // fetch popular deals id
+  const {
+    data: popularSubCategoriesList,
+    loading: popularSubCategoriesLoading,
+  } = useQuery(GET_POPULAR_SUB_CATEGORIES_LIST, {
+    variables: {
+      restaurantId: id,
+    },
+  });
+
+
   // Transform cart items when restaurant data is loaded - only once when dependencies change
   useEffect(() => {
     if (data?.restaurant && cart.length > 0) {
@@ -74,14 +89,16 @@ export default function RestaurantDetailsScreen() {
     (cat: ICategory) => cat.foods.length
   );
 
+  const popularDealsIds = popularSubCategoriesList?.popularItems?.map((item: any) => item.id);
+
   const deals = useMemo(() => {
-    return (
+
+
+    const filteredDeals =
       (allDeals || [])
         .filter((c: ICategory) => {
-          // Only apply filter logic if `filter` is not an empty string
-          if (filter.trim() === "") return true; // If filter is empty, don't filter, just map
+          if (filter.trim() === "") return true;
 
-          // Check if the category title or any food title contains the filter text
           const categoryMatches = c.title
             .toLowerCase()
             .includes(filter.toLowerCase());
@@ -89,7 +106,7 @@ export default function RestaurantDetailsScreen() {
             food.title.toLowerCase().includes(filter.toLowerCase())
           );
 
-          return categoryMatches || foodsMatch; // Keep category if it matches or any of the foods
+          return categoryMatches || foodsMatch;
         })
         .map((c: ICategory, index: number) => ({
           ...c,
@@ -106,9 +123,31 @@ export default function RestaurantDetailsScreen() {
             );
           }),
         }))
-        .filter((c: ICategory) => c.foods.length > 0) || []
+        .filter((c: ICategory) => c.foods.length > 0) || [];
+
+    // Flatten all foods from all categories
+    const allFoods = filteredDeals.flatMap((cat: ICategory) => cat.foods);
+
+    // Filter foods that are in popularDealsIds
+    const popularFoods = allFoods.filter((food: IFood) =>
+      popularDealsIds?.includes(food._id)
     );
-  }, [allDeals, filter]);
+
+    // Create a "Popular Deals" category if there are matching foods
+    const popularDealsCategory: ICategory | null = popularFoods.length
+      ? {
+        _id: "popular-deals",
+        title: "Popular Deals",
+        foods: popularFoods,
+        // index can be used for custom ordering if needed
+      }
+      : null;
+
+    // Add the new category at the top
+    return popularDealsCategory
+      ? [popularDealsCategory, ...filteredDeals]
+      : filteredDeals;
+  }, [allDeals, filter, popularDealsIds]);
 
   const [selectedCategory, setSelectedCategory] = useState("");
 
@@ -338,7 +377,7 @@ export default function RestaurantDetailsScreen() {
           <div className="relative">
             {loading ?
               <Skeleton width="100%" height="20rem" borderRadius="0" />
-            : <img
+              : <img
                 alt={`${restaurantInfo.name} banner`}
                 className="w-full h-72 object-cover"
                 height="300"
@@ -384,7 +423,7 @@ export default function RestaurantDetailsScreen() {
                   <ClockSvg />
                   {loading ?
                     <Skeleton width="2rem" height="1.5rem" />
-                  : `${headerData.deliveryTime} mins`}
+                    : `${headerData.deliveryTime} mins`}
                 </span>
 
                 {/* Rating */}
@@ -392,7 +431,7 @@ export default function RestaurantDetailsScreen() {
                   <RatingSvg />
                   {loading ?
                     <Skeleton width="2rem" height="1.5rem" />
-                  : headerData.averageReview}
+                    : headerData.averageReview}
                 </span>
 
                 {/* Info Link */}
@@ -407,7 +446,7 @@ export default function RestaurantDetailsScreen() {
                   <InfoSvg />
                   {loading ?
                     <Skeleton width="10rem" height="1.5rem" />
-                  : "See more information"}
+                    : "See more information"}
                 </a>
                 {/* Review Link */}
                 <a
@@ -421,7 +460,7 @@ export default function RestaurantDetailsScreen() {
                   <ChatSvg />
                   {loading ?
                     <Skeleton width="10rem" height="1.5rem" />
-                  : "See reviews"}
+                    : "See reviews"}
                 </a>
               </div>
             </PaddingContainer>
@@ -509,7 +548,7 @@ export default function RestaurantDetailsScreen() {
           <PaddingContainer>
             {loading ?
               <FoodCategorySkeleton />
-            : deals.map((category: ICategory, catIndex: number) => {
+              : deals.map((category: ICategory, catIndex: number) => {
                 const categorySlug = toSlug(category.title);
 
                 return (
