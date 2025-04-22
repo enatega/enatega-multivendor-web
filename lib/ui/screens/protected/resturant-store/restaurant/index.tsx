@@ -31,6 +31,7 @@ import ChatSvg from "@/lib/utils/assets/svg/chat";
 import ReviewsModal from "@/lib/ui/useable-components/reviews-modal";
 import InfoModal from "@/lib/ui/useable-components/info-modal";
 import CustomDialog from "@/lib/ui/useable-components/custom-dialog";
+import { onUseLocalStorage } from "@/lib/utils/methods/local-storage";
 
 // Queries
 import { GET_POPULAR_SUB_CATEGORIES_LIST } from "@/lib/api/graphql";
@@ -231,6 +232,14 @@ export default function RestaurantDetailsScreen() {
       // Reset the pending action
       setPendingRestaurantAction(null);
     }
+
+    onUseLocalStorage("save", "restaurant", data?.restaurant?._id);
+    onUseLocalStorage("save", "restaurant-slug", data?.restaurant?.slug);
+    onUseLocalStorage(
+      "save",
+      "currentShopType",
+      data?.restaurant?.shopType === "restaurant" ? "restaurant" : "store"
+    );
 
     // Hide the modal
     setShowClearCartModal(false);
@@ -569,7 +578,7 @@ export default function RestaurantDetailsScreen() {
                       {category.foods.map((meal: IFood, mealIndex) => (
                         <div
                           key={mealIndex}
-                          className="flex items-center gap-4 rounded-lg border border-gray-300 shadow-sm bg-white p-3 relative"
+                          className="flex items-center gap-4 rounded-lg border border-gray-300 shadow-sm bg-white p-3 relative cursor-pointer"
                           onClick={() => handleRestaurantClick(meal)}
                         >
                           {/* Text Content */}
@@ -630,6 +639,7 @@ export default function RestaurantDetailsScreen() {
             foodItem={selectedFood}
             addons={data?.restaurant?.addons}
             options={data?.restaurant?.options}
+            restaurant={data?.restaurant}
             onClose={handleCloseFoodModal}
           />
         )}
