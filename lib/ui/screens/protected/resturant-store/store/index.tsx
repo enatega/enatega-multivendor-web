@@ -29,6 +29,7 @@ import Confetti from "react-confetti";
 // API
 import {
   GET_CATEGORIES_SUB_CATEGORIES_LIST,
+  GET_POPULAR_SUB_CATEGORIES_LIST,
   GET_SUB_CATEGORIES,
 } from "@/lib/api/graphql";
 
@@ -85,6 +86,15 @@ export default function StoreDetailsScreen() {
       storeId: id,
     },
   });
+  const {
+    data: popularSubCategoriesList,
+    loading: popularSubCategoriesLoading,
+  } = useQuery(GET_POPULAR_SUB_CATEGORIES_LIST, {
+    variables: {
+      restaurantId: id,
+    },
+  });
+
   const { data: subcategoriesData, loading: subcategoriesLoading } =
     useQuery(GET_SUB_CATEGORIES);
 
@@ -152,74 +162,100 @@ export default function StoreDetailsScreen() {
     );
   };
 
-  // Memo
   const deals = useMemo(() => {
     const subCategories = subcategoriesData?.subCategories;
     if (!allDeals || !subCategories) return [];
 
-    return (
-      allDeals
-        .map((category: ICategory, index: number) => {
-          // Get subCategories for this category
-          const subCats = subCategories.filter(
-            (sc: ISubCategory) => sc.parentCategoryId === category._id
-          );
+    const allDealCategories = allDeals
+      .map((category: ICategory, index: number) => {
+        const subCats = subCategories.filter(
+          (sc: ISubCategory) => sc.parentCategoryId === category._id
+        );
 
-          // Group foods by subCategoryId
-          const groupedFoods: Record<string, IFood[]> = {};
+        const groupedFoods: Record<string, IFood[]> = {};
 
-          category.foods.forEach((food) => {
-            const subCatId = food.subCategory || "uncategorized";
-            if (!groupedFoods[subCatId]) groupedFoods[subCatId] = [];
-            groupedFoods[subCatId].push({
-              ...food,
-              title: food.title.toLowerCase(),
-            });
+        category.foods.forEach((food) => {
+          const subCatId = food.subCategory || "uncategorized";
+          if (!groupedFoods[subCatId]) groupedFoods[subCatId] = [];
+          groupedFoods[subCatId].push({
+            ...food,
+            title: food.title.toLowerCase(),
           });
+        });
 
-          // Build sub-category groups with foods
-          const subCategoryGroups = subCats
-            .map((subCat: ISubCategory) => {
-              const foods = groupedFoods[subCat._id] || [];
+        const subCategoryGroups = subCats
+          .map((subCat: ISubCategory) => {
+            const foods = groupedFoods[subCat._id] || [];
 
-              return foods.length > 0
-                ? {
-                    _id: subCat._id,
-                    title: subCat.title,
-                    foods,
-                  }
-                : null;
-            })
-            .filter(Boolean) as {
+            return foods.length > 0
+              ? {
+                _id: subCat._id,
+                title: subCat.title,
+                foods,
+              }
+              : null;
+          })
+          .filter(Boolean) as {
             _id: string;
             title: string;
             foods: IFood[];
           }[];
 
-          // Add uncategorized group if it has foods
-          if (groupedFoods["uncategorized"]?.length > 0) {
-            subCategoryGroups.push({
-              _id: "uncategorized",
-              title: "Uncategorized",
-              foods: groupedFoods["uncategorized"],
-            });
+        if (groupedFoods["uncategorized"]?.length > 0) {
+          subCategoryGroups.push({
+            _id: "uncategorized",
+            title: "Uncategorized",
+            foods: groupedFoods["uncategorized"],
+          });
+        }
+
+        if (subCategoryGroups.length === 0) return null;
+
+        return {
+          ...category,
+          index,
+          subCategories: subCategoryGroups,
+        };
+      })
+      .filter(Boolean) || [];
+
+    // 🔥 Add "Popular Items" category
+    const popularItems = popularSubCategoriesList?.popularItems || [];
+
+    if (popularItems.length > 0) {
+      const popularFoods: IFood[] = [];
+
+      for (const popular of popularItems) {
+        for (const category of allDealCategories) {
+          for (const subCat of category.subCategories) {
+            const match = subCat.foods.find((food) => food._id === popular.id);
+            if (match && !popularFoods.find((f) => f._id === match._id)) {
+              popularFoods.push(match);
+            }
           }
+        }
+      }
 
-          // Only return category if it has at least one sub-category with foods
-          if (subCategoryGroups.length === 0) return null;
+      if (popularFoods.length > 0) {
+        allDealCategories.unshift({
+          _id: "popular-items",
+          title: "Popular Items",
+          foods: [],
+          subCategories: [
+            {
+              _id: "popular-items-sub",
+              foods: popularFoods,
+            },
+          ],
+        });
+      }
+    }
 
-          return {
-            ...category,
-            index,
-            subCategories: subCategoryGroups,
-          };
-        })
-        .filter(Boolean) || []
-    );
-  }, [allDeals, filter, subcategoriesData?.subCategories]);
+    return allDealCategories;
+  }, [allDeals, filter, subcategoriesData?.subCategories, popularSubCategoriesList?.popularItems]);
 
   const menuItems = useMemo(() => {
-    return categoriesSubCategoriesList?.fetchCategoryDetailsByStoreId.map(
+    const baseItems = categoriesSubCategoriesList?.fetchCategoryDetailsByStoreId?.map(
       (item: ICategoryDetailsResponse) => ({
         id: item.id,
         label: item.label,
@@ -230,15 +266,61 @@ export default function StoreDetailsScreen() {
             id: subItem.id,
             label: subItem.label,
             url: subItem.url,
-
             template: itemRenderer,
           })) || [],
       })
-    );
-  }, [categoriesSubCategoriesList?.fetchCategoryDetailsByStoreId]);
+    ) || [];
+
+    const popularItems = popularSubCategoriesList?.popularItems || [];
+
+    // If popularItems exist, map them to menu format by matching with 'deals'
+    if (popularItems.length > 0 && deals.length > 0) {
+      const matchedPopularFoods: {
+        id: string;
+        label: string;
+        url?: string;
+        template?: any;
+      }[] = [];
+
+      popularItems.forEach((popularItem: { id: string }) => {
+        // Loop through all deals -> subCategories -> foods
+        for (const dealCategory of deals) {
+          for (const subCat of dealCategory.subCategories) {
+            const matchedFood = subCat.foods.find((food) => food._id === popularItem.id);
+            if (matchedFood) {
+              matchedPopularFoods.push({
+                id: matchedFood._id,
+                label: matchedFood.title,
+                template: itemRenderer,
+              });
+              break;
+            }
+          }
+        }
+      });
+
+      if (matchedPopularFoods.length > 0) {
+        baseItems.unshift({
+          id: "popular-items",
+          label: "Popular Items",
+          title: "Popular Items",
+          url: "#popular-items",
+          template: parentItemRenderer,
+          items: matchedPopularFoods,
+        });
+      }
+    }
+
+    return baseItems;
+  }, [
+    categoriesSubCategoriesList?.fetchCategoryDetailsByStoreId,
+    popularSubCategoriesList?.popularItems,
+    deals,
+  ]);
 
   // Handlers
   const handleScroll = (id: string, isParent = true, offset: number = 120) => {
+    console.log("handleScrollId", id)
     if (isParent) {
       setSelectedCategory(id);
       selectedCategoryRefs.current = id || "";
@@ -373,7 +455,7 @@ export default function StoreDetailsScreen() {
 
   // Effect to select the first category on page load
   useEffect(() => {
-    if (menuItems?.length > 0) {
+    if (menuItems?.length > 0 && !selectedCategory) {
       const firstCategorySlug = toSlug(menuItems[0].label);
       setSelectedCategory(firstCategorySlug);
       selectedCategoryRefs.current = firstCategorySlug;
@@ -481,13 +563,13 @@ export default function StoreDetailsScreen() {
                     width="50"
                   />
 
-                  <div className="text-gray-800 space-y-2">
-                    <h1 className="bg-black/20  p-2 mb-4 text-white rounded font-inter font-extrabold text-[32px] leading-[100%] sm:text-[40px] md:text-[48px]">
+                  <div className="text-white space-y-2">
+                    <h1 className="font-inter font-extrabold text-[32px] leading-[100%] sm:text-[40px] md:text-[48px]">
                       {restaurantInfo.name}
                     </h1>
-                    <span className="bg-black/20 p-2 rounded  text-white font-inter font-medium text-[18px] sm:text-[20px] sm:leading-[30px] md:text-[24px] md:leading-[32px]">
+                    <p className="font-inter font-medium text-[18px] leading-[28px] sm:text-[20px] sm:leading-[30px] md:text-[24px] md:leading-[32px]">
                       {restaurantInfo.address}
-                    </span>
+                    </p>
                   </div>
                 </div>
               </div>
@@ -599,7 +681,7 @@ export default function StoreDetailsScreen() {
                                 ? "[#5AC12F]"
                                 : "gray-600"
                             } rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap`}
-                            onClick={() => handleScroll(_slug, true, 130)}
+                            onClick={() => handleScroll(_slug, true, 100)}
                           >
                             {category.label}
                           </button>
@@ -707,8 +789,7 @@ export default function StoreDetailsScreen() {
                                 (meal: IFood, mealIndex) => (
                                   <div
                                     key={mealIndex}
-                                    className="flex items-center gap-4 rounded-lg border border-gray-300 shadow-sm bg-white p-3 relative cursor-pointer transition-transform duration-300 hover:scale-105 hover:shadow-lg"
-                                    onClick={() => handleOpenFoodModal(meal)}
+                                    className="flex items-center gap-4 rounded-lg border border-gray-300 shadow-sm bg-white p-3 relative"
                                   >
                                     {/* Text Content */}
                                     <div className="flex-grow text-left md:text-left space-y-2">
@@ -730,10 +811,12 @@ export default function StoreDetailsScreen() {
 
                                     {/* Image */}
                                     <div className="flex-shrink-0 w-24 h-24 md:w-28 md:h-28">
-                                      <img
+                                      <Image
                                         alt={meal.title}
-                                        className="w-full h-full object-contain mx-auto md:mx-0"
+                                        className="w-full h-full rounded-md object-cover mx-auto md:mx-0"
                                         src={meal.image}
+                                        width={100}
+                                        height={100}
                                       />
                                     </div>
 
@@ -741,10 +824,9 @@ export default function StoreDetailsScreen() {
                                     <div className="absolute top-2 right-2">
                                       <button
                                         className="bg-[#0EA5E9] rounded-full shadow-md w-6 h-6 flex items-center justify-center"
-                                        onClick={(e) => {
-                                          e.stopPropagation(); // Prevent triggering parent onClick
-                                          handleOpenFoodModal(meal);
-                                        }}
+                                        onClick={() =>
+                                          handleOpenFoodModal(meal)
+                                        }
                                         type="button"
                                       >
                                         <FontAwesomeIcon
