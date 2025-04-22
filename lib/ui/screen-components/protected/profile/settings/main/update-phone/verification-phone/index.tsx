@@ -5,6 +5,7 @@ import { useRef, useState, useEffect } from "react"
 import CustomButton from "@/lib/ui/useable-components/button"
 // Icons
 import PhoneIcon from "@/lib/utils/assets/svg/phone"
+import useDebounceFunction from "@/lib/hooks/useDebounceForFunction"
 
 const VerificationPhone = ({
   handleSubmitAfterVerification,
@@ -81,7 +82,7 @@ const VerificationPhone = ({
   }
 
   // Handle form submission
-  const handleSubmit = async () => {
+  const handleSubmit =useDebounceFunction( async () => {
     if (otp.join("").length !== 6) {
       return showToast({
         type: "error",
@@ -89,9 +90,11 @@ const VerificationPhone = ({
         message: "Please enter a valid OTP",
       })
     }
-
+    
     handleSubmitAfterVerification()
-  }
+  },
+    500, // Debounce time in milliseconds
+)
 
   return (
     <div className="w-full max-w-md mx-auto p-4 flex flex-col items-center bg-white rounded-3xl shadow-sm">

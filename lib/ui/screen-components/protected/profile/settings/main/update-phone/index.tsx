@@ -18,6 +18,7 @@ import VerificationPhone from "./verification-phone";
 // Api
 import { GET_USER_PROFILE, UPDATE_USER } from "@/lib/api/graphql";
 import { ApolloError, useLazyQuery, useMutation } from "@apollo/client";
+import useDebounceFunction from "@/lib/hooks/useDebounceForFunction";
 
 export interface IUpdatePhoneModalProps {
   isUpdatePhoneModalVisible: boolean
@@ -71,7 +72,7 @@ export default function UpdatePhoneModal({
     }))
   }
 
-  const handleSubmit = async () => { 
+  const handleSubmit = useDebounceFunction(async () => { 
     try {
       if(!user?.phone || user?.phone.length < 7) {
         showToast({
@@ -98,9 +99,11 @@ export default function UpdatePhoneModal({
         message: "An error occured while saving the phone number",
       });
     }
-  };
+  },
+    500, // Debounce time in milliseconds
+)
 
-    const handleSubmitAfterVerification = async () => {
+    const handleSubmitAfterVerification = useDebounceFunction(async () => {
       try {
         if (String(phoneOtp) === String(otp) && !!user?.phone) {
           const args = {
@@ -135,16 +138,13 @@ export default function UpdatePhoneModal({
           error,
         );
       }
-    };
+    },
+      500, // Debounce time in milliseconds
+  )
   
-    const handleResendPhoneOtp = () => {
+    const handleResendPhoneOtp = useDebounceFunction(() => {
       if (user?.phone) {
         sendOtpToPhoneNumber(user?.phone);
-        showToast({
-          type: "success",
-          title: "OTP Resent",
-          message: "We have resent the OTP code to your phone",
-        });
       } else {
         showToast({
           type: "error",
@@ -152,7 +152,9 @@ export default function UpdatePhoneModal({
           message: "Please re-enter your valid phone number",
         });
       }
-    };
+    },
+      500, // Debounce time in milliseconds
+  )
 
 
   return(

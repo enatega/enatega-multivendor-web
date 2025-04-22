@@ -153,7 +153,6 @@ export default function SettingsMain() {
       <div className="py-4 border-b">
         <div className="flex justify-between items-center">
         <TextComponent text="Name" className="font-normal text-gray-700 text-lg md:text-xl lg:text-2xl" />
-        {/* <TextComponent text={profileData?.profile?.name || "N/A"} className="font-medium text-gray-700 text-lg md:text-xl lg:text-2xl" /> */}
         <h1
         title="Update Name"
         onClick={handleUpdateNameModal}
