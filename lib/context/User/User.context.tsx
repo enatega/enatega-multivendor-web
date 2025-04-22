@@ -317,7 +317,6 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
       await fetchProfile();
       await fetchOrders();
     }
-
     setIsLoading(false);
   };
 

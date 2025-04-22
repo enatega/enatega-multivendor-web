@@ -73,6 +73,7 @@ import {
 import HomeIcon from "../../../../../assets/home_icon.png";
 import RestIcon from "../../../../../assets/rest_icon.png";
 import getEnv from "@/environment";
+import { useLocationContext } from "@/lib/context/Location/Location.context";
 
 // import RiderIcon from "../../../../../assets/rider_icon.png";
 
@@ -105,8 +106,10 @@ export default function OrderCheckoutScreen() {
   const router = useRouter();
   const { showToast } = useToast();
   const { CURRENCY_SYMBOL, CURRENCY, DELIVERY_RATE, COST_TYPE } = useConfig();
+  const { location, setLocation } = useLocationContext();
+  console.log("🚀 ~ OrderCheckoutScreen ~ location:", location);
   const { userAddress } = useUserAddress();
-
+  console.log("🚀 ~ OrderCheckoutScreen ~ userAddress:", userAddress);
   const {
     cart,
     restaurant: restaurantId,
@@ -115,7 +118,7 @@ export default function OrderCheckoutScreen() {
     fetchProfile,
     loadingProfile,
   } = useUser();
-
+  console.log("🚀 ~ OrderCheckoutScreen ~ profile:", profile);
   const { data: restaurantData } = useRestaurant(restaurantId || "");
 
   // Context
@@ -496,6 +499,7 @@ export default function OrderCheckoutScreen() {
       router.replace(
         `${SERVER_URL}stripe/create-checkout-session?id=${data?.placeOrder?.orderId}&platform=web`
       );
+      // console.log("🚀 ~ onCompleted ~ data:", data)
     }
   }
 

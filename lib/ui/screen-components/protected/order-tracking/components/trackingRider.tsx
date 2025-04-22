@@ -30,7 +30,6 @@ const TrackingRider = ({ id }: { id: string }) => {
 
   if (loading) return null;
   if (error) return null;
-
   let riderCoordinates = {
     lat: parseFloat(data.rider.location.coordinates[1]),
     lng: parseFloat(data.rider.location.coordinates[0]),
