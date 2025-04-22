@@ -37,6 +37,7 @@ function useTracking({ orderId }: { orderId: string }) {
         isOrderTrackingDetailsLoading,
         subscriptionData: subscriptionData?.subscriptionOrder
     }
+
 }
 
 export default useTracking;
