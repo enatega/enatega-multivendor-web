@@ -56,7 +56,7 @@ export const TIPS = ["2", "4", "6", "8"];
 export const PAYMENT_METHOD_LIST = [
   {
     label: "Cash",
-    value: "CASH",
+    value: "COD",
     icon: faDollar,
   },
   {
@@ -65,3 +65,5 @@ export const PAYMENT_METHOD_LIST = [
     icon: faCreditCard,
   },
 ];
+
+export const USER_CURRENT_LOCATION_LS_KEY = "user-current-location";

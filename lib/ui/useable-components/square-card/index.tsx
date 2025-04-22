@@ -7,20 +7,23 @@ import React from "react";
 import { ICuisinesCardProps } from "@/lib/utils/interfaces";
 import { useRouter } from "next/navigation";
 
-const SquareCard: React.FC<ICuisinesCardProps> = ({ item, cuisines=false, showLogo=false }) => {
-
+const SquareCard: React.FC<ICuisinesCardProps> = ({
+  item,
+  cuisines = false,
+  showLogo = false,
+}) => {
   const router = useRouter();
-  const getImgSrc = showLogo ? item?.logo : item?.image
-  
-  // console.log("item?.shopType=>>", item?.shopType)
-  
+  const getImgSrc = showLogo ? item?.logo : item?.image;
+
   const onClickHandler = () => {
     if (!cuisines) {
-      router.push(`/${item?.shopType === "restaurant" ? "restaurant" : "store"}/${item?.slug}/${item._id}`)
+      router.push(
+        `/${item?.shopType === "restaurant" ? "restaurant" : "store"}/${item?.slug}/${item._id}`
+      );
     } else {
-      router.push(`/category/${(item.name).toLowerCase().replace(/\s/g, "-")}`)
+      router.push(`/category/${item.name.toLowerCase().replace(/\s/g, "-")}`);
     }
-  }
+  };
   return (
     <div
       className="rounded-md shadow-md m-2 mb-6 cursor-pointer hover:scale-102 hover:opacity-95 hover:shadow-lg transition-transform duration-500 max-h-[272px] w-[96%] ml-[2%] my-[4%]"
@@ -29,7 +32,7 @@ const SquareCard: React.FC<ICuisinesCardProps> = ({ item, cuisines=false, showLo
       {/* Image Container */}
       <div className="relative w-full h-[150px]">
         <Image
-          src={`${getImgSrc ||'https://res.cloudinary.com/do1ia4vzf/image/upload/v1740680733/food/ehmip6g5ddtmkygpw7he.webp'}`}
+          src={`${getImgSrc || "https://res.cloudinary.com/do1ia4vzf/image/upload/v1740680733/food/ehmip6g5ddtmkygpw7he.webp"}`}
           alt={item?.name}
           fill
           className="object-cover rounded-t-md"
@@ -44,9 +47,9 @@ const SquareCard: React.FC<ICuisinesCardProps> = ({ item, cuisines=false, showLo
               {item?.name}
             </p>
             {cuisines && (
-            <p className="text-xs xl:text-sm text-[#4B5563] font-light line-clamp-1">
-              {item?.description}
-            </p>
+              <p className="text-xs xl:text-sm text-[#4B5563] font-light line-clamp-1">
+                {item?.description}
+              </p>
             )}
           </div>
         </div>

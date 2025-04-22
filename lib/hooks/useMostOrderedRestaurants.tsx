@@ -8,12 +8,12 @@ import {
   IRestaurant,
 } from "../utils/interfaces/restaurants.interface";
 // context
-import { useLocationContext } from "../context/Location/Location.context";
+import { useUserAddress } from "../context/address/address.context";
 
 const useMostOrderedRestaurants = (enabled = true) => {
-  const { location } = useLocationContext();
-  const userLatitude = Number(location?.latitude || "0")
-  const userLongitude = Number(location?.longitude || "0")
+  const { userAddress } = useUserAddress();
+  const userLongitude = userAddress?.location?.coordinates[0] || 0
+  const userLatitude = userAddress?.location?.coordinates[1] || 0
 
   const { data, loading, error, networkStatus } =
     useQuery<IMostOrderedRestaurantsData>(MOST_ORDER_RESTAURANTS, {

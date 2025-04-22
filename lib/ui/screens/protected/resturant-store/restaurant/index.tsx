@@ -33,12 +33,12 @@ import CustomDialog from "@/lib/ui/useable-components/custom-dialog";
 
 export default function RestaurantDetailsScreen() {
   // Access the UserContext via our custom hook
-  const { 
-    cart, 
-    transformCartWithFoodInfo, 
-    updateCart, 
-    restaurant: cartRestaurant, 
-    clearCart 
+  const {
+    cart,
+    transformCartWithFoodInfo,
+    updateCart,
+    restaurant: cartRestaurant,
+    clearCart,
   } = useUser();
 
   // Params from route
@@ -53,7 +53,8 @@ export default function RestaurantDetailsScreen() {
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [selectedFood, setSelectedFood] = useState<IFood | null>(null);
   const [showClearCartModal, setShowClearCartModal] = useState<boolean>(false);
-  const [pendingRestaurantAction, setPendingRestaurantAction] = useState<any>(null);
+  const [pendingRestaurantAction, setPendingRestaurantAction] =
+    useState<any>(null);
 
   // Fetch restaurant data
   const { data, loading } = useRestaurant(id, decodeURIComponent(slug));
@@ -93,14 +94,15 @@ export default function RestaurantDetailsScreen() {
         .map((c: ICategory, index: number) => ({
           ...c,
           index,
-          foods: c.foods.filter(food => {
+          foods: c.foods.filter((food) => {
             // If filter is empty, include all foods
             if (filter.trim() === "") return true;
-            
+
             // Include food if title or description matches filter
             return (
               food.title.toLowerCase().includes(filter.toLowerCase()) ||
-              (food.description && food.description.toLowerCase().includes(filter.toLowerCase()))
+              (food.description &&
+                food.description.toLowerCase().includes(filter.toLowerCase()))
             );
           }),
         }))
@@ -108,14 +110,13 @@ export default function RestaurantDetailsScreen() {
     );
   }, [allDeals, filter]);
 
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState("");
 
   useEffect(() => {
     if (deals.length > 0 && !selectedCategory) {
       setSelectedCategory(toSlug(deals[0]?.title)); // first category selected by default
     }
   }, [deals, selectedCategory]);
-
 
   // Restaurant info
   const headerData = {
@@ -141,7 +142,7 @@ export default function RestaurantDetailsScreen() {
     openingTimes: data?.restaurant?.openingTimes ?? [],
   };
 
-  const restaurantInfoModalProps={
+  const restaurantInfoModalProps = {
     _id: data?.restaurant?._id ?? "",
     name: data?.restaurant?.name ?? "...",
     username: data?.restaurant?.username ?? "N/A",
@@ -150,8 +151,10 @@ export default function RestaurantDetailsScreen() {
     location: data?.restaurant?.location ?? "N/A",
     isAvailable: data?.restaurant?.isAvailable ?? true,
     openingTimes: data?.restaurant?.openingTimes ?? [],
-    description: data?.restaurant?.description ?? "Preservation of the authentic taste of all traditional foods is upheld here.",
-  }
+    description:
+      data?.restaurant?.description ??
+      "Preservation of the authentic taste of all traditional foods is upheld here.",
+  };
 
   // States
   const [visibleItems, setVisibleItems] = useState(10); // Default visible items
@@ -166,8 +169,8 @@ export default function RestaurantDetailsScreen() {
     if (cartRestaurant && id !== cartRestaurant) {
       // Store the action we want to perform after cart confirmation
       setPendingRestaurantAction({
-        type: 'foodModal',
-        payload: food
+        type: "foodModal",
+        payload: food,
       });
       // Show clear cart confirmation
       setShowClearCartModal(true);
@@ -180,16 +183,16 @@ export default function RestaurantDetailsScreen() {
   // Function to handle clear cart confirmation
   const handleClearCartConfirm = async () => {
     await clearCart();
-    
+
     // Execute the pending action
     if (pendingRestaurantAction) {
-      if (pendingRestaurantAction.type === 'foodModal') {
+      if (pendingRestaurantAction.type === "foodModal") {
         handleOpenFoodModal(pendingRestaurantAction.payload);
       }
       // Reset the pending action
       setPendingRestaurantAction(null);
     }
-    
+
     // Hide the modal
     setShowClearCartModal(false);
   };
@@ -218,11 +221,11 @@ export default function RestaurantDetailsScreen() {
     // Add restaurant ID to the food item
     setSelectedFood({
       ...food,
-      restaurant: restaurantInfo._id
+      restaurant: restaurantInfo._id,
     });
     setShowDialog(true);
   };
-  
+
   // Function to close the food item modal
   const handleCloseFoodModal = () => {
     setShowDialog(false);
@@ -232,12 +235,12 @@ export default function RestaurantDetailsScreen() {
   // Function to handle the logic for seeing reviews
   const handleSeeReviews = () => {
     setShowReviews(true);
-  }
+  };
 
   // Function to handle the logic for seeing more information
   const handleSeeMoreInfo = () => {
     setShowMoreInfo(true);
-  }
+  };
 
   // Function to show all categories
   useEffect(() => {
@@ -252,7 +255,7 @@ export default function RestaurantDetailsScreen() {
         setVisibleItems(5); // Large screens
       }
     };
-    
+
     const updateHeight = () => {
       if (window.innerWidth >= 1024)
         setHeaderHeight("64px"); // lg (desktop)
@@ -313,7 +316,7 @@ export default function RestaurantDetailsScreen() {
         visible={showReviews && !loading}
         onHide={() => setShowReviews(false)}
       />
-            
+
       {/* See More Info Modal */}
       <InfoModal
         restaurantInfo={restaurantInfoModalProps}
@@ -321,7 +324,7 @@ export default function RestaurantDetailsScreen() {
         visible={showMoreInfo && !loading}
         onHide={() => setShowMoreInfo(false)}
       />
-      
+
       {/* Clear Cart Modal */}
       <ClearCartModal
         isVisible={showClearCartModal}
@@ -333,17 +336,16 @@ export default function RestaurantDetailsScreen() {
         <div className="scrollable-container flex-1 overflow-auto">
           {/* Banner */}
           <div className="relative">
-            {loading ? (
+            {loading ?
               <Skeleton width="100%" height="20rem" borderRadius="0" />
-            ) : (
-              <img
+            : <img
                 alt={`${restaurantInfo.name} banner`}
                 className="w-full h-72 object-cover"
                 height="300"
                 src={restaurantInfo.image}
                 width="1200"
               />
-            )}
+            }
 
             {!loading && (
               <div className="absolute bottom-0 left-0 md:left-20 p-4">
@@ -356,13 +358,13 @@ export default function RestaurantDetailsScreen() {
                     width="50"
                   />
 
-                  <div className="text-white space-y-2">
-                    <h1 className="font-inter font-extrabold text-[32px] leading-[100%] sm:text-[40px] md:text-[48px]">
+                  <div className="text-gray-800 space-y-2">
+                    <h1 className="bg-black/20  p-2 mb-4 text-white rounded font-inter font-extrabold text-[32px] leading-[100%] sm:text-[40px] md:text-[48px]">
                       {restaurantInfo.name}
                     </h1>
-                    <p className="font-inter font-medium text-[18px] leading-[28px] sm:text-[20px] sm:leading-[30px] md:text-[24px] md:leading-[32px]">
+                    <span className="bg-black/20 p-2 rounded  text-white font-inter font-medium text-[18px] sm:text-[20px] sm:leading-[30px] md:text-[24px] md:leading-[32px]">
                       {restaurantInfo.address}
-                    </p>
+                    </span>
                   </div>
                 </div>
               </div>
@@ -380,44 +382,38 @@ export default function RestaurantDetailsScreen() {
                 {/* Time */}
                 <span className="flex items-center gap-2 text-gray-600 font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle">
                   <ClockSvg />
-                  {loading ? (
+                  {loading ?
                     <Skeleton width="2rem" height="1.5rem" />
-                  ) : (
-                    `${headerData.deliveryTime} mins`
-                  )}
+                  : `${headerData.deliveryTime} mins`}
                 </span>
 
                 {/* Rating */}
                 <span className="flex items-center gap-2 text-gray-600 font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle">
                   <RatingSvg />
-                  {loading ? (
+                  {loading ?
                     <Skeleton width="2rem" height="1.5rem" />
-                  ) : (
-                    headerData.averageReview
-                  )}
+                  : headerData.averageReview}
                 </span>
 
                 {/* Info Link */}
                 <a
                   className="flex items-center gap-2 text-[#0EA5E9] font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle"
                   href="#"
-                  onClick={(e)=>{
+                  onClick={(e) => {
                     e.preventDefault();
                     handleSeeMoreInfo();
                   }}
                 >
                   <InfoSvg />
-                  {loading ? (
+                  {loading ?
                     <Skeleton width="10rem" height="1.5rem" />
-                  ) : (
-                    "See more information"
-                  )}
+                  : "See more information"}
                 </a>
-                 {/* Review Link */}
-                 <a
+                {/* Review Link */}
+                <a
                   className="flex items-center gap-2 text-[#0EA5E9] font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle"
                   href="#"
-                  onClick={(e)=>{
+                  onClick={(e) => {
                     e.preventDefault();
                     handleSeeReviews();
                   }}
@@ -511,10 +507,9 @@ export default function RestaurantDetailsScreen() {
 
           {/* Food Categories and Items */}
           <PaddingContainer>
-            {loading ? (
+            {loading ?
               <FoodCategorySkeleton />
-            ) : (
-              deals.map((category: ICategory, catIndex: number) => {
+            : deals.map((category: ICategory, catIndex: number) => {
                 const categorySlug = toSlug(category.title);
 
                 return (
@@ -524,36 +519,37 @@ export default function RestaurantDetailsScreen() {
                     id={categorySlug}
                     data-category-id={categorySlug}
                     ref={(el) => {
-                      categoryRefs.current[categorySlug] = el
+                      categoryRefs.current[categorySlug] = el;
                     }}
                   >
                     <h2 className="mb-4 font-inter text-gray-900 font-bold text-2xl sm:text-xl leading-snug tracking-tight">
                       {category.title}
                     </h2>
-  
+
                     <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                       {category.foods.map((meal: IFood, mealIndex) => (
                         <div
                           key={mealIndex}
                           className="flex items-center gap-4 rounded-lg border border-gray-300 shadow-sm bg-white p-3 relative"
+                          onClick={() => handleRestaurantClick(meal)}
                         >
                           {/* Text Content */}
                           <div className="flex-grow text-left md:text-left space-y-2">
                             <h3 className="text-gray-900 text-lg font-semibold font-inter">
                               {meal.title}
                             </h3>
-  
+
                             <p className="text-gray-500 text-sm">
                               {meal.description}
                             </p>
-  
+
                             <div className="flex items-center gap-2">
                               <span className="text-[#0EA5E9] text-lg font-semibold">
                                 Rs. {meal.variations[0].price}
                               </span>
                             </div>
                           </div>
-  
+
                           {/* Image */}
                           <div className="flex-shrink-0 w-24 h-24 md:w-28 md:h-28">
                             <img
@@ -562,7 +558,7 @@ export default function RestaurantDetailsScreen() {
                               src={meal.image}
                             />
                           </div>
-  
+
                           {/* Add Button */}
                           <div className="absolute top-2 right-2">
                             <button
@@ -577,9 +573,9 @@ export default function RestaurantDetailsScreen() {
                       ))}
                     </div>
                   </div>
-                )
+                );
               })
-            )}
+            }
           </PaddingContainer>
         </div>
       </div>

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 // Components
@@ -33,11 +33,13 @@ export default function PastOrders({
   const { showToast } = useToast();
 
   //mutation
-  const [mutate, { loading: isloadingReviewOrder }] =
-    useMutation(ADD_REVIEW_ORDER, {
+  const [mutate, { loading: isloadingReviewOrder }] = useMutation(
+    ADD_REVIEW_ORDER,
+    {
       onCompleted,
       onError,
-    });
+    }
+  );
 
   function onCompleted() {
     showToast({
@@ -66,7 +68,7 @@ export default function PastOrders({
     },
     500 // Debounce time in milliseconds
   );
-  
+
   // handle rate order clicked
   // use debouncefunction if user click multiple times at once it will call function only 1 time
   // this function will set the selected order and show the rating modal
@@ -82,16 +84,15 @@ export default function PastOrders({
     },
     500 // Debounce time in milliseconds
   );
-  
+
   // handle submit rating
   const handleSubmitRating = async (
     orderId: string | undefined,
     ratingValue: number,
-    comment?: string,
-    aspects?: string[]
+    comment?: string
   ) => {
     // Temporarily console the aspects-
-    console.log(aspects, "Temporarily consoling aspects");
+    // console.log(aspects, "Temporarily consoling aspects");
 
     // Here you would  call an API to save the rating
     try {
