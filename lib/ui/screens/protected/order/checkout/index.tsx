@@ -79,6 +79,7 @@ import { useLocationContext } from "@/lib/context/Location/Location.context";
 // import RiderIcon from "../../../../../assets/rider_icon.png";
 
 export default function OrderCheckoutScreen() {
+
   const [isAddressSelectedOnce, setIsAddressSelectedOnce] = useState(false);
   const [isUserAddressModalOpen, setIsUserAddressModalOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -105,6 +106,8 @@ export default function OrderCheckoutScreen() {
 
   // Hooks
   const router = useRouter();
+
+  const { authToken, setIsAuthModalVisible } = useAuth();
   const { showToast } = useToast();
   const { CURRENCY_SYMBOL, CURRENCY, DELIVERY_RATE, COST_TYPE } = useConfig();
   const { location, setLocation } = useLocationContext();
@@ -451,6 +454,7 @@ export default function OrderCheckoutScreen() {
         variables: {
           restaurant: restaurantId,
           orderInput: items,
+          instructions: localStorage.getItem('orderInstructions') || '',
           paymentMethod: paymentMethod,
           couponCode: coupon ? coupon.title : null,
           tipping: +selectedTip,
@@ -484,7 +488,9 @@ export default function OrderCheckoutScreen() {
   }
 
   async function onCompleted(data: { placeOrder: IOrder }) {
+    localStorage.removeItem('orderInstructions');
     clearCart();
+    
     if (paymentMethod === "COD") {
       router.replace(`/order/${data.placeOrder._id}/tracking`);
     } else if (paymentMethod === "PAYPAL") {
