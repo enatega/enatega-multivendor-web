@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { useQuery } from "@apollo/client";
-import gql from "graphql-tag";
 import { Marker } from "@react-google-maps/api";
 import { SUBSCRIPTION_RIDER_LOCATION } from "@/lib/api/graphql/subscription/riderLocation";
 import { RIDER } from "@/lib/api/graphql/queries/rider";
