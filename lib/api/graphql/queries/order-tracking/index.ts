@@ -30,6 +30,7 @@ export const ORDER_TRACKING = gql`query OrderDetails($orderDetailsId: String!) {
       food
       description
       quantity
+      image
       variation {
         _id
         title

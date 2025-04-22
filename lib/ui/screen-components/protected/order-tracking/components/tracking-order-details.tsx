@@ -1,53 +1,132 @@
-import React from 'react'
-
-// Assets
+import React, { useState } from 'react';
 import Image from "next/image";
 import { IOrderTrackingDetail } from '@/lib/utils/interfaces/order-tracking-detail.interface';
-
+import CancelOrderModal from './cancelOrderModal';
 
 function TrackingOrderDetails({ orderTrackingDetails }: { orderTrackingDetails: IOrderTrackingDetail }) {
-    console.log("orderTrackingDetails", orderTrackingDetails);
+    const [isCancelModalVisible, setIsCancelModalVisible] = useState(false);
+    // Format currency values
+    const formatCurrency = (amount: number) => {
+        return `$${amount?.toFixed(2) || '0.00'}`;
+    };
+
+    // Calculate subtotal (items only)
+    const calculateSubtotal = () => {
+        if (!orderTrackingDetails?.items) return 0;
+        
+        return orderTrackingDetails.items.reduce((total, item) => {
+            return total + (item.variation.price * item.quantity);
+        }, 0);
+    };
+
+    // Calculate total
+    const calculateTotal = () => {
+        const subtotal = calculateSubtotal();
+        const deliveryCharge = orderTrackingDetails?.deliveryCharges || 0;
+        const tax = orderTrackingDetails?.taxationAmount || 0;
+        const tip = orderTrackingDetails?.tipping || 0;
+        
+        return subtotal + deliveryCharge + tax + tip;
+    };
+
+    // Check if order can be cancelled (only PENDING or ACCEPTED)
+    const canCancelOrder = () => {
+        const cancellableStatuses = ['PENDING', 'ACCEPTED'];
+        return cancellableStatuses.includes(orderTrackingDetails?.orderStatus);
+    };
+
+    if (!orderTrackingDetails) {
+        return <div className="mt-8 p-4 text-center">Loading order details...</div>;
+    }
+
     return (
         <div className="mt-8 space-y-6 flex-1 max-w-2xl md:w-auto w-full md:px-0 px-4">
             <div>
                 <h3 className="text-lg font-semibold mb-2">Order Details</h3>
-                <div className="flex items-center justify-between">
-                    <div className="flex gap-4 items-center">
-                        <Image
-                            src="https://storage.googleapis.com/a1aa/image/jt1AynRJJVtM9j1LRb30CodA1xsK2R23pWTOmRv3nsM.jpg"
-                            alt="Big Share"
-                            width={80}
-                            height={80}
-                            className="rounded-lg"
-                        />
-                        <div>
-                            <p className="font-medium text-gray-900">Big Share</p>
-                            <p className="text-sm text-gray-500">Dip 1/2: Currydippi<br />Sweet and sour dip</p>
+                
+                {/* Display each food item under Order Details */}
+                {orderTrackingDetails.items?.map((item, index) => (
+                    <div key={item._id || index} className="flex items-center justify-between mb-4 pb-4 border-b">
+                        <div className="flex gap-4 items-center">
+                            <Image
+                                src={item.image || "https://storage.googleapis.com/a1aa/image/placeholder-food.jpg"}
+                                alt={item.title}
+                                width={80}
+                                height={80}
+                                className="rounded-lg"
+                            />
+                            <div>
+                                <p className="font-medium text-gray-900">{item.title}</p>
+                                <p className="text-sm text-gray-500">
+                                    {item.variation.title}<br />
+                                    {item.description?.substring(0, 50)}
+                                    {item.description?.length > 50 ? '...' : ''}
+                                </p>
+                                
+                                {/* Display addons */}
+                                {item.addons && item.addons.length > 0 && (
+                                    <div className="mt-1">
+                                        {item.addons.map((addon, addonIndex) => (
+                                            <div key={addon._id || addonIndex}>
+                                                {addon.options.map((option, optIndex) => (
+                                                    <p key={option._id || optIndex} className="text-xs text-gray-500">
+                                                        + {option.title} 
+                                                        {option.price > 0 ? ` (${formatCurrency(option.price)})` : ''}
+                                                    </p>
+                                                ))}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
                         </div>
+                        <span className="text-blue-600 font-semibold">
+                            {formatCurrency(item.variation.price)}
+                        </span>
                     </div>
-                    <span className="text-blue-600 font-semibold">$6</span>
-                </div>
+                ))}
             </div>
 
-            {/* Item Summary */}
+            {/* Items Summary */}
             <div>
-                <h3 className="text-lg font-semibold mb-2">Details (1 Items)</h3>
-                <div className="text-sm text-gray-700 space-y-2">
-                    <div className="flex justify-between">
-                        <span>1x Big Share</span>
-                        <span>$12.00</span>
-                    </div>
-                    <div className="flex justify-between">
+                <h3 className="text-lg font-semibold mb-4">Details ({orderTrackingDetails.items?.length || 0} Items)</h3>
+                <div className="text-sm text-gray-700 space-y-3">
+                    {/* Display each item with quantity and price */}
+                    {orderTrackingDetails.items?.map((item, idx) => (
+                        <div key={`summary-${item._id || idx}`} className="flex justify-between">
+                            <span>{item.quantity}x {item.title}</span>
+                            <span>{formatCurrency(item.variation.price * item.quantity)}</span>
+                        </div>
+                    ))}
+                    
+                    {/* Subtotal and charges */}
+                    <div className="flex justify-between pt-2 border-t">
                         <span>Subtotal</span>
-                        <span>$12.00</span>
+                        <span>{formatCurrency(calculateSubtotal())}</span>
                     </div>
-                    <div className="flex justify-between">
-                        <span>Discount</span>
-                        <span>$0.00</span>
-                    </div>
+                    
+                    {(orderTrackingDetails.taxationAmount > 0) && (
+                        <div className="flex justify-between">
+                            <span>Tax</span>
+                            <span>{formatCurrency(orderTrackingDetails.taxationAmount)}</span>
+                        </div>
+                    )}
+                    
+                    {(orderTrackingDetails.tipping > 0) && (
+                        <div className="flex justify-between">
+                            <span>Tip</span>
+                            <span>{formatCurrency(orderTrackingDetails.tipping)}</span>
+                        </div>
+                    )}
+                    
                     <div className="flex justify-between">
                         <span>Delivery Charge</span>
-                        <span>$5.00</span>
+                        <span>{formatCurrency(orderTrackingDetails.deliveryCharges || 0)}</span>
+                    </div>
+                    
+                    <div className="flex justify-between font-semibold pt-2 border-t">
+                        <span>Total</span>
+                        <span>{formatCurrency(calculateTotal())}</span>
                     </div>
                 </div>
             </div>
@@ -56,20 +135,35 @@ function TrackingOrderDetails({ orderTrackingDetails }: { orderTrackingDetails: 
             <div className="border rounded-md p-4">
                 <h4 className="font-semibold mb-2">Paid With</h4>
                 <div className="flex items-center gap-2 text-sm">
-                    <span>💳</span>
-                    <span>Cash on Delivery</span>
-                    <span className="ml-auto font-semibold">$17.00</span>
+                    <span className="text-gray-500">{orderTrackingDetails.paymentMethod === "COD" ? "💵" : "💳"}</span>
+                    <span>
+                        {orderTrackingDetails.paymentMethod === 'COD' 
+                            ? 'Cash on Delivery' 
+                            : orderTrackingDetails.paymentMethod}
+                    </span>
+                    <span className="ml-auto font-semibold">{formatCurrency(calculateTotal())}</span>
                 </div>
             </div>
 
-            {/* Cancel Button */}
-            <div className="text-center">
-                <button className="w-full border border-red-500 text-red-500 px-6 py-2 rounded-full hover:bg-red-50 transition">
-                    Cancel Order
-                </button>
-            </div>
+            {/* Cancel Button - only show for pending/accepted orders */}
+            {canCancelOrder() && (
+                <div className="text-center">
+                    <button 
+                        onClick={() => setIsCancelModalVisible(true)}
+                        className="w-full border border-red-500 text-red-500 px-6 py-2 rounded-full hover:bg-red-50 transition">
+                        Cancel Order
+                    </button>
+                </div>
+            )}
+
+            {/* Cancel Order Modal */}
+            <CancelOrderModal 
+                visible={isCancelModalVisible}
+                onHide={() => setIsCancelModalVisible(false)}
+                orderId={orderTrackingDetails._id}
+            />
         </div>
-    )
+    );
 }
 
-export default TrackingOrderDetails
+export default TrackingOrderDetails;
