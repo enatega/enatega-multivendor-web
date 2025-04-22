@@ -1,13 +1,14 @@
 import { Dispatch, SetStateAction } from "react";
 import { IGlobalComponentProps } from "./global.interface";
-import { IFood, IOption } from "./restaurants.interface";
+import { IFood, IOption, IRestaurant } from "./restaurants.interface";
 import { IAddon } from "./orders.interface";
 
 export interface IFoodItemDetalComponentProps extends IGlobalComponentProps {
   foodItem: IFood | null;
   addons: IAddon[];
   options: IOption[];
-  onClose?: ()=> void;
+  restaurant?: IRestaurant;
+  onClose?: () => void;
 }
 
 export interface Option {
@@ -27,7 +28,7 @@ export interface SectionProps<T extends { _id: string }> {
   onMultiSelect?: Dispatch<SetStateAction<T[] | null>>;
   multiple?: boolean;
   requiredTag?: string;
-  showTag?: boolean
+  showTag?: boolean;
 }
 export interface AddonSectionProps<T extends { _id: string }> {
   title: string;

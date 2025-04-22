@@ -73,6 +73,7 @@ import getEnv from "@/environment";
 // Asets
 import HomeIcon from "../../../../../assets/home_icon.png";
 import RestIcon from "../../../../../assets/rest_icon.png";
+import { onUseLocalStorage } from "@/lib/utils/methods/local-storage";
 
 export default function OrderCheckoutScreen() {
   const [isAddressSelectedOnce, setIsAddressSelectedOnce] = useState(false);
@@ -847,7 +848,23 @@ export default function OrderCheckoutScreen() {
                   })}
                   <button
                     className="text-gray-900 mt-2 font-semibold mb-2 text-sm sm:text-base md:text-[12px] lg:text-[12px] xl:text-[14px]"
-                    onClick={() => router.back()}
+                    onClick={() => {
+                      const currentShopType = onUseLocalStorage(
+                        "get",
+                        "currentShopType"
+                      );
+                      const restaurantId = onUseLocalStorage(
+                        "get",
+                        "restaurant"
+                      );
+                      const restaurantSlug = onUseLocalStorage(
+                        "get",
+                        "restaurant-slug"
+                      );
+                      router.replace(
+                        `/${currentShopType}/${restaurantSlug}/${restaurantId}`
+                      );
+                    }}
                   >
                     + Add more items
                   </button>
