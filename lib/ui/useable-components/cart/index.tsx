@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faMinus, faTrash } from "@fortawesome/free-solid-svg-icons";
@@ -18,7 +18,8 @@ interface CartProps {
 export default function Cart({ onClose }: CartProps) {
   // Access user context for cart functionality
   const { cart, cartCount, updateItemQuantity, calculateSubtotal } = useUser();
-  
+  const [instructions , setInstructions] = useState(localStorage.getItem('orderInstructions') || '')
+
   const router = useRouter();
 
   // Format subtotal for display
@@ -82,10 +83,10 @@ export default function Cart({ onClose }: CartProps) {
               {item.optionTitles && item.optionTitles.length > 0 && (
                 <div className="mt-1">
                   {item.optionTitles.map((title, index) => (
-                   <p key={index} className="text-xs text-gray-500">
-                     +{title}
+                    <p key={index} className="text-xs text-gray-500">
+                      +{title}
                     </p>
-                   ))}
+                  ))}
                 </div>
               )}
 
@@ -183,13 +184,52 @@ export default function Cart({ onClose }: CartProps) {
         </div>
       </div>
 
+      {/* Order Instructions */}
+      <div className='pt-4'>
+        <div className='flex flex-col gap-2'>
+          <label 
+          htmlFor="instructions"
+          className="font-semibold"
+          >
+            Add comment for venue
+          </label>
+          <textarea 
+          id="instructions"
+          className="w-full h-24 p-2 border border-gray-300 rounded-md resize-none focus:border-primary-color focus:outline-none"
+          placeholder="Add any special instructions or comments for the restaurant here..."
+          onChange={({ target : { value } }) => {
+            if(value?.length > 500) return;
+            localStorage.setItem('orderInstructions', value)
+            setInstructions(value)
+          }}
+          value={instructions}
+          />
+        </div>
+        {/* Instructions length */}
+        <div className='flex items-end justify-between mt-2'>
+          <span className='text-red-500 text-xs'>
+            { 
+              instructions?.length >= 500 && (
+                'Maximum limit reached'
+              )
+            }
+          </span>
+          <span className='text-xs text-gray-500'>
+            {instructions.length}/500
+          </span>
+        </div>
+      </div>
+
+
+
       {/* Checkout Button */}
-      <div className="p-4 border-t">
+      <div className="p-4">
         <button
           className="flex justify-between items-center w-full bg-[#5AC12F] text-black rounded-full px-4 py-3"
           onClick={() => {
             // Handle checkout logic here
             router.push("/order/checkout");
+            
 
             if (onClose) onClose();
           }}

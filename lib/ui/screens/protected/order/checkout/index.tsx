@@ -77,6 +77,7 @@ import { useAuth } from "@/lib/context/auth/auth.context";
 // import RiderIcon from "../../../../../assets/rider_icon.png";
 
 export default function OrderCheckoutScreen() {
+
   const [isAddressSelectedOnce, setIsAddressSelectedOnce] = useState(false);
   const [isUserAddressModalOpen, setIsUserAddressModalOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -99,14 +100,16 @@ export default function OrderCheckoutScreen() {
   const [coupon, setCoupon] = useState<ICoupon>({} as ICoupon);
 
   // Hooks
-  const { authToken, setIsAuthModalVisible } = useAuth();
   const router = useRouter();
+
+  const { authToken, setIsAuthModalVisible } = useAuth();
   const { showToast } = useToast();
   const { CURRENCY_SYMBOL, CURRENCY, DELIVERY_RATE, COST_TYPE } = useConfig();
   const { location, setLocation } = useLocationContext();
   const { userAddress } = useUserAddress();
   const { cart, restaurant: restaurantId, clearCart, profile } = useUser();
   const { data: restaurantData } = useRestaurant(restaurantId || "");
+
 
   // Context
   const { isLoaded } = useContext(GoogleMapsContext);
@@ -337,6 +340,7 @@ export default function OrderCheckoutScreen() {
         variables: {
           restaurant: restaurantId,
           orderInput: items,
+          instructions: localStorage.getItem('orderInstructions') || '',
           paymentMethod: paymentMethod,
           couponCode: coupon ? coupon.title : null,
           tipping: +selectedTip,
@@ -370,6 +374,8 @@ export default function OrderCheckoutScreen() {
   }
 
   async function onCompleted(data: { placeOrder: IOrder }) {
+    localStorage.removeItem('orderInstructions');
+
     if (paymentMethod === "COD") {
       clearCart();
       router.replace(`/order-detail/${data.placeOrder._id}`);
