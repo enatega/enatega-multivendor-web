@@ -46,6 +46,8 @@
 }
 
  interface OrderItem {
+  image: string;
+  specialInstructions: any;
   _id: string;
   title: string;
   food: string;
@@ -64,6 +66,7 @@
 }
 
 export interface IOrderTrackingDetail {
+  reason?: string;
   _id: string;
   orderId: string;
   restaurant: Restaurant;

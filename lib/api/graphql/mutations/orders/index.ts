@@ -182,3 +182,27 @@ export const ADD_REVIEW_ORDER = gql`
     }
   }
 `;
+
+export const ABORT_ORDER = gql`
+  mutation AbortOrder($id: String!) {
+    abortOrder(id: $id) {
+      _id
+      orderId
+      orderStatus
+      cancelledAt
+      reason
+      restaurant {
+        _id
+        name
+      }
+      user {
+        _id
+        name
+      }
+      rider {
+        _id
+        name
+      }
+    }
+  }
+`;

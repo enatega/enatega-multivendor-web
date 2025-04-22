@@ -205,7 +205,6 @@ export default function StoreDetailsScreen() {
   }, [allDeals, filter, subcategoriesData?.subCategories]);
 
   const menuItems = useMemo(() => {
-    console.log(categoriesSubCategoriesList?.fetchCategoryDetailsByStoreId);
     return categoriesSubCategoriesList?.fetchCategoryDetailsByStoreId.map(
       (item: ICategoryDetailsResponse) => ({
         id: item.id,
