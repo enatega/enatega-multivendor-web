@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { useQuery } from "@apollo/client";
-import gql from "graphql-tag";
 import { Marker } from "@react-google-maps/api";
 import { SUBSCRIPTION_RIDER_LOCATION } from "@/lib/api/graphql/subscription/riderLocation";
 import { RIDER } from "@/lib/api/graphql/queries/rider";
@@ -31,15 +30,14 @@ const TrackingRider = ({ id }: { id: string }) => {
 
   if (loading) return null;
   if (error) return null;
-  
   let riderCoordinates = {
     lat: parseFloat(data.rider.location.coordinates[1]),
     lng: parseFloat(data.rider.location.coordinates[0]),
   };
-  
+
   return (
-    <Marker 
-      position={riderCoordinates} 
+    <Marker
+      position={riderCoordinates}
       icon={{
         url: RiderMarker.src,
         scaledSize: new window.google.maps.Size(40, 40),
