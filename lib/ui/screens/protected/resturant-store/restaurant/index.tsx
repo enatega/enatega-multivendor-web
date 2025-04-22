@@ -65,15 +65,14 @@ export default function RestaurantDetailsScreen() {
   const { data, loading } = useRestaurant(id, decodeURIComponent(slug));
 
   // fetch popular deals id
-  const {
-    data: popularSubCategoriesList,
-    loading: popularSubCategoriesLoading,
-  } = useQuery(GET_POPULAR_SUB_CATEGORIES_LIST, {
-    variables: {
-      restaurantId: id,
-    },
-  });
-
+  const { data: popularSubCategoriesList } = useQuery(
+    GET_POPULAR_SUB_CATEGORIES_LIST,
+    {
+      variables: {
+        restaurantId: id,
+      },
+    }
+  );
 
   // Transform cart items when restaurant data is loaded - only once when dependencies change
   useEffect(() => {
@@ -90,11 +89,11 @@ export default function RestaurantDetailsScreen() {
     (cat: ICategory) => cat.foods.length
   );
 
-  const popularDealsIds = popularSubCategoriesList?.popularItems?.map((item: any) => item.id);
+  const popularDealsIds = popularSubCategoriesList?.popularItems?.map(
+    (item: any) => item.id
+  );
 
   const deals = useMemo(() => {
-
-
     const filteredDeals =
       (allDeals || [])
         .filter((c: ICategory) => {
@@ -135,18 +134,19 @@ export default function RestaurantDetailsScreen() {
     );
 
     // Create a "Popular Deals" category if there are matching foods
-    const popularDealsCategory: ICategory | null = popularFoods.length
-      ? {
-        _id: "popular-deals",
-        title: "Popular Deals",
-        foods: popularFoods,
-        // index can be used for custom ordering if needed
-      }
+    const popularDealsCategory: ICategory | null =
+      popularFoods.length ?
+        {
+          _id: "popular-deals",
+          title: "Popular Deals",
+          foods: popularFoods,
+          // index can be used for custom ordering if needed
+        }
       : null;
 
     // Add the new category at the top
-    return popularDealsCategory
-      ? [popularDealsCategory, ...filteredDeals]
+    return popularDealsCategory ?
+        [popularDealsCategory, ...filteredDeals]
       : filteredDeals;
   }, [allDeals, filter, popularDealsIds]);
 
@@ -386,7 +386,7 @@ export default function RestaurantDetailsScreen() {
           <div className="relative">
             {loading ?
               <Skeleton width="100%" height="20rem" borderRadius="0" />
-              : <img
+            : <img
                 alt={`${restaurantInfo.name} banner`}
                 className="w-full h-72 object-cover"
                 height="300"
@@ -432,7 +432,7 @@ export default function RestaurantDetailsScreen() {
                   <ClockSvg />
                   {loading ?
                     <Skeleton width="2rem" height="1.5rem" />
-                    : `${headerData.deliveryTime} mins`}
+                  : `${headerData.deliveryTime} mins`}
                 </span>
 
                 {/* Rating */}
@@ -440,7 +440,7 @@ export default function RestaurantDetailsScreen() {
                   <RatingSvg />
                   {loading ?
                     <Skeleton width="2rem" height="1.5rem" />
-                    : headerData.averageReview}
+                  : headerData.averageReview}
                 </span>
 
                 {/* Info Link */}
@@ -455,7 +455,7 @@ export default function RestaurantDetailsScreen() {
                   <InfoSvg />
                   {loading ?
                     <Skeleton width="10rem" height="1.5rem" />
-                    : "See more information"}
+                  : "See more information"}
                 </a>
                 {/* Review Link */}
                 <a
@@ -469,7 +469,7 @@ export default function RestaurantDetailsScreen() {
                   <ChatSvg />
                   {loading ?
                     <Skeleton width="10rem" height="1.5rem" />
-                    : "See reviews"}
+                  : "See reviews"}
                 </a>
               </div>
             </PaddingContainer>
@@ -557,7 +557,7 @@ export default function RestaurantDetailsScreen() {
           <PaddingContainer>
             {loading ?
               <FoodCategorySkeleton />
-              : deals.map((category: ICategory, catIndex: number) => {
+            : deals.map((category: ICategory, catIndex: number) => {
                 const categorySlug = toSlug(category.title);
 
                 return (
