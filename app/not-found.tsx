@@ -14,7 +14,7 @@ export default function NotFound() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      //   router.back();
+      router.back();
     }, 5000);
 
     return () => clearTimeout(timer);
