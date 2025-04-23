@@ -22,9 +22,10 @@ import { SubscriptionClient } from "subscriptions-transport-ws";
 
 // Utility imports
 import { Subscription } from "zen-observable-ts";
+import { ENV } from "../utils/constants";
 
 export const useSetupApollo = (): ApolloClient<NormalizedCacheObject> => {
-  const { SERVER_URL, WS_SERVER_URL } = getEnv("PROD");
+  const { SERVER_URL, WS_SERVER_URL } = getEnv(ENV);
 
   const cache = new InMemoryCache();
 
