@@ -128,7 +128,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
       <nav className="h-full w-full bg-white shadow-sm">
         <div className="w-full">
           <PaddingContainer>
-            <div className="flex flex-row items-center justify-between w-full h-16 px-2">
+            <div className="flex flex-row items-center justify-between w-full h-16">
               <div className="flex gap-x-2 items-center cursor-pointer">
                 <Link href="/" className="text-xl font-bold text-gray-900">
                   Enatega

@@ -28,7 +28,8 @@ body,
   height: 100%;
   width: 100%;
 
-  overflow: auto !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
 }
 
 /* Optional: Set box-sizing to border-box globally for consistent sizing */

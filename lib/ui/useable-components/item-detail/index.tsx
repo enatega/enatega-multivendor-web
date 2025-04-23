@@ -15,22 +15,19 @@ import ClearCartModal from "../clear-cart-modal";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { onUseLocalStorage } from "@/lib/utils/methods/local-storage";
 
 export default function FoodItemDetail(props: IFoodItemDetalComponentProps) {
-  const { foodItem, addons, options, onClose } = props;
+  const { foodItem, addons, options, onClose, restaurant } = props;
 
   // Access user context for cart functionality
-  const {
-    addItem,
-    restaurant: cartRestaurant,
-    clearCart
-  } = useUser();
+  const { addItem, restaurant: cartRestaurant, clearCart } = useUser();
 
   // State for selected variation
   const [selectedVariation, setSelectedVariation] = useState(
-    foodItem?.variations && foodItem.variations.length > 0
-      ? foodItem.variations[0]
-      : null
+    foodItem?.variations && foodItem.variations.length > 0 ?
+      foodItem.variations[0]
+    : null
   );
 
   // State for quantity
@@ -90,9 +87,10 @@ export default function FoodItemDetail(props: IFoodItemDetalComponentProps) {
         }
         // For multi-select addons
         else {
-          const selectedCount = selected
-            ? Array.isArray(selected)
-              ? selected.length
+          const selectedCount =
+            selected ?
+              Array.isArray(selected) ?
+                selected.length
               : 1
             : 0;
           if (
@@ -133,8 +131,9 @@ export default function FoodItemDetail(props: IFoodItemDetalComponentProps) {
       .filter(([, value]) => value) // Filter out undefined/null values
       .map(([addonId, optionOrOptions]) => {
         // Handle both single and multi-select addons
-        const options = Array.isArray(optionOrOptions)
-          ? optionOrOptions.map((opt) => ({ _id: opt._id }))
+        const options =
+          Array.isArray(optionOrOptions) ?
+            optionOrOptions.map((opt) => ({ _id: opt._id }))
           : [{ _id: optionOrOptions._id }];
 
         return {
@@ -153,6 +152,15 @@ export default function FoodItemDetail(props: IFoodItemDetalComponentProps) {
       "" // Special instructions - could add a field for this
     );
 
+    // UPDAT4 STORAGE
+    onUseLocalStorage("save", "restaurant", restaurant?._id);
+    onUseLocalStorage("save", "restaurant-slug", restaurant?.slug);
+    onUseLocalStorage(
+      "save",
+      "currentShopType",
+      restaurant?.shopType === "restaurant" ? "restaurant" : "store"
+    );
+
     // Close the modal
     if (onClose) {
       onClose();
@@ -164,6 +172,14 @@ export default function FoodItemDetail(props: IFoodItemDetalComponentProps) {
     await clearCart();
     addItemToCart();
     setShowClearCartModal(false);
+
+    onUseLocalStorage("save", "restaurant", restaurant?._id);
+    onUseLocalStorage("save", "restaurant-slug", restaurant?.slug);
+    onUseLocalStorage(
+      "save",
+      "currentShopType",
+      restaurant?.shopType === "restaurant" ? "restaurant" : "store"
+    );
   };
 
   // Calculate total price
@@ -249,48 +265,55 @@ export default function FoodItemDetail(props: IFoodItemDetalComponentProps) {
                 ? `${addon.quantityMinimum} Required`
                 : "Optional";
 
-            return (
-              <ItemDetailSection
-                key={addon._id ?? "addon-" + Math.random()}
-                title={addon.title ?? "Unknown"}
-                name={addon._id ?? "addon"}
-                multiple={!isSingleSelect}
-                singleSelected={
-                  isSingleSelect
-                    ? (selectedAddonOptions[addon._id ?? ""] as Option)
-                    : null
-                }
-                onSingleSelect={
-                  isSingleSelect
-                    ? (option) =>
-                      handleAddonSelection(addon._id ?? "", false, option as Option)
-                    : undefined
-                }
-                multiSelected={
-                  !isSingleSelect
-                    ? (selectedAddonOptions[addon._id ?? ""] as Option[]) || []
-                    : []
-                }
-                onMultiSelect={
-                  !isSingleSelect
-                    ? (updateFn) => {
-                      const current =
-                        (selectedAddonOptions[addon._id ?? ""] as Option[]) ||
-                        [];
-                      if (typeof updateFn === "function") {
-                        const updated = updateFn(current);
-                        handleAddonSelection(addon._id ?? "", true, updated as Option[]);
-                      }
+          return (
+            <ItemDetailSection
+              key={addon._id ?? "addon-" + Math.random()}
+              title={addon.title ?? "Unknown"}
+              name={addon._id ?? "addon"}
+              multiple={!isSingleSelect}
+              singleSelected={
+                isSingleSelect ?
+                  (selectedAddonOptions[addon._id ?? ""] as Option)
+                : null
+              }
+              onSingleSelect={
+                isSingleSelect ?
+                  (option) =>
+                    handleAddonSelection(
+                      addon._id ?? "",
+                      false,
+                      option as Option
+                    )
+                : undefined
+              }
+              multiSelected={
+                !isSingleSelect ?
+                  (selectedAddonOptions[addon._id ?? ""] as Option[]) || []
+                : []
+              }
+              onMultiSelect={
+                !isSingleSelect ?
+                  (updateFn) => {
+                    const current =
+                      (selectedAddonOptions[addon._id ?? ""] as Option[]) || [];
+                    if (typeof updateFn === "function") {
+                      const updated = updateFn(current);
+                      handleAddonSelection(
+                        addon._id ?? "",
+                        true,
+                        updated as Option[]
+                      );
                     }
-                    : undefined
-                }
-                options={addonOptions as Option[]}
-                requiredTag={requiredTagText}
-                showTag={true}
-              />
-            );
-          })}
-        </div>
+                  }
+                : undefined
+              }
+              options={addonOptions as Option[]}
+              requiredTag={requiredTagText}
+              showTag={true}
+            />
+          );
+        })}
+      </div>
 
         <div className="flex items-center justify-between gap-x-2 mt-4">
           {/* Quantity Controls - Rounded Rectangle Container */}

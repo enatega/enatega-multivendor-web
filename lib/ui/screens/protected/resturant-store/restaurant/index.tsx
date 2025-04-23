@@ -4,6 +4,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useParams } from "next/navigation";
 import { Skeleton } from "primereact/skeleton";
+import { useMutation } from "@apollo/client";
+import { ADD_FAVOURITE_RESTAURANT } from "@/lib/api/graphql/mutations/restaurant";
+import { GET_USER_PROFILE } from "@/lib/api/graphql";
 import { useQuery } from "@apollo/client";
 
 // Context & Hooks
@@ -21,6 +24,8 @@ import CustomIconTextField from "@/lib/ui/useable-components/input-icon-field";
 import FoodItemDetail from "@/lib/ui/useable-components/item-detail";
 import FoodCategorySkeleton from "@/lib/ui/useable-components/custom-skeletons/food-items.skeleton";
 import ClearCartModal from "@/lib/ui/useable-components/clear-cart-modal";
+import Confetti from "react-confetti";
+import { useConfig } from "@/lib/context/configuration/configuration.context";
 
 // Interface
 import { ICategory, IFood } from "@/lib/utils/interfaces";
@@ -31,6 +36,7 @@ import ChatSvg from "@/lib/utils/assets/svg/chat";
 import ReviewsModal from "@/lib/ui/useable-components/reviews-modal";
 import InfoModal from "@/lib/ui/useable-components/info-modal";
 import CustomDialog from "@/lib/ui/useable-components/custom-dialog";
+import { onUseLocalStorage } from "@/lib/utils/methods/local-storage";
 
 // Queries
 import { GET_POPULAR_SUB_CATEGORIES_LIST } from "@/lib/api/graphql";
@@ -59,20 +65,25 @@ export default function RestaurantDetailsScreen() {
   const [showClearCartModal, setShowClearCartModal] = useState<boolean>(false);
   const [pendingRestaurantAction, setPendingRestaurantAction] =
     useState<any>(null);
+  const [isLiked, setIsLiked] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const { CURRENCY_SYMBOL } = useConfig();
+
+  // Get user profile from context
+  const { profile } = useUser();
 
   // Fetch restaurant data
   const { data, loading } = useRestaurant(id, decodeURIComponent(slug));
 
   // fetch popular deals id
-  const {
-    data: popularSubCategoriesList,
-    loading: popularSubCategoriesLoading,
-  } = useQuery(GET_POPULAR_SUB_CATEGORIES_LIST, {
-    variables: {
-      restaurantId: id,
-    },
-  });
-
+  const { data: popularSubCategoriesList } = useQuery(
+    GET_POPULAR_SUB_CATEGORIES_LIST,
+    {
+      variables: {
+        restaurantId: id,
+      },
+    }
+  );
 
   // Transform cart items when restaurant data is loaded - only once when dependencies change
   useEffect(() => {
@@ -89,11 +100,19 @@ export default function RestaurantDetailsScreen() {
     (cat: ICategory) => cat.foods.length
   );
 
-  const popularDealsIds = popularSubCategoriesList?.popularItems?.map((item: any) => item.id);
+  // Check if restaurant is favorited when profile is loaded
+  useEffect(() => {
+    if (profile?.favourite) {
+      const isFavorite = profile.favourite.includes(id);
+      setIsLiked(isFavorite);
+    }
+  }, [profile, id]);
+
+  const popularDealsIds = popularSubCategoriesList?.popularItems?.map(
+    (item: any) => item.id
+  );
 
   const deals = useMemo(() => {
-
-
     const filteredDeals =
       (allDeals || [])
         .filter((c: ICategory) => {
@@ -134,18 +153,19 @@ export default function RestaurantDetailsScreen() {
     );
 
     // Create a "Popular Deals" category if there are matching foods
-    const popularDealsCategory: ICategory | null = popularFoods.length
-      ? {
-        _id: "popular-deals",
-        title: "Popular Deals",
-        foods: popularFoods,
-        // index can be used for custom ordering if needed
-      }
+    const popularDealsCategory: ICategory | null =
+      popularFoods.length ?
+        {
+          _id: "popular-deals",
+          title: "Popular Deals",
+          foods: popularFoods,
+          // index can be used for custom ordering if needed
+        }
       : null;
 
     // Add the new category at the top
-    return popularDealsCategory
-      ? [popularDealsCategory, ...filteredDeals]
+    return popularDealsCategory ?
+        [popularDealsCategory, ...filteredDeals]
       : filteredDeals;
   }, [allDeals, filter, popularDealsIds]);
 
@@ -156,6 +176,42 @@ export default function RestaurantDetailsScreen() {
       setSelectedCategory(toSlug(deals[0]?.title)); // first category selected by default
     }
   }, [deals, selectedCategory]);
+
+  const [addFavorite] = useMutation(ADD_FAVOURITE_RESTAURANT, {
+    onCompleted: () => {
+      const wasLiked = isLiked;
+      setIsLiked(!isLiked);
+
+      // Only show confetti when adding a favorite (not removing)
+      if (!wasLiked) {
+        console.log("Favorite added, triggering confetti!");
+        setShowConfetti(true);
+
+        // Reset confetti after a longer delay
+        setTimeout(() => {
+          setShowConfetti(false);
+        }, 5000); // Increased from 3000ms to 5000ms
+      }
+    },
+    onError: (error) => {
+      console.error("Error toggling favorite:", error);
+    },
+    refetchQueries: [{ query: GET_USER_PROFILE }],
+  });
+
+  const handleFavoriteClick = () => {
+    if (!profile) {
+      // Handle case where user is not logged in
+      console.log("Please login to add favorites");
+      return;
+    }
+
+    addFavorite({
+      variables: {
+        id: id,
+      },
+    });
+  };
 
   // Restaurant info
   const headerData = {
@@ -231,6 +287,14 @@ export default function RestaurantDetailsScreen() {
       // Reset the pending action
       setPendingRestaurantAction(null);
     }
+
+    onUseLocalStorage("save", "restaurant", data?.restaurant?._id);
+    onUseLocalStorage("save", "restaurant-slug", data?.restaurant?.slug);
+    onUseLocalStorage(
+      "save",
+      "currentShopType",
+      data?.restaurant?.shopType === "restaurant" ? "restaurant" : "store"
+    );
 
     // Hide the modal
     setShowClearCartModal(false);
@@ -370,50 +434,79 @@ export default function RestaurantDetailsScreen() {
         onHide={() => setShowClearCartModal(false)}
         onConfirm={handleClearCartConfirm}
       />
+      {showConfetti && (
+        <>
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              pointerEvents: "none",
+              zIndex: 10000, // Increased z-index
+            }}
+          >
+            <Confetti
+              width={window.innerWidth}
+              height={window.innerHeight}
+              recycle={false}
+              numberOfPieces={1000}
+              gravity={0.3}
+            />
+          </div>
+          {/* Backdrop overlay to ensure confetti is visible on all backgrounds */}
+        </>
+      )}
 
       <div className="w-screen h-screen flex flex-col pb-20">
         <div className="scrollable-container flex-1 overflow-auto">
           {/* Banner */}
           <div className="relative">
-            {loading ?
+            {loading ? (
               <Skeleton width="100%" height="20rem" borderRadius="0" />
-              : <img
+            ) : (
+              <img
                 alt={`${restaurantInfo.name} banner`}
                 className="w-full h-72 object-cover"
                 height="300"
                 src={restaurantInfo.image}
                 width="1200"
               />
-            }
+            )}
 
             {!loading && (
               <div className="absolute bottom-0 left-0 md:left-20 p-4">
                 <div className="flex flex-col items-start">
                   <img
                     alt={`${restaurantInfo.name} logo`}
-                    className="w-12 h-12 mb-2 rounded-xl"
+                    className="w-12 h-12 mb-2"
                     height="50"
                     src={restaurantInfo.image}
                     width="50"
                   />
 
-                  <div className="text-gray-800 space-y-2">
-                    <h1 className="text-3d-effect p-2  text-white rounded font-inter font-extrabold text-[32px] leading-[100%] sm:text-[40px] md:text-[48px]">
+                  <div className="text-white space-y-2">
+                    <h1 className="font-inter font-extrabold text-[32px] leading-[100%] sm:text-[40px] md:text-[48px]">
                       {restaurantInfo.name}
                     </h1>
-                    <span className="text-3d-effect p-2 rounded  text-white font-inter font-medium text-[18px] sm:text-[20px] sm:leading-[30px] md:text-[24px] md:leading-[32px]">
+                    <p className="font-inter font-medium text-[18px] leading-[28px] sm:text-[20px] sm:leading-[30px] md:text-[24px] md:leading-[32px]">
                       {restaurantInfo.address}
-                    </span>
+                    </p>
                   </div>
                 </div>
               </div>
             )}
-
-            <div className="absolute top-4 right-4 md:bottom-4 md:right-4 md:top-auto rounded-full bg-white h-8 w-8 flex justify-center items-center">
-              <HeartSvg />
-            </div>
+            <button
+              onClick={handleFavoriteClick}
+              className="absolute top-4 right-4 md:bottom-4 md:right-4 md:top-auto rounded-full bg-white h-8 w-8 flex justify-center items-center transform transition-transform duration-300 hover:scale-110 active:scale-95"
+            >
+              <HeartSvg filled={isLiked} />
+            </button>
           </div>
-
           {/* Restaurant Info */}
           <div className="bg-gray-50 shadow-[0px_1px_3px_rgba(0,0,0,0.1)] p-3 h-[80px] flex justify-between items-center">
             <PaddingContainer>
@@ -421,17 +514,21 @@ export default function RestaurantDetailsScreen() {
                 {/* Time */}
                 <span className="flex items-center gap-2 text-gray-600 font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle">
                   <ClockSvg />
-                  {loading ?
+                  {loading ? (
                     <Skeleton width="2rem" height="1.5rem" />
-                    : `${headerData.deliveryTime} mins`}
+                  ) : (
+                    `${headerData.deliveryTime} mins`
+                  )}
                 </span>
 
                 {/* Rating */}
                 <span className="flex items-center gap-2 text-gray-600 font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle">
                   <RatingSvg />
-                  {loading ?
+                  {loading ? (
                     <Skeleton width="2rem" height="1.5rem" />
-                    : headerData.averageReview}
+                  ) : (
+                    headerData.averageReview
+                  )}
                 </span>
 
                 {/* Info Link */}
@@ -444,10 +541,13 @@ export default function RestaurantDetailsScreen() {
                   }}
                 >
                   <InfoSvg />
-                  {loading ?
+                  {loading ? (
                     <Skeleton width="10rem" height="1.5rem" />
-                    : "See more information"}
+                  ) : (
+                    "See more information"
+                  )}
                 </a>
+
                 {/* Review Link */}
                 <a
                   className="flex items-center gap-2 text-[#0EA5E9] font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle"
@@ -458,9 +558,11 @@ export default function RestaurantDetailsScreen() {
                   }}
                 >
                   <ChatSvg />
-                  {loading ?
+                  {loading ? (
                     <Skeleton width="10rem" height="1.5rem" />
-                    : "See reviews"}
+                  ) : (
+                    "See reviews"
+                  )}
                 </a>
               </div>
             </PaddingContainer>
@@ -546,9 +648,10 @@ export default function RestaurantDetailsScreen() {
 
           {/* Food Categories and Items */}
           <PaddingContainer>
-            {loading ?
+            {loading ? (
               <FoodCategorySkeleton />
-              : deals.map((category: ICategory, catIndex: number) => {
+            ) : (
+              deals.map((category: ICategory, catIndex: number) => {
                 const categorySlug = toSlug(category.title);
 
                 return (
@@ -569,7 +672,7 @@ export default function RestaurantDetailsScreen() {
                       {category.foods.map((meal: IFood, mealIndex) => (
                         <div
                           key={mealIndex}
-                          className="flex items-center gap-4 rounded-lg border border-gray-300 shadow-sm bg-white p-3 relative"
+                          className="flex items-center gap-4 rounded-lg border border-gray-300 shadow-sm bg-white p-3 relative cursor-pointer transition-transform duration-300 hover:scale-105 hover:shadow-lg"
                           onClick={() => handleRestaurantClick(meal)}
                         >
                           {/* Text Content */}
@@ -584,7 +687,7 @@ export default function RestaurantDetailsScreen() {
 
                             <div className="flex items-center gap-2">
                               <span className="text-[#0EA5E9] text-lg font-semibold">
-                                Rs. {meal.variations[0].price}
+                                {CURRENCY_SYMBOL} {meal.variations[0].price}
                               </span>
                             </div>
                           </div>
@@ -602,7 +705,10 @@ export default function RestaurantDetailsScreen() {
                           <div className="absolute top-2 right-2">
                             <button
                               className="bg-[#0EA5E9] rounded-full shadow-md w-6 h-6 flex items-center justify-center"
-                              onClick={() => handleRestaurantClick(meal)}
+                              onClick={(e) => {
+                                e.stopPropagation(); // Prevent triggering parent onClick
+                                handleRestaurantClick(meal);
+                              }}
                               type="button"
                             >
                               <FontAwesomeIcon icon={faPlus} color="white" />
@@ -614,7 +720,7 @@ export default function RestaurantDetailsScreen() {
                   </div>
                 );
               })
-            }
+            )}
           </PaddingContainer>
         </div>
       </div>
@@ -630,6 +736,7 @@ export default function RestaurantDetailsScreen() {
             foodItem={selectedFood}
             addons={data?.restaurant?.addons}
             options={data?.restaurant?.options}
+            restaurant={data?.restaurant}
             onClose={handleCloseFoodModal}
           />
         )}

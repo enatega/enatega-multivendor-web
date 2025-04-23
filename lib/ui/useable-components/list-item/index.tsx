@@ -3,14 +3,10 @@ import { Skeleton } from "primereact/skeleton";
 import Image from "next/image";
 import { TileProps } from "@/lib/utils/interfaces/Home-interfaces";
 
-const ListItem: React.FC<TileProps> = ({
-  item,
-  loading = false,
-  onClick,
-}) => {
+const ListItem: React.FC<TileProps> = ({ item, loading = false, onClick }) => {
   if (loading) {
     return (
-      <div className="border-2 border-solid flex w-[280px] rounded p-2 border-[#D1D5DB] gap-4">
+      <div className="border-2 border-solid flex w-full md:w-[280px] rounded p-2 border-[#D1D5DB] gap-4">
         <Skeleton shape="circle" size="3rem" />
         <div className="flex flex-col gap-2">
           <Skeleton width="8rem" height="1rem" />
@@ -23,12 +19,12 @@ const ListItem: React.FC<TileProps> = ({
   return (
     <div>
       <button
-        className="border-[1px] border-solid flex w-[280px] rounded-md h-[60px] p-2 border-[#D1D5DB] gap-4 justify-between items-center"
-        onClick={()=>{
-          if(onClick)
-          {
-          onClick(item)
-        }}}
+        className="border-[1px] border-solid flex w-full md:w-[280px] rounded-md h-[60px] p-2 border-[#D1D5DB] gap-4 justify-between items-center"
+        onClick={() => {
+          if (onClick) {
+            onClick(item);
+          }
+        }}
       >
         <div className="flex gap-6 items-center">
           {item?.flag && (

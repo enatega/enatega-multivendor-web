@@ -21,7 +21,11 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { PaddingContainer } from "@/lib/ui/useable-components/containers";
 import FoodItemDetail from "@/lib/ui/useable-components/item-detail";
 import FoodCategorySkeleton from "@/lib/ui/useable-components/custom-skeletons/food-items.skeleton";
-
+import { useMutation } from "@apollo/client";
+import { ADD_FAVOURITE_RESTAURANT } from "@/lib/api/graphql/mutations/restaurant";
+import { GET_USER_PROFILE } from "@/lib/api/graphql";
+import { useConfig } from "@/lib/context/configuration/configuration.context";
+import Confetti from "react-confetti";
 // API
 import {
   GET_CATEGORIES_SUB_CATEGORIES_LIST,
@@ -48,7 +52,7 @@ import Image from "next/image";
 
 export default function StoreDetailsScreen() {
   // Access the UserContext via our custom hook
-  const { cart, transformCartWithFoodInfo, updateCart } = useUser();
+  const { cart, transformCartWithFoodInfo, updateCart, profile } = useUser();
 
   // Params
   const { id, slug }: { id: string; slug: string } = useParams();
@@ -61,6 +65,9 @@ export default function StoreDetailsScreen() {
   const [isScrolling, setIsScrolling] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedSubCategory, setSelectedSubCategory] = useState("");
+  const [isLiked, setIsLiked] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const { CURRENCY_SYMBOL } = useConfig();
   const [subCategoriesForCategories, setSubCategoriesForCategories] = useState<
     ICategoryDetailsResponse[]
   >([]);
@@ -79,15 +86,14 @@ export default function StoreDetailsScreen() {
       storeId: id,
     },
   });
-  const {
-    data: popularSubCategoriesList,
-    loading: popularSubCategoriesLoading,
-  } = useQuery(GET_POPULAR_SUB_CATEGORIES_LIST, {
-    variables: {
-      restaurantId: id,
-    },
-  });
-
+  const { data: popularSubCategoriesList } = useQuery(
+    GET_POPULAR_SUB_CATEGORIES_LIST,
+    {
+      variables: {
+        restaurantId: id,
+      },
+    }
+  );
 
   const { data: subcategoriesData, loading: subcategoriesLoading } =
     useQuery(GET_SUB_CATEGORIES);
@@ -102,6 +108,13 @@ export default function StoreDetailsScreen() {
     }
   }, [data?.restaurant, cart.length, transformCartWithFoodInfo, updateCart]);
 
+  useEffect(() => {
+    if (profile?.favourite) {
+      const isFavorite = profile.favourite.includes(id);
+      setIsLiked(isFavorite);
+    }
+  }, [profile, id]);
+
   // Constants
   const allDeals = data?.restaurant?.categories?.filter(
     (cat: ICategory) => cat.foods.length
@@ -112,15 +125,15 @@ export default function StoreDetailsScreen() {
     const _url = item.url?.slice(1);
     const isClicked = _url === selectedCategoryRefs.current;
 
-
     return (
       <div
         className="flex align-items-center px-3 py-2 cursor-pointer"
         onClick={() => handleScroll(_url ?? "", true)}
       >
         <span
-          className={`mx-2 ${item.items && "font-semibold"} text-${isClicked ? "[#5AC12F]" : "gray-600"
-            }`}
+          className={`mx-2 ${item.items && "font-semibold"} text-${
+            isClicked ? "[#5AC12F]" : "gray-600"
+          }`}
         >
           {item.label}
         </span>
@@ -133,13 +146,15 @@ export default function StoreDetailsScreen() {
 
     return (
       <div
-        className={`flex align-items-center px-3 py-2 cursor-pointer bg-${isClicked ? "[#F3FFEE]" : ""
-          }`}
+        className={`flex align-items-center px-3 py-2 cursor-pointer bg-${
+          isClicked ? "[#F3FFEE]" : ""
+        }`}
         onClick={() => handleScroll(_url ?? "", false, 80)}
       >
         <span
-          className={`mx-2 ${item.items && "font-semibold"} text-${isClicked ? "[#5AC12F]" : "gray-600"
-            }`}
+          className={`mx-2 ${item.items && "font-semibold"} text-${
+            isClicked ? "[#5AC12F]" : "gray-600"
+          }`}
         >
           {item.label}
         </span>
@@ -151,58 +166,59 @@ export default function StoreDetailsScreen() {
     const subCategories = subcategoriesData?.subCategories;
     if (!allDeals || !subCategories) return [];
 
-    const allDealCategories = allDeals
-      .map((category: ICategory, index: number) => {
-        const subCats = subCategories.filter(
-          (sc: ISubCategory) => sc.parentCategoryId === category._id
-        );
+    const allDealCategories =
+      allDeals
+        .map((category: ICategory, index: number) => {
+          const subCats = subCategories.filter(
+            (sc: ISubCategory) => sc.parentCategoryId === category._id
+          );
 
-        const groupedFoods: Record<string, IFood[]> = {};
+          const groupedFoods: Record<string, IFood[]> = {};
 
-        category.foods.forEach((food) => {
-          const subCatId = food.subCategory || "uncategorized";
-          if (!groupedFoods[subCatId]) groupedFoods[subCatId] = [];
-          groupedFoods[subCatId].push({
-            ...food,
-            title: food.title.toLowerCase(),
+          category.foods.forEach((food) => {
+            const subCatId = food.subCategory || "uncategorized";
+            if (!groupedFoods[subCatId]) groupedFoods[subCatId] = [];
+            groupedFoods[subCatId].push({
+              ...food,
+              title: food.title.toLowerCase(),
+            });
           });
-        });
 
-        const subCategoryGroups = subCats
-          .map((subCat: ISubCategory) => {
-            const foods = groupedFoods[subCat._id] || [];
+          const subCategoryGroups = subCats
+            .map((subCat: ISubCategory) => {
+              const foods = groupedFoods[subCat._id] || [];
 
-            return foods.length > 0
-              ? {
-                _id: subCat._id,
-                title: subCat.title,
-                foods,
-              }
-              : null;
-          })
-          .filter(Boolean) as {
+              return foods.length > 0 ?
+                  {
+                    _id: subCat._id,
+                    title: subCat.title,
+                    foods,
+                  }
+                : null;
+            })
+            .filter(Boolean) as {
             _id: string;
             title: string;
             foods: IFood[];
           }[];
 
-        if (groupedFoods["uncategorized"]?.length > 0) {
-          subCategoryGroups.push({
-            _id: "uncategorized",
-            title: "Uncategorized",
-            foods: groupedFoods["uncategorized"],
-          });
-        }
+          if (groupedFoods["uncategorized"]?.length > 0) {
+            subCategoryGroups.push({
+              _id: "uncategorized",
+              title: "Uncategorized",
+              foods: groupedFoods["uncategorized"],
+            });
+          }
 
-        if (subCategoryGroups.length === 0) return null;
+          if (subCategoryGroups.length === 0) return null;
 
-        return {
-          ...category,
-          index,
-          subCategories: subCategoryGroups,
-        };
-      })
-      .filter(Boolean) || [];
+          return {
+            ...category,
+            index,
+            subCategories: subCategoryGroups,
+          };
+        })
+        .filter(Boolean) || [];
 
     // 🔥 Add "Popular Items" category
     const popularItems = popularSubCategoriesList?.popularItems || [];
@@ -237,24 +253,30 @@ export default function StoreDetailsScreen() {
     }
 
     return allDealCategories;
-  }, [allDeals, filter, subcategoriesData?.subCategories, popularSubCategoriesList?.popularItems]);
+  }, [
+    allDeals,
+    filter,
+    subcategoriesData?.subCategories,
+    popularSubCategoriesList?.popularItems,
+  ]);
 
   const menuItems = useMemo(() => {
-    const baseItems = categoriesSubCategoriesList?.fetchCategoryDetailsByStoreId?.map(
-      (item: ICategoryDetailsResponse) => ({
-        id: item.id,
-        label: item.label,
-        url: item.url,
-        template: parentItemRenderer,
-        items:
-          item.items?.map((subItem) => ({
-            id: subItem.id,
-            label: subItem.label,
-            url: subItem.url,
-            template: itemRenderer,
-          })) || [],
-      })
-    ) || [];
+    const baseItems =
+      categoriesSubCategoriesList?.fetchCategoryDetailsByStoreId?.map(
+        (item: ICategoryDetailsResponse) => ({
+          id: item.id,
+          label: item.label,
+          url: item.url,
+          template: parentItemRenderer,
+          items:
+            item.items?.map((subItem) => ({
+              id: subItem.id,
+              label: subItem.label,
+              url: subItem.url,
+              template: itemRenderer,
+            })) || [],
+        })
+      ) || [];
 
     const popularItems = popularSubCategoriesList?.popularItems || [];
 
@@ -263,7 +285,6 @@ export default function StoreDetailsScreen() {
       const matchedPopularFoods: {
         id: string;
         label: string;
-
         url?: string;
         template?: any;
       }[] = [];
@@ -272,12 +293,13 @@ export default function StoreDetailsScreen() {
         // Loop through all deals -> subCategories -> foods
         for (const dealCategory of deals) {
           for (const subCat of dealCategory.subCategories) {
-            const matchedFood = subCat.foods.find((food) => food._id === popularItem.id);
+            const matchedFood = subCat.foods.find(
+              (food) => food._id === popularItem.id
+            );
             if (matchedFood) {
               matchedPopularFoods.push({
                 id: matchedFood._id,
                 label: matchedFood.title,
-
                 template: itemRenderer,
               });
               break;
@@ -307,7 +329,7 @@ export default function StoreDetailsScreen() {
 
   // Handlers
   const handleScroll = (id: string, isParent = true, offset: number = 120) => {
-    console.log("handleScrollId", id)
+    console.log("handleScrollId", id);
     if (isParent) {
       setSelectedCategory(id);
       selectedCategoryRefs.current = id || "";
@@ -357,6 +379,28 @@ export default function StoreDetailsScreen() {
     setShowDialog(null);
   };
 
+  const [addFavorite] = useMutation(ADD_FAVOURITE_RESTAURANT, {
+    onCompleted: () => {
+      const wasLiked = isLiked;
+      setIsLiked(!isLiked);
+
+      // Only show confetti when adding a favorite (not removing)
+      if (!wasLiked) {
+        console.log("Favorite added, triggering confetti!");
+        setShowConfetti(true);
+
+        // Reset confetti after a longer delay
+        setTimeout(() => {
+          setShowConfetti(false);
+        }, 5000);
+      }
+    },
+    onError: (error) => {
+      console.error("Error toggling favorite:", error);
+    },
+    refetchQueries: [{ query: GET_USER_PROFILE }],
+  });
+
   // Constants
   const headerData = {
     name: data?.restaurant?.name ?? "...",
@@ -365,6 +409,20 @@ export default function StoreDetailsScreen() {
     isAvailable: data?.restaurant?.isAvailable ?? true,
     openingTimes: data?.restaurant?.openingTimes ?? [],
     deliveryTime: data?.restaurant?.deliveryTime,
+  };
+
+  const handleFavoriteClick = () => {
+    if (!profile) {
+      // Handle case where user is not logged in
+      console.log("Please login to add favorites");
+      return;
+    }
+
+    addFavorite({
+      variables: {
+        id: id,
+      },
+    });
   };
 
   const restaurantInfo = {
@@ -444,7 +502,6 @@ export default function StoreDetailsScreen() {
     };
   }, [deals]);
 
-
   return (
     <>
       {/* Reviews Modal  */}
@@ -460,13 +517,41 @@ export default function StoreDetailsScreen() {
         visible={showMoreInfo && !loading}
         onHide={() => setShowMoreInfo(false)}
       />
+
+      {showConfetti && (
+        <>
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              pointerEvents: "none",
+              zIndex: 10000,
+            }}
+          >
+            <Confetti
+              width={window.innerWidth}
+              height={window.innerHeight}
+              recycle={false}
+              numberOfPieces={1000}
+              gravity={0.3}
+            />
+          </div>
+        </>
+      )}
+
       <div className="w-screen h-screen flex flex-col pb-20">
         <div className="scrollable-container flex-1 overflow-auto">
           {/* Banner */}
           <div className="relative">
             {loading ?
               <Skeleton width="100%" height="20rem" borderRadius="0" />
-              : <img
+            : <img
                 alt="McDonald's banner with a burger and fries"
                 className="w-full h-72 object-cover"
                 height="300"
@@ -486,21 +571,24 @@ export default function StoreDetailsScreen() {
                     width="50"
                   />
 
-                  <div className="text-gray-800 space-y-2">
-                    <h1 className="text-3d-effect p-2  text-white rounded font-inter font-extrabold text-[32px] leading-[100%] sm:text-[40px] md:text-[48px]">
+                  <div className="text-white space-y-2">
+                    <h1 className="font-inter font-extrabold text-[32px] leading-[100%] sm:text-[40px] md:text-[48px]">
                       {restaurantInfo.name}
                     </h1>
-                    <span className="text-3d-effect p-2 rounded  text-white font-inter font-medium text-[18px] sm:text-[20px] sm:leading-[30px] md:text-[24px] md:leading-[32px]">
+                    <p className="font-inter font-medium text-[18px] leading-[28px] sm:text-[20px] sm:leading-[30px] md:text-[24px] md:leading-[32px]">
                       {restaurantInfo.address}
-                    </span>
+                    </p>
                   </div>
                 </div>
               </div>
             )}
 
-            <div className="absolute top-4 right-4 md:bottom-4 md:right-4 md:top-auto rounded-full bg-white h-8 w-8 flex justify-center items-center">
-              <HeartSvg />
-            </div>
+            <button
+              onClick={handleFavoriteClick}
+              className="absolute top-4 right-4 md:bottom-4 md:right-4 md:top-auto rounded-full bg-white h-8 w-8 flex justify-center items-center transform transition-transform duration-300 hover:scale-110 active:scale-95"
+            >
+              <HeartSvg filled={isLiked} />
+            </button>
           </div>
 
           {/* Restaurant Info */}
@@ -514,7 +602,7 @@ export default function StoreDetailsScreen() {
                       <ClockSvg />
                       {loading ?
                         <Skeleton width="2rem" height="1.5rem" />
-                        : headerData.deliveryTime}
+                      : headerData.deliveryTime}
                       mins
                     </span>
 
@@ -523,7 +611,7 @@ export default function StoreDetailsScreen() {
                       <RatingSvg />
                       {loading ?
                         <Skeleton width="2rem" height="1.5rem" />
-                        : headerData.averageReview}
+                      : headerData.averageReview}
                     </span>
 
                     {/* Info Link */}
@@ -538,7 +626,7 @@ export default function StoreDetailsScreen() {
                       <InfoSvg />
                       {loading ?
                         <Skeleton width="10rem" height="1.5rem" />
-                        : "See more information"}
+                      : "See more information"}
                     </a>
                     {/* Review Link */}
                     <a
@@ -552,7 +640,7 @@ export default function StoreDetailsScreen() {
                       <ChatSvg />
                       {loading ?
                         <Skeleton width="10rem" height="1.5rem" />
-                        : "See reviews"}
+                      : "See reviews"}
                     </a>
                   </div>
                 </div>
@@ -580,16 +668,19 @@ export default function StoreDetailsScreen() {
                   {menuItems?.map(
                     (category: ICategoryDetailsResponse, index: number) => {
                       const _slug = toSlug(category.label);
+
                       return (
                         <li key={index} className="shrink-0">
                           <button
-                            className={`bg-${selectedCategory === _slug ? "[#F3FFEE]" : (
-                              "gray-100"
-                            )
-                              } text-${selectedCategory === _slug ? "[#5AC12F]" : (
+                            className={`bg-${
+                              selectedCategory === _slug ? "[#F3FFEE]" : (
+                                "gray-100"
+                              )
+                            } text-${
+                              selectedCategory === _slug ? "[#5AC12F]" : (
                                 "gray-600"
                               )
-                              } rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap`}
+                            } rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap`}
                             onClick={() => handleScroll(_slug, true, 100)}
                           >
                             {category.label}
@@ -618,13 +709,15 @@ export default function StoreDetailsScreen() {
                         return (
                           <li key={index} className="shrink-0">
                             <button
-                              className={`bg-${selectedSubCategory === _slug ? "[#F3FFEE]" : (
-                                "gray-100"
-                              )
-                                } text-${selectedSubCategory === _slug ? "[#5AC12F]" : (
+                              className={`bg-${
+                                selectedSubCategory === _slug ? "[#F3FFEE]" : (
+                                  "gray-100"
+                                )
+                              } text-${
+                                selectedSubCategory === _slug ? "[#5AC12F]" : (
                                   "gray-600"
                                 )
-                                } rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap`}
+                              } rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap`}
                               onClick={() => handleScroll(_slug, false, 170)}
                             >
                               {sub_category.label}
@@ -643,14 +736,15 @@ export default function StoreDetailsScreen() {
           <PaddingContainer>
             {loading || categoriesSubCategoriesLoading || subcategoriesLoading ?
               <FoodCategorySkeleton />
-              : <div className="flex flex-col md:flex-row w-full">
+            : <div className="flex flex-col md:flex-row w-full">
                 <div className="hidden md:block md:w-1/5 p-3 h-screen z-10  sticky top-0 left-0">
                   <div className="h-full overflow-hidden group">
                     <div
-                      className={`h-full overflow-y-auto transition-all duration-300 ${isScrolling ?
-                        "scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
+                      className={`h-full overflow-y-auto transition-all duration-300 ${
+                        isScrolling ?
+                          "scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
                         : "overflow-hidden"
-                        }`}
+                      }`}
                       onScroll={handleMouseEnterCategoryPanel}
                     >
                       <PanelMenu
@@ -664,11 +758,8 @@ export default function StoreDetailsScreen() {
                 </div>
 
                 <div className="w-full md:w-4/5 p-3 h-full overflow-y-auto">
-                  {deals.map((category: ICategoryV2, catIndex: number) => {
-
-
-
-                    return <div
+                  {deals.map((category: ICategoryV2, catIndex: number) => (
+                    <div
                       key={catIndex}
                       className="mb-4"
                       id={toSlug(category.title)}
@@ -709,16 +800,17 @@ export default function StoreDetailsScreen() {
 
                                       <div className="flex items-center gap-2">
                                         <span className="text-[#0EA5E9] text-lg font-semibold">
-                                          Rs. {meal.variations[0].price}
+                                          {CURRENCY_SYMBOL}{" "}
+                                          {meal.variations[0].price}
                                         </span>
                                       </div>
                                     </div>
 
                                     {/* Image */}
-                                    <div className="flex-shrink-0 w-24 h-24 md:w-28 md:h-28 ">
+                                    <div className="flex-shrink-0 w-24 h-24 md:w-28 md:h-28">
                                       <Image
                                         alt={meal.title}
-                                        className="w-full h-full rounded-md object-cover mx-auto md:mx-0 "
+                                        className="w-full h-full rounded-md object-cover mx-auto md:mx-0"
                                         src={meal.image}
                                         width={100}
                                         height={100}
@@ -748,7 +840,7 @@ export default function StoreDetailsScreen() {
                         )
                       )}
                     </div>
-                  })}
+                  ))}
                 </div>
               </div>
             }
