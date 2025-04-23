@@ -759,12 +759,13 @@ export default function StoreDetailsScreen() {
       {/* Food Item Detail Modal */}
       <Dialog
         visible={!!showDialog}
-        className="mx-3 sm:mx-4 md:mx-0" // Adds margin on small screens
+        className="mx-3 sm:mx-4 md:mx-0 "  // Adds margin on small screens
         onHide={handleCloseFoodModal}
         showHeader={false}
         contentStyle={{
           borderTopLeftRadius: "4px",
           borderTopRightRadius: "4px",
+          padding: "0px"
         }} // Rounds top corners
         style={{ borderRadius: "1rem" }} // Rounds full box including top corners
       >
