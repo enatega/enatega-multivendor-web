@@ -28,7 +28,8 @@ body,
   height: 100%;
   width: 100%;
 
-  overflow: auto !important;
+  overflow: visible !important;
+  overflow-x: hidden !important;
 }
 
 /* Optional: Set box-sizing to border-box globally for consistent sizing */
@@ -60,8 +61,12 @@ body {
 
 /* Layout */
 
+.layout-topbar-overlay {
+  position: absolute;
+}
+
 .layout-top-container {
-  height: 8%;
+  /* height: 8%; */
   z-index: 997;
   left: 0;
   top: 0;
@@ -72,18 +77,18 @@ body {
 .layout-main-container {
   /* height: 92%; */
   display: flex;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
 .layout-main {
   height: 100%;
+  position: relative;
 }
 
 .buttons {
   display: flex;
   gap: 10px;
 }
-
 
 /* Text Component */
 .custom-text {
@@ -622,7 +627,7 @@ Discovery Caurousal
 }
 
 /* Navigation Buttons */
-.discovery-carousel{
+.discovery-carousel {
   position: relative;
 }
 
@@ -640,7 +645,7 @@ Discovery Caurousal
   box-shadow:
     0px 4px 6px -2px rgba(0, 0, 0, 0.5),
     0px 10px 15px -3px rgba(0, 0, 0, 0.1);
-    position: absolute;
+  position: absolute;
 }
 
 /* Adjust navigation button positions for responsiveness */
@@ -659,8 +664,6 @@ Discovery Caurousal
     display: none;
   }
 }
-
-
 
 /* Reduce height for carousel items on smaller screens */
 .discovery-carousel .p-carousel-items .p-carousel-item {
@@ -733,7 +736,6 @@ Discovery Caurousal
     box-shadow: none !important; /* Remove shadows */
     border: none !important; /* Remove borders if desired */
     padding-left: 0;
-  
   }
 
   /* Make AccordionTab header (the one inside each AccordionTab) transparent */
@@ -742,8 +744,7 @@ Discovery Caurousal
     box-shadow: none !important; /* Remove any shadow on the header */
   }
 
-  .custom-accordion .p-accordion-header-link
-  {
+  .custom-accordion .p-accordion-header-link {
     background-color: transparent !important;
     padding: 0;
     color: white;
@@ -752,7 +753,6 @@ Discovery Caurousal
   .custom-accordion .p-accordion-header .p-accordion-toggle-icon {
     display: none;
   }
-
 }
 
 /* Panel Menu */
@@ -769,7 +769,7 @@ Discovery Caurousal
   box-shadow: none !important;
 }
 
-.p-stepper-nav{
+.p-stepper-nav {
   display: none !important;
 }
 /* Change border color */
@@ -788,10 +788,19 @@ Discovery Caurousal
   color: white !important;
 } */
 
-.p-highlight{
+.p-highlight {
   background: green !important;
-  border-color:rgb(224, 224, 100) !important;
-}.p-inputotp-input{
-  border:1px solid lightgray;
+  border-color: rgb(224, 224, 100) !important;
+}
+.p-inputotp-input {
+  border: 1px solid lightgray;
   border-radius: 32px;
+}
+
+/* 3D Text Effect */
+.text-3d-effect {
+  transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(1deg)
+    rotateY(1deg) rotateZ(1deg);
+  transform-style: preserve-3d;
+  text-shadow: 6px 6px 10px rgba(0, 0, 0, 0.5);
 }

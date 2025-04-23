@@ -1,8 +1,9 @@
+"use client"
 import Image from "next/image";
 import React from "react";
 import styles from "./Movable.module.css"; // Ensure this path is correct
 import { MoveableProps } from "@/lib/utils/interfaces/Home-interfaces";
-
+import { useEffect, useState } from "react";
 const MoveableCard: React.FC<MoveableProps> = ({
   heading,
   subText,
@@ -11,10 +12,27 @@ const MoveableCard: React.FC<MoveableProps> = ({
   middle = false,
   height = "600px",
 }) => {
+  const [responsiveHeight, setResponsiveHeight] = useState(height);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const screenWidth = window.innerWidth;
+      if (screenWidth < 700) {
+        setResponsiveHeight("400px");
+      } else {
+        setResponsiveHeight(height);
+      }
+    };
+
+    handleResize(); // Initial check
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [height]);
+
   return (
     <div
       className={`${styles.cardContainer} bg-green-300 rounded-3xl cursor-pointer`}
-      style={{ height: height }}
+      style={{ height: responsiveHeight }}
     >
       {/* Image container */}
       <Image
@@ -50,7 +68,7 @@ const MoveableCard: React.FC<MoveableProps> = ({
               <h1 className="text-white text-2xl font-bold mb-3 text-center">
                 {heading}
               </h1>
-              <p className="text-white text-5xl font-extrabold text-center">
+              <p className="text-white md:text-5xl text-4xl font-extrabold text-center">
                 {subText}
               </p>
             </div>

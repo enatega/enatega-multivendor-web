@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 // Components
 import AppTopbar from "@/lib/ui/screen-components/un-protected/layout/app-bar";
 
@@ -18,8 +18,9 @@ import AppFooter from "../../screen-components/un-protected/layout/app-footer";
 import { useAuth } from "@/lib/context/auth/auth.context";
 
 const AppLayout = ({ children }: IProvider) => {
+  const [isScrolled , setIsScrolled] = useState(false);
   // Hooks
- const { isAuthModalVisible, setIsAuthModalVisible } = useAuth();
+  const { isAuthModalVisible, setIsAuthModalVisible } = useAuth();
 
   // Hook
   const { GOOGLE_MAPS_KEY, LIBRARIES } = useConfig();
@@ -28,9 +29,24 @@ const AppLayout = ({ children }: IProvider) => {
     setIsAuthModalVisible((prev) => !prev);
   };
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      setIsScrolled(scrollTop > 300 ? true : false);
+    }
+
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    }
+  }, [])
+
   const UI = (
     <div className="layout-main">
-      <div className="layout-top-container">
+      <div className={`
+        layout-top-container transtion-all duration-300 ease-in-out
+        ${isScrolled ? '!fixed !top-0 left-0 shadow-lg' : ''}
+      `}>
         <AppTopbar handleModalToggle={handleModalToggle} />
       </div>
       <div className="layout-main-container">

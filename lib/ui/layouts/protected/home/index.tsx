@@ -6,12 +6,14 @@ import { usePathname, useRouter } from "next/navigation";
 // Svg
 import { CutlerySvg, HomeSvg, StoreSvg } from "@/lib/utils/assets/svg";
 import PaddingContainer from "@/lib/ui/useable-components/containers/padding";
+import { useEffect, useState } from "react";
 
 export default function HomeLayout({
   children,
 }: IProtectedHomeLayoutComponent) {
   const router = useRouter();
   const pathname = usePathname();
+  const [stickyTop , setStickyTop] = useState(0)
 
   const onChangeScreen = (name: "Discovery" | "Restaurants" | "Store") => {
     switch (name) {
@@ -34,10 +36,18 @@ export default function HomeLayout({
   const isRestaurants = pathname === "/restaurants";
   const isStore = pathname === "/store";
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setStickyTop(window.scrollY > 300 ? 16 : 0)
+    }
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [])
+
   return (
-    <div className="w-screen h-screen flex flex-col">
+    <div className="w-screen h-full flex flex-col ">
       {/* Sticky Top Tabs */}
-      <div className="sm:sticky sm:top-0 sm:left-0 fixed bottom-0 left-0 w-full bg-white z-50 pt-2 pb-2 sm:pt-3 sm:pb-3">
+      <div className={`sm:sticky sm:top-${stickyTop} sm:left-0 fixed bottom-0 left-0 w-full bg-white z-50 pt-2 pb-2 sm:pt-3 sm:pb-3`}>
         <div className="flex justify-center items-center space-x-4 md:space-x-6 p-2 md:p-4 overflow-x-auto">
           <div
             className="flex flex-col sm:flex-row items-center gap-x-1 p-2 md:pt-2 md:pb-2 md:pl-4 md:pr-4 text-gray-500 rounded-full cursor-pointer transition-all duration-300 whitespace-nowrap"

@@ -16,7 +16,7 @@ import enategaApp from "@/public/assets/images/png/enategaApp.png"
 import growth from "@/public/assets/images/png/Growth.png"
 import getMoreOrders from "@/public/assets/images/png/GetMoreOrders.png"
 import deliverMoreCustomers from "@/public/assets/images/png/deliverToCustomer.png"
-import restaurantBanner  from "@/public/assets/images/png/restaurantBanner.webp"
+import restaurantBanner from "@/public/assets/images/png/restaurant-banner.png"
 
 
 

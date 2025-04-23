@@ -1,15 +1,15 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faMinus, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faMinus } from "@fortawesome/free-solid-svg-icons";
+import { useQuery, useApolloClient } from "@apollo/client";
+import { RELATED_ITEMS, FOOD } from "@/lib/api/graphql";
 
 // Hooks
 import useUser from "@/lib/hooks/useUser";
-
-// Components
-import { RECOMMENDATIONS } from "@/lib/utils/dummy";
+import { useConfig } from "@/lib/context/configuration/configuration.context";
 
 interface CartProps {
   onClose?: () => void;
@@ -17,12 +17,54 @@ interface CartProps {
 
 export default function Cart({ onClose }: CartProps) {
   // Access user context for cart functionality
-  const { cart, cartCount, updateItemQuantity, calculateSubtotal } = useUser();
-  
+  const { 
+    cart, 
+    cartCount, 
+    updateItemQuantity, 
+    calculateSubtotal, 
+    restaurant: restaurantId,
+    addItem 
+  } = useUser();
+  const { CURRENCY_SYMBOL } = useConfig();
+  const [instructions, setInstructions] = useState(localStorage.getItem('orderInstructions') || '');
+
   const router = useRouter();
+  const client = useApolloClient();
 
   // Format subtotal for display
-  const formattedSubtotal = cartCount > 0 ? `$${calculateSubtotal()}` : "$0";
+  const formattedSubtotal = cartCount > 0 ? `${CURRENCY_SYMBOL}${calculateSubtotal()}` : `${CURRENCY_SYMBOL}0`;
+
+  // Get first item's ID for related items query (if cart is not empty)
+  const firstCartItemId = cart.length > 0 ? cart[0]._id : null;
+
+  // Fetch related items
+  const { data: relatedItemsData } = useQuery(RELATED_ITEMS, {
+    variables: { 
+      itemId: firstCartItemId || '', 
+      restaurantId: restaurantId || '' 
+    },
+    skip: !firstCartItemId || !restaurantId
+  });
+
+  // Handle adding related item to cart
+  const handleAddRelatedItem = (id: string) => {
+    // Use Apollo Client to read the food fragment
+    const food = client.readFragment({
+      id: `Food:${id}`,
+      fragment: FOOD
+    });
+
+    if (food) {
+      // Assuming first variation for simplicity
+      const variation = food.variations[0];
+      addItem(
+        food._id, 
+        variation._id, 
+        restaurantId || '', 
+        1 // default quantity
+      );
+    }
+  };
 
   // Empty cart state
   if (cart.length === 0) {
@@ -47,150 +89,167 @@ export default function Cart({ onClose }: CartProps) {
     );
   }
 
+  // Slice related items to max 3
+  const slicedRelatedItems = 
+    (relatedItemsData?.relatedItems || []).slice(0, 3);
+
   return (
-    <div className="h-full flex flex-col bg-white">
+    <div className="h-full flex flex-col bg-white relative">
       {/* Header */}
-      <div className="p-4 border-b">
-        <div className="flex justify-between items-center">
-          <h2 className="font-inter font-semibold text-xl text-gray-900">
-            Your order
-          </h2>
-          <span className="text-gray-500 text-sm">
-            {cartCount} {cartCount === 1 ? "item" : "items"}
-          </span>
-        </div>
-      </div>
-
-      {/* Order Items - Scrollable */}
-      <div id="order-list" className="flex-1 overflow-y-auto p-4">
-        {cart.map((item) => (
-          <div
-            key={item.key}
-            className="flex flex-wrap md:flex-nowrap items-center mb-4 gap-4 p-3 border-b"
-          >
-            {/* Content */}
-            <div className="flex-1 min-w-0">
-              <h3 className="font-inter font-semibold text-[14px] md:text-[16px] text-gray-700 leading-snug">
-                {item.foodTitle || item.title || "Food Item"}
-              </h3>
-
-              {/* Variation */}
-              <p className="font-inter font-normal text-[12px] md:text-[14px] text-gray-500 leading-snug">
-                {item.variationTitle && `${item.variationTitle}`}
-              </p>
-
-              {item.optionTitles && item.optionTitles.length > 0 && (
-                <div className="mt-1">
-                  {item.optionTitles.map((title, index) => (
-                   <p key={index} className="text-xs text-gray-500">
-                     +{title}
-                    </p>
-                   ))}
-                </div>
-              )}
-
-              {/* Special Instructions */}
-              {item.specialInstructions && (
-                <p className="text-xs italic text-gray-500 mt-1">
-                  {item.specialInstructions}
-                </p>
-              )}
-
-              {/* Price */}
-              <p className="text-[#0EA5E9] font-semibold text-sm md:text-base mt-1">
-                ${item.price || 0}
-              </p>
-            </div>
-
-            {/* Quantity Controls */}
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  updateItemQuantity(item.key, -1);
-                }}
-                className="bg-gray-200 text-gray-600 rounded-full w-6 h-6 flex items-center justify-center"
-                type="button"
-              >
-                {item.quantity === 1 ? (
-                  <FontAwesomeIcon icon={faTrash} size="xs" />
-                ) : (
-                  <FontAwesomeIcon icon={faMinus} size="xs" />
-                )}
-              </button>
-
-              <span className="text-gray-900 w-6 text-center">
-                {item.quantity}
-              </span>
-
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  updateItemQuantity(item.key, 1);
-                }}
-                className="bg-[#0EA5E9] text-white rounded-full w-6 h-6 flex items-center justify-center"
-                type="button"
-              >
-                <FontAwesomeIcon icon={faPlus} size="xs" />
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Recommendation Section */}
-      <div className="border-t p-4 bg-gray-50">
-        <h2 className="font-inter font-semibold text-base md:text-lg text-gray-900 mb-3">
-          Recommendations
+      <div className="flex justify-between items-center p-4 border-b">
+        <h2 className="font-inter font-semibold text-xl text-gray-900">
+          Your order
         </h2>
+        <span className="text-gray-500 text-sm">
+          {cartCount} {cartCount === 1 ? "item" : "items"}
+        </span>
+      </div>
 
-        <div className="flex space-x-4 overflow-x-auto pb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-          {RECOMMENDATIONS.map((item) => (
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-y-auto">
+        {/* Cart Items */}
+        <div className="p-4 space-y-4">
+          {cart.map((item) => (
             <div
-              key={item.id}
-              className="flex-shrink-0 h-[200px] w-[170px] flex flex-col justify-between bg-white rounded-lg shadow-sm"
+              key={item.key}
+              className="flex items-center bg-white rounded-lg p-3 shadow-sm"
             >
-              <div className="relative">
-                <img
-                  src={item.imageUrl}
-                  alt={item.name}
-                  className="w-full h-24 object-cover rounded-t-lg"
-                />
-                <div className="absolute top-2 right-2">
-                  <button
-                    className="bg-[#0EA5E9] rounded-full shadow-md w-6 h-6 flex items-center justify-center"
-                    type="button"
-                  >
-                    <FontAwesomeIcon icon={faPlus} color="white" size="xs" />
-                  </button>
-                </div>
+              <div className="flex-grow">
+                <h3 className="font-inter font-semibold text-sm text-gray-700">
+                  {item.foodTitle || item.title || "Food Item"}
+                </h3>
+                <p className="text-[#0EA5E9] font-semibold text-sm">
+                  {CURRENCY_SYMBOL}{item.price || 0}
+                </p>
+                {item.optionTitles && item.optionTitles.length > 0 && (
+                  <div className="text-xs text-gray-500 mt-1">
+                    {item.optionTitles.map((title, index) => (
+                      <span key={index} className="mr-2">
+                        + {title}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
 
-              <div className="flex justify-start p-3">
-                <div className="text-left">
-                  <p className="text-[#0EA5E9] font-semibold text-sm">
-                    ${item.price}
-                  </p>
-                  <p className="text-gray-700 text-sm truncate max-w-[150px]">
-                    {item.name}
-                  </p>
-                </div>
+              {/* Quantity Controls */}
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    updateItemQuantity(item.key, -1);
+                  }}
+                  className="bg-gray-200 text-gray-600 rounded-full w-6 h-6 flex items-center justify-center"
+                  type="button"
+                >
+                  <FontAwesomeIcon icon={faMinus} size="xs" />
+                </button>
+
+                <span className="text-gray-900 w-6 text-center">
+                  {item.quantity}
+                </span>
+
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    updateItemQuantity(item.key, 1);
+                  }}
+                  className="bg-[#0EA5E9] text-white rounded-full w-6 h-6 flex items-center justify-center"
+                  type="button"
+                >
+                  <FontAwesomeIcon icon={faPlus} size="xs" />
+                </button>
               </div>
             </div>
           ))}
         </div>
+
+        {/* Recommended for You Section */}
+        {slicedRelatedItems.length > 0 && (
+          <div className="p-4 bg-gray-50">
+            <h2 className="font-inter font-semibold text-base text-gray-900 mb-3">
+              Recommended for you
+            </h2>
+            <div className="flex flex-wrap gap-3">
+              {slicedRelatedItems.map((id: string) => {
+                // Read the food fragment using Apollo Client
+                const food = client.readFragment({
+                  id: `Food:${id}`,
+                  fragment: FOOD
+                });
+
+                if (!food) return null;
+
+                return (
+                  <div
+                    key={id}
+                    onClick={() => handleAddRelatedItem(id)}
+                    className="flex-grow basis-[calc(50%-0.75rem)] bg-white rounded-lg overflow-hidden relative 
+                    transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg cursor-pointer group"
+                  >
+                    {food.image && (
+                      <img
+                        src={food.image}
+                        alt={food.title}
+                        className="w-full h-36 object-cover group-hover:opacity-80 transition-opacity duration-300"
+                      />
+                    )}
+                    <div className="p-2">
+                      <p className="text-sm font-semibold text-gray-700 truncate">
+                        {food.title}
+                      </p>
+                      <p className="text-[#0EA5E9] text-sm font-semibold">
+                        {CURRENCY_SYMBOL}{food.variations[0].price}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Add Comment Section */}
+        <div className="p-4 bg-white">
+          <div className="bg-gray-50 rounded-lg p-3">
+            <h2 className="font-inter font-semibold text-base text-gray-900 mb-2">
+              Add comment for venue
+            </h2>
+            <textarea 
+              id="instructions"
+              className="w-full h-20 p-2 bg-white border border-gray-300 rounded-md resize-none focus:border-[#0EA5E9] focus:outline-none text-sm"
+              placeholder="Special requests, allergies, dietary restrictions..."
+              onChange={({ target : { value } }) => {
+                if(value?.length > 500) return;
+                localStorage.setItem('orderInstructions', value)
+                setInstructions(value)
+              }}
+              value={instructions}
+            />
+            <div className='flex items-end justify-between mt-2'>
+              <span className='text-red-500 text-xs'>
+                { 
+                  instructions?.length >= 500 && (
+                    'Maximum limit reached'
+                  )
+                }
+              </span>
+              <span className='text-xs text-gray-500'>
+                {instructions.length}/500
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Checkout Button */}
-      <div className="p-4 border-t">
+      {/* Fixed Checkout Button */}
+      <div className="p-4 border-t bg-white">
         <button
           className="flex justify-between items-center w-full bg-[#5AC12F] text-black rounded-full px-4 py-3"
           onClick={() => {
-            // Handle checkout logic here
             router.push("/order/checkout");
-
             if (onClose) onClose();
           }}
           type="button"

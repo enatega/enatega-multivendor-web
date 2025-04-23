@@ -240,9 +240,8 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
       if (!foodsData || !cartItems.length) return cartItems;
 
       // Extract all foods from categories
-      const foods =
-        foodsData.categories ?
-          foodsData.categories.flatMap((c: ICategory) => c.foods)
+      const foods = foodsData.categories
+        ? foodsData.categories.flatMap((c: ICategory) => c.foods)
         : [];
 
       // Get addons and options data
@@ -307,16 +306,17 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
 
   const onInit = async (isSubscribed: boolean) => {
     if (!isSubscribed) return;
-
+    
     setIsLoading(true);
-
+    
     const _token = localStorage.getItem("token") || null;
     setToken(_token);
-
+    
     if (_token) {
       await fetchProfile();
       await fetchOrders();
     }
+    
     setIsLoading(false);
   };
 
@@ -360,7 +360,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
     return () => {
       isSubscribed = false;
     };
-    // Important: Include token as a dependency to refetch when it changes
+  // Important: Include token as a dependency to refetch when it changes
   }, [token]);
 
   // Setup subscription when profile is loaded
@@ -791,8 +791,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
         isLoggedIn: !!token,
         loadingProfile: loadingProfile && calledProfile,
         errorProfile,
-        profile:
-          dataProfile && dataProfile.profile ? dataProfile.profile : null,
+        profile: dataProfile && dataProfile.profile ? dataProfile.profile : null,
         fetchProfile, // Add this line
         setTokenAsync,
         logout,

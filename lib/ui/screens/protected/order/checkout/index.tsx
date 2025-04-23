@@ -68,13 +68,12 @@ import {
   calculateDistance,
   checkPaymentMethod,
 } from "@/lib/utils/methods";
+import getEnv from "@/environment";
 
 // Asets
 import HomeIcon from "../../../../../assets/home_icon.png";
 import RestIcon from "../../../../../assets/rest_icon.png";
-import getEnv from "@/environment";
-
-// import RiderIcon from "../../../../../assets/rider_icon.png";
+import { onUseLocalStorage } from "@/lib/utils/methods/local-storage";
 
 export default function OrderCheckoutScreen() {
   const [isAddressSelectedOnce, setIsAddressSelectedOnce] = useState(false);
@@ -94,7 +93,6 @@ export default function OrderCheckoutScreen() {
     useState<google.maps.DirectionsResult | null>(null);
 
   const { SERVER_URL } = getEnv("DEV");
-  const { authToken, setIsAuthModalVisible } = useAuth();
 
   // Coupon
   const [isCouponApplied, setIsCouponApplied] = useState(false);
@@ -103,9 +101,9 @@ export default function OrderCheckoutScreen() {
 
   // Hooks
   const router = useRouter();
+  const { authToken, setIsAuthModalVisible } = useAuth();
   const { showToast } = useToast();
   const { CURRENCY_SYMBOL, CURRENCY, DELIVERY_RATE, COST_TYPE } = useConfig();
-  const { userAddress } = useUserAddress();
 
   const {
     cart,
@@ -115,6 +113,8 @@ export default function OrderCheckoutScreen() {
     fetchProfile,
     loadingProfile,
   } = useUser();
+
+  const { userAddress } = useUserAddress();
 
   const { data: restaurantData } = useRestaurant(restaurantId || "");
 
@@ -454,6 +454,7 @@ export default function OrderCheckoutScreen() {
         variables: {
           restaurant: restaurantId,
           orderInput: items,
+          instructions: localStorage.getItem("orderInstructions") || "",
           paymentMethod: paymentMethod,
           couponCode: coupon ? coupon.title : null,
           tipping: +selectedTip,
@@ -487,7 +488,9 @@ export default function OrderCheckoutScreen() {
   }
 
   async function onCompleted(data: { placeOrder: IOrder }) {
+    localStorage.removeItem("orderInstructions");
     clearCart();
+
     if (paymentMethod === "COD") {
       router.replace(`/order/${data.placeOrder._id}/tracking`);
     } else if (paymentMethod === "PAYPAL") {
@@ -843,7 +846,26 @@ export default function OrderCheckoutScreen() {
                       </div>
                     );
                   })}
-                  <button className="text-gray-900 mt-2 font-semibold mb-2 text-sm sm:text-base md:text-[12px] lg:text-[12px] xl:text-[14px]">
+                  <button
+                    className="text-gray-900 mt-2 font-semibold mb-2 text-sm sm:text-base md:text-[12px] lg:text-[12px] xl:text-[14px]"
+                    onClick={() => {
+                      const currentShopType = onUseLocalStorage(
+                        "get",
+                        "currentShopType"
+                      );
+                      const restaurantId = onUseLocalStorage(
+                        "get",
+                        "restaurant"
+                      );
+                      const restaurantSlug = onUseLocalStorage(
+                        "get",
+                        "restaurant-slug"
+                      );
+                      router.replace(
+                        `/${currentShopType}/${restaurantSlug}/${restaurantId}`
+                      );
+                    }}
+                  >
                     + Add more items
                   </button>
                 </div>
@@ -977,15 +999,17 @@ export default function OrderCheckoutScreen() {
                     </span>
                   </div>
 
-                  <div className="flex justify-between mb-1 text-xs lg:text-[12px]">
-                    <span className="font-inter text-gray-900 leading-5">
-                      Delivery ({distance} km)
-                    </span>
-                    <span className="font-inter text-gray-900 leading-5">
-                      {CURRENCY_SYMBOL}
-                      {deliveryCharges.toFixed()}
-                    </span>
-                  </div>
+                  {deliveryType === "Delivery" && (
+                    <div className="flex justify-between mb-1 text-xs lg:text-[12px]">
+                      <span className="font-inter text-gray-900 leading-5">
+                        Delivery ({distance} km)
+                      </span>
+                      <span className="font-inter text-gray-900 leading-5">
+                        {CURRENCY_SYMBOL}
+                        {deliveryCharges.toFixed()}
+                      </span>
+                    </div>
+                  )}
 
                   {selectedTip && (
                     <div className="flex justify-between mb-1 text-xs lg:text-[12px]">

@@ -21,10 +21,15 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { PaddingContainer } from "@/lib/ui/useable-components/containers";
 import FoodItemDetail from "@/lib/ui/useable-components/item-detail";
 import FoodCategorySkeleton from "@/lib/ui/useable-components/custom-skeletons/food-items.skeleton";
-
+import { useMutation } from "@apollo/client";
+import { ADD_FAVOURITE_RESTAURANT } from "@/lib/api/graphql/mutations/restaurant";
+import { GET_USER_PROFILE } from "@/lib/api/graphql";
+import { useConfig } from "@/lib/context/configuration/configuration.context";
+import Confetti from "react-confetti";
 // API
 import {
   GET_CATEGORIES_SUB_CATEGORIES_LIST,
+  GET_POPULAR_SUB_CATEGORIES_LIST,
   GET_SUB_CATEGORIES,
 } from "@/lib/api/graphql";
 
@@ -47,7 +52,7 @@ import Image from "next/image";
 
 export default function StoreDetailsScreen() {
   // Access the UserContext via our custom hook
-  const { cart, transformCartWithFoodInfo, updateCart } = useUser();
+  const { cart, transformCartWithFoodInfo, updateCart, profile } = useUser();
 
   // Params
   const { id, slug }: { id: string; slug: string } = useParams();
@@ -60,6 +65,9 @@ export default function StoreDetailsScreen() {
   const [isScrolling, setIsScrolling] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedSubCategory, setSelectedSubCategory] = useState("");
+  const [isLiked, setIsLiked] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const { CURRENCY_SYMBOL } = useConfig();
   const [subCategoriesForCategories, setSubCategoriesForCategories] = useState<
     ICategoryDetailsResponse[]
   >([]);
@@ -78,6 +86,15 @@ export default function StoreDetailsScreen() {
       storeId: id,
     },
   });
+  const { data: popularSubCategoriesList } = useQuery(
+    GET_POPULAR_SUB_CATEGORIES_LIST,
+    {
+      variables: {
+        restaurantId: id,
+      },
+    }
+  );
+
   const { data: subcategoriesData, loading: subcategoriesLoading } =
     useQuery(GET_SUB_CATEGORIES);
 
@@ -90,6 +107,13 @@ export default function StoreDetailsScreen() {
       }
     }
   }, [data?.restaurant, cart.length, transformCartWithFoodInfo, updateCart]);
+
+  useEffect(() => {
+    if (profile?.favourite) {
+      const isFavorite = profile.favourite.includes(id);
+      setIsLiked(isFavorite);
+    }
+  }, [profile, id]);
 
   // Constants
   const allDeals = data?.restaurant?.categories?.filter(
@@ -138,20 +162,17 @@ export default function StoreDetailsScreen() {
     );
   };
 
-  // Memo
   const deals = useMemo(() => {
     const subCategories = subcategoriesData?.subCategories;
     if (!allDeals || !subCategories) return [];
 
-    return (
+    const allDealCategories =
       allDeals
         .map((category: ICategory, index: number) => {
-          // Get subCategories for this category
           const subCats = subCategories.filter(
             (sc: ISubCategory) => sc.parentCategoryId === category._id
           );
 
-          // Group foods by subCategoryId
           const groupedFoods: Record<string, IFood[]> = {};
 
           category.foods.forEach((food) => {
@@ -163,7 +184,6 @@ export default function StoreDetailsScreen() {
             });
           });
 
-          // Build sub-category groups with foods
           const subCategoryGroups = subCats
             .map((subCat: ISubCategory) => {
               const foods = groupedFoods[subCat._id] || [];
@@ -182,7 +202,6 @@ export default function StoreDetailsScreen() {
             foods: IFood[];
           }[];
 
-          // Add uncategorized group if it has foods
           if (groupedFoods["uncategorized"]?.length > 0) {
             subCategoryGroups.push({
               _id: "uncategorized",
@@ -191,7 +210,6 @@ export default function StoreDetailsScreen() {
             });
           }
 
-          // Only return category if it has at least one sub-category with foods
           if (subCategoryGroups.length === 0) return null;
 
           return {
@@ -200,31 +218,118 @@ export default function StoreDetailsScreen() {
             subCategories: subCategoryGroups,
           };
         })
-        .filter(Boolean) || []
-    );
-  }, [allDeals, filter, subcategoriesData?.subCategories]);
+        .filter(Boolean) || [];
+
+    // 🔥 Add "Popular Items" category
+    const popularItems = popularSubCategoriesList?.popularItems || [];
+
+    if (popularItems.length > 0) {
+      const popularFoods: IFood[] = [];
+
+      for (const popular of popularItems) {
+        for (const category of allDealCategories) {
+          for (const subCat of category.subCategories) {
+            const match = subCat.foods.find((food) => food._id === popular.id);
+            if (match && !popularFoods.find((f) => f._id === match._id)) {
+              popularFoods.push(match);
+            }
+          }
+        }
+      }
+
+      if (popularFoods.length > 0) {
+        allDealCategories.unshift({
+          _id: "popular-items",
+          title: "Popular Items",
+          foods: [],
+          subCategories: [
+            {
+              _id: "popular-items-sub",
+              foods: popularFoods,
+            },
+          ],
+        });
+      }
+    }
+
+    return allDealCategories;
+  }, [
+    allDeals,
+    filter,
+    subcategoriesData?.subCategories,
+    popularSubCategoriesList?.popularItems,
+  ]);
 
   const menuItems = useMemo(() => {
-    return categoriesSubCategoriesList?.fetchCategoryDetailsByStoreId.map(
-      (item: ICategoryDetailsResponse) => ({
-        id: item.id,
-        label: item.label,
-        url: item.url,
-        template: parentItemRenderer,
-        items:
-          item.items?.map((subItem) => ({
-            id: subItem.id,
-            label: subItem.label,
-            url: subItem.url,
+    const baseItems =
+      categoriesSubCategoriesList?.fetchCategoryDetailsByStoreId?.map(
+        (item: ICategoryDetailsResponse) => ({
+          id: item.id,
+          label: item.label,
+          url: item.url,
+          template: parentItemRenderer,
+          items:
+            item.items?.map((subItem) => ({
+              id: subItem.id,
+              label: subItem.label,
+              url: subItem.url,
+              template: itemRenderer,
+            })) || [],
+        })
+      ) || [];
 
-            template: itemRenderer,
-          })) || [],
-      })
-    );
-  }, [categoriesSubCategoriesList?.fetchCategoryDetailsByStoreId]);
+    const popularItems = popularSubCategoriesList?.popularItems || [];
+
+    // If popularItems exist, map them to menu format by matching with 'deals'
+    if (popularItems.length > 0 && deals.length > 0) {
+      const matchedPopularFoods: {
+        id: string;
+        label: string;
+        url?: string;
+        template?: any;
+      }[] = [];
+
+      popularItems.forEach((popularItem: { id: string }) => {
+        // Loop through all deals -> subCategories -> foods
+        for (const dealCategory of deals) {
+          for (const subCat of dealCategory.subCategories) {
+            const matchedFood = subCat.foods.find(
+              (food) => food._id === popularItem.id
+            );
+            if (matchedFood) {
+              matchedPopularFoods.push({
+                id: matchedFood._id,
+                label: matchedFood.title,
+                template: itemRenderer,
+              });
+              break;
+            }
+          }
+        }
+      });
+
+      if (matchedPopularFoods.length > 0) {
+        baseItems.unshift({
+          id: "popular-items",
+          label: "Popular Items",
+          title: "Popular Items",
+          url: "#popular-items",
+          template: parentItemRenderer,
+          items: matchedPopularFoods,
+        });
+      }
+    }
+
+    return baseItems;
+  }, [
+    categoriesSubCategoriesList?.fetchCategoryDetailsByStoreId,
+    popularSubCategoriesList?.popularItems,
+    deals,
+  ]);
 
   // Handlers
   const handleScroll = (id: string, isParent = true, offset: number = 120) => {
+    console.log("handleScrollId", id);
     if (isParent) {
       setSelectedCategory(id);
       selectedCategoryRefs.current = id || "";
@@ -274,6 +379,28 @@ export default function StoreDetailsScreen() {
     setShowDialog(null);
   };
 
+  const [addFavorite] = useMutation(ADD_FAVOURITE_RESTAURANT, {
+    onCompleted: () => {
+      const wasLiked = isLiked;
+      setIsLiked(!isLiked);
+
+      // Only show confetti when adding a favorite (not removing)
+      if (!wasLiked) {
+        console.log("Favorite added, triggering confetti!");
+        setShowConfetti(true);
+
+        // Reset confetti after a longer delay
+        setTimeout(() => {
+          setShowConfetti(false);
+        }, 5000);
+      }
+    },
+    onError: (error) => {
+      console.error("Error toggling favorite:", error);
+    },
+    refetchQueries: [{ query: GET_USER_PROFILE }],
+  });
+
   // Constants
   const headerData = {
     name: data?.restaurant?.name ?? "...",
@@ -282,6 +409,20 @@ export default function StoreDetailsScreen() {
     isAvailable: data?.restaurant?.isAvailable ?? true,
     openingTimes: data?.restaurant?.openingTimes ?? [],
     deliveryTime: data?.restaurant?.deliveryTime,
+  };
+
+  const handleFavoriteClick = () => {
+    if (!profile) {
+      // Handle case where user is not logged in
+      console.log("Please login to add favorites");
+      return;
+    }
+
+    addFavorite({
+      variables: {
+        id: id,
+      },
+    });
   };
 
   const restaurantInfo = {
@@ -323,7 +464,7 @@ export default function StoreDetailsScreen() {
 
   // Effect to select the first category on page load
   useEffect(() => {
-    if (menuItems?.length > 0) {
+    if (menuItems?.length > 0 && !selectedCategory) {
       const firstCategorySlug = toSlug(menuItems[0].label);
       setSelectedCategory(firstCategorySlug);
       selectedCategoryRefs.current = firstCategorySlug;
@@ -376,6 +517,34 @@ export default function StoreDetailsScreen() {
         visible={showMoreInfo && !loading}
         onHide={() => setShowMoreInfo(false)}
       />
+
+      {showConfetti && (
+        <>
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              pointerEvents: "none",
+              zIndex: 10000,
+            }}
+          >
+            <Confetti
+              width={window.innerWidth}
+              height={window.innerHeight}
+              recycle={false}
+              numberOfPieces={1000}
+              gravity={0.3}
+            />
+          </div>
+        </>
+      )}
+
       <div className="w-screen h-screen flex flex-col pb-20">
         <div className="scrollable-container flex-1 overflow-auto">
           {/* Banner */}
@@ -414,9 +583,12 @@ export default function StoreDetailsScreen() {
               </div>
             )}
 
-            <div className="absolute top-4 right-4 md:bottom-4 md:right-4 md:top-auto rounded-full bg-white h-8 w-8 flex justify-center items-center">
-              <HeartSvg />
-            </div>
+            <button
+              onClick={handleFavoriteClick}
+              className="absolute top-4 right-4 md:bottom-4 md:right-4 md:top-auto rounded-full bg-white h-8 w-8 flex justify-center items-center transform transition-transform duration-300 hover:scale-110 active:scale-95"
+            >
+              <HeartSvg filled={isLiked} />
+            </button>
           </div>
 
           {/* Restaurant Info */}
@@ -509,7 +681,7 @@ export default function StoreDetailsScreen() {
                                 "gray-600"
                               )
                             } rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap`}
-                            onClick={() => handleScroll(_slug, true, 130)}
+                            onClick={() => handleScroll(_slug, true, 100)}
                           >
                             {category.label}
                           </button>
@@ -628,16 +800,17 @@ export default function StoreDetailsScreen() {
 
                                       <div className="flex items-center gap-2">
                                         <span className="text-[#0EA5E9] text-lg font-semibold">
-                                          Rs. {meal.variations[0].price}
+                                          {CURRENCY_SYMBOL}{" "}
+                                          {meal.variations[0].price}
                                         </span>
                                       </div>
                                     </div>
 
                                     {/* Image */}
-                                    <div className="flex-shrink-0 w-24 h-24 md:w-28 md:h-28 ">
+                                    <div className="flex-shrink-0 w-24 h-24 md:w-28 md:h-28">
                                       <Image
                                         alt={meal.title}
-                                        className="w-full h-full rounded-md object-cover mx-auto md:mx-0 "
+                                        className="w-full h-full rounded-md object-cover mx-auto md:mx-0"
                                         src={meal.image}
                                         width={100}
                                         height={100}
