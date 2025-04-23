@@ -68,7 +68,6 @@ import {
   calculateDistance,
   checkPaymentMethod,
 } from "@/lib/utils/methods";
-import getEnv from "@/environment";
 
 // Asets
 import HomeIcon from "../../../../../assets/home_icon.png";
@@ -92,8 +91,6 @@ export default function OrderCheckoutScreen() {
   const [directions, setDirections] =
     useState<google.maps.DirectionsResult | null>(null);
 
-  const { SERVER_URL } = getEnv("DEV");
-
   // Coupon
   const [isCouponApplied, setIsCouponApplied] = useState(false);
   const [couponText, setCouponText] = useState("");
@@ -101,9 +98,10 @@ export default function OrderCheckoutScreen() {
 
   // Hooks
   const router = useRouter();
+  const { CURRENCY_SYMBOL, CURRENCY, DELIVERY_RATE, COST_TYPE, SERVER_URL } =
+    useConfig();
   const { authToken, setIsAuthModalVisible } = useAuth();
   const { showToast } = useToast();
-  const { CURRENCY_SYMBOL, CURRENCY, DELIVERY_RATE, COST_TYPE } = useConfig();
 
   const {
     cart,
