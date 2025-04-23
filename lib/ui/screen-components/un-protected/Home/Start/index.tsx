@@ -18,7 +18,7 @@ const Start: React.FC = () => {
   const { onSetUserLocation } = useSetUserCurrentLocation();
 
   return (
-    <div className="h-screen w-full bg-cover bg-center flex items-center justify-center bg-[#94e469] relative">
+    <div className="h-[100vh] w-full bg-cover bg-center flex items-center justify-center bg-[#94e469] relative">
       <div className="text-center flex flex-col items-center justify-center">
         <TextFlyingAnimation />
         <h1 className="text-[40px] md:text-[90px] font-extrabold text-white">

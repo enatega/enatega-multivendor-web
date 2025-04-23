@@ -163,7 +163,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                   </span>
 
                   {/* Show on small screens only */}
-                  <span className="inline absolute top-2 left-[7.5rem] md:hidden text-[8px] sm:text-sm md:text-base text-gray-500 font-inter font-normal tracking-normal mr-2">
+                  <span className="inline absolute top-6.5 left-[9rem] md:hidden text-[8px] sm:text-sm md:text-base text-gray-500 font-inter font-normal tracking-normal mr-2">
                     {userAddress?.details || userAddress?.deliveryAddress}
                   </span>
 
