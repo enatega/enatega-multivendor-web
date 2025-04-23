@@ -163,7 +163,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                   </span>
 
                   {/* Show on small screens only */}
-                  <span className="inline absolute top-2 left-[7.5rem] md:hidden text-[8px] sm:text-sm md:text-base text-gray-500 font-inter font-normal tracking-normal mr-2">
+                  <span className="inline absolute top-6.5 left-[9rem] md:hidden text-[8px] sm:text-sm md:text-base text-gray-500 font-inter font-normal tracking-normal mr-2">
                     {userAddress?.details || userAddress?.deliveryAddress}
                   </span>
 
@@ -181,7 +181,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                 {/* Login Button */}
                 {!authToken ?
                   <button
-                    className="w-20 h-fit bg-transparent text-gray-900 py-2 border border-black rounded-full text-base lg:text-[14px]"
+                    className="md:w-20 w-16 h-fit bg-transparent text-gray-900 md:py-2 py-1 border border-black rounded-full text-sm lg:text-[14px] md:text-md "
                     onClick={handleModalToggle}
                   >
                     <span>Login</span>
