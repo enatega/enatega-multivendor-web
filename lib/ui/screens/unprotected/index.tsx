@@ -14,11 +14,10 @@ import { PaddingContainer } from "../../useable-components/containers";
 
 const Main = () => {
   return (
-    <div>
+    <div className="w-screen">
       <Start />
-
       <PaddingContainer>
-        <div className="w-full mx-auto ">
+        <div className="w-full">
           <Cities />
           <Info />
           <EnategaInfo />
@@ -39,7 +38,7 @@ const Main = () => {
               }
               heading={"Become a store partner"}
               buttonText={"For stores"}
-              backColor={"#eaf7fc"}
+              backColor="#eaf7fc"
             />
           </div>
 
