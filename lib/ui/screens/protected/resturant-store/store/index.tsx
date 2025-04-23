@@ -86,14 +86,14 @@ export default function StoreDetailsScreen() {
       storeId: id,
     },
   });
-  const {
-    data: popularSubCategoriesList,
-    loading: popularSubCategoriesLoading,
-  } = useQuery(GET_POPULAR_SUB_CATEGORIES_LIST, {
-    variables: {
-      restaurantId: id,
-    },
-  });
+  const { data: popularSubCategoriesList } = useQuery(
+    GET_POPULAR_SUB_CATEGORIES_LIST,
+    {
+      variables: {
+        restaurantId: id,
+      },
+    }
+  );
 
   const { data: subcategoriesData, loading: subcategoriesLoading } =
     useQuery(GET_SUB_CATEGORIES);
@@ -166,58 +166,59 @@ export default function StoreDetailsScreen() {
     const subCategories = subcategoriesData?.subCategories;
     if (!allDeals || !subCategories) return [];
 
-    const allDealCategories = allDeals
-      .map((category: ICategory, index: number) => {
-        const subCats = subCategories.filter(
-          (sc: ISubCategory) => sc.parentCategoryId === category._id
-        );
+    const allDealCategories =
+      allDeals
+        .map((category: ICategory, index: number) => {
+          const subCats = subCategories.filter(
+            (sc: ISubCategory) => sc.parentCategoryId === category._id
+          );
 
-        const groupedFoods: Record<string, IFood[]> = {};
+          const groupedFoods: Record<string, IFood[]> = {};
 
-        category.foods.forEach((food) => {
-          const subCatId = food.subCategory || "uncategorized";
-          if (!groupedFoods[subCatId]) groupedFoods[subCatId] = [];
-          groupedFoods[subCatId].push({
-            ...food,
-            title: food.title.toLowerCase(),
+          category.foods.forEach((food) => {
+            const subCatId = food.subCategory || "uncategorized";
+            if (!groupedFoods[subCatId]) groupedFoods[subCatId] = [];
+            groupedFoods[subCatId].push({
+              ...food,
+              title: food.title.toLowerCase(),
+            });
           });
-        });
 
-        const subCategoryGroups = subCats
-          .map((subCat: ISubCategory) => {
-            const foods = groupedFoods[subCat._id] || [];
+          const subCategoryGroups = subCats
+            .map((subCat: ISubCategory) => {
+              const foods = groupedFoods[subCat._id] || [];
 
-            return foods.length > 0
-              ? {
-                _id: subCat._id,
-                title: subCat.title,
-                foods,
-              }
-              : null;
-          })
-          .filter(Boolean) as {
+              return foods.length > 0 ?
+                  {
+                    _id: subCat._id,
+                    title: subCat.title,
+                    foods,
+                  }
+                : null;
+            })
+            .filter(Boolean) as {
             _id: string;
             title: string;
             foods: IFood[];
           }[];
 
-        if (groupedFoods["uncategorized"]?.length > 0) {
-          subCategoryGroups.push({
-            _id: "uncategorized",
-            title: "Uncategorized",
-            foods: groupedFoods["uncategorized"],
-          });
-        }
+          if (groupedFoods["uncategorized"]?.length > 0) {
+            subCategoryGroups.push({
+              _id: "uncategorized",
+              title: "Uncategorized",
+              foods: groupedFoods["uncategorized"],
+            });
+          }
 
-        if (subCategoryGroups.length === 0) return null;
+          if (subCategoryGroups.length === 0) return null;
 
-        return {
-          ...category,
-          index,
-          subCategories: subCategoryGroups,
-        };
-      })
-      .filter(Boolean) || [];
+          return {
+            ...category,
+            index,
+            subCategories: subCategoryGroups,
+          };
+        })
+        .filter(Boolean) || [];
 
     // 🔥 Add "Popular Items" category
     const popularItems = popularSubCategoriesList?.popularItems || [];
@@ -252,24 +253,30 @@ export default function StoreDetailsScreen() {
     }
 
     return allDealCategories;
-  }, [allDeals, filter, subcategoriesData?.subCategories, popularSubCategoriesList?.popularItems]);
+  }, [
+    allDeals,
+    filter,
+    subcategoriesData?.subCategories,
+    popularSubCategoriesList?.popularItems,
+  ]);
 
   const menuItems = useMemo(() => {
-    const baseItems = categoriesSubCategoriesList?.fetchCategoryDetailsByStoreId?.map(
-      (item: ICategoryDetailsResponse) => ({
-        id: item.id,
-        label: item.label,
-        url: item.url,
-        template: parentItemRenderer,
-        items:
-          item.items?.map((subItem) => ({
-            id: subItem.id,
-            label: subItem.label,
-            url: subItem.url,
-            template: itemRenderer,
-          })) || [],
-      })
-    ) || [];
+    const baseItems =
+      categoriesSubCategoriesList?.fetchCategoryDetailsByStoreId?.map(
+        (item: ICategoryDetailsResponse) => ({
+          id: item.id,
+          label: item.label,
+          url: item.url,
+          template: parentItemRenderer,
+          items:
+            item.items?.map((subItem) => ({
+              id: subItem.id,
+              label: subItem.label,
+              url: subItem.url,
+              template: itemRenderer,
+            })) || [],
+        })
+      ) || [];
 
     const popularItems = popularSubCategoriesList?.popularItems || [];
 
@@ -286,7 +293,9 @@ export default function StoreDetailsScreen() {
         // Loop through all deals -> subCategories -> foods
         for (const dealCategory of deals) {
           for (const subCat of dealCategory.subCategories) {
-            const matchedFood = subCat.foods.find((food) => food._id === popularItem.id);
+            const matchedFood = subCat.foods.find(
+              (food) => food._id === popularItem.id
+            );
             if (matchedFood) {
               matchedPopularFoods.push({
                 id: matchedFood._id,
@@ -320,7 +329,7 @@ export default function StoreDetailsScreen() {
 
   // Handlers
   const handleScroll = (id: string, isParent = true, offset: number = 120) => {
-    console.log("handleScrollId", id)
+    console.log("handleScrollId", id);
     if (isParent) {
       setSelectedCategory(id);
       selectedCategoryRefs.current = id || "";
@@ -540,17 +549,16 @@ export default function StoreDetailsScreen() {
         <div className="scrollable-container flex-1 overflow-auto">
           {/* Banner */}
           <div className="relative">
-            {loading ? (
+            {loading ?
               <Skeleton width="100%" height="20rem" borderRadius="0" />
-            ) : (
-              <img
+            : <img
                 alt="McDonald's banner with a burger and fries"
                 className="w-full h-72 object-cover"
                 height="300"
                 src={restaurantInfo.image}
                 width="1200"
               />
-            )}
+            }
 
             {!loading && (
               <div className="absolute bottom-0 left-0 md:left-20 p-4">
@@ -592,22 +600,18 @@ export default function StoreDetailsScreen() {
                     {/* Time */}
                     <span className="flex items-center gap-2 text-gray-600 font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle">
                       <ClockSvg />
-                      {loading ? (
+                      {loading ?
                         <Skeleton width="2rem" height="1.5rem" />
-                      ) : (
-                        headerData.deliveryTime
-                      )}
+                      : headerData.deliveryTime}
                       mins
                     </span>
 
                     {/* Rating */}
                     <span className="flex items-center gap-2 text-gray-600 font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle">
                       <RatingSvg />
-                      {loading ? (
+                      {loading ?
                         <Skeleton width="2rem" height="1.5rem" />
-                      ) : (
-                        headerData.averageReview
-                      )}
+                      : headerData.averageReview}
                     </span>
 
                     {/* Info Link */}
@@ -620,11 +624,9 @@ export default function StoreDetailsScreen() {
                       }}
                     >
                       <InfoSvg />
-                      {loading ? (
+                      {loading ?
                         <Skeleton width="10rem" height="1.5rem" />
-                      ) : (
-                        "See more information"
-                      )}
+                      : "See more information"}
                     </a>
                     {/* Review Link */}
                     <a
@@ -636,11 +638,9 @@ export default function StoreDetailsScreen() {
                       }}
                     >
                       <ChatSvg />
-                      {loading ? (
+                      {loading ?
                         <Skeleton width="10rem" height="1.5rem" />
-                      ) : (
-                        "See reviews"
-                      )}
+                      : "See reviews"}
                     </a>
                   </div>
                 </div>
@@ -673,13 +673,13 @@ export default function StoreDetailsScreen() {
                         <li key={index} className="shrink-0">
                           <button
                             className={`bg-${
-                              selectedCategory === _slug
-                                ? "[#F3FFEE]"
-                                : "gray-100"
+                              selectedCategory === _slug ? "[#F3FFEE]" : (
+                                "gray-100"
+                              )
                             } text-${
-                              selectedCategory === _slug
-                                ? "[#5AC12F]"
-                                : "gray-600"
+                              selectedCategory === _slug ? "[#5AC12F]" : (
+                                "gray-600"
+                              )
                             } rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap`}
                             onClick={() => handleScroll(_slug, true, 100)}
                           >
@@ -710,13 +710,13 @@ export default function StoreDetailsScreen() {
                           <li key={index} className="shrink-0">
                             <button
                               className={`bg-${
-                                selectedSubCategory === _slug
-                                  ? "[#F3FFEE]"
-                                  : "gray-100"
+                                selectedSubCategory === _slug ? "[#F3FFEE]" : (
+                                  "gray-100"
+                                )
                               } text-${
-                                selectedSubCategory === _slug
-                                  ? "[#5AC12F]"
-                                  : "gray-600"
+                                selectedSubCategory === _slug ? "[#5AC12F]" : (
+                                  "gray-600"
+                                )
                               } rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap`}
                               onClick={() => handleScroll(_slug, false, 170)}
                             >
@@ -734,19 +734,16 @@ export default function StoreDetailsScreen() {
 
           {/* Main Section */}
           <PaddingContainer>
-            {loading ||
-            categoriesSubCategoriesLoading ||
-            subcategoriesLoading ? (
+            {loading || categoriesSubCategoriesLoading || subcategoriesLoading ?
               <FoodCategorySkeleton />
-            ) : (
-              <div className="flex flex-col md:flex-row w-full">
+            : <div className="flex flex-col md:flex-row w-full">
                 <div className="hidden md:block md:w-1/5 p-3 h-screen z-10  sticky top-0 left-0">
                   <div className="h-full overflow-hidden group">
                     <div
                       className={`h-full overflow-y-auto transition-all duration-300 ${
-                        isScrolling
-                          ? "scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
-                          : "overflow-hidden"
+                        isScrolling ?
+                          "scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
+                        : "overflow-hidden"
                       }`}
                       onScroll={handleMouseEnterCategoryPanel}
                     >
@@ -846,7 +843,7 @@ export default function StoreDetailsScreen() {
                   ))}
                 </div>
               </div>
-            )}
+            }
           </PaddingContainer>
         </div>
       </div>
