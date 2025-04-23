@@ -6,17 +6,19 @@ import TranparentButton from "@/lib/ui/useable-components/Home-Buttons/Tranparen
 import competetiveEarning  from "@/public/assets/images/png/competitiveEarning.webp"
 import flexibleHours  from "@/public/assets/images/png/flexibleHours.webp"
 
+import Banner2 from "@/public/assets/images/png/Banner2.webp"
+
 const Couriers:React.FC = () => {
   const EarningButton = <TranparentButton text={"Learn More"} />;
   const FLexiblegButton = <TranparentButton text={"Learn More"} />;
-  const EarnWhereButton = <TranparentButton text={"Get started"} />;
+  const EarnWhereButton = <TranparentButton text={"Get started"} link={'rider'} />;
   return (
     <div className="my-[60px]">
       <MoveableCard
         image={
-          "https://images.ctfassets.net/23u853certza/52xdHKNnGODHWovJvhwvYb/b1a71a75301e7e8fe1266660869c3358/subhero_courier_v2.jpg?w=1920&q=90&fm=webp"
+          Banner2
         }
-        heading={"For Couriers"}
+        heading={"For Riders"}
         subText={"EARN WHEN AND WHERE YOU WANT"}
         button={EarnWhereButton}
         middle={true}

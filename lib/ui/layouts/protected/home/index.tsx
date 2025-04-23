@@ -35,7 +35,7 @@ export default function HomeLayout({
   const isStore = pathname === "/store";
 
   return (
-    <div className="w-screen h-screen flex flex-col">
+    <div className="w-screen h-auto flex flex-col">
       {/* Sticky Top Tabs */}
       <div className="sm:sticky sm:top-0 sm:left-0 fixed bottom-0 left-0 w-full bg-white z-50 pt-2 pb-2 sm:pt-3 sm:pb-3">
         <div className="flex justify-center items-center space-x-4 md:space-x-6 p-2 md:p-4 overflow-x-auto">

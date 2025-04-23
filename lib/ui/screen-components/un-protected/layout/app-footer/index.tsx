@@ -14,7 +14,7 @@ const products = {
   title: "Products",
   links: [
     { label: "Enatega Rider", link: "https://play.google.com/store/apps/details?id=com.enatega.multirider&hl=en" , internal:false},
-    { label: "Enatega Restaurant", link: "https://play.google.com/store/apps/details?id=com.enatega.multivendor&hl=en" , internal:false },
+    { label: "Enatega Restaurant", link: "https://play.google.com/store/apps/details?id=multivendor.enatega.restaurant&hl=en" , internal:false },
   ],
 };
 
@@ -31,8 +31,8 @@ const followUs = {
   title: "Follow us",
   links: [
     { label: "Blog", link: "https://ninjascode.com/blog",internal:false },
-    { label: "Instagram", link: "#" , internal:false },
-    { label: "Facebook", link: "#" , internal:false },
+    { label: "Instagram", link: "https://www.instagram.com/ninjascodeofficial/reel/DHdHAngsG6D/" , internal:false },
+    { label: "Facebook", link: "https://www.facebook.com/enatega/" , internal:false },
     { label: "LinkedIn", link: "https://www.linkedin.com/company/enatega/?originalSubdomain=pk", internal:false },
   ],
 };
@@ -58,8 +58,6 @@ const AppFooter = () => {
             <FooterLinks section={followUs} />
           </div>
         </div>
-
-        <div>Header Bottom</div>
       </div>
     </div>
   );
