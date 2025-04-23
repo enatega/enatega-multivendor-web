@@ -16,4 +16,5 @@ export interface IConfigProps {
   DELIVERY_RATE: number;
   COST_TYPE: string;
   TEST_OTP: string;
+  SERVER_URL: string;
 }

@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 // Components
 import AppTopbar from "@/lib/ui/screen-components/un-protected/layout/app-bar";
 
@@ -14,12 +14,17 @@ import { GoogleMapsProvider } from "@/lib/context/global/google-maps.context";
 import AuthModal from "@/lib/ui/screen-components/un-protected/authentication";
 import AppFooter from "../../screen-components/un-protected/layout/app-footer";
 
+// Search Context 
+import { useSearchUI } from "@/lib/context/search/search.context";
+
 // Hooks
 import { useAuth } from "@/lib/context/auth/auth.context";
 
 const AppLayout = ({ children }: IProvider) => {
+  const [isScrolled , setIsScrolled] = useState(false);
   // Hooks
   const { isAuthModalVisible, setIsAuthModalVisible } = useAuth();
+  const { isSearchFocused } = useSearchUI();
 
   // Hook
   const { GOOGLE_MAPS_KEY, LIBRARIES } = useConfig();
@@ -28,12 +33,27 @@ const AppLayout = ({ children }: IProvider) => {
     setIsAuthModalVisible((prev) => !prev);
   };
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      setIsScrolled(scrollTop > 300 ? true : false);
+    }
+
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    }
+  }, [])
+
   const UI = (
     <div className="layout-main">
-      <div className="layout-top-container">
+      <div className={`
+        layout-top-container transtion-all duration-300 ease-in-out
+        ${isScrolled ? '!fixed !top-0 left-0 shadow-lg' : ''}
+      `}>
         <AppTopbar handleModalToggle={handleModalToggle} />
       </div>
-      <div className="layout-main-container">
+      <div className={`layout-main-container ${isSearchFocused && 'blur-md overflow-hidden h-screen'}`}>
         <div className="layout-main">{children}</div>
       </div>
       <div>

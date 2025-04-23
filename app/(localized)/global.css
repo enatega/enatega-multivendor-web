@@ -28,7 +28,7 @@ body,
   height: 100%;
   width: 100%;
 
-  overflow-y: auto !important;
+  overflow: visible !important;
   overflow-x: hidden !important;
 }
 
@@ -61,12 +61,14 @@ body {
 
 /* Layout */
 
-.layout-topbar-overlay {
+.layout-top-bar {
+  z-index: 997;
   position: absolute;
 }
 
 .layout-top-container {
-  height: 8%;
+  position: sticky;
+  height: 64px;
   z-index: 997;
   left: 0;
   top: 0;
@@ -77,11 +79,11 @@ body {
 .layout-main-container {
   /* height: 92%; */
   display: flex;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
 .layout-main {
-  height: 100%;
+  /* height: 100%; */
   position: relative;
 }
 
