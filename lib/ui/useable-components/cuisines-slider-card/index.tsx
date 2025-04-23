@@ -90,7 +90,7 @@ const CuisinesSliderCard: CuisinesSliderCardComponent = ({
 
   // see all click handler
   const onSeeAllClick = () => {
-    router.push(`/${title?.toLocaleLowerCase().replace(/\s/g, "-")}`);
+    router.push(`/see-all/${title?.toLocaleLowerCase().replace(/\s/g, "-")}`);
   };
 
   return (
@@ -127,23 +127,6 @@ const CuisinesSliderCard: CuisinesSliderCardComponent = ({
             </div>
           </div>
         </div>
-
-        <div
-          className={`${data?.length < numVisible ? "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-0" : ""}`}
-        >
-          {data.length < numVisible ? (
-            // Render cards in a grid if fewer items than visible
-            data.map((item, index) => (
-              <div key={index}>
-                <SquareCard
-                  item={item}
-                  showLogo={showLogo}
-                  cuisines={cuisines}
-                />
-              </div>
-            ))
-          ) : (
-            // Use carousel for normal case
             <Carousel
               value={data}
               className="w-[100%] h-[100%]"
@@ -158,8 +141,6 @@ const CuisinesSliderCard: CuisinesSliderCardComponent = ({
               showNavigators={false}
               page={page}
             />
-          )}
-        </div>
       </div>
     )
   );
