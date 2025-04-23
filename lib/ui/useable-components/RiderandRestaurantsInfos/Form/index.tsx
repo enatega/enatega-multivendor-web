@@ -76,8 +76,8 @@ const EmailForm: React.FC<formProps> = ({ heading, role }) => {
   };
 
   return (
-    <div className="p-6 max-w-2xl mx-auto bg-white shadow-lg rounded-m my-6">
-      <h2 className="text-2xl font-semibold mb-6">{heading}</h2>
+    <div className="p-6 max-w-xl mx-auto bg-white shadow-lg rounded-m my-6">
+      <h2 className="text-[20px] font-semibold mb-6">{heading}</h2>
 
       <Formik
         initialValues={initialValues}
@@ -94,14 +94,14 @@ const EmailForm: React.FC<formProps> = ({ heading, role }) => {
                     <InputText
                       placeholder="First Name"
                       {...field}
-                      className="w-full border-2 border-gray-100 p-2 rounded-lg"
+                      className="w-full text-sm border-2 border-gray-100 p-2 rounded-lg"
                     />
                   )}
                 </Field>
                 <ErrorMessage
                   name="firstName"
                   component="small"
-                  className="p-error"
+                  className="p-error text-sm"
                 />
               </div>
 
@@ -111,34 +111,34 @@ const EmailForm: React.FC<formProps> = ({ heading, role }) => {
                     <InputText
                       placeholder="Last Name"
                       {...field}
-                      className="w-full border-2 border-gray-100 p-2 rounded-lg"
+                      className="w-full border-2 text-sm border-gray-100 p-2 rounded-lg"
                     />
                   )}
                 </Field>
                 <ErrorMessage
                   name="lastName"
                   component="small"
-                  className="p-error"
+                  className="p-error text-sm"
                 />
               </div>
             </div>
 
             {/* Email */}
             <div>
-              <label>Email</label>
+              <label className="text-sm">Email</label>
               <Field name="email">
                 {({ field }: any) => (
                   <InputText
                     placeholder="Email Address"
                     {...field}
-                    className="w-full border-2 border-gray-100 p-2 rounded-lg"
+                    className="w-full border-2 text-sm border-gray-100 p-2 rounded-lg"
                   />
                 )}
               </Field>
               <ErrorMessage
                 name="email"
                 component="small"
-                className="p-error"
+                className="p-error text-sm"
               />
             </div>
 
@@ -148,7 +148,7 @@ const EmailForm: React.FC<formProps> = ({ heading, role }) => {
               <ErrorMessage
                 name="phoneNumber"
                 component="small"
-                className="p-error"
+                className="p-error text-sm  "
               />
             </div>
 
@@ -160,7 +160,7 @@ const EmailForm: React.FC<formProps> = ({ heading, role }) => {
                     {...field}
                     placeholder="Password"
                     toggleMask
-                    className="w-full border-2 border-gray-100 p-2 rounded-lg"
+                    className="w-full border-2 text-sm border-gray-100 p-2 rounded-lg"
                     feedback={false}
                   />
                 )}
@@ -168,20 +168,20 @@ const EmailForm: React.FC<formProps> = ({ heading, role }) => {
               <ErrorMessage
                 name="password"
                 component="small"
-                className="p-error"
+                className="p-error text-sm"
               />
             </div>
 
             {/* Confirm Password */}
             <div>
-              <label>Confirm Password</label>
+              <label className="text-sm">Confirm Password</label>
               <Field name="confirmPassword">
                 {({ field }: any) => (
                   <Password
                     placeholder="Confirm Password"
                     {...field}
                     toggleMask
-                    className="w-full border-2 border-gray-100 p-2 rounded-lg"
+                    className="w-full border-2 text-sm border-gray-100 p-2 rounded-lg"
                     feedback={false}
                   />
                 )}
@@ -189,7 +189,7 @@ const EmailForm: React.FC<formProps> = ({ heading, role }) => {
               <ErrorMessage
                 name="confirmPassword"
                 component="small"
-                className="p-error"
+                className="p-error text-sm"
               />
             </div>
 
@@ -199,16 +199,16 @@ const EmailForm: React.FC<formProps> = ({ heading, role }) => {
                 inputId="termsAccepted"
                 checked={values.termsAccepted}
                 onChange={(e) => setFieldValue("termsAccepted", e.checked)}
-                className="border-gray-400"
+                className="border-gray-400 text-sm"
               />
-              <label htmlFor="termsAccepted">
+              <label className="text-sm" htmlFor="termsAccepted">
                 I accept the Terms and Conditions
               </label>
             </div>
             <ErrorMessage
               name="termsAccepted"
               component="small"
-              className="p-error"
+              className="p-error text-sm"
             />
 
             {/* Submit Button */}
@@ -217,7 +217,7 @@ const EmailForm: React.FC<formProps> = ({ heading, role }) => {
                 type="submit"
                 label="Send"
                 loading={isSubmitting}
-                className="mt-4 bg-[#94e469] w-[200px] p-2 rounded-md text-white text-[20px] hover:bg-[#81db51] transition-all"
+                className="mt-4 bg-[#5AC12F] text-[16px] font-medium w-[200px] p-2 rounded-full text-white  hover:bg-[#5AC12F] transition-all"
               />
             </div>
           </Form>

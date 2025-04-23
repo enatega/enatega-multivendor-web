@@ -29,6 +29,7 @@ body,
   width: 100%;
 
   overflow: visible !important;
+  overflow-x: hidden !important;
 }
 
 /* Optional: Set box-sizing to border-box globally for consistent sizing */
@@ -794,4 +795,12 @@ Discovery Caurousal
 .p-inputotp-input {
   border: 1px solid lightgray;
   border-radius: 32px;
+}
+
+/* 3D Text Effect */
+.text-3d-effect {
+  transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(1deg)
+    rotateY(1deg) rotateZ(1deg);
+  transform-style: preserve-3d;
+  text-shadow: 6px 6px 10px rgba(0, 0, 0, 0.5);
 }

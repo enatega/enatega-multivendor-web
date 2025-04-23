@@ -68,18 +68,14 @@ import {
   calculateDistance,
   checkPaymentMethod,
 } from "@/lib/utils/methods";
+import getEnv from "@/environment";
 
 // Asets
 import HomeIcon from "../../../../../assets/home_icon.png";
 import RestIcon from "../../../../../assets/rest_icon.png";
-import getEnv from "@/environment";
-import { useLocationContext } from "@/lib/context/Location/Location.context";
-
-
-// import RiderIcon from "../../../../../assets/rider_icon.png";
+import { onUseLocalStorage } from "@/lib/utils/methods/local-storage";
 
 export default function OrderCheckoutScreen() {
-
   const [isAddressSelectedOnce, setIsAddressSelectedOnce] = useState(false);
   const [isUserAddressModalOpen, setIsUserAddressModalOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -97,7 +93,6 @@ export default function OrderCheckoutScreen() {
     useState<google.maps.DirectionsResult | null>(null);
 
   const { SERVER_URL } = getEnv("DEV");
-  const {authToken, setIsAuthModalVisible } = useAuth();
 
   // Coupon
   const [isCouponApplied, setIsCouponApplied] = useState(false);
@@ -106,18 +101,22 @@ export default function OrderCheckoutScreen() {
 
   // Hooks
   const router = useRouter();
-
   const { authToken, setIsAuthModalVisible } = useAuth();
   const { showToast } = useToast();
   const { CURRENCY_SYMBOL, CURRENCY, DELIVERY_RATE, COST_TYPE } = useConfig();
-  const { location, setLocation } = useLocationContext();
-  console.log("🚀 ~ OrderCheckoutScreen ~ location:", location);
-  const { cart, restaurant: restaurantId, clearCart, profile, fetchProfile, loadingProfile } = useUser();
-  console.log("🚀 ~ OrderCheckoutScreen ~ profile:", profile);
+
+  const {
+    cart,
+    restaurant: restaurantId,
+    clearCart,
+    profile,
+    fetchProfile,
+    loadingProfile,
+  } = useUser();
+
   const { userAddress } = useUserAddress();
 
   const { data: restaurantData } = useRestaurant(restaurantId || "");
-
 
   // Context
   const { isLoaded } = useContext(GoogleMapsContext);
@@ -179,8 +178,9 @@ export default function OrderCheckoutScreen() {
         food: food._id,
         quantity: food.quantity,
         variation: food.variation._id,
-        addons: food.addons
-          ? food.addons.map(({ _id, options }) => ({
+        addons:
+          food.addons ?
+            food.addons.map(({ _id, options }) => ({
               _id,
               options: options.map(({ _id }) => _id),
             }))
@@ -454,7 +454,7 @@ export default function OrderCheckoutScreen() {
         variables: {
           restaurant: restaurantId,
           orderInput: items,
-          instructions: localStorage.getItem('orderInstructions') || '',
+          instructions: localStorage.getItem("orderInstructions") || "",
           paymentMethod: paymentMethod,
           couponCode: coupon ? coupon.title : null,
           tipping: +selectedTip,
@@ -488,9 +488,9 @@ export default function OrderCheckoutScreen() {
   }
 
   async function onCompleted(data: { placeOrder: IOrder }) {
-    localStorage.removeItem('orderInstructions');
+    localStorage.removeItem("orderInstructions");
     clearCart();
-    
+
     if (paymentMethod === "COD") {
       router.replace(`/order/${data.placeOrder._id}/tracking`);
     } else if (paymentMethod === "PAYPAL") {
@@ -620,7 +620,7 @@ export default function OrderCheckoutScreen() {
         <div className="scrollable-container flex-1 overflow-auto">
           {/* <!-- Header with map and navigation --> */}
           <div className="relative">
-            {isLoaded ? (
+            {isLoaded ?
               <GoogleMap
                 mapContainerStyle={{
                   width: "100%",
@@ -676,8 +676,7 @@ export default function OrderCheckoutScreen() {
                   />
                 )}
               </GoogleMap>
-            ) : (
-              <>
+            : <>
                 <img
                   alt="Map showing delivery route"
                   className="w-full h-64 object-cover"
@@ -689,7 +688,7 @@ export default function OrderCheckoutScreen() {
                   H
                 </div>{" "}
               </>
-            )}
+            }
           </div>
           {/* <!-- Toggle Prices Button for Mobile --> */}
           <div className="sm:hidden fixed top-10 left-0 right-0 bg-transparent z-10 p-4">
@@ -849,7 +848,23 @@ export default function OrderCheckoutScreen() {
                   })}
                   <button
                     className="text-gray-900 mt-2 font-semibold mb-2 text-sm sm:text-base md:text-[12px] lg:text-[12px] xl:text-[14px]"
-                    onClick={() => router.back()}
+                    onClick={() => {
+                      const currentShopType = onUseLocalStorage(
+                        "get",
+                        "currentShopType"
+                      );
+                      const restaurantId = onUseLocalStorage(
+                        "get",
+                        "restaurant"
+                      );
+                      const restaurantSlug = onUseLocalStorage(
+                        "get",
+                        "restaurant-slug"
+                      );
+                      router.replace(
+                        `/${currentShopType}/${restaurantSlug}/${restaurantId}`
+                      );
+                    }}
                   >
                     + Add more items
                   </button>
@@ -927,13 +942,12 @@ export default function OrderCheckoutScreen() {
                   <h2 className="font-semibold text-gray-900 mb-2 text-base sm:text-lg md:text-[16px] lg:text-[18px]">
                     Promo code
                   </h2>
-                  {isCouponApplied ? (
+                  {isCouponApplied ?
                     <Message
                       severity="success"
                       text="Coupon has been applied successfully"
                     />
-                  ) : (
-                    <>
+                  : <>
                       <p className="text-gray-500 mb-4 leading-5 sm:leading-5 tracking-normal font-inter text-xs sm:text-sm md:text-sm align-middle mt-2">
                         If you have a promo code enter it below to claim your
                         benefit!
@@ -951,15 +965,13 @@ export default function OrderCheckoutScreen() {
                           className="bg-[#5AC12F] h-10 px-8 space-x-2 font-medium text-gray-900  tracking-normal font-inter text-sm sm:text-base md:text-[12px] lg:text-[14px] rounded-full"
                           onClick={onApplyCoupon}
                         >
-                          {couponLoading ? (
+                          {couponLoading ?
                             <FontAwesomeIcon icon={faSpinner} spin />
-                          ) : (
-                            <span>Submit</span>
-                          )}
+                          : <span>Submit</span>}
                         </button>
                       </div>
                     </>
-                  )}
+                  }
                 </div>
               </div>
 
@@ -1063,11 +1075,9 @@ export default function OrderCheckoutScreen() {
                     className="bg-[#5AC12F] text-gray-900 w-full py-2 rounded-full text-xs lg:text-[12px]"
                     onClick={onPlaceOrder}
                   >
-                    {loadingOrderMutation ? (
+                    {loadingOrderMutation ?
                       <FontAwesomeIcon icon={faSpinner} spin />
-                    ) : (
-                      <span> Click to order</span>
-                    )}
+                    : <span> Click to order</span>}
                   </button>
                 </div>
               </div>
@@ -1175,11 +1185,9 @@ export default function OrderCheckoutScreen() {
                         className="bg-[#5AC12F] text-gray-900 w-full py-2 rounded-full text-sm"
                         onClick={onPlaceOrder}
                       >
-                        {loadingOrderMutation ? (
+                        {loadingOrderMutation ?
                           <FontAwesomeIcon icon={faSpinner} spin />
-                        ) : (
-                          <span> Click to order</span>
-                        )}
+                        : <span> Click to order</span>}
                       </button>
                     </motion.div>
                   )}
