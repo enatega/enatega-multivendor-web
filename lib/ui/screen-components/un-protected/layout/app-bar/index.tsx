@@ -123,6 +123,9 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
       setRefetchProfileData(false);
     }
   }, [refetchProfileData]);
+
+
+
   return (
     <>
       <nav className="h-full w-full bg-white shadow-sm">

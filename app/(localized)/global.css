@@ -28,7 +28,7 @@ body,
   height: 100%;
   width: 100%;
 
-  overflow: auto !important;
+  overflow: visible !important;
 }
 
 /* Optional: Set box-sizing to border-box globally for consistent sizing */
@@ -76,7 +76,7 @@ body {
 .layout-main-container {
   /* height: 92%; */
   display: flex;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
 .layout-main {
