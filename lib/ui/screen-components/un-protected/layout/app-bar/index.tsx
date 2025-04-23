@@ -181,7 +181,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                 {/* Login Button */}
                 {!authToken ?
                   <button
-                    className="w-20 h-fit bg-transparent text-gray-900 py-2 border border-black rounded-full text-base lg:text-[14px]"
+                    className="md:w-20 w-16 h-fit bg-transparent text-gray-900 md:py-2 py-1 border border-black rounded-full text-sm lg:text-[14px] md:text-md "
                     onClick={handleModalToggle}
                   >
                     <span>Login</span>
