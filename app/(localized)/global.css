@@ -61,7 +61,8 @@ body {
 
 /* Layout */
 
-.layout-topbar-overlay {
+.layout-top-bar {
+  z-index: 997;
   position: absolute;
 }
 

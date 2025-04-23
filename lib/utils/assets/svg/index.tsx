@@ -15,3 +15,4 @@ export { default as CycleSvg } from "./cycle";
 export { default as FaceSvg } from "./face";
 export { default as LaptopSvg } from "./laptop";
 export { default as LocationSvg } from "./location";
+export { default as SearchSvg } from './search'
