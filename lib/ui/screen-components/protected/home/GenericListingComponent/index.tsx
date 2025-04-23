@@ -127,7 +127,7 @@ export default function GenericListingComponent({
           title={cuisineSectionTitle}
           data={cuisineData}
           loading={loading}
-          error={false}
+          error={error}
         />
       )}
       <MainSection

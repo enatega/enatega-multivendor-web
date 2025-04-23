@@ -149,4 +149,5 @@ export interface IMainSectionProps {
   data: IRestaurant[];
   loading: boolean;
   error: boolean;
+  search?: boolean
 }

@@ -14,6 +14,9 @@ import { GoogleMapsProvider } from "@/lib/context/global/google-maps.context";
 import AuthModal from "@/lib/ui/screen-components/un-protected/authentication";
 import AppFooter from "../../screen-components/un-protected/layout/app-footer";
 
+// Search Context 
+import { useSearchUI } from "@/lib/context/search/search.context";
+
 // Hooks
 import { useAuth } from "@/lib/context/auth/auth.context";
 
@@ -21,6 +24,7 @@ const AppLayout = ({ children }: IProvider) => {
   const [isScrolled , setIsScrolled] = useState(false);
   // Hooks
   const { isAuthModalVisible, setIsAuthModalVisible } = useAuth();
+  const { isSearchFocused } = useSearchUI();
 
   // Hook
   const { GOOGLE_MAPS_KEY, LIBRARIES } = useConfig();
@@ -49,7 +53,7 @@ const AppLayout = ({ children }: IProvider) => {
       `}>
         <AppTopbar handleModalToggle={handleModalToggle} />
       </div>
-      <div className="layout-main-container">
+      <div className={`layout-main-container ${isSearchFocused && 'blur-md overflow-hidden h-screen'}`}>
         <div className="layout-main">{children}</div>
       </div>
       <div>
