@@ -8,8 +8,9 @@ import MoveableCard from "@/lib/ui/useable-components/Moveable-Card";
 // images
 import deliveryFee from "@/public/assets/images/png/deliveryFee.webp";
 import ZeroDelivery from "@/public/assets/images/png/0delivery.webp";
-import RiderSection from "@/public/assets/images/svgs/RiderSection.svg";
-import RestaurantSection from "@/public/assets/images/svgs/RestuarantSection.svg";
+import RestaurantApp from "@/public/assets/images/png/restaurantApp.png"
+import RiderApp from "@/public/assets/images/png/riderApp.png"
+import CustomerApp from "@/public/assets/images/png/CustomerApp.png"
 
 
 const EnategaInfo: React.FC = () => {
@@ -42,9 +43,9 @@ const EnategaInfo: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-[30px] mb-[30px]">
-        <HomeCard image={'https://enatega.com/wp-content/uploads/2025/01/enatega-customer-app.webp'} heading={"Fresh Groceries Delivered"} subText={"Go to Enatega App"} link={""}/>
-        <HomeCard image={RiderSection} heading={"Restaurants Earn More"} subText={"Go to Enatega Restaurant App"} link={""} />
-        <HomeCard image={RestaurantSection} heading={"Riders Reaches Fast"} subText={"Go to Enatega Rider App"} link={""}/>
+        <HomeCard image={CustomerApp} heading={"Fresh Groceries Delivered"} subText={"Go to Enatega App"} link={"https://play.google.com/store/apps/details?id=com.enatega.multivendor&hl=en"}/>
+        <HomeCard image={RestaurantApp} heading={"Restaurants Earn More"} subText={"Go to Enatega Restaurant App"} link={"https://play.google.com/store/apps/details?id=multivendor.enatega.restaurant&hl=en"} />
+        <HomeCard image={RiderApp} heading={"Riders Reaches Fast"} subText={"Go to Enatega Rider App"} link={"https://play.google.com/store/apps/details?id=com.enatega.multirider&hl=en"}/>
       </div>
     </div>
   );
