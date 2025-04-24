@@ -1,20 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
 import { Dialog } from "primereact/dialog";
 import { useMutation } from "@apollo/client";
 import { ABORT_ORDER } from "@/lib/api/graphql";
 import useToast from "@/lib/hooks/useToast";
 import { useAuth } from "@/lib/context/auth/auth.context";
+import CancelOrderSuccessModal from "./cancel-order-success-modal";
 
 interface CancelOrderModalProps {
   visible: boolean;
   onHide: () => void;
   orderId: string;
+  onSuccess: () => void;
 }
 
-function CancelOrderModal({ visible, onHide, orderId }: CancelOrderModalProps) {
+function CancelOrderModal({ visible, onHide, orderId, onSuccess }: CancelOrderModalProps) {
   const { showToast } = useToast();
   const { authToken } = useAuth(); // Get auth context for authentication
-
+ 
   const [abortOrder, { loading }] = useMutation(ABORT_ORDER, {
     onCompleted: (data) => {
       console.log("Order cancelled successfully:", data);
@@ -23,9 +25,10 @@ function CancelOrderModal({ visible, onHide, orderId }: CancelOrderModalProps) {
         title: "Order Cancelled",
         message: "Your order has been cancelled successfully.",
       });
-      onHide();
+      console.log("onSuccess is called");
+      onSuccess();
       // Refresh the order tracking page to show the updated status
-      window.location.reload();
+    
     },
     onError: (error) => {
       console.error("Abort order error:", error);
@@ -129,6 +132,8 @@ function CancelOrderModal({ visible, onHide, orderId }: CancelOrderModalProps) {
           </button>
         </div>
       </div>
+
+   
     </Dialog>
   );
 }

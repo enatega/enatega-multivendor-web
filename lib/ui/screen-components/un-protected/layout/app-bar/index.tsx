@@ -82,15 +82,11 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
   } = useAuth();
   const { queryData = [] } = useNearByRestaurantsPreview();
 
-  // UseStates
-  const [debouncedFilter, setDebouncedFilter] = useState("");
-
   const {
     isSearchFocused,
     setIsSearchFocused,
     filter,
     setFilter,
-    searchedData,
     setSearchedData,
     setSearchedKeywords,
   } = useSearchUI();
@@ -156,13 +152,14 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
   }, [refetchProfileData]);
 
 
-
-
-  // filtered search results
+  // filters search results
+  let searchedKeywords = getSearchedKeywords();
+  
   const filteredResults = useMemo(() => {
-    if (!debouncedFilter) return [];
-    const searchText = debouncedFilter.toLowerCase();
-
+    if (!filter.trim()) return [];
+    if (!queryData || !Array.isArray(queryData) || queryData.length === 0) return [];
+    
+    const searchText = filter.toLowerCase();
     return queryData.filter(({ name, address = "", cuisines = [] }) => {
       return (
         name.toLowerCase().includes(searchText) ||
@@ -170,26 +167,18 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
         cuisines.join(" ").toLowerCase().includes(searchText)
       );
     });
-  }, [debouncedFilter, queryData]);
+  }, [filter, queryData]);
 
-  // debounce effect
+  // Update searchedData in context whenever filter changes
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedFilter(filter);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [filter]);
+    setSearchedData(filteredResults);
+  }, [filter, filteredResults]);
 
-  // useEffect for storing the filtered data into the context
-  useEffect(() => {
-    if (debouncedFilter.trim().length === 0) {
-      setSearchedData([]);
-    } else {
-      setSearchedData(filteredResults);
-    }
-  }, [filteredResults, debouncedFilter]);
+  // Handle search input change
+  const handleSearchInputChange = (e) => {
+    setFilter(e.target.value);
+  };
 
-  let searchedKeywords = getSearchedKeywords();
   // Search results rendered
   const renderSearchResults = () => {
     // Case 1: Input is empty
@@ -237,11 +226,11 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
     }
 
     // Case 2: User searched something
-    if (searchedData.length > 0) {
+    if (filteredResults.length > 0) {
       return (
         <MainSection
           title={`Restaurant and stores: ${filter}`}
-          data={searchedData.slice(0, 3)}
+          data={filteredResults.slice(0, 3)}
           loading={false}
           error={false}
           search={true}
@@ -334,7 +323,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                   <input
                     id="search-input"
                     value={filter}
-                    onChange={(e) => setFilter(e.target.value)}
+                    onChange={handleSearchInputChange}
                     onFocus={() => setIsSearchFocused(true)}
                     placeholder="Search in enatega"
                     className={`

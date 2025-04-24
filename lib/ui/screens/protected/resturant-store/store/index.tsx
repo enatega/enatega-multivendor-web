@@ -49,6 +49,7 @@ import ReviewsModal from "@/lib/ui/useable-components/reviews-modal";
 import InfoModal from "@/lib/ui/useable-components/info-modal";
 import ChatSvg from "@/lib/utils/assets/svg/chat";
 import Image from "next/image";
+import Loader from "@/app/(localized)/mapview/[slug]/components/Loader";
 
 export default function StoreDetailsScreen() {
   // Access the UserContext via our custom hook
@@ -379,7 +380,7 @@ export default function StoreDetailsScreen() {
     setShowDialog(null);
   };
 
-  const [addFavorite] = useMutation(ADD_FAVOURITE_RESTAURANT, {
+  const [addFavorite, { loading: addFavoriteLoading }] = useMutation(ADD_FAVOURITE_RESTAURANT, {
     onCompleted: () => {
       const wasLiked = isLiked;
       setIsLiked(!isLiked);
@@ -585,9 +586,10 @@ export default function StoreDetailsScreen() {
 
             <button
               onClick={handleFavoriteClick}
+              disabled={addFavoriteLoading}
               className="absolute top-4 right-4 md:bottom-4 md:right-4 md:top-auto rounded-full bg-white h-8 w-8 flex justify-center items-center transform transition-transform duration-300 hover:scale-110 active:scale-95"
             >
-              <HeartSvg filled={isLiked} />
+              {addFavoriteLoading ? <Loader style={{ width: "1.5rem", height: "1.5rem" }} /> : <HeartSvg filled={isLiked} />}
             </button>
           </div>
 
@@ -650,9 +652,9 @@ export default function StoreDetailsScreen() {
 
           {/* Category Section */}
           <PaddingContainer
+            className="md"
             style={{
               position: "sticky",
-              top: 0,
               zIndex: 50,
               backgroundColor: "white",
               boxShadow: "0 1px 1px rgba(0, 0, 0, 0.1)",
