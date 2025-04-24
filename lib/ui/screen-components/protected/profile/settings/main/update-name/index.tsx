@@ -41,9 +41,11 @@ export default function NameUpdateModal({
 
     // Queries and Mutations
     
-   // refetch user profile after updating phone number
+   // refetch user profile after updating name
      const [
-        fetchProfile
+        fetchProfile,{
+          data: profileData,
+        }
       ] = useLazyQuery(GET_USER_PROFILE, {
         fetchPolicy: "network-only",
       });

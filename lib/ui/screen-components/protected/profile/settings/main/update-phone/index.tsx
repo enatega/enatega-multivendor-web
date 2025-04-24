@@ -72,35 +72,35 @@ export default function UpdatePhoneModal({
     }))
   }
 
-  const handleSubmit = useDebounceFunction(async () => { 
-    try {
-      if(!user?.phone || user?.phone.length < 7) {
-        showToast({
-          type: "error",
-          title: "Error",
-          message: "Please enter a valid phone number",
-        });
-        return;
-      }
-      else{
-        await checkPhoneExists(user?.phone).then(async (res) => {
-            if (res) {
-                return;
-            }
-            await sendOtpToPhoneNumber(user?.phone || "");
-            setActiveStep(1);
-        });
-      }
-    } catch (error) {
-      console.log(error);
+ const handleSubmit = useDebounceFunction(async () => { 
+  try {
+    if(!user?.phone || user?.phone.length < 7) {
       showToast({
         type: "error",
         title: "Error",
-        message: "An error occured while saving the phone number",
+        message: "Please enter a valid phone number",
       });
+      return;
     }
-  },
-    500, // Debounce time in milliseconds
+    const phoneExists = await checkPhoneExists(user?.phone);
+
+    // Only proceed with sending OTP if the phone number doesn't exist
+    // The checkPhoneExists function already shows a toast error if phone exists
+    if (!phoneExists) {
+      await sendOtpToPhoneNumber(user?.phone || "");
+      setActiveStep(1);
+    }
+    // If phoneExists is true, just return and don't proceed further
+    
+  } catch (error) {
+    showToast({
+      type: "error",
+      title: "Error",
+      message: "An error occured while saving the phone number",
+    });
+  }
+},
+  500, // Debounce time in milliseconds
 )
 
     const handleSubmitAfterVerification = useDebounceFunction(async () => {
@@ -117,8 +117,9 @@ export default function UpdatePhoneModal({
           });
           setOtp("");
           setPhoneOtp("");
-          handleUpdatePhoneModal()
-          fetchProfile()
+          setActiveStep(0);
+          handleUpdatePhoneModal();
+          fetchProfile();
           return showToast({
             type: "success",
             title: "Phone Verification",

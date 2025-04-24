@@ -125,7 +125,7 @@ export default function SettingsMain() {
         visible={deleteAccount}
         onHide={handleCancelDelete}
         onConfirm={handleConfirmDelete}
-        userName={profileData?.profile?.name}
+        userName={profileData?.profile?.name || profileData?.profile?.email?.split("@")[0] || "User"}
         deleteReason={deleteReason}
         setDeleteReason={setDeleteReason}
         loading={isDeleting}
