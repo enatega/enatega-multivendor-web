@@ -157,6 +157,8 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
   
   const filteredResults = useMemo(() => {
     if (!filter.trim()) return [];
+    if (!queryData || !Array.isArray(queryData) || queryData.length === 0) return [];
+    
     const searchText = filter.toLowerCase();
     return queryData.filter(({ name, address = "", cuisines = [] }) => {
       return (
