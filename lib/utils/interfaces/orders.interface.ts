@@ -78,6 +78,7 @@ export interface IRider {
 export interface IReview {
   _id?: string;
   order: {
+    _id?: string;
     user: IUser;
   };
   rating?: number;
