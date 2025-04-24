@@ -9,12 +9,17 @@ import { useRouter, usePathname } from "next/navigation";
 import { ClockSvg, CycleSvg, FaceSvg } from "@/lib/utils/assets/svg";
 import IconWithTitle from "../icon-with-title";
 
+// Hooks
+import { useSearchUI } from "@/lib/context/search/search.context";
+
 // Interface
 import { ICardProps } from "@/lib/utils/interfaces";
+import { saveSearchedKeyword } from "@/lib/utils/methods";
 
 const Card: React.FC<ICardProps> = ({ item }) => {
   const router = useRouter();
   const pathname = usePathname();
+  const {setIsSearchFocused, setFilter, isSearchFocused, filter} = useSearchUI();
 
   return (
     <div
@@ -34,10 +39,18 @@ const Card: React.FC<ICardProps> = ({ item }) => {
         //   "currentShopType",
         //   item.shopType === "restaurant" ? "restaurant" : "store"
         // );
+
+        // reset search
+        setFilter("")
+        setIsSearchFocused(false)
+
+        // save the keyword in local storage
+        saveSearchedKeyword(filter);
+        
       }}
     >
       {/* Image Container */}
-      <div className="relative w-full h-[160px]">
+      <div className={`relative w-full ${isSearchFocused ? 'h-[160px]' : 'h-[160px]'}`}>
         <Image
           src={item?.image}
           alt={item?.name}

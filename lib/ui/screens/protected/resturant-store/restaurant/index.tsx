@@ -40,6 +40,7 @@ import { onUseLocalStorage } from "@/lib/utils/methods/local-storage";
 
 // Queries
 import { GET_POPULAR_SUB_CATEGORIES_LIST } from "@/lib/api/graphql";
+import { Dialog } from "primereact/dialog";
 
 export default function RestaurantDetailsScreen() {
   // Access the UserContext via our custom hook
@@ -726,10 +727,17 @@ export default function RestaurantDetailsScreen() {
       </div>
 
       {/* Food Item Detail Modal */}
-      <CustomDialog
-        visible={showDialog}
-        className="mx-4 md:mx-0" // Adds margin on small screens
+      <Dialog
+        visible={!!showDialog}
+        className="mx-3 sm:mx-4 md:mx-0 "  // Adds margin on small screens
         onHide={handleCloseFoodModal}
+        showHeader={false}
+        contentStyle={{
+          borderTopLeftRadius: "4px",
+          borderTopRightRadius: "4px",
+          padding: "0px"
+        }} // Rounds top corners
+        style={{ borderRadius: "1rem" }} // Rounds full box including top corners
       >
         {selectedFood && (
           <FoodItemDetail
@@ -740,7 +748,7 @@ export default function RestaurantDetailsScreen() {
             onClose={handleCloseFoodModal}
           />
         )}
-      </CustomDialog>
+      </Dialog>
     </>
   );
 }

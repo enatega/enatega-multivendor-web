@@ -61,12 +61,14 @@ body {
 
 /* Layout */
 
-.layout-topbar-overlay {
+.layout-top-bar {
+  z-index: 997;
   position: absolute;
 }
 
 .layout-top-container {
-  /* height: 8%; */
+  position: sticky;
+  height: 64px;
   z-index: 997;
   left: 0;
   top: 0;
@@ -81,7 +83,7 @@ body {
 }
 
 .layout-main {
-  height: 100%;
+  /* height: 100%; */
   position: relative;
 }
 

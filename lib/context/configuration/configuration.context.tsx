@@ -1,7 +1,9 @@
 "use client";
 
+import getEnv from "@/environment";
 // GQL
 import { GET_CONFIG } from "@/lib/api/graphql/queries";
+import { ENV } from "@/lib/utils/constants";
 
 // Interfaces
 import { IConfigProps } from "@/lib/utils/interfaces";
@@ -43,6 +45,7 @@ export const ConfigurationProvider = ({
   const DELIVERY_RATE = configuration.deliveryRate;
   const COST_TYPE = configuration.costType;
   const TEST_OTP = configuration.testOtp;
+  const { SERVER_URL } = getEnv(ENV);
 
   return (
     <ConfigurationContext.Provider
@@ -61,7 +64,8 @@ export const ConfigurationProvider = ({
         CURRENCY_SYMBOL,
         DELIVERY_RATE,
         COST_TYPE,
-        TEST_OTP
+        TEST_OTP,
+        SERVER_URL,
       }}
     >
       {children}

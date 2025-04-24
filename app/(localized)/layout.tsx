@@ -27,6 +27,7 @@ import AppLayout from "@/lib/ui/layouts/global";
 import { FontawesomeConfig } from "@/lib/config";
 import { LocationProvider } from "@/lib/context/Location/Location.context";
 import { UserAddressProvider } from "@/lib/context/address/address.context";
+import { SearchUIProvider } from "@/lib/context/search/search.context";
 
 export default function RootLayout({
   children,
@@ -56,7 +57,9 @@ export default function RootLayout({
                   <UserProvider>
                     <LocationProvider>
                       <UserAddressProvider>
-                        <AppLayout>{children}</AppLayout>
+                        <SearchUIProvider>
+                          <AppLayout>{children}</AppLayout>
+                        </SearchUIProvider>
                       </UserAddressProvider>
                     </LocationProvider>
                   </UserProvider>

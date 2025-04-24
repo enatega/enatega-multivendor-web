@@ -7,6 +7,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { CutlerySvg, HomeSvg, StoreSvg } from "@/lib/utils/assets/svg";
 import PaddingContainer from "@/lib/ui/useable-components/containers/padding";
 import { useEffect, useState } from "react";
+// context
+import { useSearchUI } from "@/lib/context/search/search.context";
 
 export default function HomeLayout({
   children,
@@ -14,6 +16,7 @@ export default function HomeLayout({
   const router = useRouter();
   const pathname = usePathname();
   const [stickyTop , setStickyTop] = useState(0)
+  const { isSearchFocused, setIsSearchFocused } = useSearchUI();
 
   const onChangeScreen = (name: "Discovery" | "Restaurants" | "Store") => {
     switch (name) {
@@ -45,10 +48,25 @@ export default function HomeLayout({
   }, [])
 
   return (
-    <div className="w-screen h-full flex flex-col ">
+    <div className="w-screen h-full flex flex-col">
+      {/* click-away handler */}
+      {isSearchFocused && (
+        <div
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            setIsSearchFocused(false);
+          }}
+          className="fixed inset-0 z-40 bg-transparent cursor-default"
+        />
+      )}
       {/* Sticky Top Tabs */}
-      <div className={`sm:sticky sm:top-${stickyTop} sm:left-0 fixed bottom-0 left-0 w-full bg-white z-50 pt-2 pb-2 sm:pt-3 sm:pb-3`}>
-        <div className="flex justify-center items-center space-x-4 md:space-x-6 p-2 md:p-4 overflow-x-auto">
+      <div
+        className={`sm:sticky sm:top-${stickyTop} sm:left-0 fixed bottom-0 left-0 w-full bg-white z-30 pt-2 pb-2 sm:pt-3 sm:pb-3 ${isSearchFocused && "opacity-0"}`}
+      >
+        <div
+          className={`flex justify-center items-center space-x-4 md:space-x-6 p-2 md:p-4 overflow-x-auto`}
+        >
           <div
             className="flex flex-col sm:flex-row items-center gap-x-1 p-2 md:pt-2 md:pb-2 md:pl-4 md:pr-4 text-gray-500 rounded-full cursor-pointer transition-all duration-300 whitespace-nowrap"
             style={{
@@ -94,7 +112,9 @@ export default function HomeLayout({
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 overflow-auto pb-[33%] sm:pb-0">
+      <div
+        className={`flex-1 overflow-auto pb-[33%] bg-white sm:pb-0 ${isSearchFocused && "blur-md cursor-default"}`}
+      >
         <PaddingContainer>{children}</PaddingContainer>
       </div>
     </div>
