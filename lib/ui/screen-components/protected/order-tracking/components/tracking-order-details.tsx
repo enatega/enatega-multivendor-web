@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import Image from "next/image";
 import { IOrderTrackingDetail } from '@/lib/utils/interfaces/order-tracking-detail.interface';
 import CancelOrderModal from './cancelOrderModal';
+import CancelOrderSuccessModal from './cancel-order-success-modal';
 
 function TrackingOrderDetails({ orderTrackingDetails }: { orderTrackingDetails: IOrderTrackingDetail }) {
     const [isCancelModalVisible, setIsCancelModalVisible] = useState(false);
+    const [setshowCancelOrderSuccessModal, setSetshowCancelOrderSuccessModal] = useState(orderTrackingDetails.orderStatus === "CANCELLED" ? true : false)
     // Format currency values
     const formatCurrency = (amount: number) => {
         return `$${amount?.toFixed(2) || '0.00'}`;
@@ -13,7 +15,7 @@ function TrackingOrderDetails({ orderTrackingDetails }: { orderTrackingDetails: 
     // Calculate subtotal (items only)
     const calculateSubtotal = () => {
         if (!orderTrackingDetails?.items) return 0;
-        
+
         return orderTrackingDetails.items.reduce((total, item) => {
             return total + (item.variation.price * item.quantity);
         }, 0);
@@ -25,7 +27,7 @@ function TrackingOrderDetails({ orderTrackingDetails }: { orderTrackingDetails: 
         const deliveryCharge = orderTrackingDetails?.deliveryCharges || 0;
         const tax = orderTrackingDetails?.taxationAmount || 0;
         const tip = orderTrackingDetails?.tipping || 0;
-        
+
         return subtotal + deliveryCharge + tax + tip;
     };
 
@@ -43,7 +45,7 @@ function TrackingOrderDetails({ orderTrackingDetails }: { orderTrackingDetails: 
         <div className="mt-8 space-y-6 flex-1 max-w-2xl md:w-auto w-full md:px-0 px-4">
             <div>
                 <h3 className="text-lg font-semibold mb-2">Order Details</h3>
-                
+
                 {/* Display each food item under Order Details */}
                 {orderTrackingDetails.items?.map((item, index) => (
                     <div key={item._id || index} className="flex items-center justify-between mb-4 pb-4 border-b">
@@ -62,7 +64,7 @@ function TrackingOrderDetails({ orderTrackingDetails }: { orderTrackingDetails: 
                                     {item.description?.substring(0, 50)}
                                     {item.description?.length > 50 ? '...' : ''}
                                 </p>
-                                
+
                                 {/* Display addons */}
                                 {item.addons && item.addons.length > 0 && (
                                     <div className="mt-1">
@@ -70,7 +72,7 @@ function TrackingOrderDetails({ orderTrackingDetails }: { orderTrackingDetails: 
                                             <div key={addon._id || addonIndex}>
                                                 {addon.options.map((option, optIndex) => (
                                                     <p key={option._id || optIndex} className="text-xs text-gray-500">
-                                                        + {option.title} 
+                                                        + {option.title}
                                                         {option.price > 0 ? ` (${formatCurrency(option.price)})` : ''}
                                                     </p>
                                                 ))}
@@ -98,32 +100,32 @@ function TrackingOrderDetails({ orderTrackingDetails }: { orderTrackingDetails: 
                             <span>{formatCurrency(item.variation.price * item.quantity)}</span>
                         </div>
                     ))}
-                    
+
                     {/* Subtotal and charges */}
                     <div className="flex justify-between pt-2 border-t">
                         <span>Subtotal</span>
                         <span>{formatCurrency(calculateSubtotal())}</span>
                     </div>
-                    
+
                     {(orderTrackingDetails.taxationAmount > 0) && (
                         <div className="flex justify-between">
                             <span>Tax</span>
                             <span>{formatCurrency(orderTrackingDetails.taxationAmount)}</span>
                         </div>
                     )}
-                    
+
                     {(orderTrackingDetails.tipping > 0) && (
                         <div className="flex justify-between">
                             <span>Tip</span>
                             <span>{formatCurrency(orderTrackingDetails.tipping)}</span>
                         </div>
                     )}
-                    
+
                     <div className="flex justify-between">
                         <span>Delivery Charge</span>
                         <span>{formatCurrency(orderTrackingDetails.deliveryCharges || 0)}</span>
                     </div>
-                    
+
                     <div className="flex justify-between font-semibold pt-2 border-t">
                         <span>Total</span>
                         <span>{formatCurrency(calculateTotal())}</span>
@@ -137,8 +139,8 @@ function TrackingOrderDetails({ orderTrackingDetails }: { orderTrackingDetails: 
                 <div className="flex items-center gap-2 text-sm">
                     <span className="text-gray-500">{orderTrackingDetails.paymentMethod === "COD" ? "💵" : "💳"}</span>
                     <span>
-                        {orderTrackingDetails.paymentMethod === 'COD' 
-                            ? 'Cash on Delivery' 
+                        {orderTrackingDetails.paymentMethod === 'COD'
+                            ? 'Cash on Delivery'
                             : orderTrackingDetails.paymentMethod}
                     </span>
                     <span className="ml-auto font-semibold">{formatCurrency(calculateTotal())}</span>
@@ -148,7 +150,7 @@ function TrackingOrderDetails({ orderTrackingDetails }: { orderTrackingDetails: 
             {/* Cancel Button - only show for pending/accepted orders */}
             {canCancelOrder() && (
                 <div className="text-center">
-                    <button 
+                    <button
                         onClick={() => setIsCancelModalVisible(true)}
                         className="w-full border border-red-500 text-red-500 px-6 py-2 rounded-full hover:bg-red-50 transition">
                         Cancel Order
@@ -157,10 +159,15 @@ function TrackingOrderDetails({ orderTrackingDetails }: { orderTrackingDetails: 
             )}
 
             {/* Cancel Order Modal */}
-            <CancelOrderModal 
+            <CancelOrderModal
                 visible={isCancelModalVisible}
-                onHide={() => setIsCancelModalVisible(false)}
+                onHide={() => { setIsCancelModalVisible(false); }}
+                onSuccess={() => { setIsCancelModalVisible(false); setSetshowCancelOrderSuccessModal(true); }}
                 orderId={orderTrackingDetails._id}
+            />
+            <CancelOrderSuccessModal
+                visible={setshowCancelOrderSuccessModal}
+                onHide={() => setSetshowCancelOrderSuccessModal(false)}
             />
         </div>
     );
