@@ -8,7 +8,7 @@ import type React from "react"
 
 export const HeaderFavourite: React.FC<IHeaderFavourite> = ({ title, onSeeAllClick }) => {
   return (
-    <div className="flex justify-between items-center mb-4 w-full">
+    <div className="flex justify-between items-center w-full">
       <TextComponent text={title} className="text-xl md:text-2xl  font-medium"/>
         <CustomButton
           label="See all"
