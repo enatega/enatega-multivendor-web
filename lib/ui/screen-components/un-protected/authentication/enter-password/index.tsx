@@ -81,7 +81,7 @@ export default function EnterPassword({
   };
 
   return (
-    <div className="flex flex-col items-start justify-between w-full h-full">
+    <div className="flex flex-col items-start justify-between w-full h-full mt-4">
       <div className="flex flex-col gap-y-1 my-3 w-full">
         <CustomPasswordTextField
           value={formData?.password}

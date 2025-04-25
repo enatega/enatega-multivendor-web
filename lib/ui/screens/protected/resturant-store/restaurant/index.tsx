@@ -466,7 +466,7 @@ export default function RestaurantDetailsScreen() {
         </>
       )}
 
-      <div className="w-screen h-screen flex flex-col pb-20">
+      <div className="w-screen flex flex-col pb-20">
         <div className="scrollable-container flex-1 overflow-auto">
           {/* Banner */}
           <div className="relative">
@@ -583,6 +583,7 @@ export default function RestaurantDetailsScreen() {
                   className="h-12 w-full overflow-x-auto overflow-y-hidden flex items-center 
                   [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
                 >
+
                   <ul className="flex space-x-4 items-center w-max flex-nowrap">
                     {(showAll ? deals : deals.slice(0, visibleItems)).map(
                       (category: ICategory, index: number) => {

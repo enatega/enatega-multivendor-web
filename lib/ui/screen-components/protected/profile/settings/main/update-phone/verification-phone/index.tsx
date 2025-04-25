@@ -97,7 +97,7 @@ const VerificationPhone = ({
 )
 
   return (
-    <div className="w-full max-w-md mx-auto p-4 flex flex-col items-center bg-white rounded-3xl shadow-sm">
+    <div className="w-[300px] sm:w-full max-w-md mx-auto p-4 flex flex-col items-center bg-white rounded-3xl shadow-sm">
       <div className="mb-2">
         <PhoneIcon/>
       </div>
@@ -109,7 +109,7 @@ const VerificationPhone = ({
       <p className="text-base text-gray-600 mb-8 text-center">Verify your mobile number</p>
 
       <div className="w-full mb-8">
-        <div className="flex justify-center gap-2 sm:gap-4">
+        <div className="flex justify-center flex-wrap gap-2 sm:gap-4">
           {[0, 1, 2, 3, 4, 5].map((index) => (
             <input
               key={index}
@@ -123,7 +123,7 @@ const VerificationPhone = ({
               onChange={(e) => handleChange(e, index)}
               onKeyDown={(e) => handleKeyDown(e, index)}
               onPaste={index === 0 ? handlePaste : undefined}
-              className="w-14 h-14 sm:w-16 sm:h-16 text-xl text-center border border-gray-300 rounded-lg focus:outline-none focus:border-[#5AC12F] focus:ring-2 focus:ring-[#5AC12F] focus:ring-opacity-20"
+              className="w-12 h-12 sm:w-14 sm:h-16 text-xl text-center border border-gray-300 rounded-lg focus:outline-none focus:border-[#5AC12F] focus:ring-2 focus:ring-[#5AC12F] focus:ring-opacity-20"
               autoFocus={index === 0}
             />
           ))}

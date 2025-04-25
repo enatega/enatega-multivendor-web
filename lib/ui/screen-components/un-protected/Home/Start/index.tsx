@@ -35,7 +35,7 @@ const Start: React.FC = () => {
               className="me-2 underline"
               onClick={() => {
                 getCurrentLocation(onSetUserLocation);
-                router.push("/restaurants");
+                router.push("/discovery");
               }}
             >
               Current Location

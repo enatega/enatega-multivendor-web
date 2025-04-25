@@ -46,7 +46,7 @@ export default function ActiveOrders({ activeOrders, isOrdersLoading }: IActiveO
   //  (optional) we can use styling for order status- for example if order is pending then display the order card style in yellow color 
   return (
     <div className="space-y-4 py-4">
-      <TextComponent text="Active Orders" className="text-2xl md:text-3xl xl:text-4xl font-semibold mb-6" />
+      <TextComponent text="Active Orders" className="text-xl md:text-2xl font-semibold mb-6" />
       <div className="space-y-4">
         {activeOrders?.map((order: IOrder) => (
           <OrderCard

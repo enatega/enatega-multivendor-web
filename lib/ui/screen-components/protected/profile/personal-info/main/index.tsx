@@ -38,29 +38,29 @@ export default function PersonalInfoMain() {
           </div>
           <TextComponent
             text={profileData?.profile?.name || "N/A"}
-            className="text-2xl md:text-3xl font-semibold text-gray-900"
+            className="md:text-xl text-lg font-semibold text-gray-900"
           />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
           <div>
             <TextComponent
               text="Email"
-              className="text-black font-semibold text-xl md:text-2xl"
+              className="text-black font-semibold text-base md:text-lg"
             />
             <TextComponent
               text={profileData?.profile?.email || "N/A"}
-              className="font-normal text-lg md:text-xl"
+              className="font-normal text-sm md:text-base"
             />
           </div>
           <div>
             <TextComponent
               text="Phone number"
-              className="text-black font-semibold text-xl md:text-2xl"
+              className="text-black font-semibold text-base md:text-lg"
             />
             <h1
               onClick={handleUpdatePhoneModal}
               title="Update phone number"
-              className=" text-blue-700 font-normal text-lg md:text-xl cursor-pointer"
+              className=" text-blue-700 font-normal text-sm md:text-base cursor-pointer"
             >
               {profileData?.profile?.phone || "N/A"}
             </h1>
