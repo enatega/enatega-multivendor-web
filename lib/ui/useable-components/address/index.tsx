@@ -840,7 +840,7 @@ export default function UserAddressComponent(
         setIndex([0, 0]);
         onHide();
       }}
-      className={`w-full lg:w-1/3 bg-white m-4`}
+      className={`w-[90%] lg:w-1/3 bg-white m-4`}
       header={
         index !== 0 ?
           <div
