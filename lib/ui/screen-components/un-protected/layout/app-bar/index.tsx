@@ -37,6 +37,7 @@ import {
 // import AnimatedLogo from "@/lib/assets/gif/logo.gif";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Logo from "@/public/assets/svg/logo.svg"
 
 // Interface
 import { IAppBarProps } from "@/lib/utils/interfaces";
@@ -51,6 +52,7 @@ import {
 // Constnats
 import { USER_CURRENT_LOCATION_LS_KEY } from "@/lib/utils/constants";
 import EmptySearch from "@/lib/ui/useable-components/empty-search-results";
+import { height } from "@fortawesome/free-solid-svg-icons/faSpinner";
 
 const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
   // State for cart sidebar
@@ -272,9 +274,11 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
             <div className="flex flex-row items-center justify-center w-full h-16">
               {/* Left Section */}
               <div className={`w-1/3 flex gap-x-2 items-center cursor-pointer`}>
+              {!isSearchFocused && 
                 <Link href="/" className="text-xl font-bold text-gray-900">
-                  Enatega
+                  <Image src={Logo} alt="Enatega Logo" width={120} height={120}/>
                 </Link>
+}
                 <div
                   className={`flex items-center ${isSearchFocused && "hidden"} hidden lg:flex`}
                   onClick={onHandleAddressModelVisibility}
@@ -307,18 +311,18 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
               >
                 <div className="relative w-full">
                   {/* Search Icon - visible only below sm */}
-                  {/* {!isSearchFocused && (
-                    <div className="sm:hidden flex justify-center items-center w-full">
+                  {!isSearchFocused && (
+                    <div className="sm:hidden flex justify-end items-center w-full">
                       <div
-                        className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center cursor-pointer"
+                        className="w-7 h-7 bg-gray-100 rounded-full flex items-center justify-center cursor-pointer"
                         onClick={() => {
                           setIsSearchFocused(true);
                         }}
                       >
-                        <SearchSvg width={20} height={20} />
+                        <SearchSvg width={16} height={16} />
                       </div>
                     </div>
-                  )} */}
+                  )}
 
                   {/* Search Input - hidden on mobile unless focused */}
                   <input
@@ -489,7 +493,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                 </AnimatePresence>
               </div>
             </div>
-
+       {!isSearchFocused && 
             <div className="my-2 lg:hidden" onClick={onHandleAddressModelVisibility}>
           <div className="flex gap-4">
           <LocationSvg width={22} height={22}/>
@@ -505,6 +509,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
           </div>
          
         </div>
+}
           </PaddingContainer>
         </div>
         
