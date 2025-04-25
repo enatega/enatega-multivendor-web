@@ -710,7 +710,7 @@ export default function OrderCheckoutScreen() {
               </>
             }
           </div>
-          {/* <!-- Toggle Prices Button for Mobile --> */}
+          {/* <!-- Toggle Prices Button for Mobile --> 
           <div className="sm:hidden fixed top-14 left-0 right-0 bg-transparent z-10 p-4">
             <button
               className="bg-white text-[#5AC12F] w-full py-2 px-4 rounded-full border border-gray-300 flex justify-between items-center"
@@ -723,6 +723,7 @@ export default function OrderCheckoutScreen() {
               <FontAwesomeIcon icon={faChevronDown} className="text-[14px]" />
             </button>
           </div>
+          */}
 
           {/* <!-- Main Content --> */}
           <PaddingContainer>
@@ -982,7 +983,7 @@ export default function OrderCheckoutScreen() {
                           disabled={couponLoading}
                         />
                         <button
-                          className="bg-[#5AC12F] h-10 px-8 space-x-2 font-medium text-gray-900  tracking-normal font-inter text-sm sm:text-base md:text-[12px] lg:text-[14px] rounded-full"
+                          className="bg-[#5AC12F] sm:mt-0 mt-2 sm:w-fit w-full h-10 px-8 space-x-2 font-medium text-gray-900  tracking-normal font-inter text-sm sm:text-base md:text-[12px] lg:text-[14px] rounded-full"
                           onClick={onApplyCoupon}
                         >
                           {couponLoading ?
@@ -998,7 +999,7 @@ export default function OrderCheckoutScreen() {
               {/* <!-- Order Summary - Large Screen --> */}
               <div className="hidden lg:block lg:w-1/3 lg:m-0">
                 <div
-                  className="bg-white p-2 sticky top-4 rounded-lg shadow-md border border-gray-300 expandable max-h-0 sm:max-h-full sm:block hidden"
+                  className="bg-white p-2 sticky top-4 rounded-lg shadow-md border border-gray-300 expandable max-h-0 sm:max-h-full lg:block hidden"
                   id="price-summary"
                 >
                   <h2 className="text-sm lg:text-base font-semibold text-left flex justify-between">
@@ -1102,8 +1103,117 @@ export default function OrderCheckoutScreen() {
                 </div>
               </div>
 
+
+              {/* <!-- Order Summary - Medium & Small Screens --> */}
+              <div className="block lg:hidden md:mr-40">
+                <div
+                  className="bg-white p-2 sticky top-4 rounded-lg shadow-md border border-gray-300 expandable h-fit lg:hidden block"
+                  id="price-summary"
+                >
+                  <h2 className="text-sm lg:text-base font-semibold text-left flex justify-between">
+                    Prices in {CURRENCY}
+                    <InfoSvg />
+                  </h2>
+                  <p className="text-gray-400 mb-3 text-left leading-5 tracking-normal font-inter text-xs lg:text-[10px]">
+                    Inc. Taxes (if applicable)
+                  </p>
+
+                  <div className="flex justify-between mb-1 text-xs lg:text-[12px]">
+                    <span className="font-inter text-gray-900 leading-5">
+                      Item subtotal
+                    </span>
+                    <span className="font-inter text-gray-900 leading-5">
+                      {CURRENCY_SYMBOL}
+                      {calculatePrice(0)}
+                    </span>
+                  </div>
+
+                  {deliveryType === "Delivery" && (
+                    <div className="flex justify-between mb-1 text-xs lg:text-[12px]">
+                      <span className="font-inter text-gray-900 leading-5">
+                        Delivery ({distance} km)
+                      </span>
+                      <span className="font-inter text-gray-900 leading-5">
+                        {CURRENCY_SYMBOL}
+                        {deliveryCharges.toFixed()}
+                      </span>
+                    </div>
+                  )}
+
+                  {selectedTip && (
+                    <div className="flex justify-between mb-1 text-xs lg:text-[12px]">
+                      <span className="font-inter text-gray-900 leading-5">
+                        Tip
+                      </span>
+                      <span className="font-inter text-gray-900 leading-5">
+                        {`${CURRENCY_SYMBOL} ${selectedTip}`}
+                        {/*    {`${CURRENCY_SYMBOL} ${parseFloat(calculateTip()).toFixed(
+                      2
+                    )}`} */}
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="flex justify-between mb-1 text-xs lg:text-[12px]">
+                    <span className="font-inter text-gray-900 leading-5">
+                      Tax
+                    </span>
+                    <span className="font-inter text-gray-900 leading-5">
+                      {CURRENCY_SYMBOL}
+                      {taxCalculation()}
+                    </span>
+                  </div>
+
+                  {/* <div className="flex justify-between mb-1 text-xs lg:text-[12px]">
+                  <span className="font-inter text-gray-900 leading-5">
+                    Service fee
+                  </span>
+                  <span className="font-inter text-gray-900 leading-5">
+                    $0.40
+                  </span>
+                </div> */}
+
+                  <Divider />
+
+                  {isCouponApplied && (
+                    <div className="flex justify-between mb-1 text-xs lg:text-[12px]">
+                      <span className="font-inter text-gray-900 leading-5">
+                        Discount
+                      </span>
+                      <span className="font-inter text-gray-900 leading-5">
+                        {`-${CURRENCY_SYMBOL} ${(
+                          Number(calculatePrice(0, false)) -
+                          Number(calculatePrice(0, true))
+                        ).toFixed(2)}`}
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="text-[#0EA5E9] mb-1 text-left font-inter text-xs lg:text-[12px]">
+                    Choose an offer (1 available)
+                  </div>
+
+                  <Divider />
+
+                  <div className="flex justify-between font-semibold mb-4 text-xs lg:text-[14px]">
+                    <span>Total sum</span>
+                    <span>{`${CURRENCY_SYMBOL} ${calculateTotal()}`}</span>
+                  </div>
+
+                  <button
+                    className="bg-[#5AC12F] text-gray-900 w-full py-2 rounded-full text-xs lg:text-[12px]"
+                    onClick={onPlaceOrder}
+                  >
+                    {loadingOrderMutation ?
+                      <FontAwesomeIcon icon={faSpinner} spin />
+                      : <span> Click to order</span>}
+                  </button>
+                </div>
+              </div>
+
+
               {/* Order Summary - Small Screen */}
-              <div className="fixed top-4 right-0 mx-auto md:hidden lg:hidden xl:hidden m-4 p-4 w-full sm:w-64 ml-0 sm:ml-8 mt-16 sm:mt-0 lg:right-auto lg:m-0 lg:w-1/4 lg:sticky lg:top-6">
+              {/* <div className="fixed top-4 right-0 mx-auto md:fixed lg:hidden xl:hidden m-4 p-4 w-full sm:w-64 ml-0 sm:ml-8 mt-16 sm:mt-0 lg:right-auto lg:m-0 lg:w-1/4 lg:sticky lg:top-6">
                 <AnimatePresence>
                   {isOpen && (
                     <motion.div
@@ -1149,9 +1259,9 @@ export default function OrderCheckoutScreen() {
                           </span>
                           <span className="font-inter  text-gray-900 text-[14px] md:text-lg leading-6 md:leading-7">
                             {`${CURRENCY_SYMBOL} ${selectedTip}`}
-                            {/*   {`${CURRENCY_SYMBOL} ${parseFloat(
+                              {`${CURRENCY_SYMBOL} ${parseFloat(
                           calculateTip()
-                        ).toFixed(2)}`} */}
+                        ).toFixed(2)}`} 
                           </span>
                         </div>
                       )}
@@ -1166,14 +1276,14 @@ export default function OrderCheckoutScreen() {
                         </span>
                       </div>
 
-                      {/*  <div className="flex justify-between mb-1 text-sm">
+                        <div className="flex justify-between mb-1 text-sm">
                       <span className="font-inter  text-gray-900 text-[14px] md:text-lg leading-6 md:leading-7">
                         Service fee
                       </span>
                       <span className="font-inter  text-gray-900 text-[14px] md:text-lg leading-6 md:leading-7">
                         $0.40
                       </span>
-                    </div> */}
+                    </div> 
 
                       <Divider />
 
@@ -1212,7 +1322,7 @@ export default function OrderCheckoutScreen() {
                     </motion.div>
                   )}
                 </AnimatePresence>
-              </div>
+              </div> */}
             </div>
           </PaddingContainer>
         </div>
