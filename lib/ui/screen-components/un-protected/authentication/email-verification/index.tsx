@@ -200,7 +200,7 @@ export default function EmailVerification({
         {t("We have sent OTP code to")}&nbsp;
         <span className="font-bold">{user?.email ?? "example@email.com"}</span>
       </p>
-      <p className="font-light mb-3 text-sm">{t("Please check your inbox")}</p>
+      <p className="font-light mb-3 text-sm flex ">{t("Please check your inbox")}</p>
       <InputOtp
         value={emailOtp}
         onChange={(e) => setEmailOtp(String(e.value))}

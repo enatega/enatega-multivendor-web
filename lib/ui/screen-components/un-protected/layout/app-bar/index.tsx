@@ -56,7 +56,9 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
   // State for cart sidebar
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isUserAddressModalOpen, setIsUserAddressModalOpen] = useState(false);
+  const [isLogin,setIsLogin]=useState(false)
 
+  console.log("is Login",isLogin)
   // REf
   const menuRef = useRef<Menu>(null);
 
@@ -98,6 +100,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
   // Format subtotal for display
   const formattedSubtotal = cartCount > 0 ? `$${calculateSubtotal()}` : "$0";
 
+  console.log(userAddress);
   // Handlers
   const onInit = () => {
     const current_location_ls = onUseLocalStorage(
@@ -128,6 +131,18 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
     }
   };
 
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const userId = localStorage.getItem("userId");
+    if (!token || !userId) {
+      setIsLogin(false)
+    }
+    else{
+      setIsLogin(true)
+    }
+
+  }, []);
+
   const onHandleAddressModelVisibility = () => {
     if (authToken) {
       setIsUserAddressModalOpen(true);
@@ -154,9 +169,6 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
       setRefetchProfileData(false);
     }
   }, [refetchProfileData]);
-
-
-
 
   // filtered search results
   const filteredResults = useMemo(() => {
@@ -252,7 +264,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
     // Case 3: No results found for the searched keyword
     return (
       <div className="text-center py-6 text-gray-500 flex flex-col items-center justify-center">
-        <EmptySearch/>
+        <EmptySearch />
       </div>
     );
   };
@@ -269,36 +281,20 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
               <div className={`w-1/3 flex gap-x-2 items-center cursor-pointer`}>
                 <Link href="/" className="text-xl font-bold text-gray-900">
                   Enatega
-                  {/* <Image
-                    src={AnimatedLogo}
-                    alt="Funny GIF"
-                    width={100}
-                    height={50}
-                    unoptimized // 💥 Required to keep the animation
-                  /> */}
                 </Link>
                 <div
-                  className={`flex items-center ${isSearchFocused && "hidden"}`}
+                  className={`flex items-center ${isSearchFocused && "hidden"} hidden lg:flex`}
                   onClick={onHandleAddressModelVisibility}
                 >
-                  {/* Show on small screens only */}
-                  <div className="block md:hidden p-[4px] m-2 bg-gray-50 rounded-full">
-                    <LocationSvg width={18} height={18} />
-                  </div>
 
                   {/* Show on large screens only */}
-                  <div className="hidden md:block p-[4px] m-2 bg-gray-50 rounded-full">
+                  <div className="hidden md:block p-[4px] m-2 rounded-full">
                     <LocationSvg width={22} height={22} />
                   </div>
 
                   {/* Show on medium and up */}
-                  <span className="hidden md:inline text-xs sm:text-sm md:text-base text-gray-500 font-inter font-normal leading-6 tracking-normal mr-2 truncate">
+                  <span className="hidden md:inline text-xs sm:text-sm md:text-base text-[#94e469] font-inter font-normal leading-6 tracking-normal mr-2 truncate">
                     {userAddress?.deliveryAddress}
-                  </span>
-
-                  {/* Show on small screens only */}
-                  <span className="inline absolute top-6.5 left-[9rem] md:hidden text-[8px] sm:text-sm md:text-base text-gray-500 font-inter font-normal tracking-normal mr-2">
-                    {userAddress?.details || userAddress?.deliveryAddress}
                   </span>
 
                   <div className="hidden sm:flex items-center">
@@ -306,6 +302,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                       icon={faChevronDown}
                       width={12}
                       hanging={12}
+                      color="#94e469"
                     />
                   </div>
                 </div>
@@ -317,7 +314,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
               >
                 <div className="relative w-full">
                   {/* Search Icon - visible only below sm */}
-                  {!isSearchFocused && (
+                  {/* {!isSearchFocused && (
                     <div className="sm:hidden flex justify-center items-center w-full">
                       <div
                         className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center cursor-pointer"
@@ -328,7 +325,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                         <SearchSvg width={20} height={20} />
                       </div>
                     </div>
-                  )}
+                  )} */}
 
                   {/* Search Input - hidden on mobile unless focused */}
                   <input
@@ -363,10 +360,10 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                 {/* Login Button */}
                 {!authToken && !isSearchFocused ? (
                   <button
-                    className="md:w-20 w-16 h-fit bg-transparent text-gray-900 md:py-2 py-1 border border-black rounded-full text-sm lg:text-[14px] md:text-md "
+                    className="md:w-20 w-16 h-fit py-3 text-gray-900 md:py-3  px-3 bg-[#5AC12F] rounded text-sm lg:text-[16px] md:text-md "
                     onClick={handleModalToggle}
                   >
-                    <span>Login</span>
+                    <span className="text-white font-semibold text-[16px]">Login</span>
                   </button>
                 ) : (
                   <div
@@ -422,24 +419,28 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
 
                 {/* Cart Button */}
                 <div className="p-1">
-                  {cartCount > 0 && !isSearchFocused && (
+                  { isLogin && ( <div>
+                    {cartCount > 0 && !isSearchFocused && (
                     <div
-                      className="hidden sm:flex items-center justify-between bg-[#5AC12F] rounded-full px-4 py-2 w-64 cursor-pointer"
+                      className="hidden lg:flex items-center justify-between bg-[#5AC12F] rounded-lg px-4 py-3 w-64 cursor-pointer"
                       onClick={() => setIsCartOpen(true)}
                     >
-                      <div className="flex items-center">
-                        <div className="bg-black text-[#5AC12F] rounded-full w-6 h-6 flex items-center justify-center text-[10px] sm:text-[12px]">
+                      <div className="flex items-center gap-2">
+                        <div className="bg-white text-[#5AC12F] rounded-full w-5 h-5 flex items-center justify-center text-[10px] sm:text-[12px]">
                           {cartCount}
                         </div>
-                        <span className="ml-2 text-black text-[12px] sm:text-[14px]">
-                          View Order
+                        <span className="ml-2 text-white text-[14px] font-semibold sm:text-[14px]">
+                          Show Items
                         </span>
                       </div>
-                      <span className="text-black text-[12px] sm:text-[14px]">
+                      <span className="text-white text-[14px]  sm:text-[16px]">
                         {formattedSubtotal}
                       </span>
                     </div>
+                    
                   )}
+                  </div>
+                )}
 
                   {isSearchFocused ? (
                     <div
@@ -453,19 +454,19 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                     </div>
                   ) : (
                     <div
-                      className={`${cartCount > 0 ? "sm:hidden" : ""} flex items-center justify-center rounded-full w-8 h-8 md:w-10 md:h-10 bg-gray-100 relative`}
+                      className={`${cartCount > 0 ? "lg:hidden" : ""} flex items-center justify-center rounded-full w-8 h-8 md:w-10 md:h-10 bg-gray-100 relative`}
                       onClick={() => setIsCartOpen(true)}
                     >
                       {/* <CartSvg color="black" width={22} height={22} /> */}
-                    {/* Show on small screens only */}
-                    <div className="block md:hidden">
-                      <CartSvg color="black" width={18} height={18} />
-                    </div>
+                      {/* Show on small screens only */}
+                      <div className="block md:hidden">
+                        <CartSvg color="black" width={18} height={18} />
+                      </div>
 
-                    {/* Show on large screens only */}
-                    <div className="hidden md:block">
-                      <CartSvg color="black" width={22} height={22} />
-                    </div>
+                      {/* Show on large screens only */}
+                      <div className="hidden sm:block">
+                        <CartSvg color="black" width={22} height={22} />
+                      </div>
                       {cartCount > 0 && (
                         <div className="absolute -top-1 -right-1 bg-black text-[#5AC12F] text-[10px] w-5 h-5 rounded-full flex items-center justify-center">
                           {cartCount}
@@ -495,8 +496,25 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                 </AnimatePresence>
               </div>
             </div>
+
+            <div className="my-2 lg:hidden" onClick={onHandleAddressModelVisibility}>
+          <div className="flex gap-4">
+          <LocationSvg width={22} height={22}/>
+          <p className="text-[14px] text-[#94e469]">{userAddress?.deliveryAddress}</p>
+          <div className="sm:flex items-center">
+                    <FontAwesomeIcon
+                      icon={faChevronDown}
+                      width={12}
+                      hanging={12}
+                      color="#94e469"
+                    />
+                  </div>
+          </div>
+         
+        </div>
           </PaddingContainer>
         </div>
+        
       </nav>
 
       {/* Cart Sidebar */}
@@ -520,3 +538,5 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
 AppTopbar.displayName = "AppTopbar";
 
 export default AppTopbar;
+
+
