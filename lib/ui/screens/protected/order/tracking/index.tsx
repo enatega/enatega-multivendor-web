@@ -11,15 +11,59 @@ import TrackingOrderDetailsDummy from "../../../../screen-components/protected/o
 // Services
 import useLocation from "@/lib/ui/screen-components/protected/order-tracking/services/useLocation";
 import useTracking from "@/lib/ui/screen-components/protected/order-tracking/services/useTracking";
+import { useEffect, useMemo, useState } from "react";
+import { useMutation, useQuery } from "@apollo/client";
+import { ADD_REVIEW_ORDER, GET_USER_PROFILE } from "@/lib/api/graphql";
+import useReviews from "@/lib/hooks/useReviews";
+import { IReview } from "@/lib/utils/interfaces";
+import useToast from "@/lib/hooks/useToast";
+import { RatingModal } from "@/lib/ui/screen-components/protected/profile";
 
 interface IOrderTrackingScreenProps {
     orderId: string;
 }
 
 export default function OrderTrackingScreen({ orderId }: IOrderTrackingScreenProps) {
+     //states
+  const [showRatingModal, setShowRatingModal] = useState<boolean>(false);
+  //Queries and Mutations
     const { isLoaded, origin, destination, directions, directionsCallback } = useLocation();
     const { orderTrackingDetails, isOrderTrackingDetailsLoading, subscriptionData } = useTracking({ orderId: orderId });
+    
+    const { showToast } = useToast();
 
+    const { data: profile } = useQuery(GET_USER_PROFILE, {
+    fetchPolicy: "cache-only",
+    });
+
+    const [mutate] = useMutation(ADD_REVIEW_ORDER, {
+    onCompleted,
+    onError,
+    });
+
+  function onCompleted() {
+    showToast({
+      type: "success",
+      title: "Rating",
+      message: "Rating submitted successfully",
+      duration: 3000,
+    });
+
+    // Add a small delay before navigation
+    // Use window.location for a hard redirect
+    setTimeout(() => {
+      window.location.href = "/profile/order-history";
+    }, 1000); // Increased timeout to ensure toast has time to display
+  }
+
+  function onError() {
+    showToast({
+      type: "error",
+      title: "Rating",
+      message: "Failed to submit rating",
+      duration: 3000,
+    });
+  }
     // Merge subscription data with order tracking details
     const mergedOrderDetails = orderTrackingDetails && subscriptionData ? {
         ...orderTrackingDetails,
@@ -28,8 +72,80 @@ export default function OrderTrackingScreen({ orderId }: IOrderTrackingScreenPro
         completionTime: subscriptionData.completionTime || orderTrackingDetails.completionTime
     } : orderTrackingDetails;
 
+    // Get restaurant ID for reviews query
+  const restaurantId = useMemo(() => 
+    mergedOrderDetails?.restaurant?._id, 
+    [mergedOrderDetails?.restaurant?._id]
+  );  
+
+      // Fetch reviews data for the specified restaurant
+  const { data: reviewsData, refetch } = useReviews(restaurantId);
+  
+   // Check if the user has already reviewed the order
+     // Memoize the check for existing user review
+  const hasUserReview = useMemo(() => {
+    if (!reviewsData?.reviewsByRestaurant?.reviews || !profile?.profile?.email) {
+      return false;
+    }
+    return reviewsData.reviewsByRestaurant.reviews.some((review: IReview) => 
+      review?.order?.user?.email === profile.profile.email && 
+      review?.order?._id === orderId
+    );
+  }, [reviewsData?.reviewsByRestaurant?.reviews, profile?.profile?.email, orderId]);
+    
+  // Handlers
+
+  // handle submit rating
+  const handleSubmitRating = async (
+    orderId: string | undefined,
+    ratingValue: number,
+    comment?: string
+  ) => {
+    // Here you would  call an API to save the rating
+    try {
+      await mutate({
+        variables: {
+          order: orderId,
+          description: comment,
+          rating: ratingValue,
+        },
+      });
+    } catch (error) {
+      console.error("Error submitting rating:", error);
+    }
+
+    // Close the modal
+    setShowRatingModal(false);
+  };
+
+    //useEffects
+
+  // useEffect to handle order status changes
+  useEffect(() => {
+    if (mergedOrderDetails?.orderStatus == "DELIVERED") {
+      // add timer
+      const timer = setTimeout(() => {
+        setShowRatingModal(true);
+      }, 4000); // 4 seconds delay before showing the modal
+      return () => clearTimeout(timer); // Clear timeout on component unmount
+    }
+  }, [mergedOrderDetails?.orderStatus]);
+
+    // useEffect to handle subscription data changes
+    useEffect(() => {
+    if (mergedOrderDetails?.restaurant?._id) {
+      refetch();
+    }
+  }, [mergedOrderDetails?.restaurant?._id, isOrderTrackingDetailsLoading]);
+
     return (
         <>
+        <RatingModal
+        visible={showRatingModal && !hasUserReview}
+        onHide={() => setShowRatingModal(false)}
+        order={orderTrackingDetails}
+        onSubmitRating={handleSubmitRating}
+      />
             <div className="w-screen h-full flex flex-col pb-20">
                 <div className="scrollable-container flex-1">
                     {/* Google Map for Tracking */}

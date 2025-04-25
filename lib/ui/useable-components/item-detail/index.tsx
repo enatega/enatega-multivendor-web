@@ -16,9 +16,12 @@ import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { onUseLocalStorage } from "@/lib/utils/methods/local-storage";
+import { useConfig } from "@/lib/context/configuration/configuration.context";
 
 export default function FoodItemDetail(props: IFoodItemDetalComponentProps) {
   const { foodItem, addons, options, onClose, restaurant } = props;
+    const { CURRENCY_SYMBOL} =
+      useConfig();
 
   // Access user context for cart functionality
   const { addItem, restaurant: cartRestaurant, clearCart } = useUser();
@@ -228,7 +231,7 @@ export default function FoodItemDetail(props: IFoodItemDetalComponentProps) {
           {foodItem?.title}
         </h2>
         <p className="text-[#0EA5E9] font-[600] text-[14px] md:text-[15px] lg:text-[16px] mb-2">
-          ${selectedVariation?.price.toFixed(2)}
+          {CURRENCY_SYMBOL}{selectedVariation?.price.toFixed(2)}
         </p>
         <p className="font-inter font-normal text-gray-500 text-[12px] md:text-[13px] lg:text-[14px] leading-[18px] md:leading-[20px]">
           {foodItem?.description}
