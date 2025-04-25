@@ -15,6 +15,11 @@ function TrackingStatusCard({ orderTrackingDetails }: TrackingStatusCardProps) {
       return "inactive";
     }
 
+      // Special case: When order is DELIVERED, mark all steps as completed
+    if (currentStatus === "DELIVERED" || currentStatus === "COMPLETED") {
+    return "completed";
+    }
+
     const currentStatusIndex = STATUS_ORDER.indexOf(currentStatus);
 
     if (currentStatusIndex === -1) return "inactive";

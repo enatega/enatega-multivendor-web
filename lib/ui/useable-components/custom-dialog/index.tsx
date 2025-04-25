@@ -9,7 +9,7 @@ export default function CustomDialog({
   children,
   width = "450px",
   height = "auto",
-  showCloseButton = false,
+  showCloseButton = true,
   className = "",
 }: ICustomDialogProps) {
   return (
@@ -18,7 +18,7 @@ export default function CustomDialog({
       onHide={onHide}
       dismissableMask
       showHeader={false}
-      className={`w-full   ${className} m-10`}
+      className={`w-full m-10 ${className} `}
       contentClassName="p-0 rounded-xl scrollbar-none  m-4 md:m-0"
       style={{ maxWidth: width, borderRadius: "0.75rem", height: height }}
     >
