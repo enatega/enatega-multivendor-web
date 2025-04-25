@@ -4,20 +4,13 @@
 // Core
 import {
   faBicycle,
-  faChevronDown,
   faChevronRight,
   faStore,
 } from "@fortawesome/free-solid-svg-icons";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons/faSpinner";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { AnimatePresence, motion } from "framer-motion";
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { ApolloCache, ApolloError, useMutation } from "@apollo/client";
 import { Message } from "primereact/message";
 import { useRouter } from "next/navigation";
@@ -77,7 +70,7 @@ import { onUseLocalStorage } from "@/lib/utils/methods/local-storage";
 export default function OrderCheckoutScreen() {
   const [isAddressSelectedOnce, setIsAddressSelectedOnce] = useState(false);
   const [isUserAddressModalOpen, setIsUserAddressModalOpen] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
+  // const [isOpen, setIsOpen] = useState(false);
   const [deliveryType, setDeliveryType] = useState("Delivery");
   const [deliveryCharges, setDeliveryCharges] = useState(0);
   const [isPickUp, setIsPickUp] = useState(false);
@@ -120,7 +113,7 @@ export default function OrderCheckoutScreen() {
   const { isLoaded } = useContext(GoogleMapsContext);
 
   // Ref
-  const contentRef = useRef<HTMLDivElement>(null);
+  // const contentRef = useRef<HTMLDivElement>(null);
 
   /*
     ##############
@@ -166,7 +159,7 @@ export default function OrderCheckoutScreen() {
     onInitDeliveryCharges();
   };
 
-  const onInitDirectCacheSet = () => {
+  const onInitDirectionCacheSet = () => {
     try {
       const stored_direction = onUseLocalStorage(
         "get",
@@ -198,9 +191,10 @@ export default function OrderCheckoutScreen() {
     setDeliveryCharges(amount > 0 ? amount : DELIVERY_RATE);
   };
 
-  const togglePriceSummary = () => {
-    setIsOpen((prev) => !prev);
-  };
+  // const togglePriceSummary = () => {
+  //   setIsOpen((prev) => !prev);
+  // };
+
   function transformOrder(cartData: CartItem[]) {
     return cartData.map((food) => {
       return {
@@ -631,7 +625,7 @@ export default function OrderCheckoutScreen() {
   }, [restaurantData]);
 
   useEffect(() => {
-    onInitDirectCacheSet();
+    onInitDirectionCacheSet();
   }, [store_user_location_cache_key]);
 
   return (
@@ -1103,7 +1097,6 @@ export default function OrderCheckoutScreen() {
                 </div>
               </div>
 
-
               {/* <!-- Order Summary - Medium & Small Screens --> */}
               <div className="block lg:hidden md:mr-40">
                 <div
@@ -1206,11 +1199,10 @@ export default function OrderCheckoutScreen() {
                   >
                     {loadingOrderMutation ?
                       <FontAwesomeIcon icon={faSpinner} spin />
-                      : <span> Click to order</span>}
+                    : <span> Click to order</span>}
                   </button>
                 </div>
               </div>
-
 
               {/* Order Summary - Small Screen */}
               {/* <div className="fixed top-4 right-0 mx-auto md:fixed lg:hidden xl:hidden m-4 p-4 w-full sm:w-64 ml-0 sm:ml-8 mt-16 sm:mt-0 lg:right-auto lg:m-0 lg:w-1/4 lg:sticky lg:top-6">
