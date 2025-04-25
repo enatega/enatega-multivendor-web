@@ -471,7 +471,7 @@ export default function RestaurantDetailsScreen() {
           {/* Banner */}
           <div className="relative">
             {loading ?
-              <Skeleton width="100%" height="20rem" borderRadius="0" />
+              <Skeleton width="100%" height="18rem" borderRadius="0" />
             : <img
                 alt={`${restaurantInfo.name} banner`}
                 className="w-full h-72 object-cover"
@@ -520,7 +520,7 @@ export default function RestaurantDetailsScreen() {
                 <span className="flex items-center gap-2 text-gray-600 font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle">
                   <ClockSvg />
                   {loading ?
-                    <Skeleton width="2rem" height="1.5rem" />
+                    <Skeleton width="1rem" height="1.5rem" />
                   : `${headerData.deliveryTime} mins`}
                 </span>
 
@@ -528,7 +528,7 @@ export default function RestaurantDetailsScreen() {
                 <span className="flex items-center gap-2 text-gray-600 font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle">
                   <RatingSvg />
                   {loading ?
-                    <Skeleton width="2rem" height="1.5rem" />
+                    <Skeleton width="1rem" height="1.5rem" />
                   : headerData.averageReview}
                 </span>
 
