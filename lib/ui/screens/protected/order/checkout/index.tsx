@@ -620,8 +620,6 @@ export default function OrderCheckoutScreen() {
     setIsCheckingCache(false); // done checking
   }, [store_user_location_cache_key]);
 
-  console.log({ directions });
-
   return (
     <>
       <div className="w-screen h-screen flex flex-col pb-20">
