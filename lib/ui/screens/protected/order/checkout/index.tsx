@@ -15,7 +15,6 @@ import React, {
   useCallback,
   useContext,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
@@ -91,6 +90,7 @@ export default function OrderCheckoutScreen() {
   const [taxValue, setTaxValue] = useState();
   const [directions, setDirections] =
     useState<google.maps.DirectionsResult | null>(null);
+  const [isCheckingCache, setIsCheckingCache] = useState(true);
 
   // Coupon
   const [isCouponApplied, setIsCouponApplied] = useState(false);
@@ -604,26 +604,23 @@ export default function OrderCheckoutScreen() {
     []
   );
 
-  const cachedDirections = useMemo(() => {
-    const stored_direction = onUseLocalStorage(
-      "get",
-      store_user_location_cache_key
-    );
-    return stored_direction ? JSON.parse(stored_direction) : null;
-  }, [store_user_location_cache_key]);
-
   // Use Effect
   useEffect(() => {
     onInit();
   }, [restaurantData]);
 
   useEffect(() => {
-    if (cachedDirections) {
-      setDirections(cachedDirections);
+    const stored_direction = onUseLocalStorage(
+      "get",
+      store_user_location_cache_key
+    );
+    if (stored_direction) {
+      setDirections(JSON.parse(stored_direction));
     }
-  }, [cachedDirections]);
+    setIsCheckingCache(false); // done checking
+  }, [store_user_location_cache_key]);
 
-  console.log({ cachedDirections, directions });
+  console.log({ directions });
 
   return (
     <>
@@ -661,7 +658,7 @@ export default function OrderCheckoutScreen() {
                   }}
                 />
 
-                {!directions && !cachedDirections && (
+                {!directions && !isCheckingCache && (
                   <DirectionsService
                     options={{
                       destination,
