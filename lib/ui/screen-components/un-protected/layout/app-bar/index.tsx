@@ -78,6 +78,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
   const {
     authToken,
     setIsAuthModalVisible,
+    setActivePanel,
     setAuthToken,
     refetchProfileData,
     setRefetchProfileData,
@@ -148,6 +149,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
 
   const onLogout = () => {
     router.replace("/");
+    setActivePanel(0);
     setAuthToken("");
     localStorage.clear();
   };

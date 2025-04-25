@@ -133,30 +133,30 @@ export default function SettingsMain() {
       {/* Email */}
       <div className="py-4 border-b">
         <div className="flex justify-between items-center">
-          <TextComponent text="Email" className="font-normal text-gray-700 text-lg md:text-xl lg:text-2xl" />
-          <TextComponent text={profileData?.profile?.email} className="font-medium text-gray-700 text-lg md:text-xl lg:text-2xl" />
+          <TextComponent text="Email" className="font-normal text-gray-700 text-base md:text-lg " />
+          <TextComponent text={profileData?.profile?.email} className="font-medium text-gray-700 text-base md:text-lg " />
         </div>
       </div>
 
       {/* Mobile Number */}
       <div className="py-4 border-b">
         <div className="flex justify-between items-center">
-        <TextComponent text="Mobile Number" className="font-normal text-gray-700 text-lg md:text-xl lg:text-2xl" />
+        <TextComponent text="Mobile Number" className="font-normal text-gray-700 text-base md:text-lg " />
         <h1
         title="Update phone number"
         onClick={handleUpdatePhoneModal}
-        className="font-medium text-blue-700 text-lg md:text-xl lg:text-2xl cursor-pointer">{profileData?.profile?.phone || "N/A" }</h1>
+        className="font-medium text-blue-700 text-base md:text-lg  cursor-pointer">{profileData?.profile?.phone || "N/A" }</h1>
         </div>
       </div>
 
       {/* Name */}
       <div className="py-4 border-b">
         <div className="flex justify-between items-center">
-        <TextComponent text="Name" className="font-normal text-gray-700 text-lg md:text-xl lg:text-2xl" />
+        <TextComponent text="Name" className="font-normal text-gray-700 text-base md:text-lg " />
         <h1
         title="Update Name"
         onClick={handleUpdateNameModal}
-        className="font-medium text-blue-700 text-lg md:text-xl lg:text-2xl cursor-pointer"
+        className="font-medium text-blue-700 text-base md:text-lg  cursor-pointer"
         >
           {profileData?.profile?.name || "N/A"}
         </h1>
@@ -166,10 +166,10 @@ export default function SettingsMain() {
       {/* Delete Account */}
       <div className="py-4 border-b">
         <div className="flex justify-between items-center">
-        <TextComponent text="Delete Account" className="font-normal text-gray-700 text-lg md:text-xl lg:text-2xl" />
+        <TextComponent text="Delete Account" className="font-normal text-gray-700 text-base md:text-lg " />
           <CustomButton
            label="Delete"
-            className="text-red-500 hover:text-red-600 font-medium text-lg md:text-xl lg:text-2xl "
+            className="text-red-500 hover:text-red-600 font-medium text-base md:text-lg  "
             onClick={handleDeleteAccount}
           />
               
@@ -179,7 +179,7 @@ export default function SettingsMain() {
       {/* Send Receipts */}
       <div className="py-4 border-b">
         <div className="flex justify-between items-center">
-        <TextComponent text="Send receipts to email" className="font-normal text-gray-700 text-lg md:text-xl lg:text-2xl" />
+        <TextComponent text="Send receipts to email" className="font-normal text-gray-700 text-base md:text-lg " />
           <CustomInputSwitch
             isActive={sendReceipts}
             onChange={handleSendReceiptsChange}
@@ -203,8 +203,8 @@ export default function SettingsMain() {
       {/* Logout */}
       <div className="py-4">
         <div className="flex justify-between items-center">
-        <TextComponent text="Log out of app" className="font-normal text-gray-700 text-lg md:text-xl lg:text-2xl" />
-          <CustomButton className="font-medium text-gray-700 text-lg md:text-xl lg:text-2xl" onClick={handleLogout}
+          <TextComponent text="Log out of app" className="font-normal text-gray-700 text-base md:text-lg " />
+          <CustomButton className="font-light text-gray-700 text-base lg:text-lg" onClick={handleLogout}
             label="Logout"
           />
         </div>

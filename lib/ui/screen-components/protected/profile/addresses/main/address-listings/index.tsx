@@ -24,15 +24,15 @@ const AddressItem: FC<IAddressItemProps> = ({
         <div>
           <TextComponent
             text={address?.label || "N/A"}
-            className="font-medium md:text-[24px]"
+            className="font-medium md:text-lg text-base"
           />
           <TextComponent
             text={address?.deliveryAddress || "N/A"}
-            className="md:text-[20px]"
+            className="md:text-base text-sm"
           />
           <TextComponent
             text={address?.details || ""}
-            className="md:text-[14px]"
+            className="md:text-sm text-xs"
           />
         </div>
       </div>

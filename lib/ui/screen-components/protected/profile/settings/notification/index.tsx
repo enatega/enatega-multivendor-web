@@ -24,12 +24,12 @@ export default function NotificationSection() {
 
   return (
     <div className="w-full mx-auto">
-      <TextComponent text="Notifications" className=" font-semibold text-gray-700 text-xl md:text-2xl lg:text-4xl mb-4" />
+      <TextComponent text="Notifications" className=" font-semibold text-gray-700 text-xl md:text-2xl   mb-4" />
 
       {/* Push Notifications */}
       <div className="py-4 border-b">
         <div className="flex justify-between items-center">
-          <TextComponent text="I want to receive special offers and promotions from us via push-messages" className="font-normal text-gray-700 text-lg md:text-xl lg:text-2xl" />
+          <TextComponent text="I want to receive special offers and promotions from us via push-messages" className="font-normal text-gray-700 text-base md:text-lg " />
           <CustomInputSwitch
             loading={false}
             isActive={pushNotifications}
@@ -41,7 +41,7 @@ export default function NotificationSection() {
       {/* Email Notifications */}
       <div className="py-4 border-b">
         <div className="flex justify-between items-center">
-        <TextComponent text="I want to receive special offers and promotions from us via email" className="font-normal text-gray-700 text-lg md:text-xl lg:text-2xl" />
+        <TextComponent text="I want to receive special offers and promotions from us via email" className="font-normal text-gray-700 text-base md:text-lg   " />
           <CustomInputSwitch
             loading={false}
             isActive={emailNotifications}
