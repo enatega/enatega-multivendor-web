@@ -50,6 +50,7 @@ import InfoModal from "@/lib/ui/useable-components/info-modal";
 import ChatSvg from "@/lib/utils/assets/svg/chat";
 import Image from "next/image";
 import Loader from "@/app/(localized)/mapview/[slug]/components/Loader";
+import { motion } from "framer-motion";
 
 export default function StoreDetailsScreen() {
   // Access the UserContext via our custom hook
@@ -543,144 +544,185 @@ export default function StoreDetailsScreen() {
         </>
       )}
 
-      <div className="w-screen h-auto flex flex-col pb-20">
-        <div className="scrollable-container flex-1 overflow-auto">
-          {/* Banner */}
-          <div className="relative">
-            {loading ?
-              <Skeleton width="100%" height="20rem" borderRadius="0" />
-              : <img
-                alt="McDonald's banner with a burger and fries"
-                className="w-full h-72 object-cover"
-                height="300"
+      {/* Banner */}
+      <div className="relative">
+        {loading ?
+          <Skeleton width="100%" height="20rem" borderRadius="0" />
+          : <img
+            alt="McDonald's banner with a burger and fries"
+            className="w-full h-72 object-cover"
+            height="300"
+            src={restaurantInfo.image}
+            width="1200"
+          />
+        }
+
+        {!loading && (
+          <div className="absolute bottom-0 left-0 md:left-20 p-4">
+            <div className="flex flex-col items-start">
+              <img
+                alt={`${restaurantInfo.name} logo`}
+                className="w-12 h-12 mb-2"
+                height="50"
                 src={restaurantInfo.image}
-                width="1200"
+                width="50"
               />
-            }
 
-            {!loading && (
-              <div className="absolute bottom-0 left-0 md:left-20 p-4">
-                <div className="flex flex-col items-start">
-                  <img
-                    alt={`${restaurantInfo.name} logo`}
-                    className="w-12 h-12 mb-2"
-                    height="50"
-                    src={restaurantInfo.image}
-                    width="50"
-                  />
-
-                  <div className="text-white space-y-2">
-                    <h1 className="font-inter font-extrabold text-[32px] leading-[100%] sm:text-[40px] md:text-[48px]">
-                      {restaurantInfo.name}
-                    </h1>
-                    <p className="font-inter font-medium text-[18px] leading-[28px] sm:text-[20px] sm:leading-[30px] md:text-[24px] md:leading-[32px]">
-                      {restaurantInfo.address}
-                    </p>
-                  </div>
-                </div>
+              <div className="text-white space-y-2">
+                <h1 className="font-inter font-extrabold text-[32px] leading-[100%] sm:text-[40px] md:text-[48px]">
+                  {restaurantInfo.name}
+                </h1>
+                <p className="font-inter font-medium text-[18px] leading-[28px] sm:text-[20px] sm:leading-[30px] md:text-[24px] md:leading-[32px]">
+                  {restaurantInfo.address}
+                </p>
               </div>
-            )}
+            </div>
+          </div>
+        )}
 
-            <button
-              onClick={handleFavoriteClick}
-              disabled={addFavoriteLoading}
-              className="absolute top-4 right-4 md:bottom-4 md:right-4 md:top-auto rounded-full bg-white h-8 w-8 flex justify-center items-center transform transition-transform duration-300 hover:scale-110 active:scale-95"
+        <button
+          onClick={handleFavoriteClick}
+          disabled={addFavoriteLoading}
+          className="absolute top-4 right-4 md:bottom-4 md:right-4 md:top-auto rounded-full bg-white h-8 w-8 flex justify-center items-center transform transition-transform duration-300 hover:scale-110 active:scale-95"
+        >
+          {addFavoriteLoading ? <Loader style={{ width: "1.5rem", height: "1.5rem" }} /> : <HeartSvg filled={isLiked} />}
+        </button>
+      </div>
+
+      {/* Restaurant Info */}
+      <div className="bg-gray-50 shadow-[0px_1px_3px_rgba(0,0,0,0.1)]  p-3 md:h-[80px] h-fit flex justify-between items-center">
+        <PaddingContainer>
+          <div className="p-3  h-full w-full flex flex-col md:flex-row gap-2 items-center justify-between">
+            <div className="w-full md:w-[80%]">
+              <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+                {/* Time */}
+                <span className="flex items-center gap-2 text-gray-600 font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle">
+                  <ClockSvg />
+                  {loading ?
+                    <Skeleton width="2rem" height="1.5rem" />
+                    : headerData.deliveryTime}
+                  mins
+                </span>
+
+                {/* Rating */}
+                <span className="flex items-center gap-2 text-gray-600 font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle">
+                  <RatingSvg />
+                  {loading ?
+                    <Skeleton width="2rem" height="1.5rem" />
+                    : headerData.averageReview}
+                </span>
+
+                {/* Info Link */}
+                <a
+                  className="flex items-center gap-2 text-[#0EA5E9] font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle"
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleSeeMoreInfo();
+                  }}
+                >
+                  <InfoSvg />
+                  {loading ?
+                    <Skeleton width="10rem" height="1.5rem" />
+                    : "See more information"}
+                </a>
+                {/* Review Link */}
+                <a
+                  className="flex items-center gap-2 text-[#0EA5E9] font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle"
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleSeeReviews();
+                  }}
+                >
+                  <ChatSvg />
+                  {loading ?
+                    <Skeleton width="10rem" height="1.5rem" />
+                    : "See reviews"}
+                </a>
+              </div>
+            </div>
+          </div>
+        </PaddingContainer>
+      </div>
+
+      {/* Category Section */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        className="lg:top-[90px] top-[90px]"
+        style={{
+          position: "sticky",
+
+          zIndex: 50,
+          backgroundColor: "white",
+          boxShadow: "0 1px 1px rgba(0, 0, 0, 0.1)",
+        }}
+      >
+        <PaddingContainer
+
+
+        >
+          <div className="p-3  w-full flex flex-col md:hidden gap-2 items-center justify-between">
+            {/* Categories */}
+            <div
+              className="w-full overflow-x-auto overflow-y-hidden flex items-center 
+                  [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
             >
-              {addFavoriteLoading ? <Loader style={{ width: "1.5rem", height: "1.5rem" }} /> : <HeartSvg filled={isLiked} />}
-            </button>
-          </div>
+              <ul className="flex space-x-4 items-center w-max flex-nowrap">
+                {menuItems?.map(
+                  (category: ICategoryDetailsResponse, index: number) => {
+                    const _slug = toSlug(category.label);
 
-          {/* Restaurant Info */}
-          <div className="bg-gray-50 shadow-[0px_1px_3px_rgba(0,0,0,0.1)]  p-3 md:h-[80px] h-fit flex justify-between items-center">
-            <PaddingContainer>
-              <div className="p-3  h-full w-full flex flex-col md:flex-row gap-2 items-center justify-between">
-                <div className="w-full md:w-[80%]">
-                  <div className="flex flex-wrap items-center gap-4 sm:gap-6">
-                    {/* Time */}
-                    <span className="flex items-center gap-2 text-gray-600 font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle">
-                      <ClockSvg />
-                      {loading ?
-                        <Skeleton width="2rem" height="1.5rem" />
-                        : headerData.deliveryTime}
-                      mins
-                    </span>
+                    return (
+                      <li key={index} className="shrink-0">
+                        <button
+                          className={`bg-${selectedCategory === _slug ? "[#F3FFEE]" : (
+                            "gray-100"
+                          )
+                            } text-${selectedCategory === _slug ? "[#5AC12F]" : (
+                              "gray-600"
+                            )
+                            } rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap`}
+                          onClick={() => handleScroll(_slug, true, 100)}
+                        >
+                          {category.label}
+                        </button>
+                      </li>
+                    );
+                  }
+                )}
+              </ul>
+            </div>
 
-                    {/* Rating */}
-                    <span className="flex items-center gap-2 text-gray-600 font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle">
-                      <RatingSvg />
-                      {loading ?
-                        <Skeleton width="2rem" height="1.5rem" />
-                        : headerData.averageReview}
-                    </span>
-
-                    {/* Info Link */}
-                    <a
-                      className="flex items-center gap-2 text-[#0EA5E9] font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle"
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleSeeMoreInfo();
-                      }}
-                    >
-                      <InfoSvg />
-                      {loading ?
-                        <Skeleton width="10rem" height="1.5rem" />
-                        : "See more information"}
-                    </a>
-                    {/* Review Link */}
-                    <a
-                      className="flex items-center gap-2 text-[#0EA5E9] font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle"
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleSeeReviews();
-                      }}
-                    >
-                      <ChatSvg />
-                      {loading ?
-                        <Skeleton width="10rem" height="1.5rem" />
-                        : "See reviews"}
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </PaddingContainer>
-          </div>
-
-          {/* Category Section */}
-          <PaddingContainer
-            className="md"
-            style={{
-              position: "sticky",
-              zIndex: 50,
-              backgroundColor: "white",
-              boxShadow: "0 1px 1px rgba(0, 0, 0, 0.1)",
-            }}
-          >
-            <div className="p-3 h-full w-full flex flex-col md:hidden gap-2 items-center justify-between">
-              {/* Categories */}
+            {/* Sub-Categories */}
+            {subCategoriesForCategories.length > 0 && (
               <div
                 className="w-full overflow-x-auto overflow-y-hidden flex items-center 
                   [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
               >
                 <ul className="flex space-x-4 items-center w-max flex-nowrap">
-                  {menuItems?.map(
-                    (category: ICategoryDetailsResponse, index: number) => {
-                      const _slug = toSlug(category.label);
+                  {subCategoriesForCategories?.map(
+                    (
+                      sub_category: ICategoryDetailsResponse,
+                      index: number
+                    ) => {
+                      const _slug = toSlug(sub_category.label);
 
                       return (
                         <li key={index} className="shrink-0">
                           <button
-                            className={`bg-${selectedCategory === _slug ? "[#F3FFEE]" : (
-                                "gray-100"
-                              )
-                              } text-${selectedCategory === _slug ? "[#5AC12F]" : (
+                            className={`bg-${selectedSubCategory === _slug ? "[#F3FFEE]" : (
+                              "gray-100"
+                            )
+                              } text-${selectedSubCategory === _slug ? "[#5AC12F]" : (
                                 "gray-600"
                               )
                               } rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap`}
-                            onClick={() => handleScroll(_slug, true, 100)}
+                            onClick={() => handleScroll(_slug, false, 170)}
                           >
-                            {category.label}
+                            {sub_category.label}
                           </button>
                         </li>
                       );
@@ -688,163 +730,131 @@ export default function StoreDetailsScreen() {
                   )}
                 </ul>
               </div>
+            )}
+          </div>
+        </PaddingContainer>
+      </motion.div>
 
-              {/* Sub-Categories */}
-              {subCategoriesForCategories.length > 0 && (
+      {/* Main Section */}
+      <PaddingContainer>
+        {loading || categoriesSubCategoriesLoading || subcategoriesLoading ?
+          <div className=" w-full">
+            <FoodCategorySkeleton />
+          </div>
+          : <div className="flex flex-col md:flex-row w-full">
+            <div className="hidden md:block md:w-1/5 p-3 h-screen z-10  sticky top-14 left-0">
+              <div className="h-full overflow-hidden group">
                 <div
-                  className="w-full overflow-x-auto overflow-y-hidden flex items-center 
-                  [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+                  className={`h-full overflow-y-auto transition-all duration-300 ${isScrolling ?
+                    "scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
+                    : "overflow-hidden"
+                    }`}
+                  onScroll={handleMouseEnterCategoryPanel}
                 >
-                  <ul className="flex space-x-4 items-center w-max flex-nowrap">
-                    {subCategoriesForCategories?.map(
-                      (
-                        sub_category: ICategoryDetailsResponse,
-                        index: number
-                      ) => {
-                        const _slug = toSlug(sub_category.label);
-
-                        return (
-                          <li key={index} className="shrink-0">
-                            <button
-                              className={`bg-${selectedSubCategory === _slug ? "[#F3FFEE]" : (
-                                  "gray-100"
-                                )
-                                } text-${selectedSubCategory === _slug ? "[#5AC12F]" : (
-                                  "gray-600"
-                                )
-                                } rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap`}
-                              onClick={() => handleScroll(_slug, false, 170)}
-                            >
-                              {sub_category.label}
-                            </button>
-                          </li>
-                        );
-                      }
-                    )}
-                  </ul>
-                </div>
-              )}
-            </div>
-          </PaddingContainer>
-
-          {/* Main Section */}
-          <PaddingContainer>
-            {loading || categoriesSubCategoriesLoading || subcategoriesLoading ?
-              <FoodCategorySkeleton />
-              : <div className="flex flex-col md:flex-row w-full">
-                <div className="hidden md:block md:w-1/5 p-3 h-screen z-10  sticky top-0 left-0">
-                  <div className="h-full overflow-hidden group">
-                    <div
-                      className={`h-full overflow-y-auto transition-all duration-300 ${isScrolling ?
-                          "scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
-                          : "overflow-hidden"
-                        }`}
-                      onScroll={handleMouseEnterCategoryPanel}
-                    >
-                      <PanelMenu
-                        model={menuItems}
-                        className="w-full"
-                        expandIcon={<span></span>}
-                        collapseIcon={<span></span>}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="w-full md:w-4/5 p-3 h-full overflow-y-auto">
-                  {deals.map((category: ICategoryV2, catIndex: number) => (
-                    <div
-                      key={catIndex}
-                      className="mb-4"
-                      id={toSlug(category.title)}
-                    >
-                      <h2 className="mb-2 font-inter text-gray-900 font-bold text-2xl sm:text-xl leading-snug tracking-tight">
-                        {category.title}
-                      </h2>
-
-                      {category.subCategories.map(
-                        (subCategory: ISubCategoryV2, subCatIndex: number) => (
-                          <div
-                            key={subCatIndex}
-                            className="mb-4"
-                            id={toSlug(subCategory.title)}
-                          >
-                            {subCategory.title !== "Uncategorized" && (
-                              <h3 className="mb-2 font-inter text-gray-600 font-semibold text-lg sm:text-base leading-snug tracking-normal">
-                                {subCategory.title}
-                              </h3>
-                            )}
-
-                            <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                              {subCategory.foods.map(
-                                (meal: IFood, mealIndex) => (
-                                  <div
-                                    key={mealIndex}
-                                    className="flex items-center gap-4 rounded-lg border border-gray-300 shadow-sm bg-white p-3 relative"
-                                  >
-                                    {/* Text Content */}
-                                    <div className="flex-grow text-left md:text-left space-y-2">
-                                      <h3 className="text-gray-900 text-lg font-semibold font-inter">
-                                        {meal.title}
-                                      </h3>
-
-                                      <p className="text-gray-500 text-sm">
-                                        {meal.description}
-                                      </p>
-
-                                      <div className="flex items-center gap-2">
-                                        <span className="text-[#0EA5E9] text-lg font-semibold">
-                                          {CURRENCY_SYMBOL}{" "}
-                                          {meal.variations[0].price}
-                                        </span>
-                                      </div>
-                                    </div>
-
-                                    {/* Image */}
-                                    <div className="flex-shrink-0 w-24 h-24 md:w-28 md:h-28">
-                                      <Image
-                                        alt={meal.title}
-                                        className="w-full h-full rounded-md object-cover mx-auto md:mx-0"
-                                        src={meal.image}
-                                        width={100}
-                                        height={100}
-                                      />
-                                    </div>
-
-                                    {/* Add Button */}
-                                    <div className="absolute top-2 right-2">
-                                      <button
-                                        className="bg-[#0EA5E9] rounded-full shadow-md w-6 h-6 flex items-center justify-center"
-                                        onClick={() =>
-                                          handleOpenFoodModal(meal)
-                                        }
-                                        type="button"
-                                      >
-                                        <FontAwesomeIcon
-                                          icon={faPlus}
-                                          color="white"
-                                        />
-                                      </button>
-                                    </div>
-                                  </div>
-                                )
-                              )}
-                            </div>
-                          </div>
-                        )
-                      )}
-                    </div>
-                  ))}
+                  <PanelMenu
+                    model={menuItems}
+                    className="w-full"
+                    expandIcon={<span></span>}
+                    collapseIcon={<span></span>}
+                  />
                 </div>
               </div>
-            }
-          </PaddingContainer>
-        </div>
-      </div>
+            </div>
+
+            <div className="w-full md:w-4/5 p-3 h-full overflow-y-auto">
+              {deals.map((category: ICategoryV2, catIndex: number) => (
+                <div
+                  key={catIndex}
+                  className="mb-4"
+                  id={toSlug(category.title)}
+                >
+                  <h2 className="mb-2 font-inter text-gray-900 font-bold text-2xl sm:text-xl leading-snug tracking-tight">
+                    {category.title}
+                  </h2>
+
+                  {category.subCategories.map(
+                    (subCategory: ISubCategoryV2, subCatIndex: number) => (
+                      <div
+                        key={subCatIndex}
+                        className="mb-4"
+                        id={toSlug(subCategory.title)}
+                      >
+                        {subCategory.title !== "Uncategorized" && (
+                          <h3 className="mb-2 font-inter text-gray-600 font-semibold text-lg sm:text-base leading-snug tracking-normal">
+                            {subCategory.title}
+                          </h3>
+                        )}
+
+                        <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                          {subCategory.foods.map(
+                            (meal: IFood, mealIndex) => (
+                              <div
+                                key={mealIndex}
+                                className="flex items-center gap-4 rounded-lg border border-gray-300 shadow-sm bg-white p-3 relative"
+                              >
+                                {/* Text Content */}
+                                <div className="flex-grow text-left md:text-left space-y-2">
+                                  <h3 className="text-gray-900 text-lg font-semibold font-inter">
+                                    {meal.title}
+                                  </h3>
+
+                                  <p className="text-gray-500 text-sm">
+                                    {meal.description}
+                                  </p>
+
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-[#0EA5E9] text-lg font-semibold">
+                                      {CURRENCY_SYMBOL}{" "}
+                                      {meal.variations[0].price}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                {/* Image */}
+                                <div className="flex-shrink-0 w-24 h-24 md:w-28 md:h-28">
+                                  <Image
+                                    alt={meal.title}
+                                    className="w-full h-full rounded-md object-cover mx-auto md:mx-0"
+                                    src={meal.image}
+                                    width={100}
+                                    height={100}
+                                  />
+                                </div>
+
+                                {/* Add Button */}
+                                <div className="absolute top-2 right-2">
+                                  <button
+                                    className="bg-[#0EA5E9] rounded-full shadow-md w-6 h-6 flex items-center justify-center"
+                                    onClick={() =>
+                                      handleOpenFoodModal(meal)
+                                    }
+                                    type="button"
+                                  >
+                                    <FontAwesomeIcon
+                                      icon={faPlus}
+                                      color="white"
+                                    />
+                                  </button>
+                                </div>
+                              </div>
+                            )
+                          )}
+                        </div>
+                      </div>
+                    )
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        }
+      </PaddingContainer>
+
 
       {/* Food Item Detail Modal */}
       <Dialog
-        visible={!!showDialog}
+        visible={!!showDialog
+        }
         className="mx-3 sm:mx-4 md:mx-0 "  // Adds margin on small screens
         onHide={handleCloseFoodModal}
         showHeader={false}

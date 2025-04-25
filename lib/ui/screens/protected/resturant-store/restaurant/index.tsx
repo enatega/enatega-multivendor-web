@@ -41,6 +41,7 @@ import { onUseLocalStorage } from "@/lib/utils/methods/local-storage";
 import { GET_POPULAR_SUB_CATEGORIES_LIST } from "@/lib/api/graphql";
 import { Dialog } from "primereact/dialog";
 import Loader from "@/app/(localized)/mapview/[slug]/components/Loader";
+import { motion } from "framer-motion";
 
 export default function RestaurantDetailsScreen() {
   // Access the UserContext via our custom hook
@@ -466,260 +467,266 @@ export default function RestaurantDetailsScreen() {
         </>
       )}
 
-      <div className="w-screen h-auto flex flex-col pb-20">
-        <div className="scrollable-container flex-1 overflow-auto">
-          {/* Banner */}
-          <div className="relative">
-            {loading ?
-              <Skeleton width="100%" height="18rem" borderRadius="0" />
-              : <img
-                alt={`${restaurantInfo.name} banner`}
-                className="w-full h-72 object-cover"
-                height="300"
+
+      {/* Banner */}
+      <div className="relative">
+        {loading ?
+          <Skeleton width="100%" height="18rem" borderRadius="0" />
+          : <img
+            alt={`${restaurantInfo.name} banner`}
+            className="w-full h-72 object-cover"
+            height="300"
+            src={restaurantInfo.image}
+            width="1200"
+          />
+        }
+
+        {!loading && (
+          <div className="absolute bottom-0 left-0 md:left-20 p-4">
+            <div className="flex flex-col items-start">
+              <img
+                alt={`${restaurantInfo.name} logo`}
+                className="w-12 h-12 mb-2"
+                height="50"
                 src={restaurantInfo.image}
-                width="1200"
+                width="50"
               />
-            }
 
-            {!loading && (
-              <div className="absolute bottom-0 left-0 md:left-20 p-4">
-                <div className="flex flex-col items-start">
-                  <img
-                    alt={`${restaurantInfo.name} logo`}
-                    className="w-12 h-12 mb-2"
-                    height="50"
-                    src={restaurantInfo.image}
-                    width="50"
-                  />
-
-                  <div className="text-white space-y-2">
-                    <h1 className="font-inter font-extrabold text-[32px] leading-[100%] sm:text-[40px] md:text-[48px]">
-                      {restaurantInfo.name}
-                    </h1>
-                    <p className="font-inter font-medium text-[18px] leading-[28px] sm:text-[20px] sm:leading-[30px] md:text-[24px] md:leading-[32px]">
-                      {restaurantInfo.address}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-            <button
-              disabled={addFavoriteLoading}
-              onClick={handleFavoriteClick}
-              className="absolute top-4 right-4 md:bottom-4 md:right-4 md:top-auto rounded-full bg-white h-8 w-8 flex justify-center items-center transform transition-transform duration-300 hover:scale-110 active:scale-95"
-            >
-
-              {addFavoriteLoading ? <Loader style={{ width: "1.5rem", height: "1.5rem" }} /> : <HeartSvg filled={isLiked} />}
-            </button>
-          </div>
-          {/* Restaurant Info */}
-          <div className="bg-gray-50 shadow-[0px_1px_3px_rgba(0,0,0,0.1)] p-3 h-[80px] flex justify-between items-center">
-            <PaddingContainer>
-              <div className="flex flex-wrap items-center gap-4 sm:gap-6">
-                {/* Time */}
-                <span className="flex items-center gap-2 text-gray-600 font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle">
-                  <ClockSvg />
-                  {loading ?
-                    <Skeleton width="1rem" height="1.5rem" />
-                    : `${headerData.deliveryTime} mins`}
-                </span>
-
-                {/* Rating */}
-                <span className="flex items-center gap-2 text-gray-600 font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle">
-                  <RatingSvg />
-                  {loading ?
-                    <Skeleton width="1rem" height="1.5rem" />
-                    : headerData.averageReview}
-                </span>
-
-                {/* Info Link */}
-                <a
-                  className="flex items-center gap-2 text-[#0EA5E9] font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle"
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleSeeMoreInfo();
-                  }}
-                >
-                  <InfoSvg />
-                  {loading ?
-                    <Skeleton width="10rem" height="1.5rem" />
-                    : "See more information"}
-                </a>
-
-                {/* Review Link */}
-                <a
-                  className="flex items-center gap-2 text-[#0EA5E9] font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle"
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleSeeReviews();
-                  }}
-                >
-                  <ChatSvg />
-                  {loading ?
-                    <Skeleton width="10rem" height="1.5rem" />
-                    : "See reviews"}
-                </a>
-              </div>
-            </PaddingContainer>
-          </div>
-
-          {/* Category Section */}
-          <PaddingContainer
-            height={headerHeight}
-            style={{
-              position: "sticky",
-              top: "0",
-              zIndex: 50,
-              backgroundColor: "white",
-              boxShadow: "0 1px 1px rgba(0, 0, 0, 0.1)",
-            }}
-          >
-            <div className="p-3 h-full w-full flex flex-col md:flex-row gap-2 items-center justify-between">
-              {/* Category List - Full Width on Small Screens, 80% on Larger Screens */}
-              <div className="relative w-full md:w-[80%]">
-                <div
-                  className="h-12 w-full overflow-x-auto overflow-y-hidden flex items-center 
-                  [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
-                >
-                  <ul className="flex space-x-4 items-center w-max flex-nowrap">
-                    {(showAll ? deals : deals.slice(0, visibleItems)).map(
-                      (category: ICategory, index: number) => {
-                        const _slug = toSlug(category.title);
-                        return (
-                          <li key={index} className="shrink-0">
-                            <button
-                              type="button"
-                              className={`bg-${selectedCategory === _slug ? "[#F3FFEE]" : "gray-100"} text-${selectedCategory === _slug ? "[#5AC12F]" : "gray-600"} rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap`}
-                              onClick={() =>
-                                handleScroll(toSlug(category.title))
-                              }
-                            >
-                              {category.title}
-                            </button>
-                          </li>
-                        );
-                      }
-                    )}
-
-                    {!showAll && deals.length > visibleItems && (
-                      <li className="shrink-0">
-                        <button
-                          type="button"
-                          className="bg-blue-500 text-white rounded-full px-4 py-2 font-medium text-[14px] cursor-pointer"
-                          onClick={() => setShowAll(true)}
-                        >
-                          More
-                        </button>
-                      </li>
-                    )}
-                  </ul>
-                </div>
-              </div>
-
-              {/* Search Input - 20% Width on Large Screens, Full Width on Small Screens */}
-              <div className="h-full w-full md:w-[20%]">
-                {
-                  <CustomIconTextField
-                    value={filter}
-                    className="w-full md:h-10 h-9 rounded-full pl-10"
-                    iconProperties={{
-                      icon: faSearch,
-                      position: "left",
-                      style: { marginTop: "-10px" },
-                    }}
-                    placeholder="Search for food items"
-                    type="text"
-                    name="search"
-                    showLabel={false}
-                    isLoading={loading}
-                    onChange={(e) => setFilter(e.target.value)}
-                  />
-                }
+              <div className="text-white space-y-2">
+                <h1 className="font-inter font-extrabold text-[32px] leading-[100%] sm:text-[40px] md:text-[48px]">
+                  {restaurantInfo.name}
+                </h1>
+                <p className="font-inter font-medium text-[18px] leading-[28px] sm:text-[20px] sm:leading-[30px] md:text-[24px] md:leading-[32px]">
+                  {restaurantInfo.address}
+                </p>
               </div>
             </div>
-          </PaddingContainer>
+          </div>
+        )}
+        <button
+          disabled={addFavoriteLoading}
+          onClick={handleFavoriteClick}
+          className="absolute top-4 right-4 md:bottom-4 md:right-4 md:top-auto rounded-full bg-white h-8 w-8 flex justify-center items-center transform transition-transform duration-300 hover:scale-110 active:scale-95"
+        >
 
-          <Spacer height="20px" />
-
-          {/* Food Categories and Items */}
-          <PaddingContainer>
-            {loading ?
-              <FoodCategorySkeleton />
-              : deals.map((category: ICategory, catIndex: number) => {
-                const categorySlug = toSlug(category.title);
-
-                return (
-                  <div
-                    key={catIndex}
-                    className="mb-4 p-3"
-                    id={categorySlug}
-                    data-category-id={categorySlug}
-                    ref={(el) => {
-                      categoryRefs.current[categorySlug] = el;
-                    }}
-                  >
-                    <h2 className="mb-4 font-inter text-gray-900 font-bold text-2xl sm:text-xl leading-snug tracking-tight">
-                      {category.title}
-                    </h2>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                      {category.foods.map((meal: IFood, mealIndex) => (
-                        <div
-                          key={mealIndex}
-                          className="flex items-center gap-4 rounded-lg border border-gray-300 shadow-sm bg-white p-3 relative cursor-pointer transition-transform duration-300 hover:scale-105 hover:shadow-lg"
-                          onClick={() => handleRestaurantClick(meal)}
-                        >
-                          {/* Text Content */}
-                          <div className="flex-grow text-left md:text-left space-y-2">
-                            <h3 className="text-gray-900 text-lg font-semibold font-inter">
-                              {meal.title}
-                            </h3>
-
-                            <p className="text-gray-500 text-sm">
-                              {meal.description}
-                            </p>
-
-                            <div className="flex items-center gap-2">
-                              <span className="text-[#0EA5E9] text-lg font-semibold">
-                                {CURRENCY_SYMBOL} {meal.variations[0].price}
-                              </span>
-                            </div>
-                          </div>
-
-                          {/* Image */}
-                          <div className="flex-shrink-0 w-24 h-24 md:w-28 md:h-28">
-                            <img
-                              alt={meal.title}
-                              className="w-full h-full rounded-md object-cover mx-auto md:mx-0"
-                              src={meal.image}
-                            />
-                          </div>
-
-                          {/* Add Button */}
-                          <div className="absolute top-2 right-2">
-                            <button
-                              className="bg-[#0EA5E9] rounded-full shadow-md w-6 h-6 flex items-center justify-center"
-                              onClick={(e) => {
-                                e.stopPropagation(); // Prevent triggering parent onClick
-                                handleRestaurantClick(meal);
-                              }}
-                              type="button"
-                            >
-                              <FontAwesomeIcon icon={faPlus} color="white" />
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                );
-              })
-            }
-          </PaddingContainer>
-        </div>
+          {addFavoriteLoading ? <Loader style={{ width: "1.5rem", height: "1.5rem" }} /> : <HeartSvg filled={isLiked} />}
+        </button>
       </div>
+      {/* Restaurant Info */}
+      <div className="bg-gray-50 shadow-[0px_1px_3px_rgba(0,0,0,0.1)] p-3 h-[80px] flex justify-between items-center">
+        <PaddingContainer>
+          <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+            {/* Time */}
+            <span className="flex items-center gap-2 text-gray-600 font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle">
+              <ClockSvg />
+              {loading ?
+                <Skeleton width="1rem" height="1.5rem" />
+                : `${headerData.deliveryTime} mins`}
+            </span>
+
+            {/* Rating */}
+            <span className="flex items-center gap-2 text-gray-600 font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle">
+              <RatingSvg />
+              {loading ?
+                <Skeleton width="1rem" height="1.5rem" />
+                : headerData.averageReview}
+            </span>
+
+            {/* Info Link */}
+            <a
+              className="flex items-center gap-2 text-[#0EA5E9] font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle"
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                handleSeeMoreInfo();
+              }}
+            >
+              <InfoSvg />
+              {loading ?
+                <Skeleton width="10rem" height="1.5rem" />
+                : "See more information"}
+            </a>
+
+            {/* Review Link */}
+            <a
+              className="flex items-center gap-2 text-[#0EA5E9] font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle"
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                handleSeeReviews();
+              }}
+            >
+              <ChatSvg />
+              {loading ?
+                <Skeleton width="10rem" height="1.5rem" />
+                : "See reviews"}
+            </a>
+          </div>
+        </PaddingContainer>
+      </div>
+
+      {/* Category Section */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        className="lg:top-[60px] top-[80px]"
+        style={{
+          position: "sticky",
+         
+          zIndex: 50,
+          backgroundColor: "white",
+          boxShadow: "0 1px 1px rgba(0, 0, 0, 0.1)",
+        }}
+      >
+        <PaddingContainer
+          height={headerHeight}
+
+        >
+          <div className="p-3 h-full w-full flex flex-col md:flex-row gap-2 items-center justify-between">
+            {/* Category List - Full Width on Small Screens, 80% on Larger Screens */}
+            <div className="relative w-full md:w-[80%]">
+              <div
+                className="h-12 w-full overflow-x-auto overflow-y-hidden flex items-center 
+                  [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+              >
+                <ul className="flex space-x-4 items-center w-max flex-nowrap">
+                  {(showAll ? deals : deals.slice(0, visibleItems)).map(
+                    (category: ICategory, index: number) => {
+                      const _slug = toSlug(category.title);
+                      return (
+                        <li key={index} className="shrink-0">
+                          <button
+                            type="button"
+                            className={`bg-${selectedCategory === _slug ? "[#F3FFEE]" : "gray-100"} text-${selectedCategory === _slug ? "[#5AC12F]" : "gray-600"} rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap`}
+                            onClick={() =>
+                              handleScroll(toSlug(category.title))
+                            }
+                          >
+                            {category.title}
+                          </button>
+                        </li>
+                      );
+                    }
+                  )}
+
+                  {!showAll && deals.length > visibleItems && (
+                    <li className="shrink-0">
+                      <button
+                        type="button"
+                        className="bg-blue-500 text-white rounded-full px-4 py-2 font-medium text-[14px] cursor-pointer"
+                        onClick={() => setShowAll(true)}
+                      >
+                        More
+                      </button>
+                    </li>
+                  )}
+                </ul>
+              </div>
+            </div>
+
+            {/* Search Input - 20% Width on Large Screens, Full Width on Small Screens */}
+            <div className="h-full w-full md:w-[20%]">
+              {
+                <CustomIconTextField
+                  value={filter}
+                  className="w-full md:h-10 h-9 rounded-full pl-10"
+                  iconProperties={{
+                    icon: faSearch,
+                    position: "left",
+                    style: { marginTop: "-10px" },
+                  }}
+                  placeholder="Search for food items"
+                  type="text"
+                  name="search"
+                  showLabel={false}
+                  isLoading={loading}
+                  onChange={(e) => setFilter(e.target.value)}
+                />
+              }
+            </div>
+          </div>
+        </PaddingContainer>
+      </motion.div>
+
+      <Spacer height="20px" />
+
+      {/* Food Categories and Items */}
+      <PaddingContainer className="pb-10">
+        {loading ?
+          <FoodCategorySkeleton />
+          : deals.map((category: ICategory, catIndex: number) => {
+            const categorySlug = toSlug(category.title);
+
+            return (
+              <div
+                key={catIndex}
+                className="mb-4 p-3"
+                id={categorySlug}
+                data-category-id={categorySlug}
+                ref={(el) => {
+                  categoryRefs.current[categorySlug] = el;
+                }}
+              >
+                <h2 className="mb-4 font-inter text-gray-900 font-bold text-2xl sm:text-xl leading-snug tracking-tight">
+                  {category.title}
+                </h2>
+
+                <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                  {category.foods.map((meal: IFood, mealIndex) => (
+                    <div
+                      key={mealIndex}
+                      className="flex items-center gap-4 rounded-lg border border-gray-300 shadow-sm bg-white p-3 relative cursor-pointer transition-transform duration-300 hover:scale-105 hover:shadow-lg"
+                      onClick={() => handleRestaurantClick(meal)}
+                    >
+                      {/* Text Content */}
+                      <div className="flex-grow text-left md:text-left space-y-2">
+                        <h3 className="text-gray-900 text-lg font-semibold font-inter">
+                          {meal.title}
+                        </h3>
+
+                        <p className="text-gray-500 text-sm">
+                          {meal.description}
+                        </p>
+
+                        <div className="flex items-center gap-2">
+                          <span className="text-[#0EA5E9] text-lg font-semibold">
+                            {CURRENCY_SYMBOL} {meal.variations[0].price}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Image */}
+                      <div className="flex-shrink-0 w-24 h-24 md:w-28 md:h-28">
+                        <img
+                          alt={meal.title}
+                          className="w-full h-full rounded-md object-cover mx-auto md:mx-0"
+                          src={meal.image}
+                        />
+                      </div>
+
+                      {/* Add Button */}
+                      <div className="absolute top-2 right-2">
+                        <button
+                          className="bg-[#0EA5E9] rounded-full shadow-md w-6 h-6 flex items-center justify-center"
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevent triggering parent onClick
+                            handleRestaurantClick(meal);
+                          }}
+                          type="button"
+                        >
+                          <FontAwesomeIcon icon={faPlus} color="white" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })
+        }
+      </PaddingContainer>
+
 
       {/* Food Item Detail Modal */}
       <Dialog
