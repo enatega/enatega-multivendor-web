@@ -53,7 +53,7 @@ const AppLayout = ({ children }: IProvider) => {
   const UI = (
     <div className="layout-main">
       <div className={`
-        layout-top-container transtion-all duration-300 ease-in-out
+        layout-top-container transtion-all duration-300 ease-in-out h-[100px] md:h-[64px]
         ${isScrolled ? '!fixed !top-0 left-0 shadow-lg' : ''}
       `}>
         <AppTopbar handleModalToggle={handleModalToggle} />
