@@ -443,7 +443,7 @@ export default function UserAddressComponent(
           <GoogleMap
             mapContainerStyle={{
               width: "100%",
-              height: "400px",
+              height: "35vh",
             }}
             center={{
               lat: Number(userAddress?.location?.coordinates[1]) || 0,
