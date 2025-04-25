@@ -59,7 +59,6 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
   const [isUserAddressModalOpen, setIsUserAddressModalOpen] = useState(false);
   const [isLogin, setIsLogin] = useState(false);
 
-  console.log("is Login", isLogin);
   // REf
   const menuRef = useRef<Menu>(null);
 
