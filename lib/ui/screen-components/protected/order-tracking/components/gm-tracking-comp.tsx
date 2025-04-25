@@ -1,42 +1,53 @@
-import { DirectionsRenderer, DirectionsService, GoogleMap, Marker } from '@react-google-maps/api'
-import React from 'react'
+import {
+  DirectionsRenderer,
+  DirectionsService,
+  GoogleMap,
+  Marker,
+} from "@react-google-maps/api";
+import React from "react";
 
 // Assets
 import HomeIcon from "../../../../../assets/home_icon.png";
 import RestIcon from "../../../../../assets/rest_icon.png";
 import Image from "next/image";
-import TrackingRider from './trackingRider';
+import TrackingRider from "./trackingRider";
 
 interface IGoogleMapTrackingComponent {
-  isLoaded: boolean,
+  isLoaded: boolean;
   origin: {
-    lat: number,
-    lng: number
-  },
+    lat: number;
+    lng: number;
+  };
   destination: {
-    lat: number,
-    lng: number
-  },
-  directions: google.maps.DirectionsResult | null,
-  directionsCallback: (result: google.maps.DirectionsResult | null, status: string) => void,
-  orderStatus: string,
-  riderId?: string
+    lat: number;
+    lng: number;
+  };
+  directions: google.maps.DirectionsResult | null;
+  directionsCallback: (
+    result: google.maps.DirectionsResult | null,
+    status: string
+  ) => void;
+  orderStatus: string;
+  riderId?: string;
+  isCheckingCache?: boolean;
 }
 
-function GoogleMapTrackingComponent({ 
-  isLoaded, 
-  origin, 
-  destination, 
-  directions, 
+function GoogleMapTrackingComponent({
+  isLoaded,
+  origin,
+  destination,
+  directions,
+  isCheckingCache,
   directionsCallback,
   orderStatus,
-  riderId 
+  riderId,
 }: IGoogleMapTrackingComponent) {
-  
   // Determine which markers to show based on order status
-  const showRestaurantMarker = ['PENDING', 'ACCEPTED', 'ASSIGNED'].includes(orderStatus);
-  const showRiderMarker = ['PICKED', 'DELIVERED'].includes(orderStatus);
-  
+  const showRestaurantMarker = ["PENDING", "ACCEPTED", "ASSIGNED"].includes(
+    orderStatus
+  );
+  const showRiderMarker = ["PICKED", "DELIVERED"].includes(orderStatus);
+
   // Update origin and destination based on order status
   const mapOrigin = showRiderMarker ? undefined : origin; // Will be provided by TrackingRider component
   const mapDestination = destination; // Always show home location
@@ -73,12 +84,10 @@ function GoogleMapTrackingComponent({
           />
 
           {/* Rider Marker - show only after pickup */}
-          {showRiderMarker && riderId && (
-            <TrackingRider id={riderId} />
-          )}
+          {showRiderMarker && riderId && <TrackingRider id={riderId} />}
 
           {/* Directions between appropriate points */}
-          {!directions && mapOrigin && (
+          {!directions && !isCheckingCache && mapOrigin && (
             <DirectionsService
               options={{
                 destination: mapDestination,
@@ -88,6 +97,7 @@ function GoogleMapTrackingComponent({
               callback={directionsCallback}
             />
           )}
+
           {directions && (
             <DirectionsRenderer
               directions={directions}
@@ -104,7 +114,7 @@ function GoogleMapTrackingComponent({
             />
           )}
         </GoogleMap>
-        : <>
+      : <>
           <Image
             alt="Map showing delivery route"
             className="w-full h-64 object-cover"
@@ -118,7 +128,7 @@ function GoogleMapTrackingComponent({
         </>
       }
     </div>
-  )
+  );
 }
 
-export default GoogleMapTrackingComponent
+export default GoogleMapTrackingComponent;
