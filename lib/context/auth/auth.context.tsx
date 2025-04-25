@@ -46,7 +46,6 @@ import {
 import { ApolloError, useLazyQuery, useMutation } from "@apollo/client";
 
 // Google API
-import useUser from "@/lib/hooks/useUser";
 import { onUseLocalStorage } from "@/lib/utils/methods/local-storage";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { useRouter } from "next/navigation";
@@ -77,7 +76,6 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   const { showToast } = useToast();
   const t = useTranslations();
   const router = useRouter();
-  const { profile } = useUser();
 
   // Mutations
   const [mutateEmailCheck] = useMutation<

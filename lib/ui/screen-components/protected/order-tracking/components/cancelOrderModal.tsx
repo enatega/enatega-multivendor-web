@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import { Dialog } from "primereact/dialog";
 import { useMutation } from "@apollo/client";
 import { ABORT_ORDER } from "@/lib/api/graphql";
 import useToast from "@/lib/hooks/useToast";
 import { useAuth } from "@/lib/context/auth/auth.context";
-import CancelOrderSuccessModal from "./cancel-order-success-modal";
 
 interface CancelOrderModalProps {
   visible: boolean;
