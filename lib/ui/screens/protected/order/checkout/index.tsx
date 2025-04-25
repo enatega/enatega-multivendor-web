@@ -166,7 +166,7 @@ export default function OrderCheckoutScreen() {
     onInitDeliveryCharges();
   };
 
-  const onInitDirectCacheSet = () => {
+  const onInitDirectionCacheSet = () => {
     try {
       const stored_direction = onUseLocalStorage(
         "get",
@@ -631,7 +631,7 @@ export default function OrderCheckoutScreen() {
   }, [restaurantData]);
 
   useEffect(() => {
-    onInitDirectCacheSet();
+    onInitDirectionCacheSet();
   }, [store_user_location_cache_key]);
 
   return (
