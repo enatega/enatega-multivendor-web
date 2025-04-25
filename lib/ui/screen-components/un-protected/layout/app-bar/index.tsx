@@ -84,15 +84,11 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
   } = useAuth();
   const { queryData = [] } = useNearByRestaurantsPreview();
 
-  // UseStates
-  const [debouncedFilter, setDebouncedFilter] = useState("");
-
   const {
     isSearchFocused,
     setIsSearchFocused,
     filter,
     setFilter,
-    searchedData,
     setSearchedData,
     setSearchedKeywords,
   } = useSearchUI();
@@ -107,9 +103,8 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
       "get",
       USER_CURRENT_LOCATION_LS_KEY
     );
-    const user_current_location = current_location_ls
-      ? JSON.parse(current_location_ls)
-      : null;
+    const user_current_location =
+      current_location_ls ? JSON.parse(current_location_ls) : null;
 
     if (user_current_location) {
       setUserAddress(user_current_location);
@@ -124,7 +119,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
     if (selectedAddress) {
       setUserAddress(selectedAddress);
     } else {
-      // 🚀 Otherwise, get current location if profile is loaded and maps key exists
+      // Otherwise, get current location if profile is loaded and maps key exists
       if (!loadingProfile && GOOGLE_MAPS_KEY) {
         getCurrentLocation(onSetUserLocation);
       }
@@ -170,11 +165,15 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
     }
   }, [refetchProfileData]);
 
-  // filtered search results
-  const filteredResults = useMemo(() => {
-    if (!debouncedFilter) return [];
-    const searchText = debouncedFilter.toLowerCase();
+  // filters search results
+  let searchedKeywords = getSearchedKeywords();
 
+  const filteredResults = useMemo(() => {
+    if (!filter.trim()) return [];
+    if (!queryData || !Array.isArray(queryData) || queryData.length === 0)
+      return [];
+
+    const searchText = filter.toLowerCase();
     return queryData.filter(({ name, address = "", cuisines = [] }) => {
       return (
         name.toLowerCase().includes(searchText) ||
@@ -182,26 +181,18 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
         cuisines.join(" ").toLowerCase().includes(searchText)
       );
     });
-  }, [debouncedFilter, queryData]);
+  }, [filter, queryData]);
 
-  // debounce effect
+  // Update searchedData in context whenever filter changes
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedFilter(filter);
-    }, 300);
-    return () => clearTimeout(timer);
+    setSearchedData(filteredResults);
   }, [filter]);
 
-  // useEffect for storing the filtered data into the context
-  useEffect(() => {
-    if (debouncedFilter.trim().length === 0) {
-      setSearchedData([]);
-    } else {
-      setSearchedData(filteredResults);
-    }
-  }, [filteredResults, debouncedFilter]);
+  // Handle search input change
+  const handleSearchInputChange = (e) => {
+    setFilter(e.target.value);
+  };
 
-  let searchedKeywords = getSearchedKeywords();
   // Search results rendered
   const renderSearchResults = () => {
     // Case 1: Input is empty
@@ -249,11 +240,11 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
     }
 
     // Case 2: User searched something
-    if (searchedData.length > 0) {
+    if (filteredResults.length > 0) {
       return (
         <MainSection
           title={`Restaurant and stores: ${filter}`}
-          data={searchedData.slice(0, 3)}
+          data={filteredResults.slice(0, 3)}
           loading={false}
           error={false}
           search={true}
@@ -331,7 +322,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                   <input
                     id="search-input"
                     value={filter}
-                    onChange={(e) => setFilter(e.target.value)}
+                    onChange={handleSearchInputChange}
                     onFocus={() => setIsSearchFocused(true)}
                     placeholder="Search in enatega"
                     className={`
@@ -358,15 +349,14 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
               {/* Right Section */}
               <div className={`flex w-1/3 justify-end items-center space-x-4`}>
                 {/* Login Button */}
-                {!authToken && !isSearchFocused ? (
+                {!authToken && !isSearchFocused ?
                   <button
                     className="md:w-20 w-16 h-fit py-3 text-gray-900 md:py-3  px-3 bg-[#5AC12F] rounded text-sm lg:text-[16px] md:text-md "
                     onClick={handleModalToggle}
                   >
                     <span className="text-white font-semibold text-[16px]">Login</span>
                   </button>
-                ) : (
-                  <div
+                : <div
                     className={`flex items-center space-x-2 rounded-md p-2 hover:bg-[#d8d8d837] ${isSearchFocused && "hidden"}`}
                     onClick={(event) => menuRef.current?.toggle(event)}
                     aria-controls="popup_menu_right"
@@ -415,7 +405,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                       popupAlignment="right"
                     />
                   </div>
-                )}
+                }
 
                 {/* Cart Button */}
                 <div className="p-1">
@@ -442,7 +432,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                   </div>
                 )}
 
-                  {isSearchFocused ? (
+                  {isSearchFocused ?
                     <div
                       className={`flex items-center justify-center rounded-full w-10 h-10 bg-gray-100 relative cursor-pointer`}
                       onClick={() => {
@@ -473,7 +463,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                         </div>
                       )}
                     </div>
-                  )}
+                  }
                 </div>
               </div>
             </div>

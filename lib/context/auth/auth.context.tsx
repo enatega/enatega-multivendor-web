@@ -19,6 +19,7 @@ import { useConfig } from "../configuration/configuration.context";
 import {
   CREATE_USER,
   EMAIL_EXISTS,
+  GET_USER_PROFILE,
   LOGIN,
   PHONE_EXISTS,
   SENT_OTP_TO_EMAIL,
@@ -42,10 +43,9 @@ import {
 } from "@/lib/utils/interfaces";
 
 // Apollo
-import { ApolloError, useMutation } from "@apollo/client";
+import { ApolloError, useLazyQuery, useMutation } from "@apollo/client";
 
 // Google API
-import useUser from "@/lib/hooks/useUser";
 import { onUseLocalStorage } from "@/lib/utils/methods/local-storage";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { useRouter } from "next/navigation";
@@ -76,7 +76,6 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   const { showToast } = useToast();
   const t = useTranslations();
   const router = useRouter();
-  const { profile } = useUser();
 
   // Mutations
   const [mutateEmailCheck] = useMutation<
@@ -170,6 +169,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       const { data } = userResponse;
       localStorage.setItem("userId", data?.login.userId ?? "");
       localStorage.setItem("token", data?.login.token ?? "");
+    
       return data;
     } catch (err) {
       const error = err as ApolloError;
@@ -254,20 +254,25 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       setRefetchProfileData(true);
     }
   };
-
+  const [
+    fetchProfile
+  ] = useLazyQuery(GET_USER_PROFILE, {
+    fetchPolicy: "network-only",
+  });
   // GQL Handlers
-  function onLoginCompleted(data: ILoginProfileResponse) {
+  async function onLoginCompleted(data: ILoginProfileResponse) {
     try {
       setUser(data.login);
+     
       localStorage.setItem("token", data?.login?.token ?? "");
       localStorage.setItem("userId", data?.login?.userId ?? "");
-
+      await fetchProfile();
       if (!data.login.emailIsVerified) {
         setActivePanel(5);
       } else if (!data.login.phoneIsVerified) {
         setActivePanel(4);
       } else {
-        if (profile?.phoneIsVerified && profile?.emailIsVerified) {
+        if (data.login?.phoneIsVerified && data.login?.emailIsVerified) {
           setActivePanel(0);
           setIsAuthModalVisible(false);
           showToast({
@@ -410,7 +415,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     if (token) {
       setAuthToken(token);
     }
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     if (typeof user?.token !== "undefined" && !!user?.token) {

@@ -60,6 +60,8 @@ export default function PastOrders({
     setSelectedOrder(null);
   }
 
+  // const slug =pastOrders[0]?.restaurant?.slug;
+
   //Handlers
   // use debouncefunction if user click multiple times at once it will call function only 1 time
   const handleReOrderClicked = useDebounceFunction(

@@ -31,7 +31,7 @@ const AddressItem: FC<IAddressItemProps> = ({
             className="md:text-[20px]"
           />
           <TextComponent
-            text={address?.details || "N/A"}
+            text={address?.details || ""}
             className="md:text-[14px]"
           />
         </div>
