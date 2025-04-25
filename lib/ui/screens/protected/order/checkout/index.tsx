@@ -15,6 +15,7 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -113,7 +114,6 @@ export default function OrderCheckoutScreen() {
   } = useUser();
 
   const { userAddress } = useUserAddress();
-
   const { data: restaurantData } = useRestaurant(restaurantId || "");
 
   // Context
@@ -121,6 +121,19 @@ export default function OrderCheckoutScreen() {
 
   // Ref
   const contentRef = useRef<HTMLDivElement>(null);
+
+  // Constants
+  const origin = {
+    lat: Number(restaurantData?.restaurant?.location.coordinates[1]) || 0,
+    lng: Number(restaurantData?.restaurant?.location.coordinates[0]) || 0,
+  };
+
+  const destination = {
+    lat: Number(userAddress?.location?.coordinates[1]) || 0,
+    lng: Number(userAddress?.location?.coordinates[0]) || 0,
+  };
+
+  const store_user_location_cache_key = `${origin?.lat},${origin?.lng}_${destination?.lat},${destination?.lng}`;
 
   // API
   const [placeOrder, { loading: loadingOrderMutation }] = useMutation(
@@ -579,6 +592,11 @@ export default function OrderCheckoutScreen() {
     (result: google.maps.DirectionsResult | null, status: string) => {
       if (status === "OK" && result) {
         setDirections(result);
+        onUseLocalStorage(
+          "save",
+          store_user_location_cache_key,
+          JSON.stringify(result)
+        );
       } else {
         console.error("Directions request failed due to", status);
       }
@@ -586,31 +604,26 @@ export default function OrderCheckoutScreen() {
     []
   );
 
+  const cachedDirections = useMemo(() => {
+    const stored_direction = onUseLocalStorage(
+      "get",
+      store_user_location_cache_key
+    );
+    return stored_direction ? JSON.parse(stored_direction) : null;
+  }, [store_user_location_cache_key]);
+
   // Use Effect
   useEffect(() => {
     onInit();
   }, [restaurantData]);
 
-  /*  useEffect(() => {
-    if (!location) {
-      const localStorageLocation = JSON.parse(
-        localStorage.getItem("location") || "null"
-      ) as ILocation;
-      if (localStorageLocation) {
-        setLocation(localStorageLocation);
-      }
+  useEffect(() => {
+    if (cachedDirections) {
+      setDirections(cachedDirections);
     }
-  }, []); */
+  }, [cachedDirections]);
 
-  const origin = {
-    lat: Number(restaurantData?.restaurant?.location.coordinates[1]) || 0,
-    lng: Number(restaurantData?.restaurant?.location.coordinates[0]) || 0,
-  };
-
-  const destination = {
-    lat: Number(userAddress?.location?.coordinates[1]) || 0,
-    lng: Number(userAddress?.location?.coordinates[0]) || 0,
-  };
+  console.log({ cachedDirections, directions });
 
   return (
     <>
@@ -648,7 +661,7 @@ export default function OrderCheckoutScreen() {
                   }}
                 />
 
-                {!directions && (
+                {!directions && !cachedDirections && (
                   <DirectionsService
                     options={{
                       destination,
