@@ -4,14 +4,14 @@ const withNextIntl = createNextIntlPlugin();
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['storage.googleapis.com'],
+    // domains: ["storage.googleapis.com"],
     dangerouslyAllowSVG: true,
     remotePatterns: [
-      // Dummy
       {
         protocol: "https",
-        hostname: "imageproxy.wolt.com",
+        hostname: "storage.googleapis.com",
       },
+      // Dummy
       {
         protocol: "https",
         hostname: "images.ctfassets.net",
@@ -72,13 +72,13 @@ const nextConfig = {
         hostname: "cdn-icons-png.flaticon.com",
       },
       {
-        protocol: 'https',
-        hostname: 'images.ctfassets.net',
+        protocol: "https",
+        hostname: "images.ctfassets.net",
       },
       {
-        protocol:'https',
-        hostname:'flagcdn.com'
-      }
+        protocol: "https",
+        hostname: "flagcdn.com",
+      },
     ], // Add placehold.co as an allowed domain
   },
 };

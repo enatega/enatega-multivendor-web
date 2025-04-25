@@ -3,8 +3,8 @@ import {
   STRIPE_ALLOWED_CURRENCIES,
 } from "../constants/currencies";
 import { OrderStatus } from "../interfaces";
-import emailjs from 'emailjs-com'
-
+import emailjs from "emailjs-com";
+import { onUseLocalStorage } from "./local-storage";
 
 export function formatDate(dateString?: string): string {
   if (!dateString) return "";
@@ -218,4 +218,40 @@ export const sendEmail = (templateId : any, templateParams : any) => {
     templateParams,
     "kfOnsw1Kn8ZWu4l77"
   );
+};
+
+const LOCAL_STORAGE_KEY = "searchedKeywords";
+
+export const saveSearchedKeyword = (keyword: string) => {
+  if (!keyword) return;
+
+  try {
+    const stored = onUseLocalStorage("get", LOCAL_STORAGE_KEY);
+    let keywords = stored ? JSON.parse(stored) : [];
+
+    // Avoid duplicates
+    if (!keywords.includes(keyword)) {
+      keywords.push(keyword);
+      onUseLocalStorage("save", LOCAL_STORAGE_KEY, JSON.stringify(keywords));
+    }
+  } catch (err) {
+    console.error("Failed to save keyword:", err);
+  }
+};
+
+export const getSearchedKeywords = (): string[] => {
+  try {
+    const stored = onUseLocalStorage("get", LOCAL_STORAGE_KEY);
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
+};
+
+export const deleteSearchedKeywords = () => {
+  try {
+    onUseLocalStorage("delete", LOCAL_STORAGE_KEY);
+  } catch {
+    // Do nothing or log if necessary
+  }
 };

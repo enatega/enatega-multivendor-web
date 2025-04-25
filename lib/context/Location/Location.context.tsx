@@ -15,7 +15,7 @@ export const LocationContext = React.createContext({} as ILocationContext);
 export const LocationProvider = ({ children }: ILocationProvider) => {
   // State
   const [location, setLocation] = useState<ILocation | null>(null);
-  console.log("🚀 ~ LocationProvider ~ location:", location)
+
   const [cities, setCities] = useState<IArea[] | []>([]);
 
   // Ref

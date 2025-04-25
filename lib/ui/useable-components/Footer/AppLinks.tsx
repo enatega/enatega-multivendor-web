@@ -13,7 +13,7 @@ const AppLinks = () => {
     <div>
       <div className='text-[20px] mb-4 font-extrabold text-white'
       
-      >Enatega Icon</div>
+      ><h1 className='font-serif italic ps-2'>Enatega</h1></div>
 
       <div className='flex gap-2 flex-wrap'>
         <button onClick={()=>handleButtonClick(AppleStoreLink)}><Image  alt={"Apple App Store Link"} width={130} height={130}src={"https://images.ctfassets.net/23u853certza/7xaqvusYmbDlca5umD9bZo/a0fa3e1c7ca41a70c6285d6c7b18c92b/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg"}/></button>

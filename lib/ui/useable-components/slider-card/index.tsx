@@ -80,7 +80,7 @@ const SliderCard = <T,>({
 
   // see all click handler
   const onSeeAllClick = () => {
-    router.push(`/${title?.toLocaleLowerCase().replace(/\s/g, "-")}`);
+    router.push(`/see-all/${title?.toLocaleLowerCase().replace(/\s/g, "-")}`);
   };
 
   return (
