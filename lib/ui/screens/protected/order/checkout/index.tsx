@@ -699,7 +699,7 @@ export default function OrderCheckoutScreen() {
             }
           </div>
           {/* <!-- Toggle Prices Button for Mobile --> */}
-          <div className="sm:hidden fixed top-10 left-0 right-0 bg-transparent z-10 p-4">
+          <div className="sm:hidden fixed top-14 left-0 right-0 bg-transparent z-10 p-4">
             <button
               className="bg-white text-[#5AC12F] w-full py-2 px-4 rounded-full border border-gray-300 flex justify-between items-center"
               onClick={togglePriceSummary}
@@ -984,9 +984,9 @@ export default function OrderCheckoutScreen() {
               </div>
 
               {/* <!-- Order Summary - Large Screen --> */}
-              <div className="hidden lg:sticky lg:top-4 lg:block lg:w-1/3 lg:m-0">
+              <div className="hidden lg:block lg:w-1/3 lg:m-0">
                 <div
-                  className="bg-white p-2 rounded-lg shadow-md border border-gray-300 expandable max-h-0 sm:max-h-full sm:block hidden"
+                  className="bg-white p-2 sticky top-4 rounded-lg shadow-md border border-gray-300 expandable max-h-0 sm:max-h-full sm:block hidden"
                   id="price-summary"
                 >
                   <h2 className="text-sm lg:text-base font-semibold text-left flex justify-between">
@@ -1091,7 +1091,7 @@ export default function OrderCheckoutScreen() {
               </div>
 
               {/* Order Summary - Small Screen */}
-              <div className="fixed top-4 right-0 mx-auto md:hidden lg:hidden xl:hidden m-4 p-4 w-full sm:w-64 ml-0 sm:ml-8 mt-16 sm:mt-0 lg:right-auto lg:m-0 lg:w-1/4 lg:sticky lg:top-4">
+              <div className="fixed top-4 right-0 mx-auto md:hidden lg:hidden xl:hidden m-4 p-4 w-full sm:w-64 ml-0 sm:ml-8 mt-16 sm:mt-0 lg:right-auto lg:m-0 lg:w-1/4 lg:sticky lg:top-6">
                 <AnimatePresence>
                   {isOpen && (
                     <motion.div

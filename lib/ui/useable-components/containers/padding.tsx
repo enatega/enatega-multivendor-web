@@ -7,10 +7,11 @@ export default function PaddingContainer({
   height,
   paddingTop,
   paddingBottom,
+  className,
 }: IPaddingContainer) {
   return (
     <div
-      className="w-full px-4 md:px-6 lg:px-12 xl:px-20 2xl:px-[80px]"
+      className={`w-full px-4 md:px-6 lg:px-12 xl:px-20 2xl:px-[80px] ${className}`}
       style={{
         height,
         paddingTop,

@@ -9,12 +9,13 @@ interface CancelOrderModalProps {
   visible: boolean;
   onHide: () => void;
   orderId: string;
+  onSuccess: () => void;
 }
 
-function CancelOrderModal({ visible, onHide, orderId }: CancelOrderModalProps) {
+function CancelOrderModal({ visible, onHide, orderId, onSuccess }: CancelOrderModalProps) {
   const { showToast } = useToast();
   const { authToken } = useAuth(); // Get auth context for authentication
-
+ 
   const [abortOrder, { loading }] = useMutation(ABORT_ORDER, {
     onCompleted: (data) => {
       console.log("Order cancelled successfully:", data);
@@ -23,9 +24,10 @@ function CancelOrderModal({ visible, onHide, orderId }: CancelOrderModalProps) {
         title: "Order Cancelled",
         message: "Your order has been cancelled successfully.",
       });
-      onHide();
+      console.log("onSuccess is called");
+      onSuccess();
       // Refresh the order tracking page to show the updated status
-      window.location.reload();
+    
     },
     onError: (error) => {
       console.error("Abort order error:", error);
@@ -129,6 +131,8 @@ function CancelOrderModal({ visible, onHide, orderId }: CancelOrderModalProps) {
           </button>
         </div>
       </div>
+
+   
     </Dialog>
   );
 }

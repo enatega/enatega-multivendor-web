@@ -40,6 +40,7 @@ import { onUseLocalStorage } from "@/lib/utils/methods/local-storage";
 // Queries
 import { GET_POPULAR_SUB_CATEGORIES_LIST } from "@/lib/api/graphql";
 import { Dialog } from "primereact/dialog";
+import Loader from "@/app/(localized)/mapview/[slug]/components/Loader";
 
 export default function RestaurantDetailsScreen() {
   // Access the UserContext via our custom hook
@@ -177,9 +178,12 @@ export default function RestaurantDetailsScreen() {
     }
   }, [deals, selectedCategory]);
 
-  const [addFavorite] = useMutation(ADD_FAVOURITE_RESTAURANT, {
-    onCompleted: () => {
-      const wasLiked = isLiked;
+  
+  const [addFavorite, { loading: addFavoriteLoading }] = useMutation(
+    ADD_FAVOURITE_RESTAURANT,
+    {
+      onCompleted: () => {
+        const wasLiked = isLiked;
       setIsLiked(!isLiked);
 
       // Only show confetti when adding a favorite (not removing)
@@ -500,10 +504,12 @@ export default function RestaurantDetailsScreen() {
               </div>
             )}
             <button
+              disabled={addFavoriteLoading}
               onClick={handleFavoriteClick}
               className="absolute top-4 right-4 md:bottom-4 md:right-4 md:top-auto rounded-full bg-white h-8 w-8 flex justify-center items-center transform transition-transform duration-300 hover:scale-110 active:scale-95"
             >
-              <HeartSvg filled={isLiked} />
+             
+              {addFavoriteLoading ? <Loader style={{ width: "1.5rem", height: "1.5rem" }} /> : <HeartSvg filled={isLiked} />}
             </button>
           </div>
           {/* Restaurant Info */}
@@ -564,7 +570,7 @@ export default function RestaurantDetailsScreen() {
             height={headerHeight}
             style={{
               position: "sticky",
-              top: 0,
+              top: "0",
               zIndex: 50,
               backgroundColor: "white",
               boxShadow: "0 1px 1px rgba(0, 0, 0, 0.1)",
@@ -686,7 +692,7 @@ export default function RestaurantDetailsScreen() {
                           <div className="flex-shrink-0 w-24 h-24 md:w-28 md:h-28">
                             <img
                               alt={meal.title}
-                              className="w-full h-full object-contain mx-auto md:mx-0"
+                              className="w-full h-full rounded-md object-cover mx-auto md:mx-0"
                               src={meal.image}
                             />
                           </div>

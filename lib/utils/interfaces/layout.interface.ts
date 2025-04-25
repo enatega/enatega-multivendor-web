@@ -95,6 +95,7 @@ export interface IPaddingContainer extends IGlobalProps {
   paddingRight?: string;
   paddingTop?: string;
   paddingBottom?: string;
+  className?: string;
 }
 
 /* Home Layout  */
