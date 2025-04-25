@@ -1,6 +1,14 @@
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
-import Script from 'next/script';
+import Script from "next/script";
+
+
+export const metadata = {
+  title: "Enatega Multivendor",
+  icons: {
+    icon: "/favicon.ico",
+  },
+};
 
 
 export default async function RootLayout({
