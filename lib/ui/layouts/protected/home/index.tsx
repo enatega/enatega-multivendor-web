@@ -4,7 +4,7 @@ import { IProtectedHomeLayoutComponent } from "@/lib/utils/interfaces";
 import { usePathname, useRouter } from "next/navigation";
 
 // Svg
-import { CutlerySvg, HomeSvg, StoreSvg } from "@/lib/utils/assets/svg";
+import { CutlerySvg, HomeSvg, LocationSvg, StoreSvg } from "@/lib/utils/assets/svg";
 import PaddingContainer from "@/lib/ui/useable-components/containers/padding";
 import { useEffect, useState } from "react";
 // context
@@ -51,7 +51,7 @@ export default function HomeLayout({
   return (
     <div className="w-screen h-full flex flex-col">
       {/* click-away handler */}
-      {isSearchFocused && (
+       {isSearchFocused && (
         <div
           onClick={(e) => {
             e.stopPropagation();

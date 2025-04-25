@@ -23,14 +23,19 @@ import { useAuth } from "@/lib/context/auth/auth.context";
 const AppLayout = ({ children }: IProvider) => {
   const [isScrolled , setIsScrolled] = useState(false);
   // Hooks
-  const { isAuthModalVisible, setIsAuthModalVisible } = useAuth();
+  const { isAuthModalVisible, setIsAuthModalVisible, setActivePanel } = useAuth();
   const { isSearchFocused } = useSearchUI();
-
+  
   // Hook
   const { GOOGLE_MAPS_KEY, LIBRARIES } = useConfig();
 
   const handleModalToggle = () => {
-    setIsAuthModalVisible((prev) => !prev);
+    setIsAuthModalVisible((prev) => {
+      if (prev) {
+        setActivePanel(0);
+      }
+      return !prev;
+    });
   };
 
   useEffect(() => {

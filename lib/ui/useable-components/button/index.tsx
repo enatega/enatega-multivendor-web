@@ -18,6 +18,7 @@ export default function CustomButton({
   return (
     <Button
       loading={loading}
+      disabled={loading}
       className={twMerge("shadow-none text-sm", className)}
       // className={`${classes['btn-custom']} ${className}`}
       label={label}

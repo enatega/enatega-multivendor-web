@@ -79,7 +79,7 @@ export default function RatingModal({
 
   return (
     <CustomDialog visible={visible} onHide={onHide} className="m-0" width="594px">
-      <div className="flex flex-col items-center p-8 pt-16 rounded-xl gap-4">
+      <div className="flex flex-col items-center md:p-6 p-0 pt-16 rounded-xl gap-4">
         {/* Restaurant Image - Shows restaurant profile picture or placeholder */}
         <div className="w-[162px] h-[162px] rounded-full overflow-hidden mb-4">
           {order?.restaurant?.image ? (
@@ -107,10 +107,10 @@ export default function RatingModal({
         </p>
 
         {/* Modal Title */}
-        <h2 className="text-2xl font-bold  text-black">How was the delivery?</h2>
+        <h2 className="md:text-2xl text-xl font-bold  text-black">How was the delivery?</h2>
 
         {/* Modal Description */}
-        <p className="text-gray-600  text-center text-lg">
+        <p className="text-gray-600  text-center md:text-lg text-base">
           Whether it&apos;s good or bad, let&apos;s talk about it
         </p>
 
