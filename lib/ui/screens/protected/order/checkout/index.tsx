@@ -122,7 +122,11 @@ export default function OrderCheckoutScreen() {
   // Ref
   const contentRef = useRef<HTMLDivElement>(null);
 
-  // Constants
+  /*
+    ##############
+     Constants
+    #############
+   */
   const origin = {
     lat: Number(restaurantData?.restaurant?.location.coordinates[1]) || 0,
     lng: Number(restaurantData?.restaurant?.location.coordinates[0]) || 0,
@@ -132,7 +136,6 @@ export default function OrderCheckoutScreen() {
     lat: Number(userAddress?.location?.coordinates[1]) || 0,
     lng: Number(userAddress?.location?.coordinates[0]) || 0,
   };
-
   const store_user_location_cache_key = `${origin?.lat},${origin?.lng}_${destination?.lat},${destination?.lng}`;
 
   // API
@@ -161,6 +164,21 @@ export default function OrderCheckoutScreen() {
 
     // Delivery Charges
     onInitDeliveryCharges();
+  };
+
+  const onInitDirectCacheSet = () => {
+    try {
+      const stored_direction = onUseLocalStorage(
+        "get",
+        store_user_location_cache_key
+      );
+      if (stored_direction) {
+        setDirections(JSON.parse(stored_direction));
+      }
+      setIsCheckingCache(false); // done checking
+    } catch (err) {
+      setIsCheckingCache(false);
+    }
   };
 
   const onInitDeliveryCharges = () => {
@@ -588,6 +606,9 @@ export default function OrderCheckoutScreen() {
     return total.toFixed(2);
   }
 
+  /*
+   Use Callbacks
+  */
   const directionsCallback = useCallback(
     (result: google.maps.DirectionsResult | null, status: string) => {
       if (status === "OK" && result) {
@@ -610,14 +631,7 @@ export default function OrderCheckoutScreen() {
   }, [restaurantData]);
 
   useEffect(() => {
-    const stored_direction = onUseLocalStorage(
-      "get",
-      store_user_location_cache_key
-    );
-    if (stored_direction) {
-      setDirections(JSON.parse(stored_direction));
-    }
-    setIsCheckingCache(false); // done checking
+    onInitDirectCacheSet();
   }, [store_user_location_cache_key]);
 
   return (
