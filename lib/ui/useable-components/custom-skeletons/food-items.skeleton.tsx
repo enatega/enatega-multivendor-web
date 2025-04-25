@@ -2,7 +2,7 @@ import { Skeleton } from "primereact/skeleton";
 
 export default function FoodCategorySkeleton({ count = 6 }) {
   return (
-    <div className="mb-4 p-3">
+    <div className="mb-4 p-3 w-full">
       <Skeleton width="12rem" height="2rem" className="mb-4" />
 
       <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">

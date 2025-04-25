@@ -840,7 +840,7 @@ export default function UserAddressComponent(
         setIndex([0, 0]);
         onHide();
       }}
-      className="lg:w-1/3 w-full h-auto m-4"
+      className={`w-[90%] lg:w-1/3 bg-white m-4`}
       header={
         index !== 0 ?
           <div
@@ -851,6 +851,7 @@ export default function UserAddressComponent(
           </div>
         : null
       }
+      headerStyle={{ paddingTop: '10px', paddingBottom: '0px' }}
     >
       <AnimatePresence initial={false} custom={direction}>
         <motion.div

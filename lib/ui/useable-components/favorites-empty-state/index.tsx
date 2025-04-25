@@ -13,7 +13,7 @@ export default function FavoritesEmptyState() {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center p-8 rounded-lg bg-white max-w-md mx-auto my-10">
+    <div className="flex flex-col items-center justify-center rounded-lg bg-white max-w-md mx-auto">
       <div className="w-32 h-32 md:w-60 md:h-60 flex items-center justify-center">
         <Lottie animationData={animationData} loop={true} autoplay={true} />
       </div>
