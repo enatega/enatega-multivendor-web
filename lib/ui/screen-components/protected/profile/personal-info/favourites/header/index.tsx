@@ -9,11 +9,11 @@ import type React from "react"
 export const HeaderFavourite: React.FC<IHeaderFavourite> = ({ title, onSeeAllClick }) => {
   return (
     <div className="flex justify-between items-center mb-4 w-full">
-      <TextComponent text={title} className="text-2xl md:text-3xl xl:text-4xl font-semibold"/>
+      <TextComponent text={title} className="text-xl md:text-2xl  font-medium"/>
         <CustomButton
           label="See all"
           onClick={onSeeAllClick}
-          className="text-[#0EA5E9] transition-colors duration-200 text-base md:text-lg "
+          className="text-[#0EA5E9] transition-colors duration-200 text-base md:text-lg font-light"
         />  
     </div>
   )

@@ -18,7 +18,7 @@ export default function CustomDialog({
       onHide={onHide}
       dismissableMask
       showHeader={false}
-      className={`w-full m-10 ${className} `}
+      className={`w-full md:m-10 m-2 bg-white ${className} `}
       contentClassName="p-0 rounded-xl scrollbar-none  m-4 md:m-0"
       style={{ maxWidth: width, borderRadius: "0.75rem", height: height }}
     >

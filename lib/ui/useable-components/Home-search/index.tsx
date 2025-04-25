@@ -69,7 +69,7 @@ const CitySearch: React.FC = () => {
           details: `Selected from Google search`,
         });
 
-        router.push("/restaurants");
+        router.push("/discovery");
         setCityName("");
         setSuggestions([]);
       }

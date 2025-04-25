@@ -10,12 +10,12 @@ const RatingOption = ({ value, emoji, label, selected, onSelect }: IRatingOption
     <span
       onClick={() => onSelect(value)}
       className={twMerge(
-        "flex flex-col cursor-pointer items-center focus:outline-none transition-all hover:scale-125 ease-in-out",
+        "flex flex-col cursor-pointer items-center focus:outline-none transition-all hover:scale-125 ease-in-out md:w-auto w-1/5",
         selected ? "transform scale-125 transition-all ease-in-out" : ""  // Scale up when selected
       )}
     >
       <span className="text-3xl mb-2">{emoji}</span>
-      <span className={twMerge("text-sm text-gray-600",
+      <span className={twMerge("md:text-sm text-xs text-gray-600",
         selected ? "font-semibold" : ""
       )}>{label}</span>
     </span>
@@ -25,7 +25,7 @@ const RatingOption = ({ value, emoji, label, selected, onSelect }: IRatingOption
   function RenderStepOne({rating,handleRatingSelect,handleNext}: {rating: number | null,handleRatingSelect: (value: number) => void,handleNext: () => void}) {
     return (
         <div className="w-full">
-          <div className="flex justify-around items-center mb-8 md:px-20">
+          <div className="flex justify-between items-center mb-8 md:px-20">
             {ratingOptions.map((option) => (
               <RatingOption
                 key={option.value}
