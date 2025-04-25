@@ -32,6 +32,7 @@ import {
   CircleCrossSvg,
   ClockSvg,
   LocationSvg,
+  SearchSvg
 } from "@/lib/utils/assets/svg";
 // import AnimatedLogo from "@/lib/assets/gif/logo.gif";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";

@@ -68,7 +68,7 @@ body {
 
 .layout-top-container {
   position: sticky;
-  height: 64px;
+  /* height: 64px; */
   z-index: 997;
   left: 0;
   top: 0;
