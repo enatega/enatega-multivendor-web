@@ -13,7 +13,7 @@ import {
   IReviewsModalProps,
 } from "@/lib/utils/interfaces/reviews.interface"; // TypeScript interfaces
 // Useable Components
-import CustomDialog from "../custom-dialog"; // Modal dialog component
+import { Dialog } from "primereact/dialog";
 
 /**
  * Modal component to display restaurant reviews
@@ -139,13 +139,14 @@ const ReviewsModal = ({
   if (loading && visible) return <CustomReviewModal />;
 
   return (
-    <CustomDialog
+    <Dialog
       visible={visible}
       onHide={onHide}
-      className="m-0 z-[100]"
-      width="905px"
+      className="md:m-10 m-2 z-[100] md:w-[905px] w-full max-h-[80vh]"
+      // width="905px"
+     
     >
-      <div className="p-6 pt-16 max-h-[80vh] overflow-y-auto">
+      <div className="md:p-2 md:pt-0 pt-3 p-1 ">
         {
           hasReviews ?
             <>
@@ -204,11 +205,11 @@ const ReviewsModal = ({
                     </h3>
                     <div className="flex items-center mb-2">
                       {renderStars(review?.rating)}
-                      <span className="ml-2 text-gray-500 font-normal text-[16px]">
+                      <span className="ml-2 text-gray-500 font-normal md:text-[16px] text-[12px]">
                         {formatDateForCreatedAt(review?.createdAt)}
                       </span>
                     </div>
-                    <p className="text-gray-500 font-normal text-lg">
+                    <p className="text-gray-500 font-normal md:text-lg text-sm">
                       {review?.description}
                     </p>
                   </div>
@@ -235,7 +236,7 @@ const ReviewsModal = ({
 
         }
       </div>
-    </CustomDialog>
+    </Dialog>
   );
 };
 

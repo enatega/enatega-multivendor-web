@@ -156,7 +156,7 @@ export default function AuthModal({
           height={30}
         />
       </button>
-      <Stepper ref={authenticationPanelRef} activeStep={activePanel}>
+      <Stepper ref={authenticationPanelRef} activeStep={activePanel} >
         <StepperPanel>
           <LoginWithGoogle
             googleLogin={googleLogin}
