@@ -9,7 +9,7 @@ const SideCard:React.FC<sideCardProps> = ({image,heading,subHeading,right=true})
         <h1 className='text-[40px] font-bold my-6 leading-tight'>{heading}</h1>
         <p className='font-medium text-[#717173] text-justify'>{subHeading} </p>
       </div>
-      <div className='order-1 p-4 w-full h-[400px]'>
+      <div className='order-1 md:p-4 w-full h-[400px]'>
       <div className='h-[400px] relative '>
           <Image src={image} alt={"image"} fill className='object-cover rounded-lg'/>
       </div>
