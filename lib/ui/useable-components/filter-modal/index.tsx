@@ -64,7 +64,7 @@ export default function FilterModal({
   };
 
   return (
-    <CustomDialog visible={visible} className="mx-4 md:mx-0" onHide={onClose}>
+    <CustomDialog visible={visible} onHide={onClose}>
       <div className="m-[3%]">
         <button
           onClick={clearFilters}
