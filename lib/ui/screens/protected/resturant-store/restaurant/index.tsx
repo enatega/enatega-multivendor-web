@@ -162,11 +162,11 @@ export default function RestaurantDetailsScreen() {
           foods: popularFoods,
           // index can be used for custom ordering if needed
         }
-      : null;
+        : null;
 
     // Add the new category at the top
     return popularDealsCategory ?
-        [popularDealsCategory, ...filteredDeals]
+      [popularDealsCategory, ...filteredDeals]
       : filteredDeals;
   }, [allDeals, filter, popularDealsIds]);
 
@@ -178,30 +178,30 @@ export default function RestaurantDetailsScreen() {
     }
   }, [deals, selectedCategory]);
 
-  
+
   const [addFavorite, { loading: addFavoriteLoading }] = useMutation(
     ADD_FAVOURITE_RESTAURANT,
     {
       onCompleted: () => {
         const wasLiked = isLiked;
-      setIsLiked(!isLiked);
+        setIsLiked(!isLiked);
 
-      // Only show confetti when adding a favorite (not removing)
-      if (!wasLiked) {
-        console.log("Favorite added, triggering confetti!");
-        setShowConfetti(true);
+        // Only show confetti when adding a favorite (not removing)
+        if (!wasLiked) {
+          console.log("Favorite added, triggering confetti!");
+          setShowConfetti(true);
 
-        // Reset confetti after a longer delay
-        setTimeout(() => {
-          setShowConfetti(false);
-        }, 5000); // Increased from 3000ms to 5000ms
-      }
-    },
-    onError: (error) => {
-      console.error("Error toggling favorite:", error);
-    },
-    refetchQueries: [{ query: GET_USER_PROFILE }],
-  });
+          // Reset confetti after a longer delay
+          setTimeout(() => {
+            setShowConfetti(false);
+          }, 5000); // Increased from 3000ms to 5000ms
+        }
+      },
+      onError: (error) => {
+        console.error("Error toggling favorite:", error);
+      },
+      refetchQueries: [{ query: GET_USER_PROFILE }],
+    });
 
   const handleFavoriteClick = () => {
     if (!profile) {
@@ -466,13 +466,13 @@ export default function RestaurantDetailsScreen() {
         </>
       )}
 
-      <div className="w-screen flex flex-col pb-20">
+      <div className="w-screen h-auto flex flex-col pb-20">
         <div className="scrollable-container flex-1 overflow-auto">
           {/* Banner */}
           <div className="relative">
             {loading ?
               <Skeleton width="100%" height="18rem" borderRadius="0" />
-            : <img
+              : <img
                 alt={`${restaurantInfo.name} banner`}
                 className="w-full h-72 object-cover"
                 height="300"
@@ -508,7 +508,7 @@ export default function RestaurantDetailsScreen() {
               onClick={handleFavoriteClick}
               className="absolute top-4 right-4 md:bottom-4 md:right-4 md:top-auto rounded-full bg-white h-8 w-8 flex justify-center items-center transform transition-transform duration-300 hover:scale-110 active:scale-95"
             >
-             
+
               {addFavoriteLoading ? <Loader style={{ width: "1.5rem", height: "1.5rem" }} /> : <HeartSvg filled={isLiked} />}
             </button>
           </div>
@@ -521,7 +521,7 @@ export default function RestaurantDetailsScreen() {
                   <ClockSvg />
                   {loading ?
                     <Skeleton width="1rem" height="1.5rem" />
-                  : `${headerData.deliveryTime} mins`}
+                    : `${headerData.deliveryTime} mins`}
                 </span>
 
                 {/* Rating */}
@@ -529,7 +529,7 @@ export default function RestaurantDetailsScreen() {
                   <RatingSvg />
                   {loading ?
                     <Skeleton width="1rem" height="1.5rem" />
-                  : headerData.averageReview}
+                    : headerData.averageReview}
                 </span>
 
                 {/* Info Link */}
@@ -544,7 +544,7 @@ export default function RestaurantDetailsScreen() {
                   <InfoSvg />
                   {loading ?
                     <Skeleton width="10rem" height="1.5rem" />
-                  : "See more information"}
+                    : "See more information"}
                 </a>
 
                 {/* Review Link */}
@@ -559,7 +559,7 @@ export default function RestaurantDetailsScreen() {
                   <ChatSvg />
                   {loading ?
                     <Skeleton width="10rem" height="1.5rem" />
-                  : "See reviews"}
+                    : "See reviews"}
                 </a>
               </div>
             </PaddingContainer>
@@ -583,7 +583,6 @@ export default function RestaurantDetailsScreen() {
                   className="h-12 w-full overflow-x-auto overflow-y-hidden flex items-center 
                   [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
                 >
-
                   <ul className="flex space-x-4 items-center w-max flex-nowrap">
                     {(showAll ? deals : deals.slice(0, visibleItems)).map(
                       (category: ICategory, index: number) => {
@@ -648,7 +647,7 @@ export default function RestaurantDetailsScreen() {
           <PaddingContainer>
             {loading ?
               <FoodCategorySkeleton />
-            : deals.map((category: ICategory, catIndex: number) => {
+              : deals.map((category: ICategory, catIndex: number) => {
                 const categorySlug = toSlug(category.title);
 
                 return (
