@@ -90,6 +90,7 @@ export default function OrderCheckoutScreen() {
   const [taxValue, setTaxValue] = useState();
   const [directions, setDirections] =
     useState<google.maps.DirectionsResult | null>(null);
+  const [isCheckingCache, setIsCheckingCache] = useState(true);
 
   // Coupon
   const [isCouponApplied, setIsCouponApplied] = useState(false);
@@ -113,7 +114,6 @@ export default function OrderCheckoutScreen() {
   } = useUser();
 
   const { userAddress } = useUserAddress();
-
   const { data: restaurantData } = useRestaurant(restaurantId || "");
 
   // Context
@@ -121,6 +121,22 @@ export default function OrderCheckoutScreen() {
 
   // Ref
   const contentRef = useRef<HTMLDivElement>(null);
+
+  /*
+    ##############
+     Constants
+    #############
+   */
+  const origin = {
+    lat: Number(restaurantData?.restaurant?.location.coordinates[1]) || 0,
+    lng: Number(restaurantData?.restaurant?.location.coordinates[0]) || 0,
+  };
+
+  const destination = {
+    lat: Number(userAddress?.location?.coordinates[1]) || 0,
+    lng: Number(userAddress?.location?.coordinates[0]) || 0,
+  };
+  const store_user_location_cache_key = `${origin?.lat},${origin?.lng}_${destination?.lat},${destination?.lng}`;
 
   // API
   const [placeOrder, { loading: loadingOrderMutation }] = useMutation(
@@ -148,6 +164,21 @@ export default function OrderCheckoutScreen() {
 
     // Delivery Charges
     onInitDeliveryCharges();
+  };
+
+  const onInitDirectCacheSet = () => {
+    try {
+      const stored_direction = onUseLocalStorage(
+        "get",
+        store_user_location_cache_key
+      );
+      if (stored_direction) {
+        setDirections(JSON.parse(stored_direction));
+      }
+      setIsCheckingCache(false); // done checking
+    } catch (err) {
+      setIsCheckingCache(false);
+    }
   };
 
   const onInitDeliveryCharges = () => {
@@ -575,10 +606,18 @@ export default function OrderCheckoutScreen() {
     return total.toFixed(2);
   }
 
+  /*
+   Use Callbacks
+  */
   const directionsCallback = useCallback(
     (result: google.maps.DirectionsResult | null, status: string) => {
       if (status === "OK" && result) {
         setDirections(result);
+        onUseLocalStorage(
+          "save",
+          store_user_location_cache_key,
+          JSON.stringify(result)
+        );
       } else {
         console.error("Directions request failed due to", status);
       }
@@ -591,26 +630,9 @@ export default function OrderCheckoutScreen() {
     onInit();
   }, [restaurantData]);
 
-  /*  useEffect(() => {
-    if (!location) {
-      const localStorageLocation = JSON.parse(
-        localStorage.getItem("location") || "null"
-      ) as ILocation;
-      if (localStorageLocation) {
-        setLocation(localStorageLocation);
-      }
-    }
-  }, []); */
-
-  const origin = {
-    lat: Number(restaurantData?.restaurant?.location.coordinates[1]) || 0,
-    lng: Number(restaurantData?.restaurant?.location.coordinates[0]) || 0,
-  };
-
-  const destination = {
-    lat: Number(userAddress?.location?.coordinates[1]) || 0,
-    lng: Number(userAddress?.location?.coordinates[0]) || 0,
-  };
+  useEffect(() => {
+    onInitDirectCacheSet();
+  }, [store_user_location_cache_key]);
 
   return (
     <>
@@ -648,7 +670,7 @@ export default function OrderCheckoutScreen() {
                   }}
                 />
 
-                {!directions && (
+                {!directions && !isCheckingCache && (
                   <DirectionsService
                     options={{
                       destination,
