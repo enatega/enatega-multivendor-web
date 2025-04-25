@@ -137,7 +137,7 @@ export default function PastOrders({
       <div className="space-y-4 py-4">
         <TextComponent
           text="Past Orders"
-          className="text-2xl md:text-3xl xl:text-4xl font-semibold mb-6"
+          className="text-xl md:text-2xl  font-semibold mb-6"
         />
         <div className="space-y-4">
           {pastOrders?.map((order: IOrder) => (
