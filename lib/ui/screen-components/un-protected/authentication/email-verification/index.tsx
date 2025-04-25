@@ -22,6 +22,7 @@ import { UPDATE_USER } from "@/lib/api/graphql";
 
 // Prime React
 import { InputOtp } from "primereact/inputotp";
+import { width } from "@fortawesome/free-solid-svg-icons/faSpinner";
 
 export default function EmailVerification({
   handleChangePanel,
@@ -209,7 +210,7 @@ export default function EmailVerification({
         mask
         maxLength={6}
         length={6}
-        className="w-full h-20 my-2 "
+        className=" w-full flex flex-wrap h-16 sm:h-20 my-2 "
       />
       {/* create a span and give a margin top */}
       <span className="mt-4"></span>

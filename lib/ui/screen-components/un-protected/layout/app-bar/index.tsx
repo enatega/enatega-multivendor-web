@@ -433,7 +433,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                 )}
 
                   {isSearchFocused ?
-                    <div
+                    (<div
                       className={`flex items-center justify-center rounded-full w-10 h-10 bg-gray-100 relative cursor-pointer`}
                       onClick={() => {
                         setIsSearchFocused(false);
@@ -463,6 +463,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                         </div>
                       )}
                     </div>
+                  )
                   }
                 </div>
               </div>
