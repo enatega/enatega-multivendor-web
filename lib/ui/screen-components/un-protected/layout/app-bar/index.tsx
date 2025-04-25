@@ -32,7 +32,6 @@ import {
   CircleCrossSvg,
   ClockSvg,
   LocationSvg,
-  SearchSvg,
 } from "@/lib/utils/assets/svg";
 // import AnimatedLogo from "@/lib/assets/gif/logo.gif";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
@@ -56,9 +55,9 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
   // State for cart sidebar
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isUserAddressModalOpen, setIsUserAddressModalOpen] = useState(false);
-  const [isLogin,setIsLogin]=useState(false)
+  const [isLogin, setIsLogin] = useState(false);
 
-  console.log("is Login",isLogin)
+  console.log("is Login", isLogin);
   // REf
   const menuRef = useRef<Menu>(null);
 
@@ -131,12 +130,10 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
     const token = localStorage.getItem("token");
     const userId = localStorage.getItem("userId");
     if (!token || !userId) {
-      setIsLogin(false)
+      setIsLogin(false);
+    } else {
+      setIsLogin(true);
     }
-    else{
-      setIsLogin(true)
-    }
-
   }, []);
 
   const onHandleAddressModelVisibility = () => {
@@ -279,7 +276,6 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                   className={`flex items-center ${isSearchFocused && "hidden"} hidden lg:flex`}
                   onClick={onHandleAddressModelVisibility}
                 >
-
                   {/* Show on large screens only */}
                   <div className="hidden md:block p-[4px] m-2 rounded-full">
                     <LocationSvg width={22} height={22} />
@@ -356,7 +352,9 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                     className="md:w-20 w-16 h-fit py-3 text-gray-900 md:py-3  px-3 bg-[#5AC12F] rounded text-sm lg:text-[16px] md:text-md "
                     onClick={handleModalToggle}
                   >
-                    <span className="text-white font-semibold text-[16px]">Login</span>
+                    <span className="text-white font-semibold text-[16px]">
+                      Login
+                    </span>
                   </button>
                 : <div
                     className={`flex items-center space-x-2 rounded-md p-2 hover:bg-[#d8d8d837] ${isSearchFocused && "hidden"}`}
@@ -411,31 +409,31 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
 
                 {/* Cart Button */}
                 <div className="p-1">
-                  { isLogin && ( <div>
-                    {cartCount > 0 && !isSearchFocused && (
-                    <div
-                      className="hidden lg:flex items-center justify-between bg-[#5AC12F] rounded-lg px-4 py-3 w-64 cursor-pointer"
-                      onClick={() => setIsCartOpen(true)}
-                    >
-                      <div className="flex items-center gap-2">
-                        <div className="bg-white text-[#5AC12F] rounded-full w-5 h-5 flex items-center justify-center text-[10px] sm:text-[12px]">
-                          {cartCount}
+                  {isLogin && (
+                    <div>
+                      {cartCount > 0 && !isSearchFocused && (
+                        <div
+                          className="hidden lg:flex items-center justify-between bg-[#5AC12F] rounded-lg px-4 py-3 w-64 cursor-pointer"
+                          onClick={() => setIsCartOpen(true)}
+                        >
+                          <div className="flex items-center gap-2">
+                            <div className="bg-white text-[#5AC12F] rounded-full w-5 h-5 flex items-center justify-center text-[10px] sm:text-[12px]">
+                              {cartCount}
+                            </div>
+                            <span className="ml-2 text-white text-[14px] font-semibold sm:text-[14px]">
+                              Show Items
+                            </span>
+                          </div>
+                          <span className="text-white text-[14px]  sm:text-[16px]">
+                            {formattedSubtotal}
+                          </span>
                         </div>
-                        <span className="ml-2 text-white text-[14px] font-semibold sm:text-[14px]">
-                          Show Items
-                        </span>
-                      </div>
-                      <span className="text-white text-[14px]  sm:text-[16px]">
-                        {formattedSubtotal}
-                      </span>
+                      )}
                     </div>
-                    
                   )}
-                  </div>
-                )}
 
                   {isSearchFocused ?
-                    (<div
+                    <div
                       className={`flex items-center justify-center rounded-full w-10 h-10 bg-gray-100 relative cursor-pointer`}
                       onClick={() => {
                         setIsSearchFocused(false);
@@ -444,8 +442,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                     >
                       <CircleCrossSvg color="black" width={24} height={24} />
                     </div>
-                  ) : (
-                    <div
+                  : <div
                       className={`${cartCount > 0 ? "lg:hidden" : ""} flex items-center justify-center rounded-full w-8 h-8 md:w-10 md:h-10 bg-gray-100 relative`}
                       onClick={() => setIsCartOpen(true)}
                     >
@@ -465,7 +462,6 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                         </div>
                       )}
                     </div>
-                  )
                   }
                 </div>
               </div>
@@ -490,24 +486,27 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
               </div>
             </div>
 
-            <div className="my-2 lg:hidden" onClick={onHandleAddressModelVisibility}>
-          <div className="flex gap-4">
-          <LocationSvg width={22} height={22}/>
-          <p className="text-[14px] text-[#94e469]">{userAddress?.deliveryAddress}</p>
-          <div className="sm:flex items-center">
-                    <FontAwesomeIcon
-                      icon={faChevronDown}
-                      width={12}
-                      hanging={12}
-                      color="#94e469"
-                    />
-                  </div>
-          </div>
-         
-        </div>
+            <div
+              className="my-2 lg:hidden"
+              onClick={onHandleAddressModelVisibility}
+            >
+              <div className="flex gap-4">
+                <LocationSvg width={22} height={22} />
+                <p className="text-[14px] text-[#94e469]">
+                  {userAddress?.deliveryAddress}
+                </p>
+                <div className="sm:flex items-center">
+                  <FontAwesomeIcon
+                    icon={faChevronDown}
+                    width={12}
+                    hanging={12}
+                    color="#94e469"
+                  />
+                </div>
+              </div>
+            </div>
           </PaddingContainer>
         </div>
-        
       </nav>
 
       {/* Cart Sidebar */}
@@ -531,5 +530,3 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
 AppTopbar.displayName = "AppTopbar";
 
 export default AppTopbar;
-
-
