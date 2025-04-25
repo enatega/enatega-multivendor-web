@@ -18,7 +18,7 @@ interface GenericListingProps {
   error: boolean;
 }
 
-export default function GenericListingComponent({
+export default function   GenericListingComponent({
   headingTitle,
   cuisineSectionTitle,
   mainSectionTitle,

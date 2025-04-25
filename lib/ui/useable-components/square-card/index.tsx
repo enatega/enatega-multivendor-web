@@ -42,7 +42,7 @@ const SquareCard: React.FC<ICuisinesCardProps> = ({
       {/* Content Section */}
       <div className="p-2 flex flex-col justify-between flex-grow">
         <div className="flex flex-row justify-between items-center relative">
-          <div className="w-[70%]">
+          <div className="md:w-[70%]">
             <p className="text-sm lg:text-base text-[#374151] font-semibold line-clamp-1">
               {item?.name}
             </p>
