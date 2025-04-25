@@ -490,7 +490,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
         visible={isCartOpen}
         onHide={() => setIsCartOpen(false)}
         position="right"
-        className="!p-0 !m-0 w-full md:w-[30%]"
+        className="!p-0 !m-0 w-full md:w-[430] lg:w-[580px]"
       >
         <Cart onClose={() => setIsCartOpen(false)} />
       </Sidebar>
