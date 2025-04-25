@@ -171,7 +171,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
   // Update searchedData in context whenever filter changes
   useEffect(() => {
     setSearchedData(filteredResults);
-  }, [filter, filteredResults]);
+  }, [filter]);
 
   // Handle search input change
   const handleSearchInputChange = (e) => {
