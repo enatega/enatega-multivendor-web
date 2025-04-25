@@ -142,10 +142,17 @@ export default function SettingsMain() {
       <div className="py-4 border-b">
         <div className="flex justify-between items-center">
         <TextComponent text="Mobile Number" className="font-normal text-gray-700 text-lg md:text-xl lg:text-2xl" />
+      <div className="flex flex-col md:flex-row items-center gap-2">
+         {!profileData?.profile?.phoneIsVerified && (
+         <CustomButton
+         onClick={handleUpdatePhoneModal} 
+         label='Not Verified' type='button' className='text-sm md:text-lg font-light bg-[#dd151583] px-[16px] py-[8px] text-white'/>
+       )}
         <h1
         title="Update phone number"
         onClick={handleUpdatePhoneModal}
         className="font-medium text-blue-700 text-lg md:text-xl lg:text-2xl cursor-pointer">{profileData?.profile?.phone || "N/A" }</h1>
+      </div>
         </div>
       </div>
 
