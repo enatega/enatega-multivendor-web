@@ -127,12 +127,12 @@ export default function AuthModal({
         padding: "22px",
         borderBottomLeftRadius: "12px",
         borderBottomRightRadius: "12px",
-        borderTopLeftRadius: "4px",
-        borderTopRightRadius: "4px",
+        borderTopLeftRadius: "8px",
+        borderTopRightRadius: "8px",
       }}
       headerStyle={{
-        borderTopLeftRadius: "12px",
-        borderTopRightRadius: "12px",
+        borderTopLeftRadius: "8px",
+        borderTopRightRadius: "8px",
         height: "fit-content",
       }}
       className={
