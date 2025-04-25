@@ -132,9 +132,8 @@ export default function StoreDetailsScreen() {
         onClick={() => handleScroll(_url ?? "", true)}
       >
         <span
-          className={`mx-2 ${item.items && "font-semibold"} text-${
-            isClicked ? "[#5AC12F]" : "gray-600"
-          }`}
+          className={`mx-2 ${item.items && "font-semibold"} text-${isClicked ? "[#5AC12F]" : "gray-600"
+            }`}
         >
           {item.label}
         </span>
@@ -147,15 +146,13 @@ export default function StoreDetailsScreen() {
 
     return (
       <div
-        className={`flex align-items-center px-3 py-2 cursor-pointer bg-${
-          isClicked ? "[#F3FFEE]" : ""
-        }`}
+        className={`flex align-items-center px-3 py-2 cursor-pointer bg-${isClicked ? "[#F3FFEE]" : ""
+          }`}
         onClick={() => handleScroll(_url ?? "", false, 80)}
       >
         <span
-          className={`mx-2 ${item.items && "font-semibold"} text-${
-            isClicked ? "[#5AC12F]" : "gray-600"
-          }`}
+          className={`mx-2 ${item.items && "font-semibold"} text-${isClicked ? "[#5AC12F]" : "gray-600"
+            }`}
         >
           {item.label}
         </span>
@@ -190,18 +187,18 @@ export default function StoreDetailsScreen() {
               const foods = groupedFoods[subCat._id] || [];
 
               return foods.length > 0 ?
-                  {
-                    _id: subCat._id,
-                    title: subCat.title,
-                    foods,
-                  }
+                {
+                  _id: subCat._id,
+                  title: subCat.title,
+                  foods,
+                }
                 : null;
             })
             .filter(Boolean) as {
-            _id: string;
-            title: string;
-            foods: IFood[];
-          }[];
+              _id: string;
+              title: string;
+              foods: IFood[];
+            }[];
 
           if (groupedFoods["uncategorized"]?.length > 0) {
             subCategoryGroups.push({
@@ -546,13 +543,13 @@ export default function StoreDetailsScreen() {
         </>
       )}
 
-      <div className="w-screen h-screen flex flex-col pb-20">
+      <div className="w-screen h-auto flex flex-col pb-20">
         <div className="scrollable-container flex-1 overflow-auto">
           {/* Banner */}
           <div className="relative">
             {loading ?
               <Skeleton width="100%" height="20rem" borderRadius="0" />
-            : <img
+              : <img
                 alt="McDonald's banner with a burger and fries"
                 className="w-full h-72 object-cover"
                 height="300"
@@ -604,7 +601,7 @@ export default function StoreDetailsScreen() {
                       <ClockSvg />
                       {loading ?
                         <Skeleton width="2rem" height="1.5rem" />
-                      : headerData.deliveryTime}
+                        : headerData.deliveryTime}
                       mins
                     </span>
 
@@ -613,7 +610,7 @@ export default function StoreDetailsScreen() {
                       <RatingSvg />
                       {loading ?
                         <Skeleton width="2rem" height="1.5rem" />
-                      : headerData.averageReview}
+                        : headerData.averageReview}
                     </span>
 
                     {/* Info Link */}
@@ -628,7 +625,7 @@ export default function StoreDetailsScreen() {
                       <InfoSvg />
                       {loading ?
                         <Skeleton width="10rem" height="1.5rem" />
-                      : "See more information"}
+                        : "See more information"}
                     </a>
                     {/* Review Link */}
                     <a
@@ -642,7 +639,7 @@ export default function StoreDetailsScreen() {
                       <ChatSvg />
                       {loading ?
                         <Skeleton width="10rem" height="1.5rem" />
-                      : "See reviews"}
+                        : "See reviews"}
                     </a>
                   </div>
                 </div>
@@ -674,15 +671,13 @@ export default function StoreDetailsScreen() {
                       return (
                         <li key={index} className="shrink-0">
                           <button
-                            className={`bg-${
-                              selectedCategory === _slug ? "[#F3FFEE]" : (
+                            className={`bg-${selectedCategory === _slug ? "[#F3FFEE]" : (
                                 "gray-100"
                               )
-                            } text-${
-                              selectedCategory === _slug ? "[#5AC12F]" : (
+                              } text-${selectedCategory === _slug ? "[#5AC12F]" : (
                                 "gray-600"
                               )
-                            } rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap`}
+                              } rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap`}
                             onClick={() => handleScroll(_slug, true, 100)}
                           >
                             {category.label}
@@ -711,15 +706,13 @@ export default function StoreDetailsScreen() {
                         return (
                           <li key={index} className="shrink-0">
                             <button
-                              className={`bg-${
-                                selectedSubCategory === _slug ? "[#F3FFEE]" : (
+                              className={`bg-${selectedSubCategory === _slug ? "[#F3FFEE]" : (
                                   "gray-100"
                                 )
-                              } text-${
-                                selectedSubCategory === _slug ? "[#5AC12F]" : (
+                                } text-${selectedSubCategory === _slug ? "[#5AC12F]" : (
                                   "gray-600"
                                 )
-                              } rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap`}
+                                } rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap`}
                               onClick={() => handleScroll(_slug, false, 170)}
                             >
                               {sub_category.label}
@@ -738,15 +731,14 @@ export default function StoreDetailsScreen() {
           <PaddingContainer>
             {loading || categoriesSubCategoriesLoading || subcategoriesLoading ?
               <FoodCategorySkeleton />
-            : <div className="flex flex-col md:flex-row w-full">
+              : <div className="flex flex-col md:flex-row w-full">
                 <div className="hidden md:block md:w-1/5 p-3 h-screen z-10  sticky top-0 left-0">
                   <div className="h-full overflow-hidden group">
                     <div
-                      className={`h-full overflow-y-auto transition-all duration-300 ${
-                        isScrolling ?
+                      className={`h-full overflow-y-auto transition-all duration-300 ${isScrolling ?
                           "scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
-                        : "overflow-hidden"
-                      }`}
+                          : "overflow-hidden"
+                        }`}
                       onScroll={handleMouseEnterCategoryPanel}
                     >
                       <PanelMenu
