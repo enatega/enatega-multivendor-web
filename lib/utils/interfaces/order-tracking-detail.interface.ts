@@ -66,6 +66,7 @@
 }
 
 export interface IOrderTrackingDetail {
+  selectedPrepTime: number;
   reason?: string;
   _id: string;
   orderId: string;
