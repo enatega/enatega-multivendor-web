@@ -10,7 +10,7 @@ import { CycleSvg, FaceSvg } from "@/lib/utils/assets/svg";
 
 const FavoriteCard: React.FC<IFavoriteCardProps> = ({ item }) => {
   return (
-    <div className="relative p-0 border border-gray-200 rounded-lg shadow-lg w-full h-[308px] cursor-pointer">
+    <div className="relative p-0 border border-gray-200 rounded-lg shadow-lg w-full h-[255px] cursor-pointer">
       <hr className="border-t-2 border-gray-300 border-dashed my-2 absolute bottom-10 w-full" />
       <div className="flex flex-col h-full w-full">
         <div className="relative w-full h-52 overflow-hidden rounded-t-lg">
