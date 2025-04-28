@@ -3,6 +3,7 @@ import Image from "next/image";
 import { IOrderTrackingDetail } from "@/lib/utils/interfaces/order-tracking-detail.interface";
 import CancelOrderModal from "./cancelOrderModal";
 import CancelOrderSuccessModal from "./cancel-order-success-modal";
+import { onUseLocalStorage } from "@/lib/utils/methods/local-storage";
 
 function TrackingOrderDetails({
   orderTrackingDetails,
@@ -16,6 +17,12 @@ function TrackingOrderDetails({
   const formatCurrency = (amount: number) => {
     return `$${amount?.toFixed(2) || "0.00"}`;
   };
+
+  // set orderTrackingDetails.restaurant._id in local storage
+  const restaurantId = orderTrackingDetails?.restaurant?._id;
+  if (restaurantId) {
+    onUseLocalStorage("save", "orderTrackingRestaurantId", restaurantId);
+  }
 
   // Calculate subtotal (items only)
   const calculateSubtotal = () => {

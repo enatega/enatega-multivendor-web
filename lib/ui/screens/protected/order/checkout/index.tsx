@@ -4,7 +4,6 @@
 // Core
 import {
   faBicycle,
-  faChevronRight,
   faStore,
 } from "@fortawesome/free-solid-svg-icons";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons/faSpinner";
