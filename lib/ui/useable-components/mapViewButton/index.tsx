@@ -1,6 +1,7 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Tooltip } from "react-tooltip";
+import CustomButton from "../button";
 
 const MapViewButton: React.FC = () => {
   const pathname = usePathname();
@@ -10,7 +11,12 @@ const MapViewButton: React.FC = () => {
   return (
     showMapViewButton ? (
       <div className="flex items-center gap-2 ">
-        <h6 className="text-[#0EA5E9] md:text-base text-sm font-medium sm:block hidden">Map View</h6>
+        <Link href={`/mapview${pathname}`}>
+        <CustomButton
+              label={"Map View"}
+              className="text-sky-500 transition-colors duration-200 text-sm md:text-base hidden sm:block"
+            />
+        </Link>
         <Link
           href={`/mapview${pathname}`}
           className="bg-white hover:bg-gray-100 transition-colors duration-200 text-gray-900 rounded-full p-2 flex items-center justify-center shadow-md"

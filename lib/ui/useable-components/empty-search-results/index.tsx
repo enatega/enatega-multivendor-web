@@ -17,7 +17,7 @@ export default function EmptySearch() {
      <div className="w-32 h-32 md:w-60 md:h-60 flex items-center justify-center">
        <Lottie animationData={animationData} loop={true} autoplay={true} />
       </div>
-      <p className="text-gray-500 text-sm md:text-base text-center mb-4">No results found.</p>
+      <p className="text-gray-500 text-sm md:text-base text-center mb-4">No item found</p>
     </div>
   )
 }
