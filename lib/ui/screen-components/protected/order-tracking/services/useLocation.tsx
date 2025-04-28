@@ -12,9 +12,21 @@ function useLocation() {
   // Hooks
   const { location, setLocation } = useLocationContext();
   const { userAddress } = useUserAddress();
-
   const { restaurant: restaurantId } = useUser();
-  const { data: restaurantData } = useRestaurant(restaurantId || "");
+
+ // Check if window is defined (client-side) before accessing localStorage
+  const orderTrackingRestaurantId = typeof window !== 'undefined' 
+  ? localStorage.getItem("orderTrackingRestaurantId") 
+  : null;
+
+  let effectiveRestaurantId = "";
+  if(orderTrackingRestaurantId) {
+    effectiveRestaurantId = orderTrackingRestaurantId;
+  }else {
+    effectiveRestaurantId = restaurantId || "";
+  }
+
+  const { data: restaurantData } = useRestaurant(effectiveRestaurantId);
   const { isLoaded } = useContext(GoogleMapsContext);
   const [directions, setDirections] =
     useState<google.maps.DirectionsResult | null>(null);
@@ -57,6 +69,17 @@ function useLocation() {
       }
     }
   }, []);
+
+  useEffect(() => {
+  // This function runs when the component unmounts
+  return () => {
+     // This runs only on the client side
+  if (typeof window !== 'undefined') {
+    // Remove the item from local storage on unmount
+    localStorage.removeItem("orderTrackingRestaurantId");
+  }
+}
+}, []); // this effect runs once on mount and cleanup runs on unmount
 
   return {
     isLoaded,
