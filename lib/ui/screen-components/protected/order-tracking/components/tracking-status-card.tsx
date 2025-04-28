@@ -36,8 +36,7 @@ function TrackingStatusCard({ orderTrackingDetails }: TrackingStatusCardProps) {
   // Get dynamic estimated delivery time
   const getEstimatedDeliveryTime = () => {
     if (!orderTrackingDetails?.createdAt) return "20 - 30 min";
-
-    const now = new Date();
+    
     const selectedPrepTime = orderTrackingDetails.selectedPrepTime || 0;
     
     // Format a date to HH:MM format
