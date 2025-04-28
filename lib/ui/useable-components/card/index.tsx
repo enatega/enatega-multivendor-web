@@ -89,7 +89,7 @@ const Card: React.FC<ICardProps> = ({ item }) => {
             title={item?.deliveryTime + " mins"}
             isBlue={true}
           />
-          <IconWithTitle logo={CycleSvg} title={item?.tax} />
+          {item?.deliveryInfo?.deliveryFee && <IconWithTitle logo={CycleSvg} title={item?.deliveryInfo?.deliveryFee} />}
           <IconWithTitle logo={FaceSvg} title={item?.reviewAverage} />
         </div>
       </div>

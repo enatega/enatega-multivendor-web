@@ -1,6 +1,6 @@
 import { IGlobalComponentProps } from "./global.interface";
 import { IAddon } from "./orders.interface";
-import { ICategory, IOpeningTime, IOption, IRestaurantLocation, IReviewData, IZone } from "./restaurants.interface";
+import { ICategory, IDeliveryInfo, IOpeningTime, IOption, IRestaurantLocation, IReviewData, IZone } from "./restaurants.interface";
 
 export interface ISliderCardComponentProps<T> extends IGlobalComponentProps {
   title: string;
@@ -38,6 +38,7 @@ export interface ISliderCardItemProps {
   addons: IAddon[];
   zone: IZone;
   openingTimes: IOpeningTime[];
+  deliveryInfo: IDeliveryInfo;
 }
 
 export interface ICardProps {
