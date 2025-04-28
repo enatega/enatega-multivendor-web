@@ -29,12 +29,28 @@ const TrackingRider = ({ id }: { id: string }) => {
   }, [id, subscribeToMore]);
 
   if (loading) return null;
-  if (error) return null;
+  if (error) {
+    console.error("Error fetching rider data:", error);
+    return null;
+  }
+  
+  // Ensure we have valid coordinates
+  if (!data?.rider?.location?.coordinates || 
+      data.rider.location.coordinates.length < 2) {
+    console.error("Invalid rider coordinates:", data?.rider?.location);
+    return null;
+  }
   
   let riderCoordinates = {
     lat: parseFloat(data.rider.location.coordinates[1]),
     lng: parseFloat(data.rider.location.coordinates[0]),
   };
+  
+  // Validate the coordinates are numbers
+  if (isNaN(riderCoordinates.lat) || isNaN(riderCoordinates.lng)) {
+    console.error("Invalid rider coordinates (NaN):", data.rider.location.coordinates);
+    return null;
+  }
   
   return (
     <Marker 
