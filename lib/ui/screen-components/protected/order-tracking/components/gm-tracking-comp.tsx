@@ -46,11 +46,12 @@ function GoogleMapTrackingComponent({
   const showRestaurantMarker = ["PENDING", "ACCEPTED", "ASSIGNED"].includes(
     orderStatus
   );
-  const showRiderMarker = ["PICKED", "DELIVERED"].includes(orderStatus);
+  const showRiderMarker = ["PICKED", "ASSIGNED"].includes(orderStatus);
 
-  // Update origin and destination based on order status
-  const mapOrigin = showRiderMarker ? undefined : origin; // Will be provided by TrackingRider component
+  // Update map center and directions based on order status
+  const mapOrigin = showRiderMarker ? undefined : origin; // Will be provided by TrackingRider component if rider is shown
   const mapDestination = destination; // Always show home location
+  const mapCenter = showRiderMarker ? destination : origin; // Center on rider's current location when applicable
 
   return (
     <div className="relative">
@@ -60,13 +61,13 @@ function GoogleMapTrackingComponent({
             width: "100%",
             height: "400px",
           }}
-          center={mapOrigin || destination} // Center on restaurant or home
+          center={mapCenter}
           zoom={13}
         >
           {/* Restaurant Marker - show only before rider pickup */}
-          {showRestaurantMarker && mapOrigin && (
+          {showRestaurantMarker && origin && (
             <Marker
-              position={mapOrigin}
+              position={origin}
               icon={{
                 url: RestIcon.src,
                 scaledSize: new window.google.maps.Size(40, 40),
