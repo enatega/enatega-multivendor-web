@@ -4,7 +4,6 @@
 // Core
 import {
   faBicycle,
-  faChevronRight,
   faStore,
 } from "@fortawesome/free-solid-svg-icons";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons/faSpinner";
@@ -638,7 +637,7 @@ export default function OrderCheckoutScreen() {
               <GoogleMap
                 mapContainerStyle={{
                   width: "100%",
-                  height: "400px",
+                  height: "35vh",
                 }}
                 center={{
                   lat: 24.8607, // Example: Karachi
@@ -779,11 +778,6 @@ export default function OrderCheckoutScreen() {
                         </span>
                       </p>
                     </div>
-
-                    <FontAwesomeIcon
-                      icon={faChevronRight}
-                      className="text-gray-500 self-center"
-                    />
                   </div>
                 </div>
 
