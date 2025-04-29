@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Carousel } from "primereact/carousel";
 
 import { ISliderCardComponentProps } from "@/lib/utils/interfaces";
@@ -25,6 +25,14 @@ const SliderCard = <T,>({
 }: ISliderCardComponentProps<T>) => {
   const [page, setPage] = useState(0);
   const [numVisible, setNumVisible] = useState(getNumVisible());
+  const [isModalOpen, setIsModalOpen] = useState({value: false, id: ""});
+
+  const handleUpdateIsModalOpen = useCallback((value: boolean, id: string) => {
+    if (isModalOpen.value !== value || isModalOpen.id !== id) {
+      console.log("value, id", value, id);
+      setIsModalOpen({ value, id });
+    }
+  }, [isModalOpen]);
 
   const router = useRouter();
 
@@ -119,7 +127,7 @@ const SliderCard = <T,>({
         <Carousel
           value={data}
           className="w-[100%]"
-          itemTemplate={(item) => <Card item={item} />}
+          itemTemplate={(item) => <Card item={item} isModalOpen={isModalOpen} handleUpdateIsModalOpen={handleUpdateIsModalOpen} />}
           numVisible={numVisible}
           numScroll={1}
           circular

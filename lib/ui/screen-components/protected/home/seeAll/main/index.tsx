@@ -1,6 +1,6 @@
 "use client"
 // core
-import React from "react";
+import React, { useCallback, useState } from "react";
 // card component
 import Card from "@/lib/ui/useable-components/card";
 // hooks
@@ -36,7 +36,8 @@ function SeeAllSection() {
   // Get slug from URL params
   const params = useParams();
   const slug = Array.isArray(params.slug) ? params.slug[0] : params.slug;
-
+  
+  const [isModalOpen, setIsModalOpen] = useState({value: false, id: ""});
     // Generate a formatted title from the slug
   let title = slug
   .replaceAll("-", " ")
@@ -64,6 +65,13 @@ function SeeAllSection() {
     },
     500 // Debounce time in milliseconds
   );
+
+  // Handle update is modal open
+  const handleUpdateIsModalOpen = useCallback((value: boolean, id: string) => {
+    if (isModalOpen.value !== value || isModalOpen.id !== id) {
+      setIsModalOpen({ value, id });
+    }
+  }, [isModalOpen]);
 
 // Create the protected layout component for the favourite restaurants
 // This layout will be used to wrap the favourite restaurants section
@@ -138,7 +146,7 @@ const ProtectedFavRestaurants = AuthGuard(ProtectedLayout);
           {Array.isArray(data) &&
             !RESTAURANT_SLUGS.has(slug) &&
             (data as IRestaurant[]).map((item) => (
-              <Card key={item._id} item={item} />
+              <Card key={item._id} item={item} isModalOpen={isModalOpen} handleUpdateIsModalOpen={handleUpdateIsModalOpen} />
             ))}
         </div>
       </div>

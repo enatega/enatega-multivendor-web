@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState, useEffect } from "react";
+import { useMemo, useRef, useState, useEffect, useCallback } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useParams } from "next/navigation";
 import { Skeleton } from "primereact/skeleton";
@@ -26,6 +26,8 @@ import { ADD_FAVOURITE_RESTAURANT } from "@/lib/api/graphql/mutations/restaurant
 import { GET_USER_PROFILE } from "@/lib/api/graphql";
 import { useConfig } from "@/lib/context/configuration/configuration.context";
 import Confetti from "react-confetti";
+import CustomDialog from "@/lib/ui/useable-components/custom-dialog";
+
 // API
 import {
   GET_CATEGORIES_SUB_CATEGORIES_LIST,
@@ -73,6 +75,8 @@ export default function StoreDetailsScreen() {
   const [subCategoriesForCategories, setSubCategoriesForCategories] = useState<
     ICategoryDetailsResponse[]
   >([]);
+  const [isModalOpen, setIsModalOpen] = useState({ value: false, id: "" });
+
 
   // Ref
   const selectedCategoryRefs = useRef<string>("");
@@ -141,6 +145,19 @@ export default function StoreDetailsScreen() {
       </div>
     );
   };
+
+  // Handle update is modal open if restaurant is not active
+  const handleUpdateIsModalOpen = useCallback((value: boolean, id: string) => {
+    if (isModalOpen.value !== value || isModalOpen.id !== id) {
+      console.log("value, id", value, id);
+      setIsModalOpen({ value, id });
+    }
+  }, [isModalOpen]);
+
+ 
+
+
+
   const itemRenderer = (item: MenuItem) => {
     const _url = item.url?.slice(1);
     const isClicked = _url === selectedSubCategoryRefs.current;
@@ -366,6 +383,11 @@ export default function StoreDetailsScreen() {
 
   // Function to handle opening the food item modal
   const handleOpenFoodModal = (food: IFood) => {
+
+    if (!restaurantInfo.isAvailable) {
+      handleUpdateIsModalOpen(true, food?._id);
+      return;
+    }
     // Add restaurant ID to the food item
     setShowDialog({
       ...food,
@@ -434,6 +456,7 @@ export default function StoreDetailsScreen() {
     deliveryTime: data?.restaurant?.deliveryTime ?? "...",
     isAvailable: data?.restaurant?.isAvailable ?? true,
     openingTimes: data?.restaurant?.openingTimes ?? [],
+    isActive: data?.restaurant?.isActive ?? true,
   };
 
   const restaurantInfoModalProps = {
@@ -836,6 +859,14 @@ export default function StoreDetailsScreen() {
                                     />
                                   </button>
                                 </div>
+
+                                {/* create a modal that will be show that this restaurant is closed do want to see menu or want to close if click on the see menu then will move to the next page other wise modal will be closed */}
+                                <CustomDialog className="max-w-[300px]" visible={isModalOpen.value && isModalOpen.id === meal?._id?.toString()} onHide={() => handleUpdateIsModalOpen(false, meal?._id?.toString())}>
+                                  <div className="text-center pb-10 pt-10">
+                                    <p className="text-lg font-bold pb-3">Restaurant is closed</p>
+                                    <p className="text-sm">You can&apos;t order this food item right now.<br></br> Please try again later.</p>
+                                  </div>
+                                </CustomDialog>
                               </div>
                             )
                           )}
