@@ -31,6 +31,7 @@ const Main = () => {
               heading={"Reach new customers and get more orders"}
               buttonText={"For restaurants"}
               backColor={"#eaf7fc"}
+              link={"/restaurantInfo"}
             />
             <TinyTiles
               image={
@@ -39,6 +40,7 @@ const Main = () => {
               heading={"Become a store partner"}
               buttonText={"For stores"}
               backColor="#eaf7fc"
+              link={"/restaurantInfo"}
             />
           </div>
 

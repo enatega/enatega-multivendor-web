@@ -2,15 +2,24 @@
 
 import React, { useEffect, useState } from "react";
 import { Dialog } from "primereact/dialog";
-import { useMutation, useQuery } from "@apollo/client";
+import { useQuery, useMutation, useSubscription } from "@apollo/client";
 import { MessageBox } from "react-chat-elements";
 import { Button } from "primereact/button";
 
-// Subcriptions , Queries and Mutations
+// Subscriptions, Queries, and Mutations
 import { CHAT_QUERY } from "@/lib/api/graphql/queries/chatWithRider";
 import { SUBSCRIPTION_NEW_MESSAGE } from "@/lib/api/graphql/subscription/ChatWithRider";
 import { SEND_CHAT_MESSAGE } from "@/lib/api/graphql/mutations/chatWithRider";
 
+interface Message {
+  _id: string;
+  text: string;
+  createdAt: string;
+  user: {
+    _id: string;
+    name: string;
+  };
+}
 
 interface ChatWithRiderModalProps {
   visible: boolean;
@@ -25,15 +34,22 @@ function ChatWithRiderModal({
   orderId,
   currentUserId,
 }: ChatWithRiderModalProps) {
-  const [messages, setMessages] = useState<any[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
 
-  const { data: chatData, subscribeToMore } = useQuery(CHAT_QUERY, {
+  // Initial chat messages
+  const { data: chatData } = useQuery(CHAT_QUERY, {
     variables: { order: orderId },
     fetchPolicy: "network-only",
     onError: (error) => alert(error.message),
   });
 
+  // Subscription for new messages
+  const { data: subscriptionData } = useSubscription(SUBSCRIPTION_NEW_MESSAGE, {
+    variables: { order: orderId },
+  });
+
+  // Send message mutation
   const [sendChatMessage] = useMutation(SEND_CHAT_MESSAGE, {
     onCompleted: (data) => {
       if (!data.sendChatMessage.success) {
@@ -43,6 +59,7 @@ function ChatWithRiderModal({
     onError: (error) => alert(error.message),
   });
 
+  // Load chat history
   useEffect(() => {
     if (chatData?.chat) {
       const formattedMessages = chatData.chat.map((message: any) => ({
@@ -58,31 +75,29 @@ function ChatWithRiderModal({
     }
   }, [chatData]);
 
+  // Handle new message via subscription
   useEffect(() => {
-    if (!subscribeToMore) return;
+    if (subscriptionData?.subscriptionNewMessage) {
+      const newMsg = subscriptionData.subscriptionNewMessage;
 
-    const unsubscribe = subscribeToMore({
-      document: SUBSCRIPTION_NEW_MESSAGE,
-      variables: { order: orderId },
-      updateQuery: (prev, { subscriptionData }) => {
-        if (!subscriptionData.data) return prev;
+      const formattedMsg: Message = {
+        _id: newMsg.id,
+        text: newMsg.message,
+        createdAt: newMsg.createdAt,
+        user: {
+          _id: newMsg.user.id,
+          name: newMsg.user.name,
+        },
+      };
 
-        const newMessage = subscriptionData.data.subscriptionNewMessage;
+      setMessages((prevMessages) => [...prevMessages, formattedMsg]);
+    }
+  }, [subscriptionData]);
 
-        return {
-          chat: [...prev.chat, newMessage],
-        };
-      },
-    });
-
-    return () => unsubscribe();
-  }, [subscribeToMore, orderId]);
-
+  // Handle sending a message
   const handleSend = async () => {
     if (!inputMessage.trim()) return;
-   
-    
-    // Send the message via the mutation
+
     await sendChatMessage({
       variables: {
         orderId,
@@ -95,22 +110,17 @@ function ChatWithRiderModal({
         },
       },
     });
-  
-    setInputMessage("");
-  };
-  
 
-  const handleOnHide = () => {
-    onHide();
+    setInputMessage("");
   };
 
   return (
     <Dialog
       visible={visible}
-      onHide={handleOnHide}
+      onHide={onHide}
       modal
       className="w-full max-w-xs mx-0 relative"
-      contentClassName="pb-6 m-0 "
+      contentClassName="pb-6 m-0"
       showHeader={false}
       closable
       dismissableMask
@@ -120,37 +130,49 @@ function ChatWithRiderModal({
         boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.1)",
         height: "80vh",
         overflow: "hidden",
-         position: 'fixed', bottom: '20px', right: '20px'
+        position: "fixed",
+        bottom: "20px",
+        right: "20px",
       }}
     >
-
-
-
-      <div className="flex flex-col h-full ">
-      <div className=" flex justify-between items-center bg-[#5AC12F] text-white p-2  ">
-         <div>Chat With Rider</div>
-         <button onClick={onHide}><i className="pi pi-times" style={{ fontSize: '1rem' }}></i></button>
-      </div>
+      <div className="flex flex-col h-full">
+        <div className="flex justify-between items-center bg-[#5AC12F] text-white p-2">
+          <div>Chat With Rider</div>
+          <button onClick={onHide}>
+            <i className="pi pi-times" style={{ fontSize: "1rem" }}></i>
+          </button>
+        </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-2 ">
-          {messages.map((msg) => (
+        <div className="flex-1 overflow-y-auto p-2">
+          {messages.map((msg: Message) => (
             <div key={msg._id} className="mb-2">
               <MessageBox
                 type="text"
                 text={msg.text}
                 date={new Date(msg.createdAt)}
-                id={msg._id} 
-                title={msg.user.name} 
-                titleColor={msg.user._id === currentUserId ? "green" : "black"} 
-                focus={false} 
-                className={msg.user._id === currentUserId ? 'message-left' : 'message-right'}
+                id={msg._id}
+                title={msg.user.name}
+                titleColor={msg.user._id === currentUserId ? "green" : "black"}
+                position={msg.user._id === currentUserId ? "right" : "left"}
+                className={
+                  msg.user._id === currentUserId
+                    ? "message-left"
+                    : "message-right"
+                }
+                focus={false}
+                forwarded={false}
+                replyButton={false}
+                removeButton={false}
+                notch={true}
+                retracted={false}
               />
             </div>
           ))}
         </div>
 
         {/* Input Area */}
+
         <div className="flex gap-2 p-2">
           <input
             type="text"
@@ -159,7 +181,9 @@ function ChatWithRiderModal({
             placeholder="Type a message"
             className="flex-1 border rounded p-2 focus:outline-none"
           />
-          <Button label="Send" onClick={handleSend} />
+          <button onClick={handleSend}>
+          <i className="pi  pi-send" ></i>
+          </button >
         </div>
       </div>
     </Dialog>

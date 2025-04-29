@@ -30,6 +30,8 @@ export default function OrderTrackingScreen({
 }: IOrderTrackingScreenProps) {
   //states
   const [showRatingModal, setShowRatingModal] = useState<boolean>(false);
+  const [showChat,setShowChat] = useState(false)
+
   //Queries and Mutations
   const {
     isLoaded,
@@ -69,6 +71,7 @@ export default function OrderTrackingScreen({
       duration: 3000,
     });
 
+    
     // Add a small delay before navigation
     // Use window.location for a hard redirect
     setTimeout(() => {
@@ -172,6 +175,11 @@ export default function OrderTrackingScreen({
 
   // useEffect to handle order status changes
   useEffect(() => {
+     if(mergedOrderDetails?.orderStatus == 'PICKED' )
+     {
+       setShowChat(true)
+     }
+
     if (mergedOrderDetails?.orderStatus == "DELIVERED") {
       // add timer
       const timer = setTimeout(() => {
@@ -230,9 +238,10 @@ console.log("data ",mergedOrderDetails)
                 {/* Help Card - positioned on the left */}
                 <div className="md:ml-0 w-full md:w-auto md:flex-none">
                   <TrackingHelpCard />
+                  {showChat   &&
                   <ChatRider orderId={orderId}  customerId={profile?.profile._id}/>
 
-                    
+                  }
                 </div>
               </div>
 
