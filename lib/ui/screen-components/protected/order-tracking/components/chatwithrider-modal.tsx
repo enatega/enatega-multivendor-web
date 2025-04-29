@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import { Dialog } from "primereact/dialog";
 import { useQuery, useMutation, useSubscription } from "@apollo/client";
 import { MessageBox } from "react-chat-elements";
-import { Button } from "primereact/button";
 
 // Subscriptions, Queries, and Mutations
 import { CHAT_QUERY } from "@/lib/api/graphql/queries/chatWithRider";
@@ -166,6 +165,7 @@ function ChatWithRiderModal({
                 removeButton={false}
                 notch={true}
                 retracted={false}
+                status="read"
               />
             </div>
           ))}
