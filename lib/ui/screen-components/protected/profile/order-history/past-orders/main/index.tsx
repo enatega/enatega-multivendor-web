@@ -65,8 +65,8 @@ export default function PastOrders({
   //Handlers
   // use debouncefunction if user click multiple times at once it will call function only 1 time
   const handleReOrderClicked = useDebounceFunction(
-    (restaurantId: string | undefined) => {
-      router.push(`/restaurants/${restaurantId}`);
+    (restaurantId: string | undefined, slug: string | undefined,shopType: string | undefined) => {
+      router.push(`/${shopType == "restaurant" ? "restaurant" : "store"  }/${slug}/${restaurantId}`);
     },
     500 // Debounce time in milliseconds
   );

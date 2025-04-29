@@ -9,6 +9,8 @@ export const ORDERS = gql`
       restaurant {
         _id
         name
+        slug
+        shopType
         image
         address
         location {
