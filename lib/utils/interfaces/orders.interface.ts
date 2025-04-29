@@ -10,6 +10,8 @@ export interface IRestaurantDetail {
   image?: string;
   address?: string;
   location?: IPoint;
+  slug?: string;
+  shopType?: string;
 }
 
 export interface IOrderAddress {
@@ -141,7 +143,7 @@ export interface IOrderCardProps {
   type: "active" | "past";
   className?: string;
   handleTrackOrderClicked?: (id: string | undefined) => void;
-  handleReOrderClicked?: (id: string | undefined) => void;
+  handleReOrderClicked?: (id: string | undefined, slug: string | undefined, shopType: string | undefined) => void;
   handleRateOrderClicked?: (id: string | undefined) => void;
 }
 
