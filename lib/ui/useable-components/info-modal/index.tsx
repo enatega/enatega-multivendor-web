@@ -136,7 +136,7 @@ const InfoModal = ({ visible, onHide, restaurantInfo }: IInfoModalProps) => {
         </div>
 
         {/* Restaurant Information Section */}
-        <div className="p-6">
+        <div className="py-6 md:px-6">
           {/* Restaurant Name Header */}
           <h1 className="text-xl md:text-3xl font-bold mb-2">
             {restaurantInfo.name}
