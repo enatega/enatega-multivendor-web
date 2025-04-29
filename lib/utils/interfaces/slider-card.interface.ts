@@ -43,4 +43,6 @@ export interface ISliderCardItemProps {
 
 export interface ICardProps {
   item: ISliderCardItemProps;
+  isModalOpen: {value: boolean, id: string};
+  handleUpdateIsModalOpen: (value: boolean, id: string) => void;
 }

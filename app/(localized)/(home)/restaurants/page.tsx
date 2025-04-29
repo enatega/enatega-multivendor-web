@@ -1,6 +1,10 @@
 "use client";
+import dynamic from 'next/dynamic';
 
-import { RestaurantsScreen } from "@/lib/ui/screens/protected/home";
+const RestaurantsScreen = dynamic(
+  () => import('@/lib/ui/screens/protected/home').then(mod => mod.RestaurantsScreen),
+  { ssr: false }
+);
 
 export default function RestaurantPage() {
   return <RestaurantsScreen />;
