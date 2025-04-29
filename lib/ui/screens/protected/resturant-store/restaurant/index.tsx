@@ -265,6 +265,7 @@ export default function RestaurantDetailsScreen() {
 
   // Function to handle clicking on a restaurant item
   const handleRestaurantClick = (food: IFood) => {
+    if(food.isOutOfStock) return;
     // Check if there's a different restaurant in the cart
     if (cartRestaurant && id !== cartRestaurant) {
       // Store the action we want to perform after cart confirmation
@@ -681,9 +682,12 @@ export default function RestaurantDetailsScreen() {
                     >
                       {/* Text Content */}
                       <div className="flex-grow text-left md:text-left space-y-2">
+                        <div className="flex flex-col lg:flex-row justify-between flex-wrap">
                         <h3 className="text-gray-900 text-lg font-semibold font-inter">
                           {meal.title}
                         </h3>
+                        {meal.isOutOfStock && <span className="text-red-500">(Out of stock)</span>}
+                        </div>
 
                         <p className="text-gray-500 text-sm">
                           {meal.description}

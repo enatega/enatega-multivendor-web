@@ -15,6 +15,7 @@ export interface Option {
   _id: string;
   title: string;
   price: number;
+  isOutOfStock?: boolean;
 }
 
 export interface SectionProps<T extends { _id: string }> {

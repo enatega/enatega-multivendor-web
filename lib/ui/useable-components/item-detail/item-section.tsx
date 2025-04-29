@@ -22,7 +22,7 @@ import { SectionProps, Option } from "@/lib/utils/interfaces";
  */
 
 export const ItemDetailSection = <
-  T extends { _id: string; title?: string | undefined; price: number },
+  T extends { _id: string; title?: string | undefined; price: number, isOutOfStock?: boolean },
 >({
   title,
   options,
@@ -81,11 +81,12 @@ export const ItemDetailSection = <
                 : (singleSelected as Option | null)?._id === option._id
               }
               onChange={() => handleSelect(option)}
+              disabled={option.isOutOfStock}
             />
 
             {/* Label & Price */}
             <div className="flex justify-between items-center w-full">
-              <span className="text-sm text-gray-900">{option.title}</span>
+              <span className="text-sm text-gray-900">{option.title} {option.isOutOfStock ? "(Out of Stock)" : ""}  </span>
               <span className="text-sm text-gray-700">${option.price}</span>
             </div>
           </label>
