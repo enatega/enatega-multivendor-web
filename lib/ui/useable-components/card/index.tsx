@@ -15,18 +15,26 @@ import { useSearchUI } from "@/lib/context/search/search.context";
 // Interface
 import { ICardProps } from "@/lib/utils/interfaces";
 import { saveSearchedKeyword } from "@/lib/utils/methods";
+import CustomDialog from "../custom-dialog";
+import { Button } from "primereact/button";
 
-const Card: React.FC<ICardProps> = ({ item }) => {
+const Card: React.FC<ICardProps> = ({ item, isModalOpen={value: false, id: ""}, handleUpdateIsModalOpen=()=>{} }) => {
   const router = useRouter();
   const pathname = usePathname();
-  const {setIsSearchFocused, setFilter, isSearchFocused, filter} = useSearchUI();
-
+  const { setIsSearchFocused, setFilter, isSearchFocused, filter } = useSearchUI();
+  
+  console.log("isModalOpen", isModalOpen);
   return (
     <div
-      className={`rounded-md shadow-md cursor-pointer hover:scale-102 hover:opacity-95 transition-transform duration-500 max-h-[272px] w-[96%] ml-[2%] ${pathname === "/restaurants" || pathname === "/store" ? "my-[2%]" : "my-[4%]"}`}
+      className={`relative rounded-md shadow-md cursor-pointer hover:scale-102 hover:opacity-95 transition-transform duration-500 max-h-[272px] w-[96%] ml-[2%] ${pathname === "/restaurants" || pathname === "/store" ? "my-[2%]" : "my-[4%]"}`}
       onClick={() => {
         // const params = new URLSearchParams({ name: item?.name, id: item._id });
         // router.push(`/restaurant?${params.toString()}`);
+
+        if (!item?.isAvailable) {
+          handleUpdateIsModalOpen(true, item._id);
+          return;
+        }
 
         router.push(
           `/${item.shopType === "restaurant" ? "restaurant" : "store"}/${item?.slug}/${item._id}`
@@ -46,7 +54,7 @@ const Card: React.FC<ICardProps> = ({ item }) => {
 
         // save the keyword in local storage
         saveSearchedKeyword(filter);
-        
+
       }}
     >
       {/* Image Container */}
@@ -59,7 +67,15 @@ const Card: React.FC<ICardProps> = ({ item }) => {
           unoptimized
         />
       </div>
-
+      {/* overlay if item.isActive is false */}
+      {!item?.isAvailable && (
+        <div className="absolute rounded-md top-0 left-0 w-full h-[160px] bg-black/50 opacity-75 z-20 flex items-center justify-center">
+          <div className="text-white text-center z-30">
+            <p className="text-lg font-bold">Closed</p>
+            <p className="text-sm">We are currently closed</p>
+          </div>
+        </div>
+      )}
       {/* Content Section */}
       <div className="p-2 flex flex-col justify-between flex-grow">
         {/* Name & Cuisines */}
@@ -93,6 +109,24 @@ const Card: React.FC<ICardProps> = ({ item }) => {
           <IconWithTitle logo={FaceSvg} title={item?.reviewAverage} />
         </div>
       </div>
+
+      {/* create a modal that will be show that this restaurant is closed do want to see menu or want to close if click on the see menu then will move to the next page other wise modal will be closed */}
+      <CustomDialog className="max-w-[300px]" visible={isModalOpen.value && isModalOpen.id === item._id} onHide={() => handleUpdateIsModalOpen(false, item._id)}>
+        <div className="text-center  pt-10">
+          <p className="text-lg font-bold pb-3">{item.shopType === "restaurant" ? "Restaurant" : "Store"} is closed</p>
+          <p className="text-sm">Do you want to see menu?</p>
+          <div className="flex pt-9 px-2 pb-2 flex-row justify-center items-center gap-2 w-full">
+            <Button style={{
+              fontSize: "14px",
+              fontWeight: "normal",
+            }} onClick={() => handleUpdateIsModalOpen(false, item._id)} label="Close" className="w-1/2 bg-red-300 text-base font-normal text-black rounded-md min-h-10" />
+            <Button style={{
+              fontSize: "14px",
+              fontWeight: "normal",
+            }} onClick={() => router.push(`/${item.shopType === "restaurant" ? "restaurant" : "store"}/${item?.slug}/${item._id}`)} label="See Menu" className="w-1/2 bg-[#94e469] text-base font-normal text-black rounded-md min-h-10" />
+          </div>
+        </div>
+      </CustomDialog>
     </div>
   );
 };

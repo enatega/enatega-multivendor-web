@@ -35,7 +35,7 @@ const OrderCard: FC<IOrderCardProps> = ({
   const handleReorder = useCallback((order: IOrder) => {
     // Implement reorder functionality
     // pass restaurant id of that order
-    handleReOrderClicked?.(order?.restaurant?._id);
+    handleReOrderClicked?.(order?.restaurant?._id, order?.restaurant?.slug, order?.restaurant?.shopType,);
   }, []);
 
   const handleRateOrder = () => {

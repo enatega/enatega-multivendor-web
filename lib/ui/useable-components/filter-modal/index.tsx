@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "primereact/button";
 import CustomDialog from "@/lib/ui/useable-components/custom-dialog";
 import { ICuisinesData } from "@/lib/utils/interfaces";
@@ -40,8 +42,9 @@ export default function FilterModal({
       const alreadySelected = prev.cuisines.includes(name);
       return {
         ...prev,
-        cuisines: alreadySelected
-          ? prev.cuisines.filter((c) => c !== name)
+        cuisines:
+          alreadySelected ?
+            prev.cuisines.filter((c) => c !== name)
           : [...prev.cuisines, name],
       };
     });
@@ -52,8 +55,9 @@ export default function FilterModal({
       const alreadySelected = prev.rating.includes(rating);
       return {
         ...prev,
-        rating: alreadySelected
-          ? prev.rating.filter((r) => r !== rating)
+        rating:
+          alreadySelected ?
+            prev.rating.filter((r) => r !== rating)
           : [...prev.rating, rating],
       };
     });
@@ -82,9 +86,9 @@ export default function FilterModal({
                 key={item._id}
                 onClick={() => toggleCuisineSelection(item.name)}
                 className={`px-3 py-1 rounded-full text-sm border ${
-                  isSelected
-                    ? "bg-primary-color border-primary-color"
-                    : "border-gray-500"
+                  isSelected ?
+                    "bg-primary-color border-primary-color"
+                  : "border-gray-500"
                 }`}
               >
                 {item.name}
@@ -103,9 +107,9 @@ export default function FilterModal({
                 key={item.name}
                 onClick={() => toggleRatingSelection(item.name)}
                 className={`px-3 py-1 rounded-full text-sm border gap-1 flex justify-end items-center text-center ${
-                  isSelected
-                    ? "bg-primary-color border-primary-color"
-                    : "border-gray-500"
+                  isSelected ?
+                    "bg-primary-color border-primary-color"
+                  : "border-gray-500"
                 }`}
               >
                 <span>{item.name}</span>
@@ -125,9 +129,9 @@ export default function FilterModal({
                 key={item.name}
                 onClick={() => handleSortBy(item.name)}
                 className={`px-3 py-1 rounded-full text-sm border ${
-                  isSelected
-                    ? "border-sky-500 text-sky-500"
-                    : " border-gray-500"
+                  isSelected ?
+                    "border-sky-500 text-sky-500"
+                  : " border-gray-500"
                 }`}
               >
                 {item.name}

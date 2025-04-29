@@ -202,7 +202,7 @@ function TrackingStatusCard({ orderTrackingDetails }: TrackingStatusCardProps) {
     <div className="bg-white rounded-lg shadow-sm p-4 w-full max-w-2xl">
       <div className="flex justify-between items-center mb-3">
         <h3 className="text-sm sm:text-base font-semibold">
-          Estimated Delivery Time
+           {orderTrackingDetails.orderStatus === "DELIVERED" ? "Delivered" : "Estimated Delivery Time"}
         </h3>
 
         {orderTrackingDetails.orderStatus === "CANCELLED" && (

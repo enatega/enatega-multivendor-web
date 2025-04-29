@@ -1,5 +1,7 @@
+"use client";
+
 // core
-import React from "react";
+import React, { useCallback, useState } from "react";
 // card component
 import Card from "@/lib/ui/useable-components/card";
 // loading skeleton
@@ -22,6 +24,15 @@ function MainSection({
 }: IMainSectionProps) {
   const router = useRouter();
   const { isSearchFocused, setIsSearchFocused, filter } = useSearchUI();
+
+  const [isModalOpen, setIsModalOpen] = useState({value: false, id: ""});
+
+  const handleUpdateIsModalOpen = useCallback((value: boolean, id: string) => {
+    if (isModalOpen.value !== value || isModalOpen.id !== id) {
+      console.log("value, id", value, id);
+      setIsModalOpen({ value, id });
+    }
+  }, [isModalOpen]);
 
   if (error) {
     return;
@@ -61,17 +72,16 @@ function MainSection({
         )}
       </div>
 
-      {data?.length > 0 ? (
+      {data?.length > 0 ?
         <div
           className={`grid grid-cols-1 gap-2 mt-4 items-center ${isSearchFocused ? "sm:grid-cols-2 lg:grid-cols-3" : "md:grid-cols-2 lg:grid-cols-4"}`}
         >
-          {data?.map((item) => <Card key={item._id} item={item} />)}
+          {data?.map((item) => <Card key={item._id} item={item} isModalOpen={isModalOpen} handleUpdateIsModalOpen={handleUpdateIsModalOpen} />)}
         </div>
-      ) : (
-        <div className="text-center py-6 flex flex-col items-center justify-center">
+      : <div className="text-center py-6 flex flex-col items-center justify-center">
           <EmptySearch />
         </div>
-      )}
+      }
     </div>
   );
 }

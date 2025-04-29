@@ -19,6 +19,7 @@ import { IReview } from "@/lib/utils/interfaces";
 import useToast from "@/lib/hooks/useToast";
 import { RatingModal } from "@/lib/ui/screen-components/protected/profile";
 import { onUseLocalStorage } from "@/lib/utils/methods/local-storage";
+import ReactConfetti from "react-confetti";
 
 interface IOrderTrackingScreenProps {
   orderId: string;
@@ -29,6 +30,7 @@ export default function OrderTrackingScreen({
 }: IOrderTrackingScreenProps) {
   //states
   const [showRatingModal, setShowRatingModal] = useState<boolean>(false);
+  const [showConfetti, setShowConfetti] = useState(false);
   //Queries and Mutations
   const {
     isLoaded,
@@ -175,6 +177,13 @@ export default function OrderTrackingScreen({
         setShowRatingModal(true);
       }, 4000); // 4 seconds delay before showing the modal
       return () => clearTimeout(timer); // Clear timeout on component unmount
+    }else if (mergedOrderDetails?.orderStatus == "ACCEPTED") {
+        setShowConfetti(true);
+
+        // Reset confetti after a longer delay
+        setTimeout(() => {
+          setShowConfetti(false);
+        }, 5000);
     }
   }, [mergedOrderDetails?.orderStatus]);
 
@@ -191,6 +200,32 @@ export default function OrderTrackingScreen({
 
   return (
     <>
+       {showConfetti && (
+        <>
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              pointerEvents: "none",
+              zIndex: 10000,
+            }}
+          >
+            <ReactConfetti
+              width={window.innerWidth}
+              height={window.innerHeight}
+              recycle={false}
+              numberOfPieces={1000}
+              gravity={0.3}
+            />
+          </div>
+        </>
+      )}
       <RatingModal
         visible={showRatingModal && !hasUserReview}
         onHide={() => setShowRatingModal(false)}

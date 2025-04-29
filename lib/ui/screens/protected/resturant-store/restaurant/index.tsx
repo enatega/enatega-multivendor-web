@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useParams } from "next/navigation";
 import { Skeleton } from "primereact/skeleton";
@@ -42,6 +42,7 @@ import { GET_POPULAR_SUB_CATEGORIES_LIST } from "@/lib/api/graphql";
 import { Dialog } from "primereact/dialog";
 import Loader from "@/app/(localized)/mapview/[slug]/components/Loader";
 import { motion } from "framer-motion";
+import CustomDialog from "@/lib/ui/useable-components/custom-dialog";
 
 export default function RestaurantDetailsScreen() {
   // Access the UserContext via our custom hook
@@ -70,6 +71,9 @@ export default function RestaurantDetailsScreen() {
   const [isLiked, setIsLiked] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const { CURRENCY_SYMBOL } = useConfig();
+  const [isModalOpen, setIsModalOpen] = useState({ value: false, id: "" });
+
+
 
   // Get user profile from context
   const { profile } = useUser();
@@ -109,6 +113,14 @@ export default function RestaurantDetailsScreen() {
       setIsLiked(isFavorite);
     }
   }, [profile, id]);
+
+  // Handle update is modal open if restaurant is not active
+  const handleUpdateIsModalOpen = useCallback((value: boolean, id: string) => {
+    if (isModalOpen.value !== value || isModalOpen.id !== id) {
+      console.log("value, id", value, id);
+      setIsModalOpen({ value, id });
+    }
+  }, [isModalOpen]);
 
   const popularDealsIds = popularSubCategoriesList?.popularItems?.map(
     (item: any) => item.id
@@ -240,6 +252,7 @@ export default function RestaurantDetailsScreen() {
     deliveryTime: data?.restaurant?.deliveryTime ?? "...",
     isAvailable: data?.restaurant?.isAvailable ?? true,
     openingTimes: data?.restaurant?.openingTimes ?? [],
+    isActive: data?.restaurant?.isActive ?? true,
   };
 
   const restaurantInfoModalProps = {
@@ -265,6 +278,12 @@ export default function RestaurantDetailsScreen() {
 
   // Function to handle clicking on a restaurant item
   const handleRestaurantClick = (food: IFood) => {
+
+    if (!restaurantInfo.isAvailable) {
+      // Store the action we want to perform after cart confirmation
+      handleUpdateIsModalOpen(true, food?._id);
+      return;
+    }
     // Check if there's a different restaurant in the cart
     if (cartRestaurant && id !== cartRestaurant) {
       // Store the action we want to perform after cart confirmation
@@ -573,7 +592,7 @@ export default function RestaurantDetailsScreen() {
         className="lg:top-[60px] top-[80px]"
         style={{
           position: "sticky",
-         
+
           zIndex: 50,
           backgroundColor: "white",
           boxShadow: "0 1px 1px rgba(0, 0, 0, 0.1)",
@@ -718,6 +737,14 @@ export default function RestaurantDetailsScreen() {
                           <FontAwesomeIcon icon={faPlus} color="white" />
                         </button>
                       </div>
+
+                      {/* create a modal that will be show that this restaurant is closed do want to see menu or want to close if click on the see menu then will move to the next page other wise modal will be closed */}
+                      <CustomDialog className="max-w-[300px]" visible={isModalOpen.value && isModalOpen.id === meal?._id?.toString()} onHide={() => handleUpdateIsModalOpen(false, meal?._id?.toString())}>
+                        <div className="text-center pb-10 pt-10">
+                          <p className="text-lg font-bold pb-3">Restaurant is closed</p>
+                          <p className="text-sm">You can&apos;t order this food item right now.<br></br> Please try again later.</p>
+                        </div>
+                      </CustomDialog>
                     </div>
                   ))}
                 </div>
@@ -751,6 +778,9 @@ export default function RestaurantDetailsScreen() {
           />
         )}
       </Dialog>
+
+
+
     </>
   );
 }

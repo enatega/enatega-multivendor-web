@@ -31,7 +31,7 @@ const FavouriteProducts = () => {
   // Handle See All Click
   const handleSeeAllClick = useDebounceFunction(() => {
     // use route state to handle fetching all favourites Restaurants on that page
-    router.push("/restaurants?q=favourites");
+    router.push("/see-all/favourites");
   }, 500);
 
   // use debouncefunction if user click multiple times at once it will call function only 1 time

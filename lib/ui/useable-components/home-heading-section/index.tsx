@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 // icons
 import { faFilter } from "@fortawesome/free-solid-svg-icons";
@@ -45,8 +47,6 @@ function HomeHeadingSection({
           </div>
         )}
       </div>
-
-
     </div>
   );
 }
