@@ -189,7 +189,7 @@ export default function FoodItemDetail(props: IFoodItemDetalComponentProps) {
   const calculateTotalPrice = () => {
     if (!selectedVariation) return 0;
 
-    let totalPrice = selectedVariation.price * quantity;
+    let totalPrice = selectedVariation.price ;
 
     // Add prices for selected addons
     Object.entries(selectedAddonOptions).forEach(([, selected]) => {
@@ -205,6 +205,8 @@ export default function FoodItemDetail(props: IFoodItemDetalComponentProps) {
         totalPrice += selected.price;
       }
     });
+
+    totalPrice = totalPrice * quantity;
 
     return totalPrice.toFixed(2);
   };

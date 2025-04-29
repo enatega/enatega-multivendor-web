@@ -201,7 +201,7 @@ const ReviewsModal = ({
                     className=" border p-4 rounded-md shadow-sm"
                   >
                     <h3 className="text-gray-700 font-medium text-lg md:text-2xl mb-1">
-                      {review?.order?.user?.name}
+                      {review?.order?.user?.name || "Anonymous User"}
                     </h3>
                     <div className="flex items-center mb-2">
                       {renderStars(review?.rating)}
