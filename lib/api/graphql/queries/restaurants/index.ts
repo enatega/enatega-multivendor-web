@@ -108,6 +108,7 @@ export const GET_RESTAURANT_BY_ID_SLUG = gql`
       _id
       orderId
       orderPrefix
+      isActive
       name
       image
       slug

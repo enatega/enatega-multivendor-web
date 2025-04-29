@@ -1,5 +1,5 @@
 // core
-import React from "react";
+import React, { useCallback, useState } from "react";
 
 
 // hooks
@@ -14,6 +14,14 @@ import SliderSkeleton from "@/lib/ui/useable-components/custom-skeletons/slider.
 
 function RestaurantsMainSection() {
   const {  error, loading, restaurantsData } = useNearByRestaurantsPreview();
+  const [isModalOpen, setIsModalOpen] = useState({value: false, id: ""});
+
+  const handleUpdateIsModalOpen = useCallback((value: boolean, id: string) => {
+    if (isModalOpen.value !== value || isModalOpen.id !== id) {
+      setIsModalOpen({ value, id });
+    }
+  }, [isModalOpen]);
+  
   if (error) {
     return;
   }
@@ -34,7 +42,7 @@ function RestaurantsMainSection() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 mt-4 items-center">
         {restaurantsData?.map((item) => {
           return (
-              <Card key={item._id} item={item} />
+              <Card key={item._id} item={item} isModalOpen={isModalOpen} handleUpdateIsModalOpen={handleUpdateIsModalOpen} />
           );
         })}
       </div>
