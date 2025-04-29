@@ -361,7 +361,7 @@ export default function StoreDetailsScreen() {
       setSelectedSubCategory(id);
     }
     const element = document.getElementById(id);
-    const container = document.querySelector(".scrollable-container"); // Adjust selector
+    const container = document.body; // Adjust selector
 
     if (element && container) {
       const headerOffset = offset;
@@ -496,7 +496,7 @@ export default function StoreDetailsScreen() {
   // Effect to update selected category during scrolling
   useEffect(() => {
     const handleScrollUpdate = () => {
-      const container = document.querySelector(".scrollable-container");
+      const container = document.body;
       if (!container) return;
 
       let selected = "";
@@ -516,7 +516,7 @@ export default function StoreDetailsScreen() {
       }
     };
 
-    const container = document.querySelector(".scrollable-container");
+    const container = document.body;
     container?.addEventListener("scroll", handleScrollUpdate);
 
     return () => {

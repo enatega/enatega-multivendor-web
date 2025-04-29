@@ -329,7 +329,7 @@ export default function RestaurantDetailsScreen() {
     setSelectedCategory(id);
     selectedCategoryRef.current = id;
     const element = document.getElementById(id);
-    const container = document.querySelector(".scrollable-container");
+    const container = document.body;
 
     if (element && container) {
       const headerOffset = 120;
@@ -407,7 +407,7 @@ export default function RestaurantDetailsScreen() {
   // Highlight categories on scroll observer
   useEffect(() => {
     const handleScrollUpdate = () => {
-      const container = document.querySelector(".scrollable-container");
+      const container = document.body;
       if (!container) return;
 
       let selected = "";
@@ -427,7 +427,7 @@ export default function RestaurantDetailsScreen() {
       }
     };
 
-    const container = document.querySelector(".scrollable-container");
+    const container = document.body;
     container?.addEventListener("scroll", handleScrollUpdate);
 
     return () => {
