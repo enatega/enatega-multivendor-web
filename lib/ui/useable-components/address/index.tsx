@@ -314,11 +314,11 @@ export default function UserAddressComponent(
 
   // API Handlers
   function onCompleted({ createAddress, editAddress }) {
-    const address_response: IUserAddress = (
+   const address_response: IUserAddress = (
       createAddress || editAddress
     )?.addresses.find((a: IUserAddress) => a.selected);
 
-    setUserAddress({
+  setUserAddress({
       _id: address_response?._id,
       label: selectedLocationType,
       deliveryAddress: address_response.deliveryAddress,
@@ -330,7 +330,28 @@ export default function UserAddressComponent(
         ],
       },
     });
+    setModifyingId(address_response?._id);
+    changeUserSelectedAddress({
+      variables: { id: address_response?._id  },
+      onCompleted: () => {
+        const new_address = {
+          _id: address_response?._id,
+          label: selectedLocationType,
+          deliveryAddress: address_response.deliveryAddress,
 
+          location: {
+            coordinates: [
+              +(address_response.location?.coordinates[0] || "0"),
+              +(address_response.location?.coordinates[1] || "0"),
+            ] as [number, number],
+          },
+        };
+        setUserAddress(new_address);
+        onUseLocalStorage("delete", USER_CURRENT_LOCATION_LS_KEY);
+        setModifyingId("");
+        onHide();
+      },
+    });
     setIndex([0, 0]);
     onHide();
   }
@@ -443,7 +464,7 @@ export default function UserAddressComponent(
           <GoogleMap
             mapContainerStyle={{
               width: "100%",
-              height: "400px",
+              height: "35vh",
             }}
             center={{
               lat: Number(userAddress?.location?.coordinates[1]) || 0,

@@ -189,7 +189,7 @@ export default function FoodItemDetail(props: IFoodItemDetalComponentProps) {
   const calculateTotalPrice = () => {
     if (!selectedVariation) return 0;
 
-    let totalPrice = selectedVariation.price * quantity;
+    let totalPrice = selectedVariation.price ;
 
     // Add prices for selected addons
     Object.entries(selectedAddonOptions).forEach(([, selected]) => {
@@ -205,6 +205,8 @@ export default function FoodItemDetail(props: IFoodItemDetalComponentProps) {
         totalPrice += selected.price;
       }
     });
+
+    totalPrice = totalPrice * quantity;
 
     return totalPrice.toFixed(2);
   };
@@ -340,7 +342,7 @@ export default function FoodItemDetail(props: IFoodItemDetalComponentProps) {
 
           {/* Add to Order Button - Takes Remaining 80% */}
           <button
-            className={`${isFormValid() ? "bg-[#5AC12F]" : "bg-gray-300"} text-black px-4 py-2 text-[500] font-[14px] rounded-full flex items-center justify-between flex-[0.8]`}
+            className={`${isFormValid() ? "bg-[#5AC12F]" : "bg-gray-300"} text-black px-4 py-2 text-[500] font-[14px] rounded-full flex flex-col md:flex-row items-center justify-between flex-[0.8]`}
             onClick={handleAddToCart}
             disabled={!isFormValid()}
             type="button"

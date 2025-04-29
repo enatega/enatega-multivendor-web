@@ -340,9 +340,8 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                   {/* Clear Icon */}
                   {isSearchFocused && (
                     <div
-                      className="absolute top-1/2 right-3 transform -translate-y-1/2 bg-gray-100 rounded-full w-6 h-6 flex items-center justify-center cursor-pointer"
+                      className="absolute top-1/2 right-3 transform -translate-y-1/2 bg-gray-100 rounded-full w-6 h-6 items-center justify-center cursor-pointer hidden sm:flex"
                       onClick={() => {
-                        setIsSearchFocused(false);
                         setFilter("");
                       }}
                     >
@@ -476,7 +475,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
             </div>
 
             <div className="flex items-center justify-center">
-              <div className="w-full md:w-7/12 px-4">
+              <div className="w-full md:w-7/12 pr-5">
                 <AnimatePresence>
                   {isSearchFocused && (
                     <motion.div
