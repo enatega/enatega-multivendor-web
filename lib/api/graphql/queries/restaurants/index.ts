@@ -91,6 +91,9 @@ export const NEAR_BY_RESTAURANTS_PREVIEW = gql`
         distanceWithCurrentLocation @client
         freeDelivery @client
         acceptVouchers @client
+        deliveryInfo {
+          deliveryFee
+        }
         location {
           coordinates
         }

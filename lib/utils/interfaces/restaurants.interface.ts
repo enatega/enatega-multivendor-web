@@ -35,6 +35,13 @@ export interface IRestaurant {
   addons: IAddon[];
   zone: IZone;
   openingTimes: IOpeningTime[];
+  deliveryInfo: IDeliveryInfo;
+}
+
+export interface IDeliveryInfo {
+  deliveryFee: number;
+  deliveryTime: number;
+  minimumOrder: number;
 }
 
 export interface INearByRestaurantsPreviewData {
