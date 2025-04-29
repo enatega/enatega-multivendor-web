@@ -1,3 +1,5 @@
+"use client";
+
 // core
 import React from "react";
 // card component
@@ -61,17 +63,16 @@ function MainSection({
         )}
       </div>
 
-      {data?.length > 0 ? (
+      {data?.length > 0 ?
         <div
           className={`grid grid-cols-1 gap-2 mt-4 items-center ${isSearchFocused ? "sm:grid-cols-2 lg:grid-cols-3" : "md:grid-cols-2 lg:grid-cols-4"}`}
         >
           {data?.map((item) => <Card key={item._id} item={item} />)}
         </div>
-      ) : (
-        <div className="text-center py-6 flex flex-col items-center justify-center">
+      : <div className="text-center py-6 flex flex-col items-center justify-center">
           <EmptySearch />
         </div>
-      )}
+      }
     </div>
   );
 }

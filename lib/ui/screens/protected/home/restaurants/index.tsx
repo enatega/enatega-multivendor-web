@@ -1,3 +1,5 @@
+"use client";
+
 import useNearByRestaurantsPreview from "@/lib/hooks/useNearByRestaurantsPreview";
 import useGetCuisines from "@/lib/hooks/useGetCuisines";
 import GenericListingComponent from "@/lib/ui/screen-components/protected/home/GenericListingComponent";
