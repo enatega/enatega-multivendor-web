@@ -1,3 +1,5 @@
+"use client";
+
 // ui/screens/GenericListingComponent.tsx
 import { useEffect, useState } from "react";
 import HomeHeadingSection from "@/lib/ui/useable-components/home-heading-section";
@@ -18,7 +20,7 @@ interface GenericListingProps {
   error: boolean;
 }
 
-export default function   GenericListingComponent({
+export default function GenericListingComponent({
   headingTitle,
   cuisineSectionTitle,
   mainSectionTitle,

@@ -1,3 +1,5 @@
+"use client";
+
 // cuisines slider card
 import CuisinesSliderCard from "@/lib/ui/useable-components/cuisines-slider-card";
 // hook
@@ -7,9 +9,12 @@ import CuisinesSliderSkeleton from "@/lib/ui/useable-components/custom-skeletons
 // interface
 import { ICuisinesData, ICuisinesSectionProps } from "@/lib/utils/interfaces";
 
-function CuisinesSection({ title, data, loading, error }: ICuisinesSectionProps) {
-
-  
+function CuisinesSection({
+  title,
+  data,
+  loading,
+  error,
+}: ICuisinesSectionProps) {
   if (loading) {
     return <CuisinesSliderSkeleton />;
   }
@@ -17,7 +22,7 @@ function CuisinesSection({ title, data, loading, error }: ICuisinesSectionProps)
   if (error) {
     return;
   }
-  
+
   return (
     <CuisinesSliderCard<ICuisinesData>
       title={title}
