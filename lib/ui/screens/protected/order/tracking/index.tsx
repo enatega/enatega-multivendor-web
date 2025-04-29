@@ -19,6 +19,7 @@ import { IReview } from "@/lib/utils/interfaces";
 import useToast from "@/lib/hooks/useToast";
 import { RatingModal } from "@/lib/ui/screen-components/protected/profile";
 import { onUseLocalStorage } from "@/lib/utils/methods/local-storage";
+import ChatRider from "@/lib/ui/screen-components/protected/order-tracking/components/ChatRider";
 
 interface IOrderTrackingScreenProps {
   orderId: string;
@@ -46,6 +47,8 @@ export default function OrderTrackingScreen({
     isOrderTrackingDetailsLoading,
     subscriptionData,
   } = useTracking({ orderId: orderId });
+
+ 
 
   const { showToast } = useToast();
 
@@ -189,6 +192,7 @@ export default function OrderTrackingScreen({
     onInitDirectionCacheSet();
   }, [store_user_location_cache_key]);
 
+console.log("data ",mergedOrderDetails)
   return (
     <>
       <RatingModal
@@ -226,6 +230,9 @@ export default function OrderTrackingScreen({
                 {/* Help Card - positioned on the left */}
                 <div className="md:ml-0 w-full md:w-auto md:flex-none">
                   <TrackingHelpCard />
+                  <ChatRider orderId={orderId}  customerId={profile?.profile._id}/>
+
+                    
                 </div>
               </div>
 

@@ -806,3 +806,39 @@ Discovery Caurousal
   transform-style: preserve-3d;
   text-shadow: 6px 6px 10px rgba(0, 0, 0, 0.5);
 }
+
+.react-chat-elements-message-box .message-box-tail {
+  display: none !important;
+}
+
+.rce-mbox-right-notch , .rce-mbox-left-notch{
+  display: none;
+}
+
+.p-dialog-content{
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.message-left {
+  text-align: left;
+}
+
+.message-right {
+  text-align: right;
+}
+
+ .message-left .rce-mbox-text {
+  background-color: #59c12f; /* Light green for current user */
+  border-radius: 3px;
+  padding: 5px;
+  color:white;
+  width:fit-content
+}
+
+.message-right {
+  /* background-color: #f1f1f1;; Light green for current user */
+  border-radius: 10px;
+  padding: 4px;  
+
+}

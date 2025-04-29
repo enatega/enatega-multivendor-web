@@ -263,7 +263,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
   return (
     <>
       <nav
-        className={`w-full shadow-sm z-50 bg-white layout-top-bar ${isSearchFocused ? "sticky top-0" : ""}`}
+        className={`w-screen shadow-sm z-50 bg-white layout-top-bar ${isSearchFocused ? "sticky top-0" : ""}`}
       >
         <div className={`w-full`}>
           <PaddingContainer>
