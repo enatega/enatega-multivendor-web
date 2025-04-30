@@ -618,6 +618,11 @@ export default function OrderCheckoutScreen() {
     []
   );
 
+ // Filter PAYMENT_METHOD_LIST based on stripeDetailsSubmitted
+  const filteredPaymentMethods = !restaurantData?.restaurant?.stripeDetailsSubmitted
+    ? PAYMENT_METHOD_LIST.filter(method => method.value === 'COD')
+    : PAYMENT_METHOD_LIST;
+
   // Use Effect
   useEffect(() => {
     onInit();
@@ -883,7 +888,7 @@ export default function OrderCheckoutScreen() {
                 <h2 className="font-semibold text-gray-900 mb-2 text-base sm:text-lg md:text-[16px] lg:text-[18px]">
                   Payment details
                 </h2>
-                {PAYMENT_METHOD_LIST.map((paymentMethodItem, methodIndex) => {
+                {filteredPaymentMethods.map((paymentMethodItem, methodIndex) => {
                   return (
                     <div
                       key={`${paymentMethodItem.value}-${methodIndex}`}
