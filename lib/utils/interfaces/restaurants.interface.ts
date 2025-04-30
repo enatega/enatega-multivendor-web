@@ -86,6 +86,7 @@ export interface IFood {
   subCategory: string;
   restaurant: string;
   variations: IVariation[];
+  isOutOfStock?: boolean;
 }
 
 export interface ISelectedVariation {

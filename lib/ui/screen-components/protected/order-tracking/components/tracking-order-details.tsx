@@ -57,7 +57,14 @@ function TrackingOrderDetails({
   return (
     <div className="mt-8 space-y-6 flex-1 max-w-2xl md:w-auto w-full md:px-0 px-4">
       <div>
+         <div className="flex flex-col mb-2 md:mb-4">
+        <h1 className="text-lg font-semibold">{orderTrackingDetails?.restaurant?.name}</h1>
+       <div className="flex items-center gap-2">
+         <h1>Order # </h1><h1 className="text-blue-600">{orderTrackingDetails?.orderId}</h1>
+       </div>
+        </div>
         <h3 className="text-lg font-semibold mb-2">Order Details</h3>
+       
 
         {/* Display each food item under Order Details */}
         {orderTrackingDetails.items?.map((item, index) => (

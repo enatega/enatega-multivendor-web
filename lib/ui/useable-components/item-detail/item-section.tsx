@@ -22,7 +22,12 @@ import { SectionProps, Option } from "@/lib/utils/interfaces";
  */
 
 export const ItemDetailSection = <
-  T extends { _id: string; title?: string | undefined; price: number },
+  T extends {
+    _id: string;
+    title?: string | undefined;
+    price: number;
+    isOutOfStock?: boolean;
+  },
 >({
   title,
   options,
@@ -36,20 +41,26 @@ export const ItemDetailSection = <
   showTag = false,
 }: SectionProps<T>) => {
   const handleSelect = (option: T) => {
+    if (option.isOutOfStock) {
+      return;
+    }
     if (multiple) {
       onMultiSelect &&
         onMultiSelect((prevSelected) => {
           const exists = (prevSelected as T[]).some(
             (o) => o._id === option._id
           );
-          return exists ?
-              (prevSelected as T[]).filter((o) => o._id !== option._id)
+          return exists
+            ? (prevSelected as T[]).filter((o) => o._id !== option._id)
             : [...(prevSelected as T[]), option];
         });
     } else {
       onSingleSelect && onSingleSelect(option);
     }
   };
+  const filteredMultiSelected = multiSelected
+    ? (multiSelected as T[]).filter((item) => !item.isOutOfStock)
+    : [];
 
   return (
     <div className="mb-4">
@@ -57,7 +68,7 @@ export const ItemDetailSection = <
         <h3 className="font-inter font-bold text-[14px] md:text-[16px] lg:text-[18px] leading-[20px] md:leading-[22px]">
           {title}
         </h3>
-        
+
         {/* Required/Optional Tag - Only shown when showTag is true */}
         {showTag && requiredTag && (
           <span className="text-xs px-2 py-1 rounded-full bg-gray-200 text-gray-800">
@@ -76,16 +87,22 @@ export const ItemDetailSection = <
               type={multiple ? "checkbox" : "radio"}
               name={name}
               checked={
-                multiple && multiSelected ?
-                  multiSelected.some((o) => o._id === option._id)
-                : (singleSelected as Option | null)?._id === option._id
+                multiple
+                  ? filteredMultiSelected.some((o) => o._id === option._id)
+                  : singleSelected && !option.isOutOfStock
+                    ? (singleSelected as Option | null)?._id === option._id
+                    : false
               }
               onChange={() => handleSelect(option)}
+              disabled={option.isOutOfStock}
             />
 
             {/* Label & Price */}
             <div className="flex justify-between items-center w-full">
-              <span className="text-sm text-gray-900">{option.title}</span>
+              <span className="text-sm text-gray-900">
+                {option.title}{" "}
+                {option.isOutOfStock ?<span className="text-red-500">(Out of stock)</span> : ""}{" "}
+              </span>
               <span className="text-sm text-gray-700">${option.price}</span>
             </div>
           </label>
