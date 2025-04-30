@@ -5,9 +5,6 @@ import Script from "next/script";
 
 export const metadata = {
   title: "Enatega Multivendor",
-  icons: {
-    icon: "/favicon.ico",
-  },
 };
 
 
@@ -25,6 +22,7 @@ export default async function RootLayout({
   return (
     <html lang={locale}>
       <head>
+        <link rel="icon" type="image/png" href="/favsicon.png" />
         <Script
           src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"
           strategy="beforeInteractive"

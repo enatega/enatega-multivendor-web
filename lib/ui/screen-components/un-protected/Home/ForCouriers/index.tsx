@@ -49,6 +49,7 @@ const Couriers:React.FC = () => {
         heading={"Become a Enatega rider"}
         buttonText={"For riders"}
         backColor={"#eaf7fc"}
+        link={"/rider"}
       />
     </div>
   );
