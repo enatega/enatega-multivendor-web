@@ -102,7 +102,7 @@ const CuisinesSliderCard: CuisinesSliderCardComponent = ({
           </span>
           <div className="flex items-center justify-end gap-x-2 mb-2">
             {/* See All Button */}
-            {pathname !== "/store" && pathname !== "/restaurants" && cuisines==false && (
+            {pathname !== "/store" && pathname !== "/restaurants" && cuisines == false && (
               <CustomButton
                 label="See all"
                 onClick={onSeeAllClick}
@@ -127,20 +127,28 @@ const CuisinesSliderCard: CuisinesSliderCardComponent = ({
             </div>
           </div>
         </div>
-            <Carousel
-              value={data}
-              className="w-[100%] h-[100%]"
-              itemTemplate={(item) => (
-                  <SquareCard item={item} showLogo={showLogo} cuisines={cuisines} />
-              )}
-              numVisible={numVisible}
-              numScroll={1}
-              circular={true}
-              responsiveOptions={responsiveOptions}
-              showIndicators={false}
-              showNavigators={false}
-              page={page}
-            />
+        <div
+          className=""
+          style={{
+            width: data.length < 4 ? "max-content" : "100%", // limit width if few items
+            minWidth: "300px",
+          }}
+        >
+          <Carousel
+            value={data}
+            className="w-[100%] h-[100%] "
+            itemTemplate={(item) => (
+              <SquareCard item={item} showLogo={showLogo} cuisines={cuisines} />
+            )}
+            numVisible={numVisible}
+            numScroll={1}
+            circular={true}
+            responsiveOptions={responsiveOptions}
+            showIndicators={false}
+            showNavigators={false}
+            page={page}
+          />
+        </div>
       </div>
     )
   );
