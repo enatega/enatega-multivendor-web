@@ -20,6 +20,7 @@ function TopRatedVendors() {
       showLogo={true}
       cuisines={false}
     />
+    
   );
 }
 export default TopRatedVendors;

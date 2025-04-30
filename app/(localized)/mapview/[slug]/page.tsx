@@ -35,7 +35,7 @@ const MapView: FC<MapViewPageProps> = ({ params }) => {
           data
           ?
             <div className="flex mt-1 relative min-h-screen max-h-screen md:flex-row flex-col-reverse">
-              <div className="md:relative absolute bottom-8 z-[99999] md:flex-[0.35] xl:flex-[0.25] overflow-y-auto md:w-auto w-full">
+              <div className="md:relative absolute bottom-0 z-[99] md:flex-[0.35] xl:flex-[0.25] overflow-y-auto md:w-auto w-full">
                 <SideList 
                 data={data} 
                 slug={slug} 

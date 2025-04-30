@@ -19,8 +19,10 @@ import { useSearchUI } from "@/lib/context/search/search.context";
 
 // Hooks
 import { useAuth } from "@/lib/context/auth/auth.context";
+import { usePathname } from "next/navigation";
 
 const AppLayout = ({ children }: IProvider) => {
+  const pathname = usePathname();
   const [isScrolled , setIsScrolled] = useState(false);
   // Hooks
   const { isAuthModalVisible, setIsAuthModalVisible, setActivePanel } = useAuth();
@@ -37,6 +39,11 @@ const AppLayout = ({ children }: IProvider) => {
       return !prev;
     });
   };
+
+  useEffect(() => {
+    setIsScrolled(false);
+    window.document.body.scrollTo({top:0, behavior:"smooth"})
+  }, [pathname]);
 
   useEffect(() => {
     const handleScroll = () => {
