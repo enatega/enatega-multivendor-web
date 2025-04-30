@@ -215,7 +215,7 @@ export default function Cart({ onClose }: CartProps) {
         <div className="p-4 bg-white">
           <div className="bg-gray-50 rounded-lg p-3">
             <h2 className="font-inter font-semibold text-base text-gray-900 mb-2">
-              Add comment for venue
+              Add comment for Restautrant
             </h2>
             <textarea 
               id="instructions"
