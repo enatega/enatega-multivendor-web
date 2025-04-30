@@ -101,7 +101,7 @@ export const ItemDetailSection = <
             <div className="flex justify-between items-center w-full">
               <span className="text-sm text-gray-900">
                 {option.title}{" "}
-                {option.isOutOfStock ? "(Out of Stock)" : ""}{" "}
+                {option.isOutOfStock ?<span className="text-red-500">(Out of stock)</span> : ""}{" "}
               </span>
               <span className="text-sm text-gray-700">${option.price}</span>
             </div>
