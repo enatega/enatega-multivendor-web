@@ -42,7 +42,7 @@ const AppLayout = ({ children }: IProvider) => {
 
   useEffect(() => {
     setIsScrolled(false);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.document.body.scrollTo({top:0, behavior:"smooth"})
   }, [pathname]);
 
   useEffect(() => {
