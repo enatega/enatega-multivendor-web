@@ -20,6 +20,7 @@ import useToast from "@/lib/hooks/useToast";
 import { RatingModal } from "@/lib/ui/screen-components/protected/profile";
 import { onUseLocalStorage } from "@/lib/utils/methods/local-storage";
 import ReactConfetti from "react-confetti";
+import ChatRider from "@/lib/ui/screen-components/protected/order-tracking/components/ChatRider";
 
 interface IOrderTrackingScreenProps {
   orderId: string;
@@ -31,6 +32,8 @@ export default function OrderTrackingScreen({
   //states
   const [showRatingModal, setShowRatingModal] = useState<boolean>(false);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [showChat,setShowChat] = useState(false)
+
   //Queries and Mutations
   const {
     isLoaded,
@@ -48,6 +51,8 @@ export default function OrderTrackingScreen({
     isOrderTrackingDetailsLoading,
     subscriptionData,
   } = useTracking({ orderId: orderId });
+
+ 
 
   const { showToast } = useToast();
 
@@ -68,6 +73,7 @@ export default function OrderTrackingScreen({
       duration: 3000,
     });
 
+    
     // Add a small delay before navigation
     // Use window.location for a hard redirect
     setTimeout(() => {
@@ -171,6 +177,11 @@ export default function OrderTrackingScreen({
 
   // useEffect to handle order status changes
   useEffect(() => {
+     if(mergedOrderDetails?.orderStatus == 'PICKED' )
+     {
+       setShowChat(true)
+     }
+
     if (mergedOrderDetails?.orderStatus == "DELIVERED") {
       // add timer
       const timer = setTimeout(() => {
@@ -198,6 +209,7 @@ export default function OrderTrackingScreen({
     onInitDirectionCacheSet();
   }, [store_user_location_cache_key]);
 
+console.log("data ",mergedOrderDetails)
   return (
     <>
        {showConfetti && (
@@ -261,6 +273,10 @@ export default function OrderTrackingScreen({
                 {/* Help Card - positioned on the left */}
                 <div className="md:ml-0 w-full md:w-auto md:flex-none">
                   <TrackingHelpCard />
+                  {showChat   &&
+                  <ChatRider orderId={orderId}  customerId={profile?.profile._id}/>
+
+                  }
                 </div>
               </div>
 

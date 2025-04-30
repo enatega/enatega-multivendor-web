@@ -10,12 +10,35 @@ import TextFlyingAnimation from "@/lib/ui/useable-components/FlyingText";
 // Hooks
 import useLocation from "@/lib/hooks/useLocation";
 import useSetUserCurrentLocation from "@/lib/hooks/useSetUserCurrentLocation";
+import LoginInForSavedAddresses from "@/lib/ui/useable-components/LoginForSavedAddresses";
+
+// imports related to auth module
+import AuthModal from "../../authentication";
+import { useAuth } from "@/lib/context/auth/auth.context";
 
 const Start: React.FC = () => {
   // Hooks
   const router = useRouter();
   const { getCurrentLocation } = useLocation();
   const { onSetUserLocation } = useSetUserCurrentLocation();
+  const { isAuthModalVisible, setIsAuthModalVisible, setActivePanel } = useAuth();
+
+
+  const handleModalToggle = () => {
+    const token = localStorage.getItem("token");
+    const userId = localStorage.getItem("userId");
+    if (!token || !userId) {
+      setIsAuthModalVisible((prev) => {
+        if (prev) {
+          setActivePanel(0);
+        }
+        return !prev;
+      });
+    } else {
+      router.push("/profile/addresses") 
+    }
+    
+  };
 
   return (
     <div className="h-[100vh] w-full bg-cover bg-center flex items-center justify-center bg-[#94e469] relative">
@@ -41,7 +64,7 @@ const Start: React.FC = () => {
               Current Location
             </button>
           </div>
-          <button className="underline">Login for saved address</button>
+          <LoginInForSavedAddresses handleModalToggle={handleModalToggle}/>
         </div>
       </div>
 
@@ -55,6 +78,11 @@ const Start: React.FC = () => {
           fill="white"
         />
       </svg>
+
+      <AuthModal
+        handleModalToggle={handleModalToggle}
+        isAuthModalVisible={isAuthModalVisible}
+      />
     </div>
   );
 };

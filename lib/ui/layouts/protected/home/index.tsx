@@ -49,7 +49,7 @@ export default function HomeLayout({
   }, []);
 
   return (
-    <div className="w-screen h-full flex flex-col">
+    <div className="w-screen h-full flex flex-col ">
       {/* click-away handler */}
       {isSearchFocused && (
         <div

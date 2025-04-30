@@ -260,10 +260,25 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
     );
   };
 
+  function fittedAddress(address:String | undefined)
+  {
+    if(address)
+    {
+      let adr = address.slice(0,20)
+      if(address.length>20)
+      {
+        adr = adr + '...'
+        
+      }
+      return adr
+    }
+    return ""
+  }
+
   return (
     <>
       <nav
-        className={`w-full shadow-sm z-50 bg-white layout-top-bar ${isSearchFocused ? "sticky top-0" : ""}`}
+        className={`w-screen shadow-sm z-50 bg-white layout-top-bar ${isSearchFocused ? "sticky top-0" : ""}`}
       >
         <div className={`w-full`}>
           <PaddingContainer>
@@ -291,7 +306,8 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
 
                   {/* Show on medium and up */}
                   <span className="hidden md:inline text-xs sm:text-sm md:text-base text-[#94e469] font-inter font-normal leading-6 tracking-normal mr-2 truncate">
-                    {userAddress?.deliveryAddress}
+                    {/* {userAddress?.deliveryAddress} */}
+                    {fittedAddress(userAddress?.deliveryAddress)}
                   </span>
 
                   <div className="hidden sm:flex items-center">
