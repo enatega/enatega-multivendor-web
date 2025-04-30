@@ -17,13 +17,13 @@ interface CartProps {
 
 export default function Cart({ onClose }: CartProps) {
   // Access user context for cart functionality
-  const { 
-    cart, 
-    cartCount, 
-    updateItemQuantity, 
-    calculateSubtotal, 
+  const {
+    cart,
+    cartCount,
+    updateItemQuantity,
+    calculateSubtotal,
     restaurant: restaurantId,
-    addItem 
+    addItem
   } = useUser();
   const { CURRENCY_SYMBOL } = useConfig();
   const [instructions, setInstructions] = useState(localStorage.getItem('orderInstructions') || '');
@@ -39,9 +39,9 @@ export default function Cart({ onClose }: CartProps) {
 
   // Fetch related items
   const { data: relatedItemsData } = useQuery(RELATED_ITEMS, {
-    variables: { 
-      itemId: firstCartItemId || '', 
-      restaurantId: restaurantId || '' 
+    variables: {
+      itemId: firstCartItemId || '',
+      restaurantId: restaurantId || ''
     },
     skip: !firstCartItemId || !restaurantId
   });
@@ -58,9 +58,9 @@ export default function Cart({ onClose }: CartProps) {
       // Assuming first variation for simplicity
       const variation = food.variations[0];
       addItem(
-        food._id, 
-        variation._id, 
-        restaurantId || '', 
+        food._id,
+        variation._id,
+        restaurantId || '',
         1 // default quantity
       );
     }
@@ -78,7 +78,14 @@ export default function Cart({ onClose }: CartProps) {
             Add items to your cart to continue
           </p>
           <button
-            onClick={onClose}
+            onClick={async () => {
+              if (onClose) await onClose();
+              // Add 300ms delay (for modal animation or smooth UX)
+              await new Promise((resolve) => setTimeout(resolve, 300));
+
+              router.push("/discovery", { scroll: true });
+            }}
+
             className="bg-[#5AC12F] text-black px-6 py-2 rounded-full font-medium"
             type="button"
           >
@@ -90,7 +97,7 @@ export default function Cart({ onClose }: CartProps) {
   }
 
   // Slice related items to max 3
-  const slicedRelatedItems = 
+  const slicedRelatedItems =
     (relatedItemsData?.relatedItems || []).slice(0, 3);
 
   return (
@@ -217,12 +224,12 @@ export default function Cart({ onClose }: CartProps) {
             <h2 className="font-inter font-semibold text-base text-gray-900 mb-2">
               Add comment for venue
             </h2>
-            <textarea 
+            <textarea
               id="instructions"
               className="w-full h-20 p-2 bg-white border border-gray-300 rounded-md resize-none focus:border-[#0EA5E9] focus:outline-none text-sm"
               placeholder="Special requests, allergies, dietary restrictions..."
-              onChange={({ target : { value } }) => {
-                if(value?.length > 500) return;
+              onChange={({ target: { value } }) => {
+                if (value?.length > 500) return;
                 localStorage.setItem('orderInstructions', value)
                 setInstructions(value)
               }}
@@ -230,7 +237,7 @@ export default function Cart({ onClose }: CartProps) {
             />
             <div className='flex items-end justify-between mt-2'>
               <span className='text-red-500 text-xs'>
-                { 
+                {
                   instructions?.length >= 500 && (
                     'Maximum limit reached'
                   )
