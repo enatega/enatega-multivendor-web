@@ -210,6 +210,8 @@ export default function FoodItemDetail(props: IFoodItemDetalComponentProps) {
 
     return totalPrice.toFixed(2);
   };
+
+  // useeffects
   useEffect(() => {
   if (foodItem?.variations && foodItem.variations.length > 0) {
     // Find the first in-stock variation
