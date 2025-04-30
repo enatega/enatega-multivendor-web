@@ -26,7 +26,7 @@ const SquareCard: React.FC<ICuisinesCardProps> = ({
   };
   return (
     <div
-      className="rounded-md shadow-md m-2 mb-6 cursor-pointer hover:scale-102 hover:opacity-95 hover:shadow-lg transition-transform duration-500 max-h-[272px] w-[96%] ml-[2%] my-[4%]"
+      className="rounded-md max-w-prose shadow-md m-2 mb-6 cursor-pointer hover:scale-102 hover:opacity-95 hover:shadow-lg transition-transform duration-500 max-h-[272px] w-[96%] ml-[2%] my-[4%]"
       onClick={onClickHandler}
     >
       {/* Image Container */}
