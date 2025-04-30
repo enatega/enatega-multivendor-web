@@ -61,7 +61,7 @@ const AppLayout = ({ children }: IProvider) => {
       <div className={`layout-main-container ${isSearchFocused && 'blur-md overflow-hidden h-screen'}`}>
         <div className="layout-main w-full min-h-screen">{children}</div>
       </div>
-      <div>
+      <div className="pb-[45px] md:pb-0 bg-[#141414]">
         <AppFooter />
       </div>
       <AuthModal
