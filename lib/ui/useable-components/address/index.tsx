@@ -61,6 +61,7 @@ import {
 } from "@/lib/api/graphql";
 import { onUseLocalStorage } from "@/lib/utils/methods/local-storage";
 import { USER_CURRENT_LOCATION_LS_KEY } from "@/lib/utils/constants";
+import AppartmentSvg from "@/lib/utils/assets/svg/apartment";
 
 const variants = {
   enter: (direction: number) => ({
@@ -404,13 +405,43 @@ export default function UserAddressComponent(
             >
               <div className="w-full flex items-center gap-x-2">
                 <div className="p-2 bg-gray-50 rounded-full">
-                  <OfficeSvg
+                  {
+                    address?.label === "Office" && <OfficeSvg
                     color={
                       address.selected && !hasCurrentLocation ?
                         "#0EA5E9"
                       : undefined
                     }
                   />
+                  }
+                  {
+                    address?.label === "House" && <HomeSvg
+                     height={18}
+                    color={
+                      address.selected && !hasCurrentLocation ?
+                        "#0EA5E9"
+                      : "black"
+                    }
+                  />
+                  }
+                   {
+                    address?.label === "Apartment" && <AppartmentSvg
+                    color={
+                      address.selected && !hasCurrentLocation ?
+                        "#0EA5E9"
+                      : undefined
+                    }
+                  />
+                  }
+                   {
+                    address?.label === "Other" && <OtherSvg
+                    color={
+                      address.selected && !hasCurrentLocation ?
+                        "#0EA5E9"
+                      : undefined
+                    }
+                  />
+                  }
                 </div>
                 <div className="w-full flex flex-col gap-y-[2px]">
                   <span
@@ -861,7 +892,7 @@ export default function UserAddressComponent(
         setIndex([0, 0]);
         onHide();
       }}
-      className={`w-[90%] lg:w-1/3 bg-white m-4`}
+      className={`w-[90%] lg:w-1/3 bg-white m-4 `}
       header={
         index !== 0 ?
           <div
@@ -883,7 +914,7 @@ export default function UserAddressComponent(
           animate="center"
           exit="exit"
           transition={{ duration: 0.2 }}
-          className="w-full relative flex justify-between" // changed from absolute to relative
+          className="w-full relative flex justify-between px-4" // changed from absolute to relative
         >
           {COMPONENTS_LIST[index]}
         </motion.div>
