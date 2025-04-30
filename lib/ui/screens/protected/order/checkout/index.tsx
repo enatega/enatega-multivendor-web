@@ -1080,11 +1080,11 @@ export default function OrderCheckoutScreen() {
                 </div>
               )}
 
-                  {/* <div className="text-[#0EA5E9] mb-1 text-left font-inter text-xs lg:text-[12px]">
+                  <div className="text-[#0EA5E9] mb-1 text-left font-inter text-xs lg:text-[12px]">
                     Choose an offer (1 available)
-                  </div> */}
+                  </div>
 
-                  {/* <Divider /> */}
+                  <Divider />
 
               <div className="flex justify-between font-semibold mb-4 text-xs lg:text-[14px]">
                 <span>Total sum</span>
@@ -1187,9 +1187,9 @@ export default function OrderCheckoutScreen() {
                 </div>
               )}
 
-                  {/* <div className="text-[#0EA5E9] mb-1 text-left font-inter text-xs lg:text-[12px]">
+                  <div className="text-[#0EA5E9] mb-1 text-left font-inter text-xs lg:text-[12px]">
                     Choose an offer (1 available)
-                  </div> */}
+                  </div>
 
               <Divider />
 
