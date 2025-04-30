@@ -122,6 +122,7 @@ export const GET_RESTAURANT_BY_ID_SLUG = gql`
       deliveryTime
       minimumOrder
       tax
+      stripeDetailsSubmitted
       reviewData {
         total
         ratings

@@ -28,6 +28,7 @@ export interface IVariation {
   price: number;
   discounted?: boolean;
   addons: string[];
+  isOutOfStock?: boolean;
 }
 
 export interface IAddonOption {

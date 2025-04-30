@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useUser from "@/lib/hooks/useUser";
 
 // Interface
@@ -210,6 +210,19 @@ export default function FoodItemDetail(props: IFoodItemDetalComponentProps) {
 
     return totalPrice.toFixed(2);
   };
+  useEffect(() => {
+  if (foodItem?.variations && foodItem.variations.length > 0) {
+    // Find the first in-stock variation
+    const inStockVariation = foodItem.variations.find(variation => !variation.isOutOfStock);
+    // If there's an in-stock variation, select it; otherwise, explicitly set to null
+    if (inStockVariation) {
+      setSelectedVariation(inStockVariation);
+    } else {
+      // If no in-stock variations, set to null to avoid selecting out-of-stock items
+      setSelectedVariation(null);
+    }
+  }
+}, [foodItem]);
 
   return (
     <div className="bg-white md:max-w-md w-100 w-full relative">
