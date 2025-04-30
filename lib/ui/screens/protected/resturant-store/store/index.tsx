@@ -383,6 +383,7 @@ export default function StoreDetailsScreen() {
 
   // Function to handle opening the food item modal
   const handleOpenFoodModal = (food: IFood) => {
+    if(food.isOutOfStock) return;
 
     if (!restaurantInfo.isAvailable) {
       handleUpdateIsModalOpen(true, food?._id);
@@ -817,10 +818,12 @@ export default function StoreDetailsScreen() {
                               >
                                 {/* Text Content */}
                                 <div className="flex-grow text-left md:text-left space-y-2">
+                                   <div className="flex flex-col lg:flex-row justify-between flex-wrap">
                                   <h3 className="text-gray-900 text-lg font-semibold font-inter">
                                     {meal.title}
                                   </h3>
-
+                                    {meal.isOutOfStock && <span className="text-red-500">(Out of stock)</span>}
+                                    </div>
                                   <p className="text-gray-500 text-sm">
                                     {meal.description}
                                   </p>
