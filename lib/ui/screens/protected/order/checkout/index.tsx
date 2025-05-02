@@ -128,8 +128,34 @@ export default function OrderCheckoutScreen() {
   };
   const store_user_location_cache_key = `${origin?.lat},${origin?.lng}_${destination?.lat},${destination?.lng}`;
 
-  // localStorage
-  const orderInstructions = localStorage.getItem("orderInstructions");
+  const [orderInstructions, setOrderInstructions] = useState<string | null>(null);
+
+  // Initialize on client
+  useEffect(() => {
+    const stored = localStorage.getItem("newOrderInstructions");
+    setOrderInstructions(stored);
+  }, []);
+
+  // Update on cross-tab localStorage changes
+  useEffect(() => {
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key === "newOrderInstructions") {
+        setOrderInstructions(event.newValue);
+      }
+    };
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
+
+  // Optional: For same-tab updates via a custom event
+  useEffect(() => {
+    const handleCustomUpdate = () => {
+      const updated = localStorage.getItem("newOrderInstructions");
+      setOrderInstructions(updated);
+    };
+    window.addEventListener("orderInstructionsUpdated", handleCustomUpdate);
+    return () => window.removeEventListener("orderInstructionsUpdated", handleCustomUpdate);
+  }, []);
 
   // API
   const [placeOrder, { loading: loadingOrderMutation }] = useMutation(
@@ -203,9 +229,9 @@ export default function OrderCheckoutScreen() {
         variation: food.variation._id,
         addons: food.addons
           ? food.addons.map(({ _id, options }) => ({
-              _id,
-              options: options.map(({ _id }) => _id),
-            }))
+            _id,
+            options: options.map(({ _id }) => _id),
+          }))
           : [],
         specialInstructions: food.specialInstructions,
       };
@@ -1012,15 +1038,15 @@ export default function OrderCheckoutScreen() {
               className="bg-white p-2  top-4 rounded-lg shadow-md border border-gray-300 expandable max-h-0 sm:max-h-full lg:block hidden"
               id="price-summary"
             >
-              <h2 className="text-sm lg:text-base font-semibold text-left flex justify-between">
+              <h2 className="text-sm lg:text-lg font-semibold text-left flex justify-between">
                 Prices in {CURRENCY}
                 <InfoSvg />
               </h2>
-              <p className="text-gray-400 mb-3 text-left leading-5 tracking-normal font-inter text-xs lg:text-[10px]">
+              <p className="text-gray-400 mb-3 text-left leading-5 tracking-normal font-inter text-xs lg:text-[16px]">
                 Inc. Taxes (if applicable)
               </p>
 
-              <div className="flex justify-between mb-1 text-xs lg:text-[12px]">
+              <div className="flex justify-between mb-1 text-xs lg:text-[14px]">
                 <span className="font-inter text-gray-900 leading-5">
                   Item subtotal
                 </span>
@@ -1031,7 +1057,7 @@ export default function OrderCheckoutScreen() {
               </div>
 
               {deliveryType === "Delivery" && (
-                <div className="flex justify-between mb-1 text-xs lg:text-[12px]">
+                <div className="flex justify-between mb-1 text-xs lg:text-[14px]">
                   <span className="font-inter text-gray-900 leading-5">
                     Delivery ({distance} km)
                   </span>
@@ -1043,7 +1069,7 @@ export default function OrderCheckoutScreen() {
               )}
 
               {selectedTip && (
-                <div className="flex justify-between mb-1 text-xs lg:text-[12px]">
+                <div className="flex justify-between mb-1 text-xs lg:text-[14px]">
                   <span className="font-inter text-gray-900 leading-5">
                     Tip
                   </span>
@@ -1056,7 +1082,7 @@ export default function OrderCheckoutScreen() {
                 </div>
               )}
 
-              <div className="flex justify-between mb-1 text-xs lg:text-[12px]">
+              <div className="flex justify-between mb-1 text-xs lg:text-[14px]">
                 <span className="font-inter text-gray-900 leading-5">Tax</span>
                 <span className="font-inter text-gray-900 leading-5">
                   {CURRENCY_SYMBOL}
@@ -1076,7 +1102,7 @@ export default function OrderCheckoutScreen() {
               <Divider />
 
               {isCouponApplied && (
-                <div className="flex justify-between mb-1 text-xs lg:text-[12px]">
+                <div className="flex justify-between mb-1 text-xs lg:text-[14px]">
                   <span className="font-inter text-gray-900 leading-5">
                     Discount
                   </span>
@@ -1095,13 +1121,13 @@ export default function OrderCheckoutScreen() {
 
                   <Divider /> */}
 
-              <div className="flex justify-between font-semibold mb-4 text-xs lg:text-[14px]">
+              <div className="flex justify-between font-semibold mb-4 text-xs lg:text-[16px]">
                 <span>Total sum</span>
                 <span>{`${CURRENCY_SYMBOL} ${calculateTotal()}`}</span>
               </div>
 
               <button
-                className="bg-[#5AC12F] text-gray-900 w-full py-2 rounded-full text-xs lg:text-[12px]"
+                className="bg-[#5AC12F] text-gray-900 w-full py-2 rounded-full font-semibold text-xs lg:text-[16px]"
                 onClick={onPlaceOrder}
               >
                 {loadingOrderMutation ? (
