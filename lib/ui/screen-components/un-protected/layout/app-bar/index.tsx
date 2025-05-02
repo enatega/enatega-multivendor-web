@@ -421,6 +421,12 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                             onLogout();
                           },
                         },
+                        {
+                          label: "Get Help",
+                          command: () => {
+                            // onLogout();
+                          },
+                        },
                       ]}
                       popup
                       ref={menuRef}
