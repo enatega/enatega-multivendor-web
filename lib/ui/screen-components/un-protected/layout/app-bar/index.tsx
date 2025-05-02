@@ -23,6 +23,8 @@ import useUser from "@/lib/hooks/useUser";
 import { useSearchUI } from "@/lib/context/search/search.context";
 import useNearByRestaurantsPreview from "@/lib/hooks/useNearByRestaurantsPreview";
 
+import Logo from "@/lib/utils/assets/svg/Logo";
+
 import { AnimatePresence, motion } from "framer-motion";
 
 // Icons
@@ -36,7 +38,6 @@ import {
 // import AnimatedLogo from "@/lib/assets/gif/logo.gif";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Logo from "@/public/assets/svg/logo.svg";
 
 // Interface
 import { IAppBarProps } from "@/lib/utils/interfaces";
@@ -269,15 +270,12 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
     );
   };
 
-  function fittedAddress(address:String | undefined)
-  {
-    if(address)
-    {
-      let adr = address.slice(0,20)
-      if(address.length>20)
-      {
+  function fittedAddress(address: String | undefined) {
+    if (address) {
+      let adr = address.slice(0, 20)
+      if (address.length > 20) {
         adr = adr + '...'
-        
+
       }
       return adr
     }
@@ -296,15 +294,10 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
               {/* Left Section */}
               <div className={`w-1/3 flex gap-x-2 items-center cursor-pointer`}>
                 {!isSearchFocused && (
-                 <div
+                  <div 
                   onClick={logoClickHandler}
-                   className="text-xl font-bold text-gray-900">
-                    <Image
-                      src={Logo}
-                      alt="Enatega Logo"
-                      width={120}
-                      height={120}
-                    />
+                  className="text-xl font-bold text-gray-900">
+                   <Logo className="w-32 h-auto" fillColor="#000000" />
                   </div>
                 )}
                 <div
@@ -391,23 +384,23 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                       Login
                     </span>
                   </button>
-                : <div
+                  : <div
                     className={`flex items-center space-x-2 rounded-md p-2 hover:bg-[#d8d8d837] ${isSearchFocused && "hidden"}`}
                     onClick={(event) => menuRef.current?.toggle(event)}
                     aria-controls="popup_menu_right"
                     aria-haspopup
                   >
-                    <Image
-                      src={
-                        /*  user?.image
-                      ? user.image
-                      : */ "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png"
-                      }
-                      alt={"profile-image.png"}
-                      height={32}
-                      width={32}
-                      className="h-6 w-6 md:w-8 md:h-8 select-none rounded-full"
-                    />
+                    <div
+                      className="h-6 w-6 md:w-8 md:h-8 rounded-full flex items-center justify-center text-white font-semibold select-none uppercase"
+                      style={{ backgroundColor: "#94e469" }}
+                    >
+                      {profile?.name
+                        ?.trim()
+                        .split(" ")
+                        .map((n) => n[0])
+                        .slice(0, 2)
+                        .join("") || "U"}
+                    </div>
 
                     {/* Show full name on large screens and up */}
                     <span className="hidden lg:inline">
@@ -436,7 +429,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                         {
                           label: "Get Help",
                           command: () => {
-                            // onLogout();
+                            router.push("/profile/getHelp");
                           },
                         },
                       ]}
@@ -483,7 +476,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                     >
                       <CircleCrossSvg color="black" width={24} height={24} />
                     </div>
-                  : <div
+                    : <div
                       className={`${cartCount > 0 ? "lg:hidden" : ""} flex items-center justify-center rounded-full w-8 h-8 md:w-10 md:h-10 bg-gray-100 relative`}
                       onClick={() => setIsCartOpen(true)}
                     >
@@ -554,11 +547,11 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
       {/* Cart Sidebar */}
       <Sidebar
         visible={isCartOpen}
-        onHide={() => setIsCartOpen(false)}
+        onHide={() => { setIsCartOpen(false); localStorage.setItem("newOrderInstructions", localStorage.getItem("orderInstructions") || ""); localStorage.removeItem('orderInstructions'); window.dispatchEvent(new Event("orderInstructionsUpdated")); }}
         position="right"
         className="!p-0 !m-0 w-full md:w-[430] lg:w-[580px]"
       >
-        <Cart onClose={() => setIsCartOpen(false)} />
+        <Cart onClose={() => { setIsCartOpen(false); localStorage.setItem("newOrderInstructions", localStorage.getItem("orderInstructions") || ""); localStorage.removeItem('orderInstructions'); window.dispatchEvent(new Event("orderInstructionsUpdated")); }} />
       </Sidebar>
 
       <UserAddressComponent

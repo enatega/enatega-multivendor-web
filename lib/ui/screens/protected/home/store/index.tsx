@@ -6,7 +6,7 @@ export default function StoreScreen() {
   const { loading, error, groceriesData } = useNearByRestaurantsPreview();
   const { groceryCuisinesData } = useGetCuisines();
 
-  return (
+  return ( 
     <GenericListingComponent
       headingTitle="Stores and groceries near you"
       cuisineSectionTitle="Browse categories"

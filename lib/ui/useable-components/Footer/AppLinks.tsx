@@ -5,7 +5,7 @@ const PlayStoreLink =
   "https://play.google.com/store/apps/details?id=com.enatega.multivendor&hl=en_IE";
 const AppleStoreLink =
   "https://apps.apple.com/pk/app/enatega-multivendor/id1526488093";
-import Logo from "@/public/assets/svg/logo.svg";
+import Logo from "@/lib/utils/assets/svg/Logo";
 
 const AppLinks = () => {
   const handleButtonClick = (url: string) => {
@@ -15,7 +15,7 @@ const AppLinks = () => {
   return (
     <div>
       <div className="text-[20px] mb-4 font-extrabold text-white">
-          <Image src={Logo} alt="Enatega Icon" className="" width={100} height={100}/>
+        <Logo className="w-32 h-auto" fillColor="#94e469" />
       </div>
 
       <div className="flex gap-2 flex-wrap">
