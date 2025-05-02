@@ -195,7 +195,7 @@ export default function CustomerTicketsMain() {
       ) : (
         <div className="bg-white p-6 rounded-lg shadow-sm text-center">
           <TextComponent text="No tickets found" className="text-lg text-gray-500 mb-2" />
-          <p className="text-gray-500 mb-4">You haven't created any support tickets yet.</p>
+          <p className="text-gray-500 mb-4">You haven&apos;t created any support tickets yet.</p>
           <CustomButton 
             label="Create Your First Ticket"
             onClick={handleCreateTicket}

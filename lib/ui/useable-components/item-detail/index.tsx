@@ -364,7 +364,7 @@ export default function FoodItemDetail(props: IFoodItemDetalComponentProps) {
           >
             Add to order
             <span className="ml-2 text-gray-900 text-[500] font-[14px]">
-              ${calculateTotalPrice()}
+              {CURRENCY_SYMBOL}{calculateTotalPrice()}
             </span>
           </button>
         </div>
