@@ -49,7 +49,7 @@ function TrackingOrderDetails({
 
   // Check if order can be cancelled (only PENDING or ACCEPTED)
   const canCancelOrder = () => {
-    const cancellableStatuses = ["PENDING", "ACCEPTED"];
+    const cancellableStatuses = ["PENDING"];
     return cancellableStatuses.includes(orderTrackingDetails?.orderStatus);
   };
 
