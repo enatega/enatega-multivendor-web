@@ -9,8 +9,8 @@ import flexibleHours  from "@/public/assets/images/png/flexibleHours.webp"
 import Banner2 from "@/public/assets/images/png/Banner2.webp"
 
 const Couriers:React.FC = () => {
-  const EarningButton = <TranparentButton text={"Learn More"} />;
-  const FLexiblegButton = <TranparentButton text={"Learn More"} />;
+  const EarningButton = <TranparentButton text={"Learn More"} link={'restaurantInfo'} />;
+  const FLexiblegButton = <TranparentButton text={"Learn More"} link={'rider'} />;
   const EarnWhereButton = <TranparentButton text={"Get started"} link={'rider'} />;
   return (
     <div className="my-[60px]">

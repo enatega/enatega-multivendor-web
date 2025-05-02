@@ -24,6 +24,8 @@ import useUser from "@/lib/hooks/useUser";
 import { useSearchUI } from "@/lib/context/search/search.context";
 import useNearByRestaurantsPreview from "@/lib/hooks/useNearByRestaurantsPreview";
 
+import Logo from "@/lib/utils/assets/svg/Logo";
+
 import { AnimatePresence, motion } from "framer-motion";
 
 // Icons
@@ -37,7 +39,6 @@ import {
 // import AnimatedLogo from "@/lib/assets/gif/logo.gif";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Logo from "@/public/assets/svg/logo.svg";
 
 // Interface
 import { IAppBarProps } from "@/lib/utils/interfaces";
@@ -287,12 +288,8 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
               <div className={`w-1/3 flex gap-x-2 items-center cursor-pointer`}>
                 {!isSearchFocused && (
                   <Link href="/" className="text-xl font-bold text-gray-900">
-                    <Image
-                      src={Logo}
-                      alt="Enatega Logo"
-                      width={120}
-                      height={120}
-                    />
+                   <Logo className="w-32 h-auto" fillColor="#000000" />
+  
                   </Link>
                 )}
                 <div
