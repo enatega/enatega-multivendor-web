@@ -160,7 +160,6 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
       router.push("/");
     }
    };
-
    
   // UseEffects
   useEffect(() => {
