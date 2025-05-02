@@ -2,7 +2,6 @@
 
 // Core
 import { Sidebar } from "primereact/sidebar";
-import Image from "next/image";
 import { Menu } from "primereact/menu";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
