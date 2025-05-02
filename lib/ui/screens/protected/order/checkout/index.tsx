@@ -2,10 +2,7 @@
 "use client";
 
 // Core
-import {
-  faBicycle,
-  faStore,
-} from "@fortawesome/free-solid-svg-icons";
+import { faBicycle, faStore } from "@fortawesome/free-solid-svg-icons";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons/faSpinner";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { motion } from "framer-motion";
@@ -131,6 +128,9 @@ export default function OrderCheckoutScreen() {
   };
   const store_user_location_cache_key = `${origin?.lat},${origin?.lng}_${destination?.lat},${destination?.lng}`;
 
+  // localStorage
+  const orderInstructions = localStorage.getItem("orderInstructions");
+
   // API
   const [placeOrder, { loading: loadingOrderMutation }] = useMutation(
     PLACE_ORDER,
@@ -201,13 +201,12 @@ export default function OrderCheckoutScreen() {
         food: food._id,
         quantity: food.quantity,
         variation: food.variation._id,
-        addons:
-          food.addons ?
-            food.addons.map(({ _id, options }) => ({
+        addons: food.addons
+          ? food.addons.map(({ _id, options }) => ({
               _id,
               options: options.map(({ _id }) => _id),
             }))
-            : [],
+          : [],
         specialInstructions: food.specialInstructions,
       };
     });
@@ -620,8 +619,9 @@ export default function OrderCheckoutScreen() {
   );
 
   // Filter PAYMENT_METHOD_LIST based on stripeDetailsSubmitted
-  const filteredPaymentMethods = !restaurantData?.restaurant?.stripeDetailsSubmitted
-    ? PAYMENT_METHOD_LIST.filter(method => method.value === 'COD')
+  const filteredPaymentMethods = !restaurantData?.restaurant
+    ?.stripeDetailsSubmitted
+    ? PAYMENT_METHOD_LIST.filter((method) => method.value === "COD")
     : PAYMENT_METHOD_LIST;
 
   // Use Effect
@@ -635,10 +635,9 @@ export default function OrderCheckoutScreen() {
 
   return (
     <>
-
       {/* <!-- Header with map and navigation --> */}
       <div className="relative">
-        {isLoaded ?
+        {isLoaded ? (
           <GoogleMap
             mapContainerStyle={{
               width: "100%",
@@ -694,7 +693,8 @@ export default function OrderCheckoutScreen() {
               />
             )}
           </GoogleMap>
-          : <>
+        ) : (
+          <>
             <img
               alt="Map showing delivery route"
               className="w-full h-64 object-cover"
@@ -706,7 +706,7 @@ export default function OrderCheckoutScreen() {
               H
             </div>{" "}
           </>
-        }
+        )}
       </div>
       {/* <!-- Toggle Prices Button for Mobile --> 
           <div className="sm:hidden fixed top-14 left-0 right-0 bg-transparent z-10 p-4">
@@ -804,8 +804,8 @@ export default function OrderCheckoutScreen() {
                 </label>
               </div>
               <p className="text-gray-300 leading-4 sm:leading-5 tracking-normal font-inter text-xs sm:text-sm md:text-sm align-middle mt-2">
-                If you are not available to receive the order, the courier
-                will leave it at your door.
+                If you are not available to receive the order, the courier will
+                leave it at your door.
               </p>
             </div>
 
@@ -867,10 +867,7 @@ export default function OrderCheckoutScreen() {
                     "get",
                     "currentShopType"
                   );
-                  const restaurantId = onUseLocalStorage(
-                    "get",
-                    "restaurant"
-                  );
+                  const restaurantId = onUseLocalStorage("get", "restaurant");
                   const restaurantSlug = onUseLocalStorage(
                     "get",
                     "restaurant-slug"
@@ -884,15 +881,18 @@ export default function OrderCheckoutScreen() {
               </button>
             </div>
 
-            {localStorage.getItem("orderInstructions") && localStorage.getItem("orderInstructions")?.length > 0 ? <>
-              {/* <!-- order insturctions --> */}
-              <h2 className="font-semibold text-gray-900 mb-2 text-base sm:text-lg md:text-[16px] lg:text-[18px]">
-                Order Instruction
-              </h2>
-              <p className="text-gray-500 mb-4 leading-5 sm:leading-5 tracking-normal font-inter text-xs sm:text-sm md:text-sm align-middle mt-2">
-                {localStorage.getItem("orderInstructions")}
-              </p>
-            </> : ""}
+            {orderInstructions && orderInstructions.length > 0 ? (
+              <>
+                <h2 className="font-semibold text-gray-900 mb-2 text-base sm:text-lg md:text-[16px] lg:text-[18px]">
+                  Order Instruction
+                </h2>
+                <p className="text-gray-500 mb-4 leading-5 sm:leading-5 tracking-normal font-inter text-xs sm:text-sm md:text-sm align-middle mt-2">
+                  {orderInstructions}
+                </p>
+              </>
+            ) : (
+              ""
+            )}
 
             {/* <!-- Payment Details --> */}
             <h2 className="font-semibold text-gray-900 mb-2 text-base sm:text-lg md:text-[16px] lg:text-[18px]">
@@ -922,9 +922,7 @@ export default function OrderCheckoutScreen() {
                       type="radio"
                       checked={paymentMethod === paymentMethodItem.value}
                       value={paymentMethod}
-                      onChange={() =>
-                        setPaymentMethod(paymentMethodItem.value)
-                      }
+                      onChange={() => setPaymentMethod(paymentMethodItem.value)}
                     />
                   </div>
                 </div>
@@ -966,12 +964,13 @@ export default function OrderCheckoutScreen() {
               <h2 className="font-semibold text-gray-900 mb-2 text-base sm:text-lg md:text-[16px] lg:text-[18px]">
                 Promo code
               </h2>
-              {isCouponApplied ?
+              {isCouponApplied ? (
                 <Message
                   severity="success"
                   text="Coupon has been applied successfully"
                 />
-                : <>
+              ) : (
+                <>
                   <p className="text-gray-500 mb-4 leading-5 sm:leading-5 tracking-normal font-inter text-xs sm:text-sm md:text-sm align-middle mt-2">
                     If you have a promo code enter it below to claim your
                     benefit!
@@ -989,13 +988,15 @@ export default function OrderCheckoutScreen() {
                       className="bg-[#5AC12F] sm:mt-0 mt-2 sm:w-fit w-full h-10 px-8 space-x-2 font-medium text-gray-900  tracking-normal font-inter text-sm sm:text-base md:text-[12px] lg:text-[14px] rounded-full"
                       onClick={onApplyCoupon}
                     >
-                      {couponLoading ?
+                      {couponLoading ? (
                         <FontAwesomeIcon icon={faSpinner} spin />
-                        : <span>Submit</span>}
+                      ) : (
+                        <span>Submit</span>
+                      )}
                     </button>
                   </div>
                 </>
-              }
+              )}
             </div>
           </div>
 
@@ -1056,9 +1057,7 @@ export default function OrderCheckoutScreen() {
               )}
 
               <div className="flex justify-between mb-1 text-xs lg:text-[12px]">
-                <span className="font-inter text-gray-900 leading-5">
-                  Tax
-                </span>
+                <span className="font-inter text-gray-900 leading-5">Tax</span>
                 <span className="font-inter text-gray-900 leading-5">
                   {CURRENCY_SYMBOL}
                   {taxCalculation()}
@@ -1105,9 +1104,11 @@ export default function OrderCheckoutScreen() {
                 className="bg-[#5AC12F] text-gray-900 w-full py-2 rounded-full text-xs lg:text-[12px]"
                 onClick={onPlaceOrder}
               >
-                {loadingOrderMutation ?
+                {loadingOrderMutation ? (
                   <FontAwesomeIcon icon={faSpinner} spin />
-                  : <span> Click to order</span>}
+                ) : (
+                  <span> Click to order</span>
+                )}
               </button>
             </div>
           </motion.div>
@@ -1163,9 +1164,7 @@ export default function OrderCheckoutScreen() {
               )}
 
               <div className="flex justify-between mb-1 text-xs lg:text-[12px]">
-                <span className="font-inter text-gray-900 leading-5">
-                  Tax
-                </span>
+                <span className="font-inter text-gray-900 leading-5">Tax</span>
                 <span className="font-inter text-gray-900 leading-5">
                   {CURRENCY_SYMBOL}
                   {taxCalculation()}
@@ -1212,9 +1211,11 @@ export default function OrderCheckoutScreen() {
                 className="bg-[#5AC12F] text-gray-900 w-full py-2 rounded-full text-xs lg:text-[12px]"
                 onClick={onPlaceOrder}
               >
-                {loadingOrderMutation ?
+                {loadingOrderMutation ? (
                   <FontAwesomeIcon icon={faSpinner} spin />
-                  : <span> Click to order</span>}
+                ) : (
+                  <span> Click to order</span>
+                )}
               </button>
             </div>
           </div>
