@@ -79,6 +79,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "flagcdn.com",
       },
+      {
+        protocol:'https',
+        hostname:"images.deliveryhero.io"
+      }
     ], // Add placehold.co as an allowed domain
   },
 };

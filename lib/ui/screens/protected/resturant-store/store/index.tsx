@@ -77,7 +77,6 @@ export default function StoreDetailsScreen() {
   >([]);
   const [isModalOpen, setIsModalOpen] = useState({ value: false, id: "" });
 
-
   // Ref
   const selectedCategoryRefs = useRef<string>("");
   const selectedSubCategoryRefs = useRef<string>("");
@@ -137,8 +136,9 @@ export default function StoreDetailsScreen() {
         onClick={() => handleScroll(_url ?? "", true)}
       >
         <span
-          className={`mx-2 ${item.items && "font-semibold"} text-${isClicked ? "[#5AC12F]" : "gray-600"
-            }`}
+          className={`mx-2 ${item.items && "font-semibold"} text-${
+            isClicked ? "[#5AC12F]" : "gray-600"
+          }`}
         >
           {item.label}
         </span>
@@ -147,16 +147,15 @@ export default function StoreDetailsScreen() {
   };
 
   // Handle update is modal open if restaurant is not active
-  const handleUpdateIsModalOpen = useCallback((value: boolean, id: string) => {
-    if (isModalOpen.value !== value || isModalOpen.id !== id) {
-      console.log("value, id", value, id);
-      setIsModalOpen({ value, id });
-    }
-  }, [isModalOpen]);
-
- 
-
-
+  const handleUpdateIsModalOpen = useCallback(
+    (value: boolean, id: string) => {
+      if (isModalOpen.value !== value || isModalOpen.id !== id) {
+        console.log("value, id", value, id);
+        setIsModalOpen({ value, id });
+      }
+    },
+    [isModalOpen]
+  );
 
   const itemRenderer = (item: MenuItem) => {
     const _url = item.url?.slice(1);
@@ -164,13 +163,15 @@ export default function StoreDetailsScreen() {
 
     return (
       <div
-        className={`flex align-items-center px-3 py-2 cursor-pointer bg-${isClicked ? "[#F3FFEE]" : ""
-          }`}
+        className={`flex align-items-center px-3 py-2 cursor-pointer bg-${
+          isClicked ? "[#F3FFEE]" : ""
+        }`}
         onClick={() => handleScroll(_url ?? "", false, 80)}
       >
         <span
-          className={`mx-2 ${item.items && "font-semibold"} text-${isClicked ? "[#5AC12F]" : "gray-600"
-            }`}
+          className={`mx-2 ${item.items && "font-semibold"} text-${
+            isClicked ? "[#5AC12F]" : "gray-600"
+          }`}
         >
           {item.label}
         </span>
@@ -204,19 +205,19 @@ export default function StoreDetailsScreen() {
             .map((subCat: ISubCategory) => {
               const foods = groupedFoods[subCat._id] || [];
 
-              return foods.length > 0 ?
-                {
-                  _id: subCat._id,
-                  title: subCat.title,
-                  foods,
-                }
+              return foods.length > 0
+                ? {
+                    _id: subCat._id,
+                    title: subCat.title,
+                    foods,
+                  }
                 : null;
             })
             .filter(Boolean) as {
-              _id: string;
-              title: string;
-              foods: IFood[];
-            }[];
+            _id: string;
+            title: string;
+            foods: IFood[];
+          }[];
 
           if (groupedFoods["uncategorized"]?.length > 0) {
             subCategoryGroups.push({
@@ -383,7 +384,7 @@ export default function StoreDetailsScreen() {
 
   // Function to handle opening the food item modal
   const handleOpenFoodModal = (food: IFood) => {
-    if(food.isOutOfStock) return;
+    if (food.isOutOfStock) return;
 
     if (!restaurantInfo.isAvailable) {
       handleUpdateIsModalOpen(true, food?._id);
@@ -401,27 +402,30 @@ export default function StoreDetailsScreen() {
     setShowDialog(null);
   };
 
-  const [addFavorite, { loading: addFavoriteLoading }] = useMutation(ADD_FAVOURITE_RESTAURANT, {
-    onCompleted: () => {
-      const wasLiked = isLiked;
-      setIsLiked(!isLiked);
+  const [addFavorite, { loading: addFavoriteLoading }] = useMutation(
+    ADD_FAVOURITE_RESTAURANT,
+    {
+      onCompleted: () => {
+        const wasLiked = isLiked;
+        setIsLiked(!isLiked);
 
-      // Only show confetti when adding a favorite (not removing)
-      if (!wasLiked) {
-        console.log("Favorite added, triggering confetti!");
-        setShowConfetti(true);
+        // Only show confetti when adding a favorite (not removing)
+        if (!wasLiked) {
+          console.log("Favorite added, triggering confetti!");
+          setShowConfetti(true);
 
-        // Reset confetti after a longer delay
-        setTimeout(() => {
-          setShowConfetti(false);
-        }, 5000);
-      }
-    },
-    onError: (error) => {
-      console.error("Error toggling favorite:", error);
-    },
-    refetchQueries: [{ query: GET_USER_PROFILE }],
-  });
+          // Reset confetti after a longer delay
+          setTimeout(() => {
+            setShowConfetti(false);
+          }, 5000);
+        }
+      },
+      onError: (error) => {
+        console.error("Error toggling favorite:", error);
+      },
+      refetchQueries: [{ query: GET_USER_PROFILE }],
+    }
+  );
 
   // Constants
   const headerData = {
@@ -570,16 +574,17 @@ export default function StoreDetailsScreen() {
 
       {/* Banner */}
       <div className="relative">
-        {loading ?
+        {loading ? (
           <Skeleton width="100%" height="20rem" borderRadius="0" />
-          : <img
+        ) : (
+          <img
             alt="McDonald's banner with a burger and fries"
             className="w-full h-72 object-cover"
             height="300"
             src={restaurantInfo.image}
             width="1200"
           />
-        }
+        )}
 
         {!loading && (
           <div className="absolute bottom-0 left-0 md:left-20 p-4">
@@ -609,7 +614,11 @@ export default function StoreDetailsScreen() {
           disabled={addFavoriteLoading}
           className="absolute top-4 right-4 md:bottom-4 md:right-4 md:top-auto rounded-full bg-white h-8 w-8 flex justify-center items-center transform transition-transform duration-300 hover:scale-110 active:scale-95"
         >
-          {addFavoriteLoading ? <Loader style={{ width: "1.5rem", height: "1.5rem" }} /> : <HeartSvg filled={isLiked} />}
+          {addFavoriteLoading ? (
+            <Loader style={{ width: "1.5rem", height: "1.5rem" }} />
+          ) : (
+            <HeartSvg filled={isLiked} />
+          )}
         </button>
       </div>
 
@@ -622,18 +631,22 @@ export default function StoreDetailsScreen() {
                 {/* Time */}
                 <span className="flex items-center gap-2 text-gray-600 font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle">
                   <ClockSvg />
-                  {loading ?
+                  {loading ? (
                     <Skeleton width="2rem" height="1.5rem" />
-                    : headerData.deliveryTime}
+                  ) : (
+                    headerData.deliveryTime
+                  )}
                   mins
                 </span>
 
                 {/* Rating */}
                 <span className="flex items-center gap-2 text-gray-600 font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle">
                   <RatingSvg />
-                  {loading ?
+                  {loading ? (
                     <Skeleton width="2rem" height="1.5rem" />
-                    : headerData.averageReview}
+                  ) : (
+                    headerData.averageReview
+                  )}
                 </span>
 
                 {/* Info Link */}
@@ -646,9 +659,11 @@ export default function StoreDetailsScreen() {
                   }}
                 >
                   <InfoSvg />
-                  {loading ?
+                  {loading ? (
                     <Skeleton width="10rem" height="1.5rem" />
-                    : "See more information"}
+                  ) : (
+                    "See more information"
+                  )}
                 </a>
                 {/* Review Link */}
                 <a
@@ -660,9 +675,11 @@ export default function StoreDetailsScreen() {
                   }}
                 >
                   <ChatSvg />
-                  {loading ?
+                  {loading ? (
                     <Skeleton width="10rem" height="1.5rem" />
-                    : "See reviews"}
+                  ) : (
+                    "See reviews"
+                  )}
                 </a>
               </div>
             </div>
@@ -684,10 +701,7 @@ export default function StoreDetailsScreen() {
           boxShadow: "0 1px 1px rgba(0, 0, 0, 0.1)",
         }}
       >
-        <PaddingContainer
-
-
-        >
+        <PaddingContainer>
           <div className="p-3  w-full flex flex-col md:hidden gap-2 items-center justify-between">
             {/* Categories */}
             <div
@@ -702,13 +716,15 @@ export default function StoreDetailsScreen() {
                     return (
                       <li key={index} className="shrink-0">
                         <button
-                          className={`bg-${selectedCategory === _slug ? "[#F3FFEE]" : (
-                            "gray-100"
-                          )
-                            } text-${selectedCategory === _slug ? "[#5AC12F]" : (
-                              "gray-600"
-                            )
-                            } rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap`}
+                          className={`bg-${
+                            selectedCategory === _slug
+                              ? "[#F3FFEE]"
+                              : "gray-100"
+                          } text-${
+                            selectedCategory === _slug
+                              ? "[#5AC12F]"
+                              : "gray-600"
+                          } rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap`}
                           onClick={() => handleScroll(_slug, true, 100)}
                         >
                           {category.label}
@@ -728,22 +744,21 @@ export default function StoreDetailsScreen() {
               >
                 <ul className="flex space-x-4 items-center w-max flex-nowrap">
                   {subCategoriesForCategories?.map(
-                    (
-                      sub_category: ICategoryDetailsResponse,
-                      index: number
-                    ) => {
+                    (sub_category: ICategoryDetailsResponse, index: number) => {
                       const _slug = toSlug(sub_category.label);
 
                       return (
                         <li key={index} className="shrink-0">
                           <button
-                            className={`bg-${selectedSubCategory === _slug ? "[#F3FFEE]" : (
-                              "gray-100"
-                            )
-                              } text-${selectedSubCategory === _slug ? "[#5AC12F]" : (
-                                "gray-600"
-                              )
-                              } rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap`}
+                            className={`bg-${
+                              selectedSubCategory === _slug
+                                ? "[#F3FFEE]"
+                                : "gray-100"
+                            } text-${
+                              selectedSubCategory === _slug
+                                ? "[#5AC12F]"
+                                : "gray-600"
+                            } rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap`}
                             onClick={() => handleScroll(_slug, false, 170)}
                           >
                             {sub_category.label}
@@ -761,18 +776,20 @@ export default function StoreDetailsScreen() {
 
       {/* Main Section */}
       <PaddingContainer>
-        {loading || categoriesSubCategoriesLoading || subcategoriesLoading ?
+        {loading || categoriesSubCategoriesLoading || subcategoriesLoading ? (
           <div className=" w-full">
             <FoodCategorySkeleton />
           </div>
-          : <div className="flex flex-col md:flex-row w-full">
+        ) : (
+          <div className="flex flex-col md:flex-row w-full">
             <div className="hidden md:block md:w-1/5 p-3 h-screen z-10  sticky top-14 left-0">
               <div className="h-full overflow-hidden group">
                 <div
-                  className={`h-full overflow-y-auto transition-all duration-300 ${isScrolling ?
-                    "scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
-                    : "overflow-hidden"
-                    }`}
+                  className={`h-full overflow-y-auto transition-all duration-300 ${
+                    isScrolling
+                      ? "scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
+                      : "overflow-hidden"
+                  }`}
                   onScroll={handleMouseEnterCategoryPanel}
                 >
                   <PanelMenu
@@ -810,69 +827,85 @@ export default function StoreDetailsScreen() {
                         )}
 
                         <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                          {subCategory.foods.map(
-                            (meal: IFood, mealIndex) => (
-                              <div
-                                key={mealIndex}
-                                className="flex items-center gap-4 rounded-lg border border-gray-300 shadow-sm bg-white p-3 relative"
-                              >
-                                {/* Text Content */}
-                                <div className="flex-grow text-left md:text-left space-y-2">
-                                   <div className="flex flex-col lg:flex-row justify-between flex-wrap">
+                          {subCategory.foods.map((meal: IFood, mealIndex) => (
+                            <div
+                              key={mealIndex}
+                              className="flex items-center gap-4 rounded-lg border border-gray-300 shadow-sm bg-white p-3 relative hover:scale-105 transition-all duration-300"
+                            >
+                              {/* Text Content */}
+                              <div className="flex-grow text-left md:text-left space-y-2 ">
+                                <div className="flex flex-col lg:flex-row justify-between flex-wrap">
                                   <h3 className="text-gray-900 text-lg font-semibold font-inter">
                                     {meal.title}
                                   </h3>
-                                    {meal.isOutOfStock && <span className="text-red-500">(Out of stock)</span>}
-                                    </div>
-                                  <p className="text-gray-500 text-sm">
-                                    {meal.description}
-                                  </p>
-
-                                  <div className="flex items-center gap-2">
-                                    <span className="text-[#0EA5E9] text-lg font-semibold">
-                                      {CURRENCY_SYMBOL}{" "}
-                                      {meal.variations[0].price}
+                                  {meal.isOutOfStock && (
+                                    <span className="text-red-500">
+                                      (Out of stock)
                                     </span>
-                                  </div>
+                                  )}
                                 </div>
+                                <p className="text-gray-500 text-sm">
+                                  {meal.description}
+                                </p>
 
-                                {/* Image */}
-                                <div className="flex-shrink-0 w-24 h-24 md:w-28 md:h-28">
-                                  <Image
-                                    alt={meal.title}
-                                    className="w-full h-full rounded-md object-cover mx-auto md:mx-0"
-                                    src={meal.image}
-                                    width={100}
-                                    height={100}
-                                  />
+                                <div className="flex items-center gap-2">
+                                  <span className="text-[#0EA5E9] text-lg font-semibold">
+                                    {CURRENCY_SYMBOL} {meal.variations[0].price}
+                                  </span>
                                 </div>
-
-                                {/* Add Button */}
-                                <div className="absolute top-2 right-2">
-                                  <button
-                                    className="bg-[#0EA5E9] rounded-full shadow-md w-6 h-6 flex items-center justify-center"
-                                    onClick={() =>
-                                      handleOpenFoodModal(meal)
-                                    }
-                                    type="button"
-                                  >
-                                    <FontAwesomeIcon
-                                      icon={faPlus}
-                                      color="white"
-                                    />
-                                  </button>
-                                </div>
-
-                                {/* create a modal that will be show that this restaurant is closed do want to see menu or want to close if click on the see menu then will move to the next page other wise modal will be closed */}
-                                <CustomDialog className="max-w-[300px]" visible={isModalOpen.value && isModalOpen.id === meal?._id?.toString()} onHide={() => handleUpdateIsModalOpen(false, meal?._id?.toString())}>
-                                  <div className="text-center pb-10 pt-10">
-                                    <p className="text-lg font-bold pb-3">Restaurant is closed</p>
-                                    <p className="text-sm">You can&apos;t order this food item right now.<br></br> Please try again later.</p>
-                                  </div>
-                                </CustomDialog>
                               </div>
-                            )
-                          )}
+
+                              {/* Image */}
+                              <div className="flex-shrink-0 w-24 h-24 md:w-28 md:h-28">
+                                <Image
+                                  alt={meal.title}
+                                  className="w-full h-full rounded-md object-cover mx-auto md:mx-0"
+                                  src={meal.image}
+                                  width={100}
+                                  height={100}
+                                />
+                              </div>
+
+                              {/* Add Button */}
+                              <div className="absolute top-2 right-2">
+                                <button
+                                  className="bg-[#0EA5E9] rounded-full shadow-md w-6 h-6 flex items-center justify-center"
+                                  onClick={() => handleOpenFoodModal(meal)}
+                                  type="button"
+                                >
+                                  <FontAwesomeIcon
+                                    icon={faPlus}
+                                    color="white"
+                                  />
+                                </button>
+                              </div>
+
+                              {/* create a modal that will be show that this restaurant is closed do want to see menu or want to close if click on the see menu then will move to the next page other wise modal will be closed */}
+                              <CustomDialog
+                                className="max-w-[300px]"
+                                visible={
+                                  isModalOpen.value &&
+                                  isModalOpen.id === meal?._id?.toString()
+                                }
+                                onHide={() =>
+                                  handleUpdateIsModalOpen(
+                                    false,
+                                    meal?._id?.toString()
+                                  )
+                                }
+                              >
+                                <div className="text-center pb-10 pt-10">
+                                  <p className="text-lg font-bold pb-3">
+                                    Restaurant is closed
+                                  </p>
+                                  <p className="text-sm">
+                                    You can&apos;t order this food item right
+                                    now.<br></br> Please try again later.
+                                  </p>
+                                </div>
+                              </CustomDialog>
+                            </div>
+                          ))}
                         </div>
                       </div>
                     )
@@ -881,21 +914,19 @@ export default function StoreDetailsScreen() {
               ))}
             </div>
           </div>
-        }
+        )}
       </PaddingContainer>
-
 
       {/* Food Item Detail Modal */}
       <Dialog
-        visible={!!showDialog
-        }
-        className="mx-3 sm:mx-4 md:mx-0 "  // Adds margin on small screens
+        visible={!!showDialog}
+        className="mx-3 sm:mx-4 md:mx-0 " // Adds margin on small screens
         onHide={handleCloseFoodModal}
         showHeader={false}
         contentStyle={{
           borderTopLeftRadius: "4px",
           borderTopRightRadius: "4px",
-          padding: "0px"
+          padding: "0px",
         }} // Rounds top corners
         style={{ borderRadius: "1rem" }} // Rounds full box including top corners
       >
