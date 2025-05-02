@@ -79,7 +79,7 @@ export default function Cart({ onClose }: CartProps) {
           </p>
           <button
             onClick={async () => {
-              if (onClose) await onClose();
+              if (onClose) { await onClose(); };
               // Add 300ms delay (for modal animation or smooth UX)
               await new Promise((resolve) => setTimeout(resolve, 300));
 
