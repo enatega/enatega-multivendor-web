@@ -34,7 +34,7 @@ export default function GetHelpMain() {
 
   // Setup mutation for creating a support ticket
   const [createSupportTicket] = useMutation(CREATE_SUPPORT_TICKET, {
-    onCompleted: (data) => {
+    onCompleted: () => {
       setIsSubmitting(false);
       showToast({
         type: "success",
@@ -248,7 +248,7 @@ export default function GetHelpMain() {
             {/* Reason Dropdown */}
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                What's your issue about?
+                What&apos;s your issue about?
               </label>
               <Dropdown
                 value={reason}

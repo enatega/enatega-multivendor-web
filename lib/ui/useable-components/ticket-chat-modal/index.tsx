@@ -26,7 +26,7 @@ export default function TicketChatModal({
   const [isSending, setIsSending] = useState<boolean>(false);
   
   // Create a polling interval reference
-  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+const pollingIntervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Fetch single ticket details
   const { data: ticketData, loading: ticketLoading } = useQuery(
