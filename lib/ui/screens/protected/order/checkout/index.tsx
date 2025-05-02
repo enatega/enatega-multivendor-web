@@ -619,7 +619,7 @@ export default function OrderCheckoutScreen() {
     []
   );
 
- // Filter PAYMENT_METHOD_LIST based on stripeDetailsSubmitted
+  // Filter PAYMENT_METHOD_LIST based on stripeDetailsSubmitted
   const filteredPaymentMethods = !restaurantData?.restaurant?.stripeDetailsSubmitted
     ? PAYMENT_METHOD_LIST.filter(method => method.value === 'COD')
     : PAYMENT_METHOD_LIST;
@@ -884,6 +884,16 @@ export default function OrderCheckoutScreen() {
               </button>
             </div>
 
+            {localStorage.getItem("orderInstructions") && localStorage.getItem("orderInstructions")?.length > 0 ? <>
+              {/* <!-- order insturctions --> */}
+              <h2 className="font-semibold text-gray-900 mb-2 text-base sm:text-lg md:text-[16px] lg:text-[18px]">
+                Order Instruction
+              </h2>
+              <p className="text-gray-500 mb-4 leading-5 sm:leading-5 tracking-normal font-inter text-xs sm:text-sm md:text-sm align-middle mt-2">
+                {localStorage.getItem("orderInstructions")}
+              </p>
+            </> : ""}
+
             {/* <!-- Payment Details --> */}
             <h2 className="font-semibold text-gray-900 mb-2 text-base sm:text-lg md:text-[16px] lg:text-[18px]">
               Payment details
@@ -990,13 +1000,13 @@ export default function OrderCheckoutScreen() {
           </div>
 
           {/* <!-- Order Summary - Large Screen --> */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
             transition={{ duration: 0.3 }}
             className="hidden sticky top-20 h-max lg:block lg:w-1/3 lg:m-0 pb-10"
-            >
+          >
             <div
               className="bg-white p-2  top-4 rounded-lg shadow-md border border-gray-300 expandable max-h-0 sm:max-h-full lg:block hidden"
               id="price-summary"
@@ -1080,7 +1090,7 @@ export default function OrderCheckoutScreen() {
                 </div>
               )}
 
-                  {/* <div className="text-[#0EA5E9] mb-1 text-left font-inter text-xs lg:text-[12px]">
+              {/* <div className="text-[#0EA5E9] mb-1 text-left font-inter text-xs lg:text-[12px]">
                     Choose an offer (1 available)
                   </div>
 
@@ -1187,7 +1197,7 @@ export default function OrderCheckoutScreen() {
                 </div>
               )}
 
-                  {/* <div className="text-[#0EA5E9] mb-1 text-left font-inter text-xs lg:text-[12px]">
+              {/* <div className="text-[#0EA5E9] mb-1 text-left font-inter text-xs lg:text-[12px]">
                     Choose an offer (1 available)
                   </div> */}
 
