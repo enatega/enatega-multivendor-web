@@ -888,7 +888,7 @@ export default function OrderCheckoutScreen() {
             <h2 className="font-semibold text-gray-900 mb-2 text-base sm:text-lg md:text-[16px] lg:text-[18px]">
               Payment details
             </h2>
-            {PAYMENT_METHOD_LIST.map((paymentMethodItem, methodIndex) => {
+            {filteredPaymentMethods.map((paymentMethodItem, methodIndex) => {
               return (
                 <div
                   key={`${paymentMethodItem.value}-${methodIndex}`}
@@ -1080,11 +1080,11 @@ export default function OrderCheckoutScreen() {
                 </div>
               )}
 
-                  <div className="text-[#0EA5E9] mb-1 text-left font-inter text-xs lg:text-[12px]">
+                  {/* <div className="text-[#0EA5E9] mb-1 text-left font-inter text-xs lg:text-[12px]">
                     Choose an offer (1 available)
                   </div>
 
-                  <Divider />
+                  <Divider /> */}
 
               <div className="flex justify-between font-semibold mb-4 text-xs lg:text-[14px]">
                 <span>Total sum</span>
@@ -1187,11 +1187,11 @@ export default function OrderCheckoutScreen() {
                 </div>
               )}
 
-                  <div className="text-[#0EA5E9] mb-1 text-left font-inter text-xs lg:text-[12px]">
+                  {/* <div className="text-[#0EA5E9] mb-1 text-left font-inter text-xs lg:text-[12px]">
                     Choose an offer (1 available)
-                  </div>
+                  </div> */}
 
-              <Divider />
+              {/* <Divider /> */}
 
               <div className="flex justify-between font-semibold mb-4 text-xs lg:text-[14px]">
                 <span>Total sum</span>
