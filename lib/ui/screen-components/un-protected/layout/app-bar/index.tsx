@@ -1,7 +1,6 @@
 "use client";
 
 // Core
-import Link from "next/link";
 import { Sidebar } from "primereact/sidebar";
 import Image from "next/image";
 import { Menu } from "primereact/menu";
@@ -152,6 +151,16 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
     localStorage.clear();
   };
 
+    // Logo click handler
+   const logoClickHandler = () => {
+    if (isLogin){
+      router.push("/discovery");
+    }else {
+      router.push("/");
+    }
+   };
+
+   
   // UseEffects
   useEffect(() => {
     onInit();
@@ -274,6 +283,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
     }
     return ""
   }
+   
 
   return (
     <>
@@ -286,14 +296,16 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
               {/* Left Section */}
               <div className={`w-1/3 flex gap-x-2 items-center cursor-pointer`}>
                 {!isSearchFocused && (
-                  <Link href="/" className="text-xl font-bold text-gray-900">
+                 <div
+                  onClick={logoClickHandler}
+                   className="text-xl font-bold text-gray-900">
                     <Image
                       src={Logo}
                       alt="Enatega Logo"
                       width={120}
                       height={120}
                     />
-                  </Link>
+                  </div>
                 )}
                 <div
                   className={`flex items-center ${isSearchFocused && "hidden"} hidden lg:flex`}
