@@ -64,7 +64,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
 
   // Hooks
   const router = useRouter();
-  const { GOOGLE_MAPS_KEY } = useConfig();
+  const { GOOGLE_MAPS_KEY, CURRENCY_SYMBOL } = useConfig();
   const {
     cartCount,
     calculateSubtotal,
@@ -95,7 +95,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
   } = useSearchUI();
 
   // Format subtotal for display
-  const formattedSubtotal = cartCount > 0 ? `$${calculateSubtotal()}` : "$0";
+  const formattedSubtotal = cartCount > 0 ? `${CURRENCY_SYMBOL}${calculateSubtotal()}` : `${CURRENCY_SYMBOL}0`;
 
   console.log(userAddress);
   // Handlers

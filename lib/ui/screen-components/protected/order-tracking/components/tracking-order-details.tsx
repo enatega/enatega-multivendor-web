@@ -5,6 +5,7 @@ import { IOrderTrackingDetail } from "@/lib/utils/interfaces/order-tracking-deta
 import CancelOrderModal from "./cancelOrderModal";
 import CancelOrderSuccessModal from "./cancel-order-success-modal";
 import { onUseLocalStorage } from "@/lib/utils/methods/local-storage";
+import { useConfig } from "@/lib/context/configuration/configuration.context";
 
 function TrackingOrderDetails({
   orderTrackingDetails,
@@ -14,9 +15,11 @@ function TrackingOrderDetails({
   const [isCancelModalVisible, setIsCancelModalVisible] = useState(false);
   const [setshowCancelOrderSuccessModal, setSetshowCancelOrderSuccessModal] =
     useState(orderTrackingDetails?.orderStatus === "CANCELLED" ? true : false);
+  const { CURRENCY_SYMBOL,} =
+    useConfig();
   // Format currency values
   const formatCurrency = (amount: number) => {
-    return `$${amount?.toFixed(2) || "0.00"}`;
+    return `${CURRENCY_SYMBOL}${amount?.toFixed(2) || "0.00"}`;
   };
 
   // set orderTrackingDetails.restaurant._id in local storage
