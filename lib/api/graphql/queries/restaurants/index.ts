@@ -122,6 +122,7 @@ export const GET_RESTAURANT_BY_ID_SLUG = gql`
       deliveryTime
       minimumOrder
       tax
+      stripeDetailsSubmitted
       reviewData {
         total
         ratings
@@ -147,6 +148,7 @@ export const GET_RESTAURANT_BY_ID_SLUG = gql`
           title
           image
           description
+          isOutOfStock
           subCategory
           variations {
             _id
@@ -154,6 +156,7 @@ export const GET_RESTAURANT_BY_ID_SLUG = gql`
             price
             discounted
             addons
+            isOutOfStock
           }
         }
       }
@@ -162,6 +165,7 @@ export const GET_RESTAURANT_BY_ID_SLUG = gql`
         title
         description
         price
+        isOutOfStock
       }
       addons {
         _id

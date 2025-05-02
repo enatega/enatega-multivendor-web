@@ -1,5 +1,5 @@
 import { useRouter } from 'next/navigation';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 
 interface SideListProps {
     slug: string;
@@ -19,10 +19,50 @@ interface SideListProps {
 
 const SideList: React.FC<SideListProps> = ({ data, onHover }) => {
     const router = useRouter();
-
+    const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
+    
     const getRedirectUrl = (item) => {
         return `/${item.shopType === "restaurant" ? "restaurant" : "store"}/${item?.slug}/${item._id}`;
     };
+
+    useEffect(() => {
+        const isTouchDevice = window.matchMedia('(hover: none)').matches;
+
+        if (!isTouchDevice) return; // ⛔ Skip scroll-based hover on desktop
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        const index = itemRefs.current.findIndex((ref) => ref === entry.target);
+                        if (index !== -1) {
+                            const item = data[index];
+                            onHover({
+                                lat: Number(item.location.coordinates[1]),
+                                lng: Number(item.location.coordinates[0]),
+                            });
+                        }
+                    }
+                });
+            },
+            {
+                root: null,
+                threshold: 0.6,
+            }
+        );
+
+        itemRefs.current.forEach((ref) => {
+            if (ref) observer.observe(ref);
+        });
+
+        return () => {
+            itemRefs.current.forEach((ref) => {
+                if (ref) observer.unobserve(ref);
+            });
+        };
+    }, [data, onHover]);
+
+
 
     return (
         <div className="md:shadow-lg md:pt-8 md:bg-white  md:rounded-lg overflow-y-auto h-full md:pb-12 md:p-4 pl-2">
@@ -32,9 +72,12 @@ const SideList: React.FC<SideListProps> = ({ data, onHover }) => {
                     scrollSnapType: 'x mandatory',
                 }}
             >
-                {data.map((item) => (
+                {data.map((item,index) => (
                     <div
                         key={item._id}
+                        ref={(el) => {
+                            itemRefs.current[index] = el;
+                        }}
                         className="bg-white flex items-center p-3 border border-gray-200 rounded-lg hover:shadow-md transition-shadow flex-shrink-0 md:w-auto w-[85%] cursor-pointer"
                         style={{
                             scrollSnapAlign: 'start',

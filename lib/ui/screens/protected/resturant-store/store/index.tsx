@@ -361,7 +361,7 @@ export default function StoreDetailsScreen() {
       setSelectedSubCategory(id);
     }
     const element = document.getElementById(id);
-    const container = document.querySelector(".scrollable-container"); // Adjust selector
+    const container = document.body; // Adjust selector
 
     if (element && container) {
       const headerOffset = offset;
@@ -383,6 +383,7 @@ export default function StoreDetailsScreen() {
 
   // Function to handle opening the food item modal
   const handleOpenFoodModal = (food: IFood) => {
+    if(food.isOutOfStock) return;
 
     if (!restaurantInfo.isAvailable) {
       handleUpdateIsModalOpen(true, food?._id);
@@ -496,7 +497,7 @@ export default function StoreDetailsScreen() {
   // Effect to update selected category during scrolling
   useEffect(() => {
     const handleScrollUpdate = () => {
-      const container = document.querySelector(".scrollable-container");
+      const container = document.body;
       if (!container) return;
 
       let selected = "";
@@ -516,7 +517,7 @@ export default function StoreDetailsScreen() {
       }
     };
 
-    const container = document.querySelector(".scrollable-container");
+    const container = document.body;
     container?.addEventListener("scroll", handleScrollUpdate);
 
     return () => {
@@ -674,7 +675,7 @@ export default function StoreDetailsScreen() {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className="lg:top-[90px] top-[90px]"
+        className="lg:top-[90px] top-[103px]"
         style={{
           position: "sticky",
 
@@ -817,10 +818,12 @@ export default function StoreDetailsScreen() {
                               >
                                 {/* Text Content */}
                                 <div className="flex-grow text-left md:text-left space-y-2">
+                                   <div className="flex flex-col lg:flex-row justify-between flex-wrap">
                                   <h3 className="text-gray-900 text-lg font-semibold font-inter">
                                     {meal.title}
                                   </h3>
-
+                                    {meal.isOutOfStock && <span className="text-red-500">(Out of stock)</span>}
+                                    </div>
                                   <p className="text-gray-500 text-sm">
                                     {meal.description}
                                   </p>

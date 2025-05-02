@@ -278,6 +278,7 @@ export default function RestaurantDetailsScreen() {
 
   // Function to handle clicking on a restaurant item
   const handleRestaurantClick = (food: IFood) => {
+    if(food.isOutOfStock) return;
 
     if (!restaurantInfo.isAvailable) {
       // Store the action we want to perform after cart confirmation
@@ -329,7 +330,7 @@ export default function RestaurantDetailsScreen() {
     setSelectedCategory(id);
     selectedCategoryRef.current = id;
     const element = document.getElementById(id);
-    const container = document.querySelector(".scrollable-container");
+    const container = document.body;
 
     if (element && container) {
       const headerOffset = 120;
@@ -407,7 +408,7 @@ export default function RestaurantDetailsScreen() {
   // Highlight categories on scroll observer
   useEffect(() => {
     const handleScrollUpdate = () => {
-      const container = document.querySelector(".scrollable-container");
+      const container = document.body;
       if (!container) return;
 
       let selected = "";
@@ -427,7 +428,7 @@ export default function RestaurantDetailsScreen() {
       }
     };
 
-    const container = document.querySelector(".scrollable-container");
+    const container = document.body;
     container?.addEventListener("scroll", handleScrollUpdate);
 
     return () => {
@@ -589,7 +590,7 @@ export default function RestaurantDetailsScreen() {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className="lg:top-[60px] top-[80px]"
+        className="lg:top-[60px] top-[95px]"
         style={{
           position: "sticky",
 
@@ -700,9 +701,12 @@ export default function RestaurantDetailsScreen() {
                     >
                       {/* Text Content */}
                       <div className="flex-grow text-left md:text-left space-y-2">
+                        <div className="flex flex-col lg:flex-row justify-between flex-wrap">
                         <h3 className="text-gray-900 text-lg font-semibold font-inter">
                           {meal.title}
                         </h3>
+                        {meal.isOutOfStock && <span className="text-red-500">(Out of stock)</span>}
+                        </div>
 
                         <p className="text-gray-500 text-sm">
                           {meal.description}
