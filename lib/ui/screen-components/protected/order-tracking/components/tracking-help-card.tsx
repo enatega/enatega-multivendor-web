@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import React from 'react'
 
 function TrackingHelpCard() {
@@ -6,7 +7,7 @@ function TrackingHelpCard() {
             <span className="text-2xl">💬</span>
             <div>
                 <p className="text-sm font-medium text-gray-700">Need help with your order?</p>
-                <a href="#" className="text-blue-600 text-sm hover:underline">Get Help</a>
+                <Link href={"/profile/getHelp"} className="text-blue-600 text-sm hover:underline">Get Help</Link>
             </div>
         </div>
     )

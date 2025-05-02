@@ -25,6 +25,8 @@ const usefulLinks = {
   title: "Company",
   links: [
     { label: "About us", link: "https://ninjascode.com/", internal:false },
+    { label: "Terms-Conditions", link: "/terms" , internal:true},
+    { label: "Privacy Policy", link: "/privacy" , internal:true},
     { label: "Contact", link: "https://ninjascode.com/" , internal:false },
     { label: "Developers", link: "https://ninjascode.com/" , internal:false},
   ],
