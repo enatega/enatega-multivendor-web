@@ -371,8 +371,29 @@ export default function OrderCheckoutScreen() {
 
   // This is the fixed validateOrder function inside your OrderCheckoutScreen.js file
 
+  const isWithinOpeningTime = (openingTimes) => {
+    const now = new Date();
+    const currentDay = now.toLocaleString('en-US', { weekday: 'short' }).toUpperCase(); // e.g., "MON", "TUE", ...
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+
+    const todayOpening = openingTimes?.find((ot) => ot.day === currentDay);
+    if (!todayOpening) return false;
+
+    return todayOpening?.times?.some(({ startTime, endTime }) => {
+      const [startHour, startMinute] = startTime?.map(Number);
+      const [endHour, endMinute] = endTime?.map(Number);
+
+      const startTotal = startHour * 60 + startMinute;
+      const endTotal = endHour * 60 + endMinute;
+      const nowTotal = currentHour * 60 + currentMinute;
+
+      return nowTotal >= startTotal && nowTotal <= endTotal;
+    });
+  };
+
   function validateOrder() {
-    if (!restaurantData?.restaurant?.isAvailable || !onCheckIsOpen()) {
+    if (!restaurantData?.restaurant?.isAvailable || !restaurantData?.isActive || !isWithinOpeningTime(restaurantData?.openingTimes)|| !onCheckIsOpen()) {
       // toggleCloseModal();
       showToast({
         title: "Restaurant",

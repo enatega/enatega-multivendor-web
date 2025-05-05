@@ -381,11 +381,32 @@ export default function StoreDetailsScreen() {
     }
   };
 
+  const isWithinOpeningTime = (openingTimes) => {
+    const now = new Date();
+    const currentDay = now.toLocaleString('en-US', { weekday: 'short' }).toUpperCase(); // e.g., "MON", "TUE", ...
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+
+    const todayOpening = openingTimes?.find((ot) => ot.day === currentDay);
+    if (!todayOpening) return false;
+
+    return todayOpening?.times?.some(({ startTime, endTime }) => {
+      const [startHour, startMinute] = startTime?.map(Number);
+      const [endHour, endMinute] = endTime?.map(Number);
+
+      const startTotal = startHour * 60 + startMinute;
+      const endTotal = endHour * 60 + endMinute;
+      const nowTotal = currentHour * 60 + currentMinute;
+
+      return nowTotal >= startTotal && nowTotal <= endTotal;
+    });
+  };
+
   // Function to handle opening the food item modal
   const handleOpenFoodModal = (food: IFood) => {
     if (food.isOutOfStock) return;
 
-    if (!restaurantInfo.isAvailable) {
+    if (!restaurantInfo?.isAvailable || !restaurantInfo?.isActive || !isWithinOpeningTime(restaurantInfo?.openingTimes)) {
       handleUpdateIsModalOpen(true, food?._id);
       return;
     }
