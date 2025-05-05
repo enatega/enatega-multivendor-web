@@ -824,7 +824,7 @@ export default function StoreDetailsScreen() {
                           {subCategory.foods.map((meal: IFood, mealIndex) => (
                             <div
                               key={mealIndex}
-                              className="flex items-center gap-4 rounded-lg border border-gray-300 shadow-sm bg-white p-3 relative hover:scale-105 transition-all duration-300"
+                              className="flex items-center gap-4 rounded-lg border border-gray-300 shadow-sm bg-white p-3 relative transition-transform duration-300 hover:scale-105 hover:shadow-lg"
                             >
                               {/* Text Content */}
                               <div className="flex-grow text-left md:text-left space-y-2 ">
