@@ -396,10 +396,10 @@ const TermsConditions = () => {
       </div>
 
       <div className="w-[90%] mx-auto">
-        {ParasData.map((item) => {
+        {ParasData?.map((item) => {
           return <OnePara Para={item} key={item.head} />;
         })}
-        {ListDatas.map((item) => {
+        {ListDatas?.map((item) => {
           return <OnePara Para={item} key={item.head} />;
         })}
       </div>
