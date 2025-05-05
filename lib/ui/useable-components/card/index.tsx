@@ -18,12 +18,34 @@ import { saveSearchedKeyword } from "@/lib/utils/methods";
 import CustomDialog from "../custom-dialog";
 import { Button } from "primereact/button";
 
-const Card: React.FC<ICardProps> = ({ item, isModalOpen={value: false, id: ""}, handleUpdateIsModalOpen=()=>{} }) => {
+const Card: React.FC<ICardProps> = ({ item, isModalOpen = { value: false, id: "" }, handleUpdateIsModalOpen = () => { } }) => {
   const router = useRouter();
   const pathname = usePathname();
   const { setIsSearchFocused, setFilter, isSearchFocused, filter } = useSearchUI();
-  
+
   console.log("isModalOpen", isModalOpen);
+
+  const isWithinOpeningTime = (openingTimes) => {
+    const now = new Date();
+    const currentDay = now.toLocaleString('en-US', { weekday: 'short' }).toUpperCase(); // e.g., "MON", "TUE", ...
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+
+    const todayOpening = openingTimes?.find((ot) => ot.day === currentDay);
+    if (!todayOpening) return false;
+
+    return todayOpening?.times?.some(({ startTime, endTime }) => {
+      const [startHour, startMinute] = startTime?.map(Number);
+      const [endHour, endMinute] = endTime?.map(Number);
+
+      const startTotal = startHour * 60 + startMinute;
+      const endTotal = endHour * 60 + endMinute;
+      const nowTotal = currentHour * 60 + currentMinute;
+
+      return nowTotal >= startTotal && nowTotal <= endTotal;
+    });
+  };
+
   return (
     <div
       className={`relative rounded-md shadow-md cursor-pointer hover:scale-102 hover:opacity-95 transition-transform duration-500 max-h-[272px] w-[96%] ml-[2%] ${pathname === "/restaurants" || pathname === "/store" ? "my-[2%]" : "my-[4%]"}`}
@@ -31,7 +53,7 @@ const Card: React.FC<ICardProps> = ({ item, isModalOpen={value: false, id: ""}, 
         // const params = new URLSearchParams({ name: item?.name, id: item._id });
         // router.push(`/restaurant?${params.toString()}`);
 
-        if (!item?.isAvailable) {
+        if (!item?.isAvailable || !item?.isActive || !isWithinOpeningTime(item?.openingTimes)) {
           handleUpdateIsModalOpen(true, item._id);
           return;
         }
@@ -68,7 +90,7 @@ const Card: React.FC<ICardProps> = ({ item, isModalOpen={value: false, id: ""}, 
         />
       </div>
       {/* overlay if item.isActive is false */}
-      {!item?.isAvailable && (
+      {(!item?.isAvailable || !item?.isActive || !isWithinOpeningTime(item?.openingTimes)) && (
         <div className="absolute rounded-md top-0 left-0 w-full h-[160px] bg-black/50 opacity-75 z-20 flex items-center justify-center">
           <div className="text-white text-center z-30">
             <p className="text-lg font-bold">Closed</p>

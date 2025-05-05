@@ -43,6 +43,13 @@ export const RESTAURANTS_FRAGMENT = gql`
     location {
       coordinates
     }
+    openingTimes {
+        day
+        times {
+          startTime
+          endTime
+        }
+      }
   }
 `;
 
@@ -96,6 +103,13 @@ export const NEAR_BY_RESTAURANTS_PREVIEW = gql`
         }
         location {
           coordinates
+        }
+        openingTimes {
+          day
+          times {
+            startTime
+            endTime
+          }
         }
       }
     }
