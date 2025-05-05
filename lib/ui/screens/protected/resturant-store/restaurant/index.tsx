@@ -26,6 +26,8 @@ import FoodCategorySkeleton from "@/lib/ui/useable-components/custom-skeletons/f
 import ClearCartModal from "@/lib/ui/useable-components/clear-cart-modal";
 import Confetti from "react-confetti";
 import { useConfig } from "@/lib/context/configuration/configuration.context";
+import EmptySearch from "@/lib/ui/useable-components/empty-search-results";
+
 
 // Interface
 import { ICategory, IFood } from "@/lib/utils/interfaces";
@@ -276,11 +278,33 @@ export default function RestaurantDetailsScreen() {
   const [showReviews, setShowReviews] = useState<boolean>(false);
   const [showMoreInfo, setShowMoreInfo] = useState<boolean>(false);
 
-  // Function to handle clicking on a restaurant item
-  const handleRestaurantClick = (food: IFood) => {
-    if(food.isOutOfStock) return;
+  // Function to check weather time exisis
+  const isWithinOpeningTime = (openingTimes) => {
+    const now = new Date();
+    const currentDay = now.toLocaleString('en-US', { weekday: 'short' }).toUpperCase(); // e.g., "MON", "TUE", ...
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
 
-    if (!restaurantInfo.isAvailable) {
+    const todayOpening = openingTimes?.find((ot) => ot.day === currentDay);
+    if (!todayOpening) return false;
+
+    return todayOpening?.times?.some(({ startTime, endTime }) => {
+      const [startHour, startMinute] = startTime?.map(Number);
+      const [endHour, endMinute] = endTime?.map(Number);
+
+      const startTotal = startHour * 60 + startMinute;
+      const endTotal = endHour * 60 + endMinute;
+      const nowTotal = currentHour * 60 + currentMinute;
+
+      return nowTotal >= startTotal && nowTotal <= endTotal;
+    });
+  };
+
+  // Function to handle clicking on a restaurant
+  const handleRestaurantClick = (food: IFood) => {
+    if (food.isOutOfStock) return;
+
+    if (!restaurantInfo?.isAvailable || !restaurantInfo?.isActive || !isWithinOpeningTime(restaurantInfo?.openingTimes)) {
       // Store the action we want to perform after cart confirmation
       handleUpdateIsModalOpen(true, food?._id);
       return;
@@ -702,10 +726,10 @@ export default function RestaurantDetailsScreen() {
                       {/* Text Content */}
                       <div className="flex-grow text-left md:text-left space-y-2">
                         <div className="flex flex-col lg:flex-row justify-between flex-wrap">
-                        <h3 className="text-gray-900 text-lg font-semibold font-inter">
-                          {meal.title}
-                        </h3>
-                        {meal.isOutOfStock && <span className="text-red-500">(Out of stock)</span>}
+                          <h3 className="text-gray-900 text-lg font-semibold font-inter">
+                            {meal.title}
+                          </h3>
+                          {meal.isOutOfStock && <span className="text-red-500">(Out of stock)</span>}
                         </div>
 
                         <p className="text-gray-500 text-sm">
@@ -755,6 +779,12 @@ export default function RestaurantDetailsScreen() {
               </div>
             );
           })
+        }
+        {
+          !loading && deals.length == 0 &&
+          <div className="text-center py-6 text-gray-500 flex flex-col items-center justify-center">
+            <EmptySearch />
+          </div>
         }
       </PaddingContainer>
 

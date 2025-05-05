@@ -27,6 +27,8 @@ import { GET_USER_PROFILE } from "@/lib/api/graphql";
 import { useConfig } from "@/lib/context/configuration/configuration.context";
 import Confetti from "react-confetti";
 import CustomDialog from "@/lib/ui/useable-components/custom-dialog";
+import EmptySearch from "@/lib/ui/useable-components/empty-search-results";
+
 
 // API
 import {
@@ -136,9 +138,8 @@ export default function StoreDetailsScreen() {
         onClick={() => handleScroll(_url ?? "", true)}
       >
         <span
-          className={`mx-2 ${item.items && "font-semibold"} text-${
-            isClicked ? "[#5AC12F]" : "gray-600"
-          }`}
+          className={`mx-2 ${item.items && "font-semibold"} text-${isClicked ? "[#5AC12F]" : "gray-600"
+            }`}
         >
           {item.label}
         </span>
@@ -163,15 +164,13 @@ export default function StoreDetailsScreen() {
 
     return (
       <div
-        className={`flex align-items-center px-3 py-2 cursor-pointer bg-${
-          isClicked ? "[#F3FFEE]" : ""
-        }`}
+        className={`flex align-items-center px-3 py-2 cursor-pointer bg-${isClicked ? "[#F3FFEE]" : ""
+          }`}
         onClick={() => handleScroll(_url ?? "", false, 80)}
       >
         <span
-          className={`mx-2 ${item.items && "font-semibold"} text-${
-            isClicked ? "[#5AC12F]" : "gray-600"
-          }`}
+          className={`mx-2 ${item.items && "font-semibold"} text-${isClicked ? "[#5AC12F]" : "gray-600"
+            }`}
         >
           {item.label}
         </span>
@@ -207,17 +206,17 @@ export default function StoreDetailsScreen() {
 
               return foods.length > 0
                 ? {
-                    _id: subCat._id,
-                    title: subCat.title,
-                    foods,
-                  }
+                  _id: subCat._id,
+                  title: subCat.title,
+                  foods,
+                }
                 : null;
             })
             .filter(Boolean) as {
-            _id: string;
-            title: string;
-            foods: IFood[];
-          }[];
+              _id: string;
+              title: string;
+              foods: IFood[];
+            }[];
 
           if (groupedFoods["uncategorized"]?.length > 0) {
             subCategoryGroups.push({
@@ -382,11 +381,32 @@ export default function StoreDetailsScreen() {
     }
   };
 
+  const isWithinOpeningTime = (openingTimes) => {
+    const now = new Date();
+    const currentDay = now.toLocaleString('en-US', { weekday: 'short' }).toUpperCase(); // e.g., "MON", "TUE", ...
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+
+    const todayOpening = openingTimes?.find((ot) => ot.day === currentDay);
+    if (!todayOpening) return false;
+
+    return todayOpening?.times?.some(({ startTime, endTime }) => {
+      const [startHour, startMinute] = startTime?.map(Number);
+      const [endHour, endMinute] = endTime?.map(Number);
+
+      const startTotal = startHour * 60 + startMinute;
+      const endTotal = endHour * 60 + endMinute;
+      const nowTotal = currentHour * 60 + currentMinute;
+
+      return nowTotal >= startTotal && nowTotal <= endTotal;
+    });
+  };
+
   // Function to handle opening the food item modal
   const handleOpenFoodModal = (food: IFood) => {
     if (food.isOutOfStock) return;
 
-    if (!restaurantInfo.isAvailable) {
+    if (!restaurantInfo?.isAvailable || !restaurantInfo?.isActive || !isWithinOpeningTime(restaurantInfo?.openingTimes)) {
       handleUpdateIsModalOpen(true, food?._id);
       return;
     }
@@ -716,15 +736,13 @@ export default function StoreDetailsScreen() {
                     return (
                       <li key={index} className="shrink-0">
                         <button
-                          className={`bg-${
-                            selectedCategory === _slug
+                          className={`bg-${selectedCategory === _slug
                               ? "[#F3FFEE]"
                               : "gray-100"
-                          } text-${
-                            selectedCategory === _slug
+                            } text-${selectedCategory === _slug
                               ? "[#5AC12F]"
                               : "gray-600"
-                          } rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap`}
+                            } rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap`}
                           onClick={() => handleScroll(_slug, true, 100)}
                         >
                           {category.label}
@@ -750,15 +768,13 @@ export default function StoreDetailsScreen() {
                       return (
                         <li key={index} className="shrink-0">
                           <button
-                            className={`bg-${
-                              selectedSubCategory === _slug
+                            className={`bg-${selectedSubCategory === _slug
                                 ? "[#F3FFEE]"
                                 : "gray-100"
-                            } text-${
-                              selectedSubCategory === _slug
+                              } text-${selectedSubCategory === _slug
                                 ? "[#5AC12F]"
                                 : "gray-600"
-                            } rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap`}
+                              } rounded-full px-3 py-2 text-[10px] sm:text-sm md:text-base font-medium whitespace-nowrap`}
                             onClick={() => handleScroll(_slug, false, 170)}
                           >
                             {sub_category.label}
@@ -785,11 +801,10 @@ export default function StoreDetailsScreen() {
             <div className="hidden md:block md:w-1/5 p-3 h-screen z-10  sticky top-14 left-0">
               <div className="h-full overflow-hidden group">
                 <div
-                  className={`h-full overflow-y-auto transition-all duration-300 ${
-                    isScrolling
+                  className={`h-full overflow-y-auto transition-all duration-300 ${isScrolling
                       ? "scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
                       : "overflow-hidden"
-                  }`}
+                    }`}
                   onScroll={handleMouseEnterCategoryPanel}
                 >
                   <PanelMenu
@@ -830,7 +845,7 @@ export default function StoreDetailsScreen() {
                           {subCategory.foods.map((meal: IFood, mealIndex) => (
                             <div
                               key={mealIndex}
-                              className="flex items-center gap-4 rounded-lg border border-gray-300 shadow-sm bg-white p-3 relative hover:scale-105 transition-all duration-300"
+                              className="flex items-center gap-4 rounded-lg border border-gray-300 shadow-sm bg-white p-3 relative transition-transform duration-300 hover:scale-105 hover:shadow-lg"
                             >
                               {/* Text Content */}
                               <div className="flex-grow text-left md:text-left space-y-2 ">
@@ -915,6 +930,13 @@ export default function StoreDetailsScreen() {
             </div>
           </div>
         )}
+        {
+          !loading && deals.length == 0 &&
+          <div className="text-center py-6 text-gray-500 flex flex-col items-center justify-center">
+            <EmptySearch />
+          </div>
+        }
+
       </PaddingContainer>
 
       {/* Food Item Detail Modal */}
