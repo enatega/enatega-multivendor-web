@@ -17,11 +17,14 @@ import { ICardProps, IOpeningTime } from "@/lib/utils/interfaces";
 import { saveSearchedKeyword } from "@/lib/utils/methods";
 import CustomDialog from "../custom-dialog";
 import { Button } from "primereact/button";
+import { useConfig } from "@/lib/context/configuration/configuration.context";
 
 const Card: React.FC<ICardProps> = ({ item, isModalOpen = { value: false, id: "" }, handleUpdateIsModalOpen = () => { } }) => {
   const router = useRouter();
   const pathname = usePathname();
   const { setIsSearchFocused, setFilter, isSearchFocused, filter } = useSearchUI();
+
+  const {DELIVERY_RATE} = useConfig();
 
   console.log("isModalOpen", isModalOpen);
 
@@ -127,7 +130,7 @@ const Card: React.FC<ICardProps> = ({ item, isModalOpen = { value: false, id: ""
             title={item?.deliveryTime + " mins"}
             isBlue={true}
           />
-          {item?.deliveryInfo?.deliveryFee && <IconWithTitle logo={CycleSvg} title={item?.deliveryInfo?.deliveryFee} />}
+          {DELIVERY_RATE && <IconWithTitle logo={CycleSvg} title={DELIVERY_RATE} />}
           <IconWithTitle logo={FaceSvg} title={item?.reviewAverage} />
         </div>
       </div>
