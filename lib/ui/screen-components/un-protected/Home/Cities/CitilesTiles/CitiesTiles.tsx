@@ -45,7 +45,7 @@ const CitiesTiles: React.FC<CitiesTilesProps> = ({
       details: `Auto-selected from ${data?.getCitiesByCountry?.name}`,
     });
 
-    router.push("/restaurants");
+    router.push("/discovery");
   };
 
   return (
