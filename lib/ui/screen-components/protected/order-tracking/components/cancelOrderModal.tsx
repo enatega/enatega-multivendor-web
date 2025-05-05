@@ -79,7 +79,7 @@ function CancelOrderModal({ visible, onHide, orderId, onSuccess }: CancelOrderMo
       visible={visible}
       onHide={onHide}
       modal
-      className="w-full max-w-md mx-4"
+      className="w-full max-w-md mx-4 bg-white p-5"
       contentClassName="p-6"
       showHeader={false}
       closable={true}
