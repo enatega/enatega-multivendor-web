@@ -30,7 +30,7 @@ import EmptySearch from "@/lib/ui/useable-components/empty-search-results";
 
 
 // Interface
-import { ICategory, IFood } from "@/lib/utils/interfaces";
+import { ICategory, IFood, IOpeningTime } from "@/lib/utils/interfaces";
 
 // Methods
 import { toSlug } from "@/lib/utils/methods";
@@ -279,18 +279,18 @@ export default function RestaurantDetailsScreen() {
   const [showMoreInfo, setShowMoreInfo] = useState<boolean>(false);
 
   // Function to check weather time exisis
-  const isWithinOpeningTime = (openingTimes) => {
+  const isWithinOpeningTime = (openingTimes: IOpeningTime[]): boolean => {
     const now = new Date();
     const currentDay = now.toLocaleString('en-US', { weekday: 'short' }).toUpperCase(); // e.g., "MON", "TUE", ...
     const currentHour = now.getHours();
     const currentMinute = now.getMinutes();
 
-    const todayOpening = openingTimes?.find((ot) => ot.day === currentDay);
+    const todayOpening = openingTimes.find((ot) => ot.day === currentDay);
     if (!todayOpening) return false;
 
-    return todayOpening?.times?.some(({ startTime, endTime }) => {
-      const [startHour, startMinute] = startTime?.map(Number);
-      const [endHour, endMinute] = endTime?.map(Number);
+    return todayOpening.times.some(({ startTime, endTime }) => {
+      const [startHour, startMinute] = startTime.map(Number);
+      const [endHour, endMinute] = endTime.map(Number);
 
       const startTotal = startHour * 60 + startMinute;
       const endTotal = endHour * 60 + endMinute;

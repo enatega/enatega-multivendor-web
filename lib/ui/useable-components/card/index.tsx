@@ -13,7 +13,7 @@ import IconWithTitle from "../icon-with-title";
 import { useSearchUI } from "@/lib/context/search/search.context";
 
 // Interface
-import { ICardProps } from "@/lib/utils/interfaces";
+import { ICardProps, IOpeningTime } from "@/lib/utils/interfaces";
 import { saveSearchedKeyword } from "@/lib/utils/methods";
 import CustomDialog from "../custom-dialog";
 import { Button } from "primereact/button";
@@ -25,18 +25,18 @@ const Card: React.FC<ICardProps> = ({ item, isModalOpen = { value: false, id: ""
 
   console.log("isModalOpen", isModalOpen);
 
-  const isWithinOpeningTime = (openingTimes) => {
+  const isWithinOpeningTime = (openingTimes: IOpeningTime[]):boolean => {
     const now = new Date();
     const currentDay = now.toLocaleString('en-US', { weekday: 'short' }).toUpperCase(); // e.g., "MON", "TUE", ...
     const currentHour = now.getHours();
     const currentMinute = now.getMinutes();
 
-    const todayOpening = openingTimes?.find((ot) => ot.day === currentDay);
+    const todayOpening = openingTimes.find((ot) => ot.day === currentDay);
     if (!todayOpening) return false;
 
-    return todayOpening?.times?.some(({ startTime, endTime }) => {
-      const [startHour, startMinute] = startTime?.map(Number);
-      const [endHour, endMinute] = endTime?.map(Number);
+    return todayOpening.times.some(({ startTime, endTime }) => {
+      const [startHour, startMinute] = startTime.map(Number);
+      const [endHour, endMinute] = endTime.map(Number);
 
       const startTotal = startHour * 60 + startMinute;
       const endTotal = endHour * 60 + endMinute;
