@@ -140,7 +140,8 @@ export default function AuthModal({
 
   return (
     <Dialog
-      visible={isAuthModalVisible}closeIcon
+      visible={isAuthModalVisible}
+      closeIcon
       onHide={handleModalToggle}
       closable={activePanel <= 3}
       contentStyle={{
