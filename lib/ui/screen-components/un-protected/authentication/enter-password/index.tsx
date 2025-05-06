@@ -90,12 +90,21 @@ export default function EnterPassword({
           placeholder={t("Password")}
           onChange={(e) => handleFormChange("password", e.target.value)}
         />
+        <div className="flex justify-between">
+        <span
+          className="self-end font-semibold text-sm underline cursor-pointer text-[#5AC12F]"
+          onClick={() => handleChangePanel(8)}
+        >
+          {t("Forgot password")}
+        </span>
         <span
           className="self-end font-semibold text-sm underline cursor-pointer text-[#5AC12F]"
           onClick={() => handleChangePanel(0)}
         >
           {t("Continue with google instead")}
         </span>
+        </div>
+         
       </div>
       <CustomButton
         label={t("Continue")}

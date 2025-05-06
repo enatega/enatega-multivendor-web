@@ -114,7 +114,7 @@ export default function UserAddressComponent(
     null
   );
   const [newDraggedCenter, setNewDraggedCenter] = useState({ lat: 0, lng: 0 });
-  const [selectedLocationType, setSelectedLocationType] = useState<string>("");
+  const [selectedLocationType, setSelectedLocationType] = useState<string>("House");
   const [search, setSearch] = useState<string>("");
   const [inputValue, setInputValue] = useState<string>("");
   const [options, setOptions] = useState<IPlaceSelectedOption[]>([]);
