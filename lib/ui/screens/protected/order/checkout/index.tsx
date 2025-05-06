@@ -128,7 +128,9 @@ export default function OrderCheckoutScreen() {
   };
   const store_user_location_cache_key = `${origin?.lat},${origin?.lng}_${destination?.lat},${destination?.lng}`;
 
-  const [orderInstructions, setOrderInstructions] = useState<string | null>(null);
+  const [orderInstructions, setOrderInstructions] = useState<string | null>(
+    null
+  );
 
   // Initialize on client
   useEffect(() => {
@@ -154,7 +156,11 @@ export default function OrderCheckoutScreen() {
       setOrderInstructions(updated);
     };
     window.addEventListener("orderInstructionsUpdated", handleCustomUpdate);
-    return () => window.removeEventListener("orderInstructionsUpdated", handleCustomUpdate);
+    return () =>
+      window.removeEventListener(
+        "orderInstructionsUpdated",
+        handleCustomUpdate
+      );
   }, []);
 
   // API
@@ -229,9 +235,9 @@ export default function OrderCheckoutScreen() {
         variation: food.variation._id,
         addons: food.addons
           ? food.addons.map(({ _id, options }) => ({
-            _id,
-            options: options.map(({ _id }) => _id),
-          }))
+              _id,
+              options: options.map(({ _id }) => _id),
+            }))
           : [],
         specialInstructions: food.specialInstructions,
       };
@@ -373,7 +379,9 @@ export default function OrderCheckoutScreen() {
 
   const isWithinOpeningTime = (openingTimes: IOpeningTime[]): boolean => {
     const now = new Date();
-    const currentDay = now.toLocaleString('en-US', { weekday: 'short' }).toUpperCase(); // e.g., "MON", "TUE", ...
+    const currentDay = now
+      .toLocaleString("en-US", { weekday: "short" })
+      .toUpperCase(); // e.g., "MON", "TUE", ...
     const currentHour = now.getHours();
     const currentMinute = now.getMinutes();
 
@@ -393,7 +401,12 @@ export default function OrderCheckoutScreen() {
   };
 
   function validateOrder() {
-    if (!restaurantData?.restaurant?.isAvailable || !restaurantData?.isActive || !isWithinOpeningTime(restaurantData?.openingTimes)|| !onCheckIsOpen()) {
+    if (
+      !restaurantData?.restaurant?.isAvailable ||
+      !restaurantData?.restaurant?.isActive ||
+      !isWithinOpeningTime(restaurantData?.restaurant?.openingTimes) ||
+      !onCheckIsOpen()
+    ) {
       // toggleCloseModal();
       showToast({
         title: "Restaurant",
