@@ -103,7 +103,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     undefined | ICreateUserArguments
   >(CREATE_USER);
   const [mutateResetPassword] = useMutation<
-    {resetPassword:{result: boolean}},
+    { resetPassword: { result: boolean } },
     undefined | { password: string; email: string }
   >(RESET_PASSWORD);
 
@@ -167,40 +167,40 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   // handlers
-  
-      const handlePasswordReset = async (password: string, email: string, setFormData: Dispatch<SetStateAction<IAuthFormData>>) => {
-             try{
-                  setIsLoading(true);
-                  const resetPasswordResponse = await mutateResetPassword({
-                    variables: { password, email},
-                  });
-                  if(resetPasswordResponse?.data?.resetPassword?.result === true){
-                    showToast({
-                      type: "success",
-                      title: t("Password Reset"),
-                      message: t("Your password has been reset successfully"),
-                    });
-                    setFormData({} as IAuthFormData);
-                    setActivePanel(0);
-                    // setIsAuthModalVisible(false);
-                  }  
-             }
-             catch(err){
-                  const error = err as ApolloError;
-                  console.error("Error while resetting password:", error);
-                  showToast({
-                    type: "error",
-                    title: t("Password Reset Error"),
-                    message:
-                      error.cause?.message ||
-                      t("An error occurred while resetting the password"),
-                  });
-             }
-             finally{
-                  setIsLoading(false);
-             }
+
+  const handlePasswordReset = async (password: string, email: string, setFormData: Dispatch<SetStateAction<IAuthFormData>>) => {
+    try {
+      setIsLoading(true);
+      const resetPasswordResponse = await mutateResetPassword({
+        variables: { password, email },
+      });
+      if (resetPasswordResponse?.data?.resetPassword?.result === true) {
+        showToast({
+          type: "success",
+          title: t("Password Reset"),
+          message: t("Your password has been reset successfully"),
+        });
+        setFormData({} as IAuthFormData);
+        setActivePanel(0);
+        // setIsAuthModalVisible(false);
       }
-        
+    }
+    catch (err) {
+      const error = err as ApolloError;
+      console.error("Error while resetting password:", error);
+      showToast({
+        type: "error",
+        title: t("Password Reset Error"),
+        message:
+          error.cause?.message ||
+          t("An error occurred while resetting the password"),
+      });
+    }
+    finally {
+      setIsLoading(false);
+    }
+  }
+
 
   const handleUserLogin = async (user: IUserLoginArguments) => {
     try {
@@ -212,7 +212,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       const { data } = userResponse;
       localStorage.setItem("userId", data?.login.userId ?? "");
       localStorage.setItem("token", data?.login.token ?? "");
-    
+
       return data;
     } catch (err) {
       const error = err as ApolloError;
@@ -306,7 +306,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   async function onLoginCompleted(data: ILoginProfileResponse) {
     try {
       setUser(data.login);
-     
+
       localStorage.setItem("token", data?.login?.token ?? "");
       localStorage.setItem("userId", data?.login?.userId ?? "");
       await fetchProfile();
@@ -360,8 +360,8 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(true);
       if (SKIP_EMAIL_VERIFICATION) {
         setOtp(TEST_OTP);
-        if(type &&type !== "password-recovery"){
-          setActivePanel(5);  
+        if (type && type !== "password-recovery") {
+          setActivePanel(5);
         }
         return;
       } else {
@@ -371,7 +371,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
           variables: { email: email, otp: otpFrom.current },
         });
         if (otpResponse.data?.sendOtpToEmail?.result) {
-          if(type &&type !== "password-recovery"){
+          if (type && type !== "password-recovery") {
             setActivePanel(3);
           }
           showToast({

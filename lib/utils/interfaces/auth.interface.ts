@@ -192,3 +192,10 @@ export interface ICreateUserArguments {
   notificationToken?: string;
   appleId?: string;
 }
+export interface IVerificationEmailForChangePasswordProps {
+  handleSubmitAfterVerification: () => void;
+  handleResendEmailOtp: () => void;
+  emailOtp: string;
+  setEmailOtp: (otp: string) => void;
+  formData: { email?: string, password?: string, name?: string, phone?: string };
+}

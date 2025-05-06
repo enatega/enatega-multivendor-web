@@ -236,7 +236,6 @@ export default function AuthModal({
             handleResendEmailOtp={handleResendEmailOtp}
             emailOtp={emailOtp}
             setEmailOtp={setEmailOtp}
-            showToast={showToast}
             formData={formData}
           />
         </StepperPanel>

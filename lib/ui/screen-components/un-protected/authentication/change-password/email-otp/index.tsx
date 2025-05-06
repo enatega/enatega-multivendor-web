@@ -4,28 +4,30 @@ import { useRef, useState, useEffect } from "react"
 //components
 import CustomButton from "@/lib/ui/useable-components/button"
 // Icons
-import PhoneIcon from "@/lib/utils/assets/svg/phone"
 import useDebounceFunction from "@/lib/hooks/useDebounceForFunction"
 import { useAuth } from "@/lib/context/auth/auth.context"
+import useToast from "@/lib/hooks/useToast"
+import { IVerificationEmailForChangePasswordProps } from "@/lib/utils/interfaces"
+import EmailIcon from "@/public/assets/images/svgs/email"
+
 
 const VerificationEmailForChangePassword = ({
   handleSubmitAfterVerification,
   handleResendEmailOtp,
   emailOtp,
   setEmailOtp,
-  showToast,
   formData
-}: any) => {
+}: IVerificationEmailForChangePasswordProps) => {
   const [otp, setOtp] = useState<string[]>(Array(6).fill(""))
   const inputRefs = useRef<(HTMLInputElement | null)[]>([])
   const {otp: emailOtpVerify} = useAuth()
-
+  const { showToast } = useToast();
 
   // useEffect to handle resend email otp on first render
   const isFirstRender = useRef(true);
   useEffect(() => {
     if (formData?.email && isFirstRender.current) {
-      handleResendEmailOtp(formData?.email);
+      handleResendEmailOtp();
       isFirstRender.current = false;
     }
   }, [formData?.email]);
@@ -110,7 +112,7 @@ const VerificationEmailForChangePassword = ({
   return (
     <div className="w-[300px] sm:w-full max-w-md mx-auto p-4 flex flex-col items-center bg-white rounded-3xl shadow-sm">
       <div className="mb-2">
-        <PhoneIcon/>
+        <EmailIcon/>
       </div>
 
       <h2 className="text-2xl font-bold text-center text-gray-800 mb-1">We have sent OTP code to</h2>
