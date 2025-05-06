@@ -96,6 +96,7 @@ export default function AuthModal({
         } else {
           setActivePanel(0);
           setIsAuthModalVisible(false);
+
           showToast({
             type: "success",
             title: "Login",

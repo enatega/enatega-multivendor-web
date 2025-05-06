@@ -43,6 +43,7 @@ import {
   ICategoryDetailsResponse,
   ICategoryV2,
   IFood,
+  IOpeningTime,
   ISubCategory,
   ISubCategoryV2,
 } from "@/lib/utils/interfaces";
@@ -381,11 +382,32 @@ export default function StoreDetailsScreen() {
     }
   };
 
+  const isWithinOpeningTime = (openingTimes: IOpeningTime[]): boolean => {
+    const now = new Date();
+    const currentDay = now.toLocaleString('en-US', { weekday: 'short' }).toUpperCase(); // e.g., "MON", "TUE", ...
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+
+    const todayOpening = openingTimes.find((ot) => ot.day === currentDay);
+    if (!todayOpening) return false;
+
+    return todayOpening.times.some(({ startTime, endTime }) => {
+      const [startHour, startMinute] = startTime.map(Number);
+      const [endHour, endMinute] = endTime.map(Number);
+
+      const startTotal = startHour * 60 + startMinute;
+      const endTotal = endHour * 60 + endMinute;
+      const nowTotal = currentHour * 60 + currentMinute;
+
+      return nowTotal >= startTotal && nowTotal <= endTotal;
+    });
+  };
+
   // Function to handle opening the food item modal
   const handleOpenFoodModal = (food: IFood) => {
     if (food.isOutOfStock) return;
 
-    if (!restaurantInfo.isAvailable) {
+    if (!restaurantInfo?.isAvailable || !restaurantInfo?.isActive || !isWithinOpeningTime(restaurantInfo?.openingTimes)) {
       handleUpdateIsModalOpen(true, food?._id);
       return;
     }
@@ -824,7 +846,7 @@ export default function StoreDetailsScreen() {
                           {subCategory.foods.map((meal: IFood, mealIndex) => (
                             <div
                               key={mealIndex}
-                              className="flex items-center gap-4 rounded-lg border border-gray-300 shadow-sm bg-white p-3 relative hover:scale-105 transition-all duration-300"
+                              className="flex items-center gap-4 rounded-lg border border-gray-300 shadow-sm bg-white p-3 relative transition-transform duration-300 hover:scale-105 hover:shadow-lg"
                             >
                               {/* Text Content */}
                               <div className="flex-grow text-left md:text-left space-y-2 ">

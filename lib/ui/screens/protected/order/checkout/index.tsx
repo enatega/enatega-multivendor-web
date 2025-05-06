@@ -47,7 +47,7 @@ import { PAYMENT_METHOD_LIST, TIPS } from "@/lib/utils/constants";
 import { PLACE_ORDER, VERIFY_COUPON, ORDERS } from "@/lib/api/graphql";
 
 // Interfaces
-import { ICoupon, IOrder } from "@/lib/utils/interfaces";
+import { ICoupon, IOpeningTime, IOrder } from "@/lib/utils/interfaces";
 
 // Types
 import { OrderTypes } from "@/lib/utils/types/order";
@@ -371,8 +371,29 @@ export default function OrderCheckoutScreen() {
 
   // This is the fixed validateOrder function inside your OrderCheckoutScreen.js file
 
+  const isWithinOpeningTime = (openingTimes: IOpeningTime[]): boolean => {
+    const now = new Date();
+    const currentDay = now.toLocaleString('en-US', { weekday: 'short' }).toUpperCase(); // e.g., "MON", "TUE", ...
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+
+    const todayOpening = openingTimes.find((ot) => ot.day === currentDay);
+    if (!todayOpening) return false;
+
+    return todayOpening.times.some(({ startTime, endTime }) => {
+      const [startHour, startMinute] = startTime.map(Number);
+      const [endHour, endMinute] = endTime.map(Number);
+
+      const startTotal = startHour * 60 + startMinute;
+      const endTotal = endHour * 60 + endMinute;
+      const nowTotal = currentHour * 60 + currentMinute;
+
+      return nowTotal >= startTotal && nowTotal <= endTotal;
+    });
+  };
+
   function validateOrder() {
-    if (!restaurantData?.restaurant?.isAvailable || !onCheckIsOpen()) {
+    if (!restaurantData?.restaurant?.isAvailable || !restaurantData?.isActive || !isWithinOpeningTime(restaurantData?.openingTimes)|| !onCheckIsOpen()) {
       // toggleCloseModal();
       showToast({
         title: "Restaurant",

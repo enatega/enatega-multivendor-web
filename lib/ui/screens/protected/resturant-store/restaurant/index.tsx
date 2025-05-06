@@ -30,7 +30,7 @@ import EmptySearch from "@/lib/ui/useable-components/empty-search-results";
 
 
 // Interface
-import { ICategory, IFood } from "@/lib/utils/interfaces";
+import { ICategory, IFood, IOpeningTime } from "@/lib/utils/interfaces";
 
 // Methods
 import { toSlug } from "@/lib/utils/methods";
@@ -278,11 +278,33 @@ export default function RestaurantDetailsScreen() {
   const [showReviews, setShowReviews] = useState<boolean>(false);
   const [showMoreInfo, setShowMoreInfo] = useState<boolean>(false);
 
-  // Function to handle clicking on a restaurant item
+  // Function to check weather time exisis
+  const isWithinOpeningTime = (openingTimes: IOpeningTime[]): boolean => {
+    const now = new Date();
+    const currentDay = now.toLocaleString('en-US', { weekday: 'short' }).toUpperCase(); // e.g., "MON", "TUE", ...
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+
+    const todayOpening = openingTimes.find((ot) => ot.day === currentDay);
+    if (!todayOpening) return false;
+
+    return todayOpening.times.some(({ startTime, endTime }) => {
+      const [startHour, startMinute] = startTime.map(Number);
+      const [endHour, endMinute] = endTime.map(Number);
+
+      const startTotal = startHour * 60 + startMinute;
+      const endTotal = endHour * 60 + endMinute;
+      const nowTotal = currentHour * 60 + currentMinute;
+
+      return nowTotal >= startTotal && nowTotal <= endTotal;
+    });
+  };
+
+  // Function to handle clicking on a restaurant
   const handleRestaurantClick = (food: IFood) => {
     if (food.isOutOfStock) return;
 
-    if (!restaurantInfo.isAvailable) {
+    if (!restaurantInfo?.isAvailable || !restaurantInfo?.isActive || !isWithinOpeningTime(restaurantInfo?.openingTimes)) {
       // Store the action we want to perform after cart confirmation
       handleUpdateIsModalOpen(true, food?._id);
       return;
