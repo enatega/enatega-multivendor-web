@@ -30,6 +30,8 @@ import SavePhoneNumber from "./save-phone-number";
 import SignUpWithEmail from "./signup-with-email";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import ChangePassword from "./change-password";
+import VerificationEmailForChangePassword  from "./change-password/email-otp";
 
 export default function AuthModal({
   isAuthModalVisible,
@@ -56,6 +58,8 @@ export default function AuthModal({
     setUser,
     setIsAuthModalVisible,
     setIsLoading,
+    sendOtpToEmailAddress,
+    
   } = useAuth();
   const { showToast } = useToast();
   const { SKIP_EMAIL_VERIFICATION, SKIP_MOBILE_VERIFICATION } = useConfig();
@@ -118,9 +122,24 @@ export default function AuthModal({
       [name]: value,
     }));
   };
+
+  const handleResendEmailOtp = () => {
+    sendOtpToEmailAddress(formData?.email || "", "password-recovery");
+  };
+
+  const handleSubmitAfterVerification = () => {
+    setActivePanel(9);
+    // setIsAuthModalVisible(false);
+    showToast({
+      type: "success",
+      title: "Password Recovery",
+      message: "Update your password now",
+    });
+  };
+
   return (
     <Dialog
-      visible={isAuthModalVisible}
+      visible={isAuthModalVisible}closeIcon
       onHide={handleModalToggle}
       closable={activePanel <= 3}
       contentStyle={{
@@ -209,6 +228,19 @@ export default function AuthModal({
             handleChangePanel={handleChangePanel}
             handleFormChange={handleFormChange}
           />
+        </StepperPanel>
+        <StepperPanel>
+          <VerificationEmailForChangePassword
+            handleSubmitAfterVerification={()=>handleSubmitAfterVerification()}
+            handleResendEmailOtp={handleResendEmailOtp}
+            emailOtp={emailOtp}
+            setEmailOtp={setEmailOtp}
+            showToast={showToast}
+            formData={formData}
+          />
+        </StepperPanel>
+        <StepperPanel>
+         <ChangePassword handleChangePanel={handleChangePanel} handleFormChange={handleFormChange} formData={formData} setFormData={setFormData}/>
         </StepperPanel>
       </Stepper>
     </Dialog>
