@@ -18,16 +18,17 @@ import "primereact/resources/themes/lara-light-cyan/theme.css";
 import "./global.css";
 
 // Apollo
+import { UserProvider } from "@/lib/context/User/User.context";
 import AuthProvider from "@/lib/context/auth/auth.context";
 import { ConfigurationProvider } from "@/lib/context/configuration/configuration.context";
 import { useSetupApollo } from "@/lib/hooks/useSetApollo";
-import { UserProvider } from "@/lib/context/User/User.context";
 // Layout
-import AppLayout from "@/lib/ui/layouts/global";
 import { FontawesomeConfig } from "@/lib/config";
 import { LocationProvider } from "@/lib/context/Location/Location.context";
 import { UserAddressProvider } from "@/lib/context/address/address.context";
 import { SearchUIProvider } from "@/lib/context/search/search.context";
+import AppLayout from "@/lib/ui/layouts/global";
+import { usePathname } from "next/navigation";
 
 export default function RootLayout({
   children,
@@ -36,6 +37,8 @@ export default function RootLayout({
 }>) {
   // Apollo
   const client = useSetupApollo();
+  const path = usePathname()
+  console.log("🚀 ~ path:", path)
 
   // Constants
   const value = {

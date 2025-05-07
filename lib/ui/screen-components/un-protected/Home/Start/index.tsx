@@ -1,11 +1,11 @@
 "use client";
 
-import React from "react";
 import { useRouter } from "next/navigation";
+import React from "react";
 
 // Components
-import HomeSearch from "@/lib/ui/useable-components/Home-search";
 import TextFlyingAnimation from "@/lib/ui/useable-components/FlyingText";
+import HomeSearch from "@/lib/ui/useable-components/Home-search";
 
 // Hooks
 import useLocation from "@/lib/hooks/useLocation";
@@ -13,16 +13,18 @@ import useSetUserCurrentLocation from "@/lib/hooks/useSetUserCurrentLocation";
 import LoginInForSavedAddresses from "@/lib/ui/useable-components/LoginForSavedAddresses";
 
 // imports related to auth module
-import AuthModal from "../../authentication";
 import { useAuth } from "@/lib/context/auth/auth.context";
+import { useConfig } from "@/lib/context/configuration/configuration.context";
+import AuthModal from "../../authentication";
 
 const Start: React.FC = () => {
   // Hooks
   const router = useRouter();
   const { getCurrentLocation } = useLocation();
   const { onSetUserLocation } = useSetUserCurrentLocation();
-  const { isAuthModalVisible, setIsAuthModalVisible, setActivePanel } = useAuth();
-
+  const { isAuthModalVisible, setIsAuthModalVisible, setActivePanel } =
+    useAuth();
+  const { IS_MULTIVENDOR } = useConfig();
 
   const handleModalToggle = () => {
     const token = localStorage.getItem("token");
@@ -35,9 +37,8 @@ const Start: React.FC = () => {
         return !prev;
       });
     } else {
-      router.push("/profile/addresses") 
+      router.push("/profile/addresses");
     }
-    
   };
 
   return (
@@ -58,13 +59,14 @@ const Start: React.FC = () => {
               className="me-2 underline"
               onClick={() => {
                 getCurrentLocation(onSetUserLocation);
-                router.push("/discovery");
+                if(IS_MULTIVENDOR){router.push("/discovery");}
+                else {console.log('called'); router.replace("/store-single-vendor/testing-slug/123123-id")}
               }}
             >
               Current Location
             </button>
           </div>
-          <LoginInForSavedAddresses handleModalToggle={handleModalToggle}/>
+          <LoginInForSavedAddresses handleModalToggle={handleModalToggle} />
         </div>
       </div>
 

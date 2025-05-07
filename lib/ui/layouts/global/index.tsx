@@ -12,8 +12,8 @@ import { IProvider } from "@/lib/utils/interfaces";
 import { useConfig } from "@/lib/context/configuration/configuration.context";
 import { GoogleMapsProvider } from "@/lib/context/global/google-maps.context";
 import AuthModal from "@/lib/ui/screen-components/un-protected/authentication";
-import AppFooter from "../../screen-components/un-protected/layout/app-footer";
 import { useRouter } from "next/navigation";
+import AppFooter from "../../screen-components/un-protected/layout/app-footer";
 
 // Search Context 
 import { useSearchUI } from "@/lib/context/search/search.context";
@@ -49,9 +49,14 @@ const AppLayout = ({ children }: IProvider) => {
     window.document.body.scrollTo({top:0, behavior:"smooth"})
   }, [pathname]);
 
-  useEffect(() => {
-   
-  }, [IS_MULTIVENDOR]);
+  // useEffect(() => {
+  //  if(IS_MULTIVENDOR){
+  //   console.log("🚀 ~ useEffect ~ IS_MULTIVENDOR:", IS_MULTIVENDOR)
+  //   Router.push("/(home)")
+  //  }else if(!IS_MULTIVENDOR){
+  //   Router.push("/(singleVendor)")
+  //  }
+  // }, []);
 
   useEffect(() => {
     const handleScroll = () => {
