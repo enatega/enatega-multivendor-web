@@ -27,8 +27,9 @@ export const ConfigurationProvider = ({
     loading || error || !data.configuration ?
       { currency: "", currencySymbol: "", deliveryRate: 0, costType: "perKM" }
     : data.configuration;
-
+    
   const GOOGLE_CLIENT_ID = configuration.webClientID;
+  const IS_MULTIVENDOR = configuration.isMultiVendor;
   const STRIPE_PUBLIC_KEY = configuration.publishableKey;
   const PAYPAL_KEY = configuration.clientId;
   const GOOGLE_MAPS_KEY = configuration.googleApiKey;
@@ -53,6 +54,7 @@ export const ConfigurationProvider = ({
         GOOGLE_CLIENT_ID,
         STRIPE_PUBLIC_KEY,
         PAYPAL_KEY,
+        IS_MULTIVENDOR,
         GOOGLE_MAPS_KEY,
         AMPLITUDE_API_KEY,
         LIBRARIES,

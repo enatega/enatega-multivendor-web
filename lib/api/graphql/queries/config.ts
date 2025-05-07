@@ -19,6 +19,7 @@ export const GET_CONFIG = gql`
       skipEmailVerification
       skipMobileVerification
       costType
+      isMultiVendor
     }
   }
 `;

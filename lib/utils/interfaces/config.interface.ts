@@ -14,6 +14,7 @@ export interface IConfigProps {
   CURRENCY: string;
   CURRENCY_SYMBOL: string;
   DELIVERY_RATE: number;
+  IS_MULTIVENDOR: boolean;
   COST_TYPE: string;
   TEST_OTP: string;
   SERVER_URL: string;

@@ -13,6 +13,7 @@ import { useConfig } from "@/lib/context/configuration/configuration.context";
 import { GoogleMapsProvider } from "@/lib/context/global/google-maps.context";
 import AuthModal from "@/lib/ui/screen-components/un-protected/authentication";
 import AppFooter from "../../screen-components/un-protected/layout/app-footer";
+import { useRouter } from "next/navigation";
 
 // Search Context 
 import { useSearchUI } from "@/lib/context/search/search.context";
@@ -24,12 +25,15 @@ import { usePathname } from "next/navigation";
 const AppLayout = ({ children }: IProvider) => {
   const pathname = usePathname();
   const [isScrolled , setIsScrolled] = useState(false);
-  // Hooks
+    // Hooks
   const { isAuthModalVisible, setIsAuthModalVisible, setActivePanel } = useAuth();
   const { isSearchFocused } = useSearchUI();
+
+  const Router = useRouter();
+
   
   // Hook
-  const { GOOGLE_MAPS_KEY, LIBRARIES } = useConfig();
+  const { GOOGLE_MAPS_KEY, LIBRARIES, IS_MULTIVENDOR } = useConfig();
 
   const handleModalToggle = () => {
     setIsAuthModalVisible((prev) => {
@@ -44,6 +48,10 @@ const AppLayout = ({ children }: IProvider) => {
     setIsScrolled(false);
     window.document.body.scrollTo({top:0, behavior:"smooth"})
   }, [pathname]);
+
+  useEffect(() => {
+   
+  }, [IS_MULTIVENDOR]);
 
   useEffect(() => {
     const handleScroll = () => {
