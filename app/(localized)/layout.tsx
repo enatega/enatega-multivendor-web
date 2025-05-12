@@ -28,7 +28,6 @@ import { LocationProvider } from "@/lib/context/Location/Location.context";
 import { UserAddressProvider } from "@/lib/context/address/address.context";
 import { SearchUIProvider } from "@/lib/context/search/search.context";
 import AppLayout from "@/lib/ui/layouts/global";
-import { usePathname } from "next/navigation";
 
 export default function RootLayout({
   children,

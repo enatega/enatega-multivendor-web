@@ -12,7 +12,7 @@ import { IProvider } from "@/lib/utils/interfaces";
 import { useConfig } from "@/lib/context/configuration/configuration.context";
 import { GoogleMapsProvider } from "@/lib/context/global/google-maps.context";
 import AuthModal from "@/lib/ui/screen-components/un-protected/authentication";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import AppFooter from "../../screen-components/un-protected/layout/app-footer";
 
 // Search Context 
@@ -41,14 +41,13 @@ const AppLayout = ({ children }: IProvider) => {
     if (loading || !restaurant || !restaurantId || !restaurantSlug) return;
     
     // Check if we're already on a single vendor path
-    const isSingleVendorPath = pathname?.startsWith("/sv/");
+    // const isSingleVendorPath = pathname?.startsWith("/sv/");
     
     // Only redirect in single vendor mode and when we have restaurant data
-    if (!IS_MULTIVENDOR && !isSingleVendorPath) {
-      console.log('Redirecting to single vendor page:', `/store-single-vendor/${restaurantId}/${restaurantSlug}`);
+    if (!IS_MULTIVENDOR) {
       router.replace(`/store-single-vendor/${restaurantId}/${restaurantSlug}`);
     }
-  }, [restaurant, restaurantId, restaurantSlug, loading, IS_MULTIVENDOR, pathname]);
+  }, [restaurant, restaurantId, restaurantSlug, loading, IS_MULTIVENDOR, router]);
 
   const handleModalToggle = () => {
     setIsAuthModalVisible((prev) => {

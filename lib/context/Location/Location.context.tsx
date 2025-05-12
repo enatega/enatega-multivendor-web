@@ -1,3 +1,4 @@
+"use client"
 import { GET_ZONES } from "@/lib/api/graphql";
 import useNetworkStatus from "@/lib/hooks/useNetworkStatus";
 import {

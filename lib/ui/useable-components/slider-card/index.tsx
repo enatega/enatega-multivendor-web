@@ -1,16 +1,15 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
 import { Carousel } from "primereact/carousel";
+import { useCallback, useEffect, useState } from "react";
 
 import { ISliderCardComponentProps } from "@/lib/utils/interfaces";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { useRouter } from "next/navigation";
 
 import Card from "../card";
-import CustomButton from "../button";
 const responsiveOptions = [
   { breakpoint: "1280px", numVisible: 4, numScroll: 1 }, // If screen width is ≤ 1280px, show 4 items
   { breakpoint: "1024px", numVisible: 3, numScroll: 1 }, // If screen width is ≤ 1024px, show 3 items
@@ -91,9 +90,9 @@ const SliderCard = <T,>({
     Math.ceil((data?.length - (numVisible || 0)) / numScroll) + 1; // Total pages
 
   // see all click handler
-  const onSeeAllClick = () => {
-    router.push(`/see-all/${title?.toLocaleLowerCase().replace(/\s/g, "-")}`);
-  };
+  // const onSeeAllClick = () => {
+  //   router.push(`/see-all/${title?.toLocaleLowerCase().replace(/\s/g, "-")}`);
+  // };
 
   return (
     data?.length > 0 && (
@@ -104,11 +103,11 @@ const SliderCard = <T,>({
           </span>
           <div className="flex items-center justify-end gap-x-2">
             {/* See All Button */}
-            <CustomButton
+            {/* <CustomButton
               label="See all"
               onClick={onSeeAllClick}
               className="text-[#0EA5E9] transition-colors duration-200 text-sm md:text-base "
-            />
+            /> */}
 
             {/* Navigation Buttons */}
             <div className="gap-x-2 hidden md:flex">

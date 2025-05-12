@@ -1,11 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import SliderCard from "@/lib/ui/useable-components/slider-card";
-import SliderSkeleton from "@/lib/ui/useable-components/custom-skeletons/slider.loading.skeleton";
 import useSingleRestaurantFoodData from "@/lib/hooks/useSingleRestaurantFoodData";
+import SliderSkeleton from "@/lib/ui/useable-components/custom-skeletons/slider.loading.skeleton";
 import FoodCard from "@/lib/ui/useable-components/foodCard";
-import { useRouter } from "next/navigation";
+import SliderCard from "@/lib/ui/useable-components/slider-card";
+import { useState } from "react";
 
 // Transform food items to match the format expected by the Card component
 function transformFoodForCard(food, restaurant) {
@@ -26,20 +25,13 @@ function transformFoodForCard(food, restaurant) {
 
 function FoodItems({ onFoodClick }) {
   const { allFoodItems, loading, error, restaurant } = useSingleRestaurantFoodData();
-  const router = useRouter();
+  // const router = useRouter();
   
   // State for unavailable item modal
   const [isModalOpen, setIsModalOpen] = useState({ value: false, id: "" });
   
   const handleUpdateIsModalOpen = (value, id) => {
     setIsModalOpen({ value, id });
-  };
-
-  // Handle "See All" click
-  const handleSeeAll = () => {
-    if (restaurant?._id) {
-      router.push(`/singleVendor/categoryItemScreen/all-foods/${restaurant._id}`);
-    }
   };
 
   if (loading) {

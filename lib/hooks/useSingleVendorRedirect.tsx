@@ -1,6 +1,6 @@
 // React imports
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useRouter, usePathname } from "next/navigation";
 
 // Custom hooks
 import useSingleRestaurant from "./useSingleRestaurant";
@@ -23,19 +23,18 @@ const useSingleVendorRedirect = () => {
 
     // Get the current path pattern
     const isSingleVendorPath = pathname?.startsWith("/sv/");
-    const isHomePath = pathname === "/" || pathname?.startsWith("/(home)");
+    // const isHomePath = pathname === "/" || pathname?.startsWith("/(home)");
 
     // Handle redirection based on multi-vendor mode
-    if (!isMultiVendor && restaurant && !isSingleVendorPath) {
+    if (!isMultiVendor) {
       // In single-vendor mode, redirect to single vendor page
-      console.log("Redirecting to single vendor page:", restaurantId, restaurantSlug);
       router.push(`/sv/${restaurantId}/${restaurantSlug}`);
     } else if (isMultiVendor && isSingleVendorPath) {
       // In multi-vendor mode, redirect to home if on a single-vendor path
       console.log("Redirecting to home from single vendor path");
       router.push("/(home)");
     }
-  }, [loading, isMultiVendor, restaurant, restaurantId, restaurantSlug, pathname, router]);
+  }, [loading, isMultiVendor, restaurantId, restaurantSlug, router]);
 
   return {
     restaurant,

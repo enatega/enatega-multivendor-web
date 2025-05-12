@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 
 function CategoryCards() {
   const { categories, loading, error, restaurant } = useSingleRestaurantFoodData();
-  console.log("🚀 ~ CategoryCards ~ categories:", categories)
+
   const router = useRouter();
 
 
@@ -27,6 +27,7 @@ function CategoryCards() {
       console.error("Invalid category without ID:", category);
     }
     
+
     return {
       _id: category._id,
       name: category.name || "Unknown",
@@ -35,7 +36,6 @@ function CategoryCards() {
       restaurantId: restaurant?._id
     };
   });
-
 
  const handleCategoryClick = (category) => {
   console.log("Category clicked in CategoryCards:", category?._id, restaurant._id);
