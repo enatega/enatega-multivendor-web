@@ -1,7 +1,6 @@
 "use client"
+import RestaurantSingleVendorScreen from "@/lib/ui/screens/protected/singleVendor/restaurant-store";
 
-export default function SingleVendorHomeScreen() {
-
-  console.log("🚀 ~ page ~ router:", window.location.pathname)
-  return <div className="m-auto">Hello from Single Vendor!</div>;
+export default function page() {
+  return <RestaurantSingleVendorScreen/>;
 }

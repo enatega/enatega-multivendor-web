@@ -10,7 +10,7 @@ export default function SingleVendorLayout({
 
   return (
     <div>
-      <nav>Testing navbar of single vendor</nav>
+      {/* <nav>Testing navbar of single vendor</nav> */}
       {children}
     </div>
   );

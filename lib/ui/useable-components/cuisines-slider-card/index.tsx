@@ -1,15 +1,10 @@
 "use client";
-// core
-import React, { useEffect, useState } from "react";
+
+import React, { useCallback, useEffect, useState } from "react";
 import { Carousel } from "primereact/carousel";
-// interfaces
-import { CuisinesSliderCardComponent } from "@/lib/utils/interfaces";
-// icons
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
-// router
 import { useRouter, usePathname } from "next/navigation";
-// ui components
 import SquareCard from "../square-card";
 import CustomButton from "../button";
 
@@ -21,13 +16,31 @@ const responsiveOptions = [
   { breakpoint: "320px", numVisible: 1, numScroll: 1 },
 ];
 
-const CuisinesSliderCard: CuisinesSliderCardComponent = ({
+// Define the props interface
+interface CuisinesSliderCardProps {
+  title: string;
+  data: any[];
+  last?: boolean;
+  showLogo?: boolean;
+  cuisines?: boolean;
+  onCardClick?: (item: any) => void;
+}
+
+const CuisinesSliderCard: React.FC<CuisinesSliderCardProps> = ({
   title,
   data,
   last,
   showLogo,
   cuisines,
+  onCardClick,
 }) => {
+  console.log("CuisinesSliderCard rendering with:", { 
+    title, 
+    dataLength: data?.length, 
+    hasClickHandler: !!onCardClick 
+  });
+
+
   const [page, setPage] = useState(0);
   const [numVisible, setNumVisible] = useState(getNumVisible());
   const [userInteracted, setUserInteracted] = useState(false);
@@ -48,17 +61,32 @@ const CuisinesSliderCard: CuisinesSliderCardComponent = ({
   const numScroll = 1;
   const totalItems = data?.length || 0;
 
-  const next = () => {
+  const next = useCallback(() => {
     setUserInteracted(true);
     const maxPage = totalItems - numVisible;
     setPage((prevPage) => (prevPage < maxPage ? prevPage + numScroll : 0));
-  };
+  }, [totalItems, numVisible, numScroll]);
 
-  const prev = () => {
+  const prev = useCallback(() => {
     setUserInteracted(true);
     const maxPage = totalItems - numVisible;
     setPage((prevPage) => (prevPage > 0 ? prevPage - numScroll : maxPage));
-  };
+  }, [totalItems, numVisible, numScroll]);
+
+  // Create a card item renderer with memoization to avoid unnecessary rerenders
+ const renderCardItem = useCallback((item) => {
+    console.log("Rendering card item:", item);
+    console.log("Passing onCardClick:", !!onCardClick);
+    
+    return (
+      <SquareCard 
+        item={item} 
+        showLogo={showLogo} 
+        cuisines={cuisines} 
+        onCardClick={onCardClick} // Pass the handler to SquareCard
+      />
+    );
+  }, [showLogo, cuisines, onCardClick]);
 
   // Handle resize
   useEffect(() => {
@@ -90,63 +118,68 @@ const CuisinesSliderCard: CuisinesSliderCardComponent = ({
     router.push(`/see-all/${title?.toLocaleLowerCase().replace(/\s/g, "-")}`);
   };
 
+  // Debug check to make sure data is valid
+  console.log("CuisinesSliderCard rendering with data:", data);
+
+  // Only render if we have data
+  if (!data?.length) {
+    console.log("No data to display in CuisinesSliderCard");
+    return null;
+  }
+
   return (
-    data?.length > 0 && (
-      <div className={`${last && "mb-20"}`}>
-        <div className="flex justify-between mx-[6px]">
-          <span className="font-inter font-bold text-xl sm:text-2xl leading-8 tracking-normal text-gray-900">
-            {title}
-          </span>
-          <div className="flex items-center justify-end gap-x-2 mb-2">
-            {pathname !== "/store" && pathname !== "/restaurants" && !cuisines && (
-              <CustomButton
-                label="See all"
-                onClick={onSeeAllClick}
-                className="text-[#0EA5E9] transition-colors duration-200 text-sm md:text-base "
-              />
-            )}
-            {data.length > numVisible && (
-              <div className="gap-x-2 hidden md:flex">
-                <button
-                  className="w-8 h-8 flex items-center justify-center shadow-md rounded-full"
-                  onClick={prev}
-                >
-                  <FontAwesomeIcon icon={faAngleLeft} />
-                </button>
-                <button
-                  className="w-8 h-8 flex items-center justify-center shadow-md rounded-full"
-                  onClick={next}
-                >
-                  <FontAwesomeIcon icon={faAngleRight} />
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-        <div
-          className=""
-          style={{
-            width: data.length < 4 ? "max-content" : "100%",
-            minWidth: "300px",
-          }}
-        >
-          <Carousel
-            value={data}
-            className="w-[100%] h-[100%]"
-            itemTemplate={(item) => (
-              <SquareCard item={item} showLogo={showLogo} cuisines={cuisines} />
-            )}
-            numVisible={numVisible}
-            numScroll={1}
-            responsiveOptions={responsiveOptions}
-            showIndicators={false}
-            showNavigators={false}
-            page={page}
-            onPageChange={(e) => setPage(e.page)}
-          />
+    <div className={`${last && "mb-20"}`}>
+      <div className="flex justify-between mx-[6px]">
+        <span className="font-inter font-bold text-xl sm:text-2xl leading-8 tracking-normal text-gray-900">
+          {title}
+        </span>
+        <div className="flex items-center justify-end gap-x-2 mb-2">
+          {pathname !== "/store" && pathname !== "/restaurants" && !cuisines && (
+            <CustomButton
+              label="See all"
+              onClick={onSeeAllClick}
+              className="text-[#0EA5E9] transition-colors duration-200 text-sm md:text-base "
+            />
+          )}
+          {data.length > numVisible && (
+            <div className="gap-x-2 hidden md:flex">
+              <button
+                className="w-8 h-8 flex items-center justify-center shadow-md rounded-full"
+                onClick={prev}
+              >
+                <FontAwesomeIcon icon={faAngleLeft} />
+              </button>
+              <button
+                className="w-8 h-8 flex items-center justify-center shadow-md rounded-full"
+                onClick={next}
+              >
+                <FontAwesomeIcon icon={faAngleRight} />
+              </button>
+            </div>
+          )}
         </div>
       </div>
-    )
+      <div
+        className=""
+        style={{
+          width: data.length < 4 ? "max-content" : "100%",
+          minWidth: "300px",
+        }}
+      >
+        <Carousel
+          value={data}
+          className="w-[100%] h-[100%]"
+          itemTemplate={renderCardItem}
+          numVisible={numVisible}
+          numScroll={1}
+          responsiveOptions={responsiveOptions}
+          showIndicators={false}
+          showNavigators={false}
+          page={page}
+          onPageChange={(e) => setPage(e.page)}
+        />
+      </div>
+    </div>
   );
 };
 

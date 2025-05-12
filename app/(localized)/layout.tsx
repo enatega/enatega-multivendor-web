@@ -37,8 +37,6 @@ export default function RootLayout({
 }>) {
   // Apollo
   const client = useSetupApollo();
-  const path = usePathname()
-  console.log("🚀 ~ path:", path)
 
   // Constants
   const value = {

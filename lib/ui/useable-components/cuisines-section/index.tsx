@@ -24,7 +24,7 @@ function CuisinesSection({
   }
 
   return (
-    <CuisinesSliderCard<ICuisinesData>
+    <CuisinesSliderCard
       title={title}
       data={data || []}
       cuisines={true}

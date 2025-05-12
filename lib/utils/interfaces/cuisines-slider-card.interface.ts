@@ -9,6 +9,8 @@ export interface ICuisinesSliderCardComponentProps<T> extends IGlobalComponentPr
 }
 
 export interface ICuisinesSliderCardItemProps {
+  restaurantId: string;
+  title: string;
   _id: string;
   name: string;
   description?: string;
