@@ -1,3 +1,6 @@
+"use client"
+import RestaurantSingleVendorScreen from "@/lib/ui/screens/protected/singleVendor/restaurant-store";
+
 export default function page() {
-  return <div className="m-auto">Hello from Single Vendor!</div>;
+  return <RestaurantSingleVendorScreen/>;
 }

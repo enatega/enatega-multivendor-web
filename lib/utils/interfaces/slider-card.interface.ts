@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import { IGlobalComponentProps } from "./global.interface";
 import { IAddon } from "./orders.interface";
 import { ICategory, IDeliveryInfo, IOpeningTime, IOption, IRestaurantLocation, IReviewData, IZone } from "./restaurants.interface";
@@ -6,6 +7,7 @@ export interface ISliderCardComponentProps<T> extends IGlobalComponentProps {
   title: string;
   data: T[];
   last?: boolean;
+ renderItem?: (item: T) => ReactNode;
 }
 
 export interface ISliderCardItemProps {
