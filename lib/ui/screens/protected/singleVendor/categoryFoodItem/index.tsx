@@ -274,7 +274,7 @@ export default function CategoryItemScreen() {
       <div
         className={`flex align-items-center px-3 py-2 cursor-pointer ${isClicked ? "bg-[#F3FFEE]" : ""}`}
         onClick={() => {
-          if (item?.items && item?.items?.length > 0&&restaurantId&&item?.items[0]?.id) {
+          if (item?.items && item?.items?.length > 0&&restaurantId) {
             router.push(
               `/categoryItemScreen/${item?.id}/${restaurantId}`,
             );

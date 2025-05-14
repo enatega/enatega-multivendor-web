@@ -10,6 +10,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from "next/navigation";
 
 import Card from "../card";
+import CustomButton from "../button";
+import { useConfig } from "@/lib/context/configuration/configuration.context";
+import useSingleRestaurantFoodData from "@/lib/hooks/useSingleRestaurantFoodData";
+
 const responsiveOptions = [
   { breakpoint: "1280px", numVisible: 4, numScroll: 1 }, // If screen width is ≤ 1280px, show 4 items
   { breakpoint: "1024px", numVisible: 3, numScroll: 1 }, // If screen width is ≤ 1024px, show 3 items
@@ -26,6 +30,10 @@ const SliderCard = <T,>({
   const [page, setPage] = useState(0);
   const [numVisible, setNumVisible] = useState(getNumVisible());
   const [isModalOpen, setIsModalOpen] = useState({ value: false, id: "" });
+  const { IS_MULTIVENDOR } = useConfig();
+  
+  // Get restaurant and categories data for single-vendor mode
+  const { restaurant, categories } = useSingleRestaurantFoodData();
 
   const handleUpdateIsModalOpen = useCallback(
     (value: boolean, id: string) => {
@@ -89,10 +97,17 @@ const SliderCard = <T,>({
   const totalPages =
     Math.ceil((data?.length - (numVisible || 0)) / numScroll) + 1; // Total pages
 
-  // see all click handler
-  // const onSeeAllClick = () => {
-  //   router.push(`/see-all/${title?.toLocaleLowerCase().replace(/\s/g, "-")}`);
-  // };
+  const onSeeAllClick = () => {
+    if (IS_MULTIVENDOR) {
+      // Multi-vendor mode - use regular see all page
+      router.push(`/see-all/${title?.toLocaleLowerCase().replace(/\s/g, "-")}`);
+    } else {
+      // Single-vendor mode - redirect to category screen with first category
+      if (categories?.length > 0 && restaurant?._id) {
+        router.replace(`/seeAll/${restaurant._id}`);
+      }
+    }
+  };
 
   return (
     data?.length > 0 && (
@@ -103,11 +118,11 @@ const SliderCard = <T,>({
           </span>
           <div className="flex items-center justify-end gap-x-2">
             {/* See All Button */}
-            {/* <CustomButton
+            <CustomButton
               label="See all"
               onClick={onSeeAllClick}
               className="text-[#0EA5E9] transition-colors duration-200 text-sm md:text-base "
-            /> */}
+            />
 
             {/* Navigation Buttons */}
             <div className="gap-x-2 hidden md:flex">

@@ -161,6 +161,7 @@ export const GET_RESTAURANT_BY_ID_SLUG = gql`
           description
           isOutOfStock
           subCategory
+          isFavourite
           variations {
             _id
             title

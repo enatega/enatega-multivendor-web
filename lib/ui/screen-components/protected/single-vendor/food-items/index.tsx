@@ -7,7 +7,7 @@ import SliderCard from "@/lib/ui/useable-components/slider-card";
 import { useState } from "react";
 
 // Transform food items to match the format expected by the Card component
-function transformFoodForCard(food, restaurant) {
+function transformFoodForCard(food, restaurant, categoryId) {
   return {
     _id: food._id,
     name: food.title,
@@ -17,15 +17,21 @@ function transformFoodForCard(food, restaurant) {
     deliveryTime: restaurant?.deliveryTime || 25,
     reviewAverage: restaurant?.reviewData?.ratings || 4.5,
     isAvailable: !food.isOutOfStock,
+    isFavourite: food.isFavourite || false,
     variations: food.variations,
     shopType: restaurant?.shopType || "restaurant",
+    // Add the necessary IDs for the favorite functionality
+    restaurant: restaurant?._id,
+    restaurantId: restaurant?._id,
+    category: categoryId,
+    categoryId: categoryId,
+    // Keep the original food object for reference
     originalFood: food,
   };
 }
 
 function FoodItems({ onFoodClick }) {
-  const { allFoodItems, loading, error, restaurant } = useSingleRestaurantFoodData();
-  // const router = useRouter();
+  const { allFoodItems, loading, error, restaurant, categories } = useSingleRestaurantFoodData();
   
   // State for unavailable item modal
   const [isModalOpen, setIsModalOpen] = useState({ value: false, id: "" });
@@ -43,13 +49,24 @@ function FoodItems({ onFoodClick }) {
   }
 
   // Transform items to match Card component expectations
-  const transformedItems = allFoodItems.slice(0, 8).map(food => 
-    transformFoodForCard(food, restaurant)
-  );
+  const transformedItems = allFoodItems.slice(0, 8).map(food => {
+    // Find the category ID for this food item
+    let categoryId;
+    if (categories && categories.length > 0) {
+      for (const category of categories) {
+        if (category.foods.some(f => f._id === food._id)) {
+          categoryId = category._id;
+          break;
+        }
+      }
+    }
+    
+    return transformFoodForCard(food, restaurant, categoryId);
+  });
 
   return (
     <SliderCard 
-      title="Food Items" 
+      title="Explore Menu 🍴" 
       data={transformedItems}
       last={false}
       renderItem={(item) => (

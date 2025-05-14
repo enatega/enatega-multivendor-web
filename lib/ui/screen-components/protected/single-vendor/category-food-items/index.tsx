@@ -13,6 +13,7 @@ interface Food {
   description: string;
   image: string;
   isOutOfStock?: boolean;
+  isFavourite?: boolean;
   variations: any[];
   category?: string;
 }
@@ -24,7 +25,7 @@ interface Category {
 }
 
 // Transform food items to match the format expected by the FoodCard component
-function transformFoodForCard(food: Food, restaurant: any, categoryName: string) {
+function transformFoodForCard(food: Food, restaurant: any, categoryId: string, categoryName: string) {
   return {
     _id: food._id,
     name: food.title,
@@ -34,8 +35,14 @@ function transformFoodForCard(food: Food, restaurant: any, categoryName: string)
     deliveryTime: restaurant?.deliveryTime || 25,
     reviewAverage: restaurant?.reviewData?.ratings || 4.5,
     isAvailable: !food.isOutOfStock,
+    isFavourite: food.isFavourite || false,
     variations: food.variations,
     shopType: restaurant?.shopType || "restaurant",
+    // Add required IDs for favorite functionality
+    restaurant: restaurant?._id,
+    restaurantId: restaurant?._id,
+    category: categoryId,
+    categoryId: categoryId,
     originalFood: food,
   };
 }
@@ -70,9 +77,9 @@ function CategoryItems({ onFoodClick }: CategoryItemsProps) {
       setSelectedCategory(firstCategory);
       setCategoryName(firstCategory.name);
     }
-  }, []);
-      
+  }, [categories?.length]);
 
+      
   if (loading) {
     return <SliderSkeleton />;
   }
@@ -84,11 +91,11 @@ function CategoryItems({ onFoodClick }: CategoryItemsProps) {
   // Transform foods for display and limit to 8 items
   const displayItems = selectedCategory.foods
     .slice(0, 8)
-    .map(food => transformFoodForCard(food, restaurant, categoryName));
+    .map(food => transformFoodForCard(food, restaurant, selectedCategory._id, categoryName));
 
   return (
     <SliderCard 
-      title={`${categoryName} Items`}
+      title={`${categoryName} Items 🛍️`}
       data={displayItems}
       renderItem={(item) => (
         <FoodCard

@@ -44,7 +44,7 @@ function CategoryCards() {
 
   return (
     <CuisinesSliderCard
-      title="Categories"
+      title="Categories 🛒"
       data={enhancedCategories}
       cuisines={true}
       onCardClick={handleCategoryClick} // Add the click handler
