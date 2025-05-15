@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Dialog } from "primereact/dialog";
-import { DiscoveryBannerSection } from "@/lib/ui/screen-components/protected/home";
 import { FoodItems, PopularItems, CategoryItems, CategoryCards } from "@/lib/ui/screen-components/protected/single-vendor";
 import FoodItemDetail from "@/lib/ui/useable-components/item-detail";
 import useSingleRestaurantFoodData from "@/lib/hooks/useSingleRestaurantFoodData";
+import SingleVendorBannerSection from "@/lib/ui/screen-components/protected/single-vendor/banner-section";
+import useUser from "@/lib/hooks/useUser";
 
 export default function RestaurantSingleVendorScreen() {
   // State for the food detail modal
@@ -14,10 +15,23 @@ export default function RestaurantSingleVendorScreen() {
   
   // Get restaurant data to pass to food detail modal
   const { restaurant } = useSingleRestaurantFoodData();
+  
+  // Get user context to transform cart items
+  const { cart, transformCartWithFoodInfo, updateCart } = useUser();
+  
+  // Transform cart items when restaurant data is loaded
+  useEffect(() => {
+    if (restaurant && cart.length > 0) {
+      const transformedCart = transformCartWithFoodInfo(cart, restaurant);
+      if (JSON.stringify(transformedCart) !== JSON.stringify(cart)) {
+        updateCart(transformedCart);
+      }
+    }
+  }, [restaurant, cart.length, transformCartWithFoodInfo, updateCart]);
 
   // Function to handle food item click
   const handleFoodClick = (food) => {
-    if (!food.isAvailable) return;
+    if (!food || food.isAvailable === false) return;
     
     setSelectedFood({
       ...food.originalFood || food,
@@ -36,7 +50,8 @@ export default function RestaurantSingleVendorScreen() {
     <>
       <div className="flex flex-col space-y-6 mb-8">
         <div>
-          <DiscoveryBannerSection />
+          {/* Pass the same food click handler to the banner section */}
+          <SingleVendorBannerSection onFoodClick={handleFoodClick} />
         </div>
         <div>
           <FoodItems onFoodClick={handleFoodClick} />

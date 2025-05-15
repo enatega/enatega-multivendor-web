@@ -35,19 +35,19 @@ const AppLayout = ({ children }: IProvider) => {
   // Get single restaurant data for direct redirection
   const { restaurant, restaurantId, restaurantSlug, loading } = useSingleRestaurant();
 
-  // Handle redirection directly in the AppLayout
-  useEffect(() => {
-    // Skip if still loading or no restaurant data
-    if (loading || !restaurant || !restaurantId || !restaurantSlug) return;
+  // // Handle redirection directly in the AppLayout
+  // useEffect(() => {
+  //   // Skip if still loading or no restaurant data
+  //   if (loading || !restaurant || !restaurantId || !restaurantSlug) return;
     
-    // Check if we're already on a single vendor path
-    // const isSingleVendorPath = pathname?.startsWith("/sv/");
+  //   // Check if we're already on a single vendor path
+  //   // const isSingleVendorPath = pathname?.startsWith("/sv/");
     
-    // Only redirect in single vendor mode and when we have restaurant data
-    if (!IS_MULTIVENDOR) {
-      router.replace(`/store-single-vendor/${restaurantId}/${restaurantSlug}`);
-    }
-  }, [restaurant, restaurantId, restaurantSlug, loading, IS_MULTIVENDOR, router]);
+  //   // Only redirect in single vendor mode and when we have restaurant data
+  //   if (!IS_MULTIVENDOR) {
+  //     router.replace(`/store-single-vendor/${restaurantId}/${restaurantSlug}`);
+  //   }
+  // }, [restaurant, restaurantId, restaurantSlug, loading, IS_MULTIVENDOR, router]);
 
   const handleModalToggle = () => {
     setIsAuthModalVisible((prev) => {

@@ -181,7 +181,7 @@ export interface UserContextType {
   isLoading: boolean;
   updateItemQuantity: (key: string, changeAmount: number) => Promise<void>;
   removeItem: (key: string) => Promise<void>;
-  calculateSubtotal: () => string;
+  calculateSubtotal: (_cart?:  CartItem[]) => string;
   transformCartWithFoodInfo: (
     cartItems: CartItem[],
     foodsData: IRestaurant
@@ -589,6 +589,8 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
       }> = [],
       specialInstructions: string = ""
     ) => {
+
+      console.log("ADD ITEM FUNCTION CALLED")
       // Check if we need to clear the cart (different restaurant)
       const needsClear = Boolean(restaurantId && restaurant !== restaurantId);
 
@@ -724,8 +726,10 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
     [deleteItem]
   );
 
-  const calculateSubtotal = useCallback(() => {
-    return cart
+  const calculateSubtotal = useCallback((list_cart?:  CartItem[]) => {
+    const _cart = ((list_cart?.length ?? 0) > 0 ? list_cart : cart) ?? []
+    console.log("calculateSubtotalcalled", _cart)
+    return _cart
       .reduce((total, item) => {
         return total + (parseFloat(item.price as string) || 0) * item.quantity;
       }, 0)

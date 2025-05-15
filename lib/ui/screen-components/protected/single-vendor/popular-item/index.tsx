@@ -1,40 +1,52 @@
 "use client";
 
-import { useState } from "react";
-import SliderCard from "@/lib/ui/useable-components/slider-card";
-import SliderSkeleton from "@/lib/ui/useable-components/custom-skeletons/slider.loading.skeleton";
 import useSingleRestaurantFoodData from "@/lib/hooks/useSingleRestaurantFoodData";
+import SliderSkeleton from "@/lib/ui/useable-components/custom-skeletons/slider.loading.skeleton";
 import FoodCard from "@/lib/ui/useable-components/foodCard";
+import SliderCard from "@/lib/ui/useable-components/slider-card";
+import { useState, useEffect } from "react";
+import useUser from "@/lib/hooks/useUser";
 
-// Modify each food item to work with the FoodCard component
+// Transform food items to match the format expected by the Card component
 function transformFoodForCard(food, restaurant, categoryId) {
   return {
     _id: food._id,
     name: food.title,
     description: food.description,
     image: food.image,
-    cuisines: [food.category || "Popular"],
+    cuisines: [food.category || "Popular Item"],
     deliveryTime: restaurant?.deliveryTime || 25,
     reviewAverage: restaurant?.reviewData?.ratings || 4.5,
     isAvailable: !food.isOutOfStock,
     isFavourite: food.isFavourite || false,
     variations: food.variations,
     shopType: restaurant?.shopType || "restaurant",
-    // Add required IDs for favorite functionality
+    // Add the necessary IDs for the favorite functionality
     restaurant: restaurant?._id,
     restaurantId: restaurant?._id,
     category: categoryId,
     categoryId: categoryId,
-    // Original food properties preserved for the modal
+    // Keep the original food object for reference
     originalFood: food,
   };
 }
 
 function PopularItems({ onFoodClick }) {
   const { popularFoodItems, loading, error, restaurant, categories } = useSingleRestaurantFoodData();
+  const { cart, transformCartWithFoodInfo, updateCart } = useUser();
   
   // State for unavailable item modal
   const [isModalOpen, setIsModalOpen] = useState({ value: false, id: "" });
+  
+  // Transform cart items when restaurant data is loaded
+  useEffect(() => {
+    if (restaurant && cart.length > 0) {
+      const transformedCart = transformCartWithFoodInfo(cart, restaurant);
+      if (JSON.stringify(transformedCart) !== JSON.stringify(cart)) {
+        updateCart(transformedCart);
+      }
+    }
+  }, [restaurant, cart.length, transformCartWithFoodInfo, updateCart]);
   
   const handleUpdateIsModalOpen = (value, id) => {
     setIsModalOpen({ value, id });
@@ -48,7 +60,8 @@ function PopularItems({ onFoodClick }) {
     return null;
   }
 
-  const displayItems = popularFoodItems.map(food => {
+  // Transform items to match Card component expectations
+  const transformedItems = popularFoodItems.map(food => {
     // Find the category ID for this food item
     let categoryId;
     if (categories && categories.length > 0) {
@@ -66,7 +79,8 @@ function PopularItems({ onFoodClick }) {
   return (
     <SliderCard 
       title="Popular Items 🔥" 
-      data={displayItems}
+      data={transformedItems}
+      last={false}
       renderItem={(item) => (
         <FoodCard 
           item={item} 

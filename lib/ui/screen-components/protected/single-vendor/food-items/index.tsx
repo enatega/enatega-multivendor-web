@@ -4,7 +4,8 @@ import useSingleRestaurantFoodData from "@/lib/hooks/useSingleRestaurantFoodData
 import SliderSkeleton from "@/lib/ui/useable-components/custom-skeletons/slider.loading.skeleton";
 import FoodCard from "@/lib/ui/useable-components/foodCard";
 import SliderCard from "@/lib/ui/useable-components/slider-card";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import useUser from "@/lib/hooks/useUser";
 
 // Transform food items to match the format expected by the Card component
 function transformFoodForCard(food, restaurant, categoryId) {
@@ -32,9 +33,20 @@ function transformFoodForCard(food, restaurant, categoryId) {
 
 function FoodItems({ onFoodClick }) {
   const { allFoodItems, loading, error, restaurant, categories } = useSingleRestaurantFoodData();
+  const { cart, transformCartWithFoodInfo, updateCart } = useUser();
   
   // State for unavailable item modal
   const [isModalOpen, setIsModalOpen] = useState({ value: false, id: "" });
+  
+  // Transform cart items when restaurant data is loaded
+  useEffect(() => {
+    if (restaurant && cart.length > 0) {
+      const transformedCart = transformCartWithFoodInfo(cart, restaurant);
+      if (JSON.stringify(transformedCart) !== JSON.stringify(cart)) {
+        updateCart(transformedCart);
+      }
+    }
+  }, [restaurant, cart.length, transformCartWithFoodInfo, updateCart]);
   
   const handleUpdateIsModalOpen = (value, id) => {
     setIsModalOpen({ value, id });
