@@ -650,14 +650,14 @@ export default function StoreDetailsScreen() {
             <div className="w-full md:w-[80%]">
               <div className="flex flex-wrap items-center gap-4 sm:gap-6">
                 {/* Time */}
-                <span className="flex items-center gap-2 text-gray-600 font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle">
+                <span className="flex items-center gap-1 text-gray-600 font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle">
                   <ClockSvg />
                   {loading ? (
                     <Skeleton width="2rem" height="1.5rem" />
                   ) : (
-                    headerData.deliveryTime
+                   headerData.deliveryTime
                   )}
-                  mins
+                <span>mins</span>
                 </span>
 
                 {/* Rating */}
