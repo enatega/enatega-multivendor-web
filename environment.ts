@@ -10,8 +10,8 @@ export default function getEnv(env: "DEV" | "PROD") {
     };
   } else {
     return {
-      SERVER_URL: "http://10.97.36.212:8001/",
-      WS_SERVER_URL: "ws://10.97.36.212:8001/",
+      SERVER_URL: "http://192.168.18.74:8001/",
+      WS_SERVER_URL: "ws://192.168.18.74:8001/",
       // SERVER_URL: "https://enatega-multivendor-revamp.up.railway.app/",
       // WS_SERVER_URL: "wss://enatega-multivendor-revamp.up.railway.app/",
     };

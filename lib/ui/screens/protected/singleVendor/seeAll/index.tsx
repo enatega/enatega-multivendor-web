@@ -15,6 +15,7 @@ import EmptySearch from "@/lib/ui/useable-components/empty-search-results";
 // Hooks
 import useSingleRestaurantFoodData from "@/lib/hooks/useSingleRestaurantFoodData";
 import { useConfig } from "@/lib/context/configuration/configuration.context";
+import { IFood } from "@/lib/utils/interfaces";
 
 // Transform food items to match the format expected by the FoodCard component
 function transformFoodForCard(food, restaurant, categoryId) {
@@ -80,18 +81,18 @@ export default function SeeAllSingleVendorScreen() {
   }, [allFoodItems, categories, restaurant]);
   
   // Handle search filtering
-  useEffect(() => {
-    if (searchTerm.trim() === '') {
-      setFilteredItems(foodItems);
-    } else {
-      const term = searchTerm.toLowerCase();
-      const filtered = foodItems.filter(item => 
-        item.name.toLowerCase().includes(term) || 
-        (item.description && item.description.toLowerCase().includes(term))
-      );
-      setFilteredItems(filtered);
-    }
-  }, [searchTerm, foodItems]);
+ useEffect(() => {
+  if (searchTerm.trim() === '') {
+    setFilteredItems(foodItems);
+  } else {
+    const term = searchTerm.toLowerCase();
+    const filtered = foodItems.filter((item: IFood) => 
+      (item?.name?.toLowerCase().includes(term) || item?.title?.toLowerCase().includes(term)) || 
+      (item.description && item.description.toLowerCase().includes(term))
+    );
+    setFilteredItems(filtered);
+  }
+}, [searchTerm, foodItems]);
   
   // Handle update modal state
   const handleUpdateIsModalOpen = (value, id) => {
