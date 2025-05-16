@@ -1,3 +1,4 @@
+"use client"
 import CustomRestaurantCardSkeleton from "@/lib/ui/useable-components/custom-skeletons/restaurant.card.skeleton";
 
 interface ISkeletonGridProps {

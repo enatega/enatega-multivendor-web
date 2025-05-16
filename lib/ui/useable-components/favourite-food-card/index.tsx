@@ -1,3 +1,4 @@
+"use client" 
 // lib/ui/useable-components/favourite-food-card/index.tsx
 import React from "react";
 import Image from "next/image";

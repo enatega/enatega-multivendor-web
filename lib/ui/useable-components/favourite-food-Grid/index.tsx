@@ -1,3 +1,4 @@
+"use client"
 // lib/ui/useable-components/favourite-food-grid/index.tsx
 import React from "react";
 import { twMerge } from "tailwind-merge";
