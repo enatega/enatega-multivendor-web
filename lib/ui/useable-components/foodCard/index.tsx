@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import React, { useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import {usePathname } from "next/navigation";
 import { ClockSvg, CycleSvg, FaceSvg, HeartSvg } from "@/lib/utils/assets/svg";
 import IconWithTitle from "../icon-with-title";
 import { useConfig } from "@/lib/context/configuration/configuration.context";

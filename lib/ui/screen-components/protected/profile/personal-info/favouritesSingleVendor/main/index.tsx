@@ -9,7 +9,6 @@ import CardSkeletonGrid from "@/lib/ui/useable-components/card-skelton-grid";
 import HeaderSingleVendorFavourite from "../header";
 import FavoritesEmptyState from "@/lib/ui/useable-components/favorites-empty-state";
 import useDebounceFunction from "@/lib/hooks/useDebounceForFunction";
-import { IFood } from "@/lib/utils/interfaces";
 
 const FavouriteSingleVendorProducts = () => {
   const router = useRouter();
