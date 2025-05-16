@@ -14,8 +14,6 @@ import EmptySearch from "@/lib/ui/useable-components/empty-search-results";
 import FoodCard from "@/lib/ui/useable-components/foodCard";
 import FoodItemDetail from "@/lib/ui/useable-components/item-detail";
 
-// Hooks
-import { useConfig } from "@/lib/context/configuration/configuration.context";
 import useSingleRestaurantFoodData from "@/lib/hooks/useSingleRestaurantFoodData";
 import useUser from "@/lib/hooks/useUser";
 
@@ -63,7 +61,7 @@ export default function CategoryItemScreen() {
   const restaurantId = params.id as string;
 
   // State
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const [, setSelectedCategory] = useState("");
   const [selectedSubCategory, setSelectedSubCategory] = useState("");
   const [showDialog, setShowDialog] = useState<any>(null);
   const [isScrolling, setIsScrolling] = useState(false);
@@ -77,7 +75,6 @@ export default function CategoryItemScreen() {
   const selectedSubCategoryRef = useRef("");
 
   // Hooks
-  const { CURRENCY_SYMBOL } = useConfig();
   const { categories, loading, error, restaurant } =
     useSingleRestaurantFoodData();
   const { cart, transformCartWithFoodInfo, updateCart } = useUser();
@@ -268,7 +265,6 @@ export default function CategoryItemScreen() {
 
   // Parent item template for PanelMenu
   function parentItemRenderer(item: MenuItem) {
-    const _url = item.url?.slice(1);
     const isClicked = item.id === categoryId;
     return (
       <div

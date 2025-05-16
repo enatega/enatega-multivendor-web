@@ -12,7 +12,7 @@ import { IProvider } from "@/lib/utils/interfaces";
 import { useConfig } from "@/lib/context/configuration/configuration.context";
 import { GoogleMapsProvider } from "@/lib/context/global/google-maps.context";
 import AuthModal from "@/lib/ui/screen-components/un-protected/authentication";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import AppFooter from "../../screen-components/un-protected/layout/app-footer";
 
 // Search Context 
@@ -20,34 +20,16 @@ import { useSearchUI } from "@/lib/context/search/search.context";
 
 // Hooks
 import { useAuth } from "@/lib/context/auth/auth.context";
-import useSingleRestaurant from "@/lib/hooks/useSingleRestaurant";
 
 const AppLayout = ({ children }: IProvider) => {
   const pathname = usePathname();
-  const router = useRouter();
   const [isScrolled, setIsScrolled] = useState(false);
   
   // Hooks
   const { isAuthModalVisible, setIsAuthModalVisible, setActivePanel } = useAuth();
   const { isSearchFocused } = useSearchUI();
-  const { GOOGLE_MAPS_KEY, LIBRARIES, IS_MULTIVENDOR } = useConfig();
+  const { GOOGLE_MAPS_KEY, LIBRARIES } = useConfig();
   
-  // Get single restaurant data for direct redirection
-  const { restaurant, restaurantId, restaurantSlug, loading } = useSingleRestaurant();
-
-  // // Handle redirection directly in the AppLayout
-  // useEffect(() => {
-  //   // Skip if still loading or no restaurant data
-  //   if (loading || !restaurant || !restaurantId || !restaurantSlug) return;
-    
-  //   // Check if we're already on a single vendor path
-  //   // const isSingleVendorPath = pathname?.startsWith("/sv/");
-    
-  //   // Only redirect in single vendor mode and when we have restaurant data
-  //   if (!IS_MULTIVENDOR) {
-  //     router.replace(`/store-single-vendor/${restaurantId}/${restaurantSlug}`);
-  //   }
-  // }, [restaurant, restaurantId, restaurantSlug, loading, IS_MULTIVENDOR, router]);
 
   const handleModalToggle = () => {
     setIsAuthModalVisible((prev) => {

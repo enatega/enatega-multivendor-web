@@ -67,7 +67,6 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
   const {
     cartCount,
     calculateSubtotal,
-    cart,
     profile,
     loadingProfile,
     fetchProfile,

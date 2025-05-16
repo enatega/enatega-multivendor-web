@@ -5,19 +5,15 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@apollo/client";
 import { GET_USER_FAVORITE_FOODS } from "@/lib/api/graphql/queries/foods";
-import { Dialog } from "primereact/dialog";
-import { Button } from "primereact/button";
 
 // Components
 import { PaddingContainer } from "@/lib/ui/useable-components/containers";
-import FavoriteFoodsGrid from "@/lib/ui/useable-components/favourite-food-grid";
-import FoodItemDetail from "@/lib/ui/useable-components/item-detail";
+import FavoriteFoodsGrid from "@/lib/ui/useable-components/favourite-food-Grid";
 import CardSkeletonGrid from "@/lib/ui/useable-components/card-skelton-grid";
 import FavoritesEmptyState from "@/lib/ui/useable-components/favorites-empty-state";
 
 export default function SeeAllFavoriteFoodsScreen() {
   const router = useRouter();
-  const [showDialog, setShowDialog] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
 
   // Fetch favorite food items
@@ -37,24 +33,15 @@ export default function SeeAllFavoriteFoodsScreen() {
         item.restaurant.name.toLowerCase().includes(searchTerm.toLowerCase())
       )
     : [];
-
-  // Handle food click to show detail modal
-  const handleFoodClick = (food) => {
-    setShowDialog({
-      ...food.food,
-      restaurant: food.restaurant._id,
-    });
-  };
-
-  // Close food detail modal
-  const handleCloseFoodModal = () => {
-    setShowDialog(null);
-  };
-
+    
   // Go back handler
   const handleBack = () => {
     router.back();
   };
+
+  function handleFoodClick(): void {
+    console.log("Food Clicked");
+  }
 
   return (
     <PaddingContainer>

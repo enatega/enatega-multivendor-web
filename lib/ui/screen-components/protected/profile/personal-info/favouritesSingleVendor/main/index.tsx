@@ -9,11 +9,10 @@ import CardSkeletonGrid from "@/lib/ui/useable-components/card-skelton-grid";
 import HeaderSingleVendorFavourite from "../header";
 import FavoritesEmptyState from "@/lib/ui/useable-components/favorites-empty-state";
 import useDebounceFunction from "@/lib/hooks/useDebounceForFunction";
-import { useState } from "react";
+import { IFood } from "@/lib/utils/interfaces";
 
 const FavouriteSingleVendorProducts = () => {
   const router = useRouter();
-  const [showDialog, setShowDialog] = useState(null);
 
   // Fetch favorite food items
   const {
@@ -28,19 +27,9 @@ const FavouriteSingleVendorProducts = () => {
     router.push("/see-all/favorite-foods");
   }, 500);
 
-  // Handle food click to show detail modal
-  const handleFoodClick = (food) => {
-    // Add any transformation needed for the detail modal
-    setShowDialog({
-      ...food.food,
-      restaurant: food.restaurant._id,
-    });
-  };
-
-  // Close food detail modal
-  const handleCloseFoodModal = () => {
-    setShowDialog(null);
-  };
+  function handleFoodClick(): void {
+    console.log("Food Card Clicked");
+  }
 
   return (
     <div className="w-full py-6 flex flex-col gap-6">

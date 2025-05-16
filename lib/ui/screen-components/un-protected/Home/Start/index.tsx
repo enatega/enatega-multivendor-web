@@ -16,6 +16,7 @@ import LoginInForSavedAddresses from "@/lib/ui/useable-components/LoginForSavedA
 import { useAuth } from "@/lib/context/auth/auth.context";
 import { useConfig } from "@/lib/context/configuration/configuration.context";
 import AuthModal from "../../authentication";
+import useSingleRestaurant from "@/lib/hooks/useSingleRestaurant";
 
 const Start: React.FC = () => {
   // Hooks
@@ -25,6 +26,8 @@ const Start: React.FC = () => {
   const { isAuthModalVisible, setIsAuthModalVisible, setActivePanel } =
     useAuth();
   const { IS_MULTIVENDOR } = useConfig();
+
+  const { restaurantId, restaurantSlug} = useSingleRestaurant();
 
   const handleModalToggle = () => {
     const token = localStorage.getItem("token");
@@ -60,7 +63,7 @@ const Start: React.FC = () => {
               onClick={() => {
                 getCurrentLocation(onSetUserLocation);
                 if(IS_MULTIVENDOR){router.push("/discovery");}
-                else {console.log('called'); router.replace("/store-single-vendor/testing-slug/123123-id")}
+                else {console.log('called'); router.replace(`/store-single-vendor/${restaurantId}/${restaurantSlug}`)}
               }}
             >
               Current Location

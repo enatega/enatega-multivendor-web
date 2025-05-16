@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
 
@@ -14,7 +14,6 @@ import EmptySearch from "@/lib/ui/useable-components/empty-search-results";
 
 // Hooks
 import useSingleRestaurantFoodData from "@/lib/hooks/useSingleRestaurantFoodData";
-import { useConfig } from "@/lib/context/configuration/configuration.context";
 import { IFood } from "@/lib/utils/interfaces";
 
 // Transform food items to match the format expected by the FoodCard component
@@ -44,8 +43,6 @@ function transformFoodForCard(food, restaurant, categoryId) {
 export default function SeeAllSingleVendorScreen() {
   // Get URL parameters
   const router = useRouter();
-  const params = useParams();
-  const restaurantId = params.id;
   
   // State
   const [showDialog, setShowDialog] = useState(null);
@@ -54,9 +51,7 @@ export default function SeeAllSingleVendorScreen() {
   const [filteredItems, setFilteredItems] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   
-  // Hooks
-  const { CURRENCY_SYMBOL } = useConfig();
-  const { allFoodItems, popularFoodItems, loading, error, restaurant, categories } = useSingleRestaurantFoodData();
+  const { allFoodItems, loading, error, restaurant, categories } = useSingleRestaurantFoodData();
   
   // Update food items when data is loaded
   useEffect(() => {

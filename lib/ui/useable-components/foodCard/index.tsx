@@ -19,7 +19,6 @@ const FoodCard = ({
   handleUpdateIsModalOpen,
   onFoodClick,
 }) => {
-  const router = useRouter();
   const pathname = usePathname();
   const { CURRENCY_SYMBOL } = useConfig();
   

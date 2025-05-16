@@ -14,7 +14,7 @@ import FavoritesEmptyState from "@/lib/ui/useable-components/favorites-empty-sta
 
 export default function SeeAllFavoriteFoodsScreen() {
   const router = useRouter();
-  const [showDialog, setShowDialog] = useState(null);
+  const [, setShowDialog] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
 
   // Fetch favorite food items
@@ -44,10 +44,6 @@ export default function SeeAllFavoriteFoodsScreen() {
   };
 
   // Close food detail modal
-  const handleCloseFoodModal = () => {
-    setShowDialog(null);
-  };
-
   // Go back handler
   const handleBack = () => {
     router.back();
