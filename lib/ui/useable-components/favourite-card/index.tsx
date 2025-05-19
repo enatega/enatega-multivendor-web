@@ -5,9 +5,10 @@ import ImageComponent from "../card-image-component";
 import { IFavoriteCardProps } from "@/lib/utils/interfaces/favourite.restaurants.interface";
 import IconWithTitle from "../icon-with-title";
 import { ClockSvg, CycleSvg, FaceSvg } from "@/lib/utils/assets/svg";
+import { useConfig } from "@/lib/context/configuration/configuration.context";
 
 const FavoriteCard: React.FC<IFavoriteCardProps> = ({ item }) => {
-    
+    const { DELIVERY_RATE } = useConfig();
     return (
         <div className="relative p-0 border border-gray-200 rounded-lg shadow-lg w-full h-[255px] cursor-pointer">
             <hr className="border-t-2 border-gray-300 border-dashed my-2 absolute bottom-10 w-full" />
@@ -27,7 +28,7 @@ const FavoriteCard: React.FC<IFavoriteCardProps> = ({ item }) => {
                                 className="text-sm text-gray-600 mb-6"
                             />
                         </div>
-                        <p className=" text-[#5AC12F] bg-[#F3FFEE] p-2 rounded-md font-medium text-sm md:text-base flex items-center justify-center">
+                        <p className=" text-[#5AC12F] bg-[#F3FFEE] p-2 rounded-md font-light text-xs flex items-center justify-center">
                             {`${item?.deliveryTime}`} min
                         </p>
                     </div>
@@ -37,14 +38,16 @@ const FavoriteCard: React.FC<IFavoriteCardProps> = ({ item }) => {
                             title={item?.deliveryTime + " mins"}
                             isBlue={true}
                         />
-                        {/* <IconText icon={faBicycle} text="$2" className="mr-3 text-gray-500" /> */}
-                        <IconWithTitle
-                            logo={CycleSvg}
-                            title={`$ ${item?.tax ?? "0"}`}
-                        />
+
+                        {DELIVERY_RATE && (
+                            <IconWithTitle
+                                logo={CycleSvg}
+                                title={DELIVERY_RATE}
+                            />
+                        )}
                         <IconWithTitle
                             logo={FaceSvg}
-                            title={String(item?.reviewAverage) || "9.2"}
+                            title={Number(item?.reviewAverage)}
                         />
                     </div>
                 </div>
