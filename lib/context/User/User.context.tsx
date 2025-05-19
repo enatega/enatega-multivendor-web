@@ -42,6 +42,7 @@ const SAVE_NOTIFICATION_TOKEN_WEB = gql`
 
 // Types
 export interface CartItem {
+  image: string;
   key: string;
   _id: string;
   quantity: number;
@@ -158,8 +159,9 @@ export interface UserContextType {
   addQuantity: (key: string, quantity?: number) => Promise<void>;
   removeQuantity: (key: string) => Promise<void>;
   addItem: (
+    image : string,
     foodId: string,
-    variationId: string,
+    variationId: string,    
     restaurantId: string,
     quantity?: number,
     addons?: Array<{
@@ -577,6 +579,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
   // Enhanced method that replaces the old addCartItem - uses setCartRestaurant which is defined above
   const addItem = useCallback(
     async (
+      image : string,
       foodId: string,
       variationId: string,
       restaurantId: string,
@@ -594,6 +597,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
 
       // Create new cart item
       const newItem: CartItem = {
+        image,
         key: v4(),
         _id: foodId,
         quantity,
