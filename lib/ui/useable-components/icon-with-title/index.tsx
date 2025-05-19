@@ -5,7 +5,7 @@ const IconWithTitle: React.FC<IiconWithTitleProps> = ({logo:Logo, title, isBlue 
     return (
         <div className="flex items-center justify-center gap-1">
             <Logo/>
-            <p className={`${isBlue ? 'text-[#0EA5E9]' : 'text-[#6B7280]'} font-light text-sm`}>{title}</p>
+            <p className={`${isBlue ? 'text-[#0EA5E9]' : 'text-[#6B7280]'} font-light text-xs`}>{title}</p>
         </div>
     )
 }

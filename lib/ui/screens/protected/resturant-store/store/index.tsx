@@ -650,14 +650,14 @@ export default function StoreDetailsScreen() {
             <div className="w-full md:w-[80%]">
               <div className="flex flex-wrap items-center gap-4 sm:gap-6">
                 {/* Time */}
-                <span className="flex items-center gap-2 text-gray-600 font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle">
+                <span className="flex items-center gap-1 text-gray-600 font-inter font-normal text-sm sm:text-base md:text-lg leading-5 sm:leading-6 md:leading-7 tracking-[0px] align-middle">
                   <ClockSvg />
                   {loading ? (
                     <Skeleton width="2rem" height="1.5rem" />
                   ) : (
-                    headerData.deliveryTime
+                   headerData.deliveryTime
                   )}
-                  mins
+                <span>mins</span>
                 </span>
 
                 {/* Rating */}
@@ -842,11 +842,12 @@ export default function StoreDetailsScreen() {
                           </h3>
                         )}
 
-                        <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                        <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 " >
                           {subCategory.foods.map((meal: IFood, mealIndex) => (
                             <div
                               key={mealIndex}
-                              className="flex items-center gap-4 rounded-lg border border-gray-300 shadow-sm bg-white p-3 relative transition-transform duration-300 hover:scale-105 hover:shadow-lg"
+                              className="flex items-center gap-4 rounded-lg border border-gray-300 shadow-sm bg-white p-3 relative transition-transform duration-300 hover:scale-105 hover:shadow-lg hover:cursor-pointer"
+                              onClick={() => handleOpenFoodModal(meal)}
                             >
                               {/* Text Content */}
                               <div className="flex-grow text-left md:text-left space-y-2 ">

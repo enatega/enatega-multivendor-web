@@ -17,10 +17,10 @@ const EnategaInfo: React.FC = () => {
   return (
     <div className="mt-[80px] mb-[80px]">
       <div className="flex flex-col justify-center items-center my-[20px]">
-        <h1 className="text-[40px] md:[text-60px] font-extrabold m-4">
+        <h1 className="text-2xl md:text-3xl lg:text-4xl font-extrabold m-4">
           LIFE TASTES BETTER WITH ENATEGA
         </h1>
-        <p className="m-4 text-[28px]">
+        <p className="m-4 text-xl md:text-2xl lg:text-3xl">
           Almost everything delivered to you – quickly, reliably, and affordably
         </p>
       </div>
