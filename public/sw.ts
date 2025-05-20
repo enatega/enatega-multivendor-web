@@ -2,7 +2,7 @@
 
 import { precacheAndRoute } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
-import { NetworkFirst } from 'workbox-strategies';
+import { NetworkFirst,StaleWhileRevalidate  } from 'workbox-strategies';
 import { BackgroundSyncPlugin } from 'workbox-background-sync';
 import { ExpirationPlugin } from 'workbox-expiration';
 
@@ -17,10 +17,11 @@ const bgSyncPlugin = new BackgroundSyncPlugin('graphql-mutations-queue', {
   maxRetentionTime: 24 * 60, // Retry for max of 24 Hours
 });
 
+
 // ✅ Cache GraphQL Queries
 registerRoute(
   ({ url, request }) =>
-    url.pathname.startsWith('/graphql') && request.method === 'POST',
+    url.pathname.includes('/graphql') && request.method === 'POST',
   new NetworkFirst({
     cacheName: 'graphql-cache',
     networkTimeoutSeconds: 3,
@@ -43,3 +44,22 @@ registerRoute(
   }),
   'POST'
 );
+
+
+registerRoute(
+    ({ request }) => request.method === 'GET' && (
+      request.destination === 'script' ||
+      request.destination === 'style' ||
+      request.destination === 'image' ||
+      request.destination === 'document' // HTML pages
+    ),
+    new StaleWhileRevalidate({
+      cacheName: 'static-resources',
+      plugins: [
+        new ExpirationPlugin({
+          maxEntries: 60,
+          maxAgeSeconds: 7 * 24 * 60 * 60, // 1 week
+        }),
+      ],
+    })
+  );
