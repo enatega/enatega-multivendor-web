@@ -31,6 +31,7 @@ export const useSetupApollo = (): ApolloClient<NormalizedCacheObject> => {
 
   const httpLink = createHttpLink({
     uri: `${SERVER_URL}graphql`,
+    useGETForQueries: true, 
   });
 
   // WebSocketLink with error handling

@@ -21,7 +21,7 @@ const bgSyncPlugin = new BackgroundSyncPlugin('graphql-mutations-queue', {
 // ✅ Cache GraphQL Queries
 registerRoute(
   ({ url, request }) =>
-    url.pathname.includes('/graphql') && request.method === 'POST',
+    url.pathname.includes('/graphql') && request.method === 'GET',
   new NetworkFirst({
     cacheName: 'graphql-cache',
     networkTimeoutSeconds: 3,
@@ -32,7 +32,6 @@ registerRoute(
       }),
     ],
   }),
-  'POST'
 );
 
 // ✅ Background Sync for Mutations (usually the same POST path)
