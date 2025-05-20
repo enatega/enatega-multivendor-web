@@ -1,0 +1,11 @@
+{
+    "name": "Your App Name",
+    "short_name": "App",
+    "description": "A Progressive Web App built with Next.js",
+    "start_url": "/",
+    "background_color": "#ffffff",
+    "theme_color": "#0f172a",
+    "display": "standalone",
+    "orientation": "portrait"
+  }
+  
