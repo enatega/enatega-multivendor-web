@@ -6,8 +6,12 @@ import { IFavoriteCardProps } from "@/lib/utils/interfaces/favourite.restaurants
 import IconWithTitle from "../icon-with-title";
 import { ClockSvg, CycleSvg, FaceSvg } from "@/lib/utils/assets/svg";
 import { useConfig } from "@/lib/context/configuration/configuration.context";
+import { useWindowWidth } from "@/lib/hooks/useWindowWidth";
+import {usePathname } from "next/navigation";
 
 const FavoriteCard: React.FC<IFavoriteCardProps> = ({ item }) => {
+    const pathname = usePathname();
+    const width = useWindowWidth();
     const { DELIVERY_RATE } = useConfig();
     return (
         <div className="relative p-0 border border-gray-200 rounded-lg shadow-lg w-full h-[255px] cursor-pointer">
@@ -20,7 +24,25 @@ const FavoriteCard: React.FC<IFavoriteCardProps> = ({ item }) => {
                     <div className="flex items-center justify-between">
                         <div>
                             <TextComponent
-                                text={item?.name || "N/A"}
+                                text={
+                                    item?.name
+                                        ? pathname === "/profile" &&
+                                          width >= 1024 &&
+                                          width <= 1150 &&
+                                          item?.name?.length > 12
+                                            ? item?.name.slice(0, 10) + "..."
+                                            : item?.name
+                                        : "N/A"
+                                }
+                                title={
+                                    item?.name
+                                        ? width >= 1024 &&
+                                          width <= 1150 &&
+                                          item?.name?.length > 12
+                                            ? item?.name
+                                            : ""
+                                        : ""
+                                }
                                 className="text-lg font-medium text-gray-800 mb-1"
                             />
                             <TextComponent
