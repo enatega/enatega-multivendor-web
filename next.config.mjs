@@ -1,12 +1,14 @@
 import createNextIntlPlugin from "next-intl/plugin";
 import PWA from 'next-pwa';
+
 const withPWA = PWA({
     dest: 'public',
     register: true,
     skipWaiting: true,
     // disable: process.env.NODE_ENV === 'development',
     swSrc: 'public/sw.ts', // Or service-worker.ts if using TS & custom build process
-    buildExcludes: [/middleware-manifest\.json$/]
+    buildExcludes: [/middleware-manifest\.json$/],
+    scope: '/',
   }
 );
 

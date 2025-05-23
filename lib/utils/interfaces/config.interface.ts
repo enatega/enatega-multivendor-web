@@ -17,4 +17,6 @@ export interface IConfigProps {
   COST_TYPE: string;
   TEST_OTP: string;
   SERVER_URL: string;
+  FIREBASE_API_KEY:string,
+  FIREBASE_VAPID_KEY:string,
 }
