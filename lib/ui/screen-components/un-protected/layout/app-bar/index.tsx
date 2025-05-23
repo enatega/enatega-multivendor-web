@@ -434,16 +434,17 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                             router.push("/profile");
                           },
                         },
-                        {
-                          label: "Logout",
-                          command: () => {
-                            onLogout();
-                          },
-                        },
+                        
                         {
                           label: "Get Help",
                           command: () => {
                             router.push("/profile/getHelp");
+                          },
+                        },
+                        {
+                          label: "Logout",
+                          command: () => {
+                            onLogout();
                           },
                         },
                       ]}

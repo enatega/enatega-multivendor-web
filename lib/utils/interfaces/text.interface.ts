@@ -1,5 +1,6 @@
-import { IGlobalComponentProps } from './global.interface';
+import { IGlobalComponentProps } from "./global.interface";
 
 export interface ITextComponentProps extends IGlobalComponentProps {
-  text: string;
+    text: string;
+    title?: string;
 }

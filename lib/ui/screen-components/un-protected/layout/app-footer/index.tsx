@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 const partnerWithEnatega = {
   title: "Partner with Enatega",
   links: [
+     { label: "Home", link: "/",internal:true },
     { label: "For Riders", link: "/rider",internal:true },
     { label: "For Restaurants", link: "/restaurantInfo" , internal:true },
   ],
