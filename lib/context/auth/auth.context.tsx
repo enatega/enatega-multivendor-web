@@ -5,7 +5,9 @@ import useToast from "@/lib/hooks/useToast";
 import { useTranslations } from "next-intl";
 import {
   createContext,
+  Dispatch,
   ReactNode,
+  SetStateAction,
   useContext,
   useEffect,
   useRef,
@@ -22,6 +24,7 @@ import {
   GET_USER_PROFILE,
   LOGIN,
   PHONE_EXISTS,
+  RESET_PASSWORD,
   SENT_OTP_TO_EMAIL,
   SENT_OTP_TO_PHONE,
 } from "@/lib/api/graphql";
@@ -29,6 +32,7 @@ import {
 // Interface & Types
 import {
   IAuthContextProps,
+  IAuthFormData,
   ICreateUserArguments,
   ICreateUserData,
   ICreateUserResponse,
@@ -98,6 +102,10 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     ICreateUserResponse,
     undefined | ICreateUserArguments
   >(CREATE_USER);
+  const [mutateResetPassword] = useMutation<
+    { resetPassword: { result: boolean } },
+    undefined | { password: string; email: string }
+  >(RESET_PASSWORD);
 
   // Checkers
   async function checkEmailExists(email: string): Promise<IEmailExists> {
@@ -159,6 +167,41 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   // handlers
+
+  const handlePasswordReset = async (password: string, email: string, setFormData: Dispatch<SetStateAction<IAuthFormData>>) => {
+    try {
+      setIsLoading(true);
+      const resetPasswordResponse = await mutateResetPassword({
+        variables: { password, email },
+      });
+      if (resetPasswordResponse?.data?.resetPassword?.result === true) {
+        showToast({
+          type: "success",
+          title: t("Password Reset"),
+          message: t("Your password has been reset successfully"),
+        });
+        setFormData({} as IAuthFormData);
+        setActivePanel(0);
+        // setIsAuthModalVisible(false);
+      }
+    }
+    catch (err) {
+      const error = err as ApolloError;
+      console.error("Error while resetting password:", error);
+      showToast({
+        type: "error",
+        title: t("Password Reset Error"),
+        message:
+          error.cause?.message ||
+          t("An error occurred while resetting the password"),
+      });
+    }
+    finally {
+      setIsLoading(false);
+    }
+  }
+
+
   const handleUserLogin = async (user: IUserLoginArguments) => {
     try {
       setIsLoading(true);
@@ -169,7 +212,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       const { data } = userResponse;
       localStorage.setItem("userId", data?.login.userId ?? "");
       localStorage.setItem("token", data?.login.token ?? "");
-    
+
       return data;
     } catch (err) {
       const error = err as ApolloError;
@@ -263,7 +306,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   async function onLoginCompleted(data: ILoginProfileResponse) {
     try {
       setUser(data.login);
-     
+
       localStorage.setItem("token", data?.login?.token ?? "");
       localStorage.setItem("userId", data?.login?.userId ?? "");
       await fetchProfile();
@@ -312,12 +355,14 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   // OTP Handlers
-  async function sendOtpToEmailAddress(email: string) {
+  async function sendOtpToEmailAddress(email: string, type?: string) {
     try {
       setIsLoading(true);
       if (SKIP_EMAIL_VERIFICATION) {
         setOtp(TEST_OTP);
-        setActivePanel(5);
+        if (type && type !== "password-recovery") {
+          setActivePanel(5);
+        }
         return;
       } else {
         generateOTP();
@@ -326,7 +371,9 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
           variables: { email: email, otp: otpFrom.current },
         });
         if (otpResponse.data?.sendOtpToEmail?.result) {
-          setActivePanel(3);
+          if (type && type !== "password-recovery") {
+            setActivePanel(3);
+          }
           showToast({
             type: "info",
             title: t("Email Verification"),
@@ -452,6 +499,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
           setIsRegistering,
           refetchProfileData,
           setRefetchProfileData,
+          handlePasswordReset
         }}
       >
         {children}

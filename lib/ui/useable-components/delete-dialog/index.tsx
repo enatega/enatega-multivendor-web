@@ -52,14 +52,14 @@ const CustomDialog = ({
   return (
     <Dialog
       visible={visible}
-      style={{ width: "32rem" }}
+      style={{ width: "32rem", textAlign: "center" }}
       breakpoints={{ "960px": "75vw", "641px": "90vw" }}
       header={title}
       modal
       footer={footer}
       onHide={onHide}
     >
-      <div className="confirmation-content">
+      <div className="confirmation-content text-center">
         <span>{message || "Are you sure you want to delete this item?"}</span>
       </div>
     </Dialog>

@@ -5,7 +5,6 @@ import { useQuery, gql } from "@apollo/client";
 import { GET_CITIES } from "@/lib/api/graphql/queries/Countries";
 import ListItem from "@/lib/ui/useable-components/list-item";
 import { useRouter } from "next/navigation";
-import { useLocationContext } from "@/lib/context/Location/Location.context";
 import {
   CitiesTilesProps,
   GetCitiesByCountryResponse,
@@ -15,6 +14,11 @@ import {
 
 // Assets
 import { CircleCrossSvg } from "@/lib/utils/assets/svg";
+import { onUseLocalStorage } from "@/lib/utils/methods/local-storage";
+import { useUserAddress } from "@/lib/context/address/address.context";
+import { USER_CURRENT_LOCATION_LS_KEY } from "@/lib/utils/constants";
+
+
 
 const CITIES = gql`
   ${GET_CITIES}
@@ -25,7 +29,7 @@ const CitiesTiles: React.FC<CitiesTilesProps> = ({
   AllCountries,
 }) => {
   const router = useRouter();
-  const { setLocation } = useLocationContext();
+  const { setUserAddress } = useUserAddress();
 
   const { data, loading } = useQuery<GetCitiesByCountryResponse>(CITIES, {
     variables: { id: countryId },
@@ -37,12 +41,28 @@ const CitiesTiles: React.FC<CitiesTilesProps> = ({
 
     const city = item as City;
 
-    setLocation({
-      label: city.name,
-      latitude: city.latitude,
-      longitude: city.longitude,
-      deliveryAddress: `Selected city: ${city.name}`,
-      details: `Auto-selected from ${data?.getCitiesByCountry?.name}`,
+    onUseLocalStorage(
+      "save",
+      USER_CURRENT_LOCATION_LS_KEY,
+      JSON.stringify({
+        label: "Home",
+        location: {
+          coordinates: [city.longitude, city.latitude],
+        },
+        _id: "",
+
+        deliveryAddress: `${city.name}`,
+      })
+    );
+
+    setUserAddress({
+      _id: "",
+      label:"Home" ,
+      location: {
+        coordinates: [city.longitude, city.latitude],
+      },
+      deliveryAddress: `${city.name}`,
+      details: `Selected from Cities List`,
     });
 
     router.push("/discovery");
