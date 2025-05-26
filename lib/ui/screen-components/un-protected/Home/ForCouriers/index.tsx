@@ -19,7 +19,7 @@ const Couriers:React.FC = () => {
           Banner2
         }
         heading={"For Riders"}
-        subText={"EARN WHEN AND WHERE YOU WANT"}
+        subText={"Earn when and where you want"}
         button={EarnWhereButton}
         middle={true}
       />
