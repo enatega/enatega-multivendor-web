@@ -2,8 +2,9 @@
 import { ITextComponentProps } from '@/lib/utils/interfaces';
 
 export default function TextComponent({
+  title,
   text,
   className,
 }: ITextComponentProps) {
-  return <div className={`custom-text ${className}`}>{text}</div>;
+  return <div title={title} className={`custom-text ${className}`}>{text}</div>;
 }

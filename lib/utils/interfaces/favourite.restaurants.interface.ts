@@ -4,72 +4,72 @@ export interface IUserReviewAuthor {
     _id?: string;
     name?: string;
     email?: string;
-  }
-  
-  export interface IUserReview {
+}
+
+export interface IUserReview {
     _id?: string;
     order?: {
-      user?: IUserReviewAuthor;
+        user?: IUserReviewAuthor;
     };
     rating?: number;
     description?: string;
     createdAt?: string;
-  }
-  
-  export interface IReviewData {
+}
+
+export interface IReviewData {
     total?: number;
     ratings?: number;
     reviews?: IUserReview[];
-  }
-  
-  export interface IRestaurantOpeningTime {
+}
+
+export interface IRestaurantOpeningTime {
     day?: string;
     times?: {
-      startTime?: string;
-      endTime?: string;
+        startTime?: string;
+        endTime?: string;
     }[];
-  }
-  
-  export interface IRestaurantVariation {
+}
+
+export interface IRestaurantVariation {
     _id?: string;
     title?: string;
     price?: number;
     discounted?: number;
     addons?: string[];
-  }
-  
-  export interface IRestaurantFood {
+}
+
+export interface IRestaurantFood {
     _id?: string;
     title?: string;
     image?: string;
     description?: string;
     subCategory?: string;
     variations?: IRestaurantVariation[];
-  }
-  
-  export interface IRestaurantCategory {
+}
+
+export interface IRestaurantCategory {
     _id?: string;
     title?: string;
     foods?: IRestaurantFood[];
-  }
-  
-  export interface IRestaurantOption {
+}
+
+export interface IRestaurantOption {
     _id?: string;
     title?: string;
     description?: string;
     price?: number;
-  }
-  
-  export interface IRestaurantAddon {
+}
+
+export interface IRestaurantAddon {
     _id?: string;
     options?: string;
     title?: string;
     description?: string;
     quantityMinimum?: number;
     quantityMaximum?: number;
-  }
-  
-  export interface IFavouriteRestaurantItem {
+}
+
+export interface IFavouriteRestaurantItem {
     _id?: string;
     orderId?: string;
     orderPrefix?: string;
@@ -80,7 +80,7 @@ export interface IUserReviewAuthor {
     image?: string;
     address?: string;
     location?: {
-      coordinates?: number[];
+        coordinates?: number[];
     };
     deliveryTime?: string;
     minimumOrder?: number;
@@ -94,23 +94,23 @@ export interface IUserReviewAuthor {
     addons?: IRestaurantAddon[];
     rating?: number;
     openingTimes?: IRestaurantOpeningTime[];
-  }
-  
-  export interface IUserFavouriteQueryVariables {
+}
+
+export interface IUserFavouriteQueryVariables {
     latitude?: number;
     longitude?: number;
-  }
-  
-  export interface IUserFavouriteQueryResponse {
+}
+
+export interface IUserFavouriteQueryResponse {
     userFavourite?: IFavouriteRestaurantItem[];
-  }
+}
 
-  export interface IHeaderFavourite {
-    title: string
-    showSeeAll?: boolean
-    onSeeAllClick?: () => void
-  }
+export interface IHeaderFavourite {
+    title: string;
+    showSeeAll?: boolean;
+    onSeeAllClick?: () => void;
+}
 
-  export interface IFavoriteCardProps {
+export interface IFavoriteCardProps {
     item: IFavouriteRestaurantItem;
-  }
+}

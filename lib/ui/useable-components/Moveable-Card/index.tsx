@@ -52,7 +52,7 @@ const MoveableCard: React.FC<MoveableProps> = ({
           className={`absolute inset-0 flex items-start justify-between  flex-col p-5  ${styles.textContainer}`}
         >
           <div>
-            <h1 className="text-white text-4xl font-extrabold mb-3">
+            <h1 className="text-white text-2xl md:3xl lg:text-4xl font-extrabold mb-3">
               {heading}
             </h1>
             <p className="text-white text-md text-lg ">{subText}</p>

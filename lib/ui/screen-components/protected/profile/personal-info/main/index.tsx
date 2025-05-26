@@ -6,6 +6,7 @@ import { getInitials } from "@/lib/utils/methods";
 import { useQuery } from "@apollo/client";
 import UpdatePhoneModal from "../../settings/main/update-phone";
 import { useState } from "react";
+import "primeicons/primeicons.css";
 
 export default function PersonalInfoMain() {
   const [isUpdatePhoneModalVisible, setIsUpdatePhoneModalVisible] =
@@ -53,16 +54,20 @@ export default function PersonalInfoMain() {
             />
           </div>
           <div>
+            <div className="flex items-center gap-2">
+
             <TextComponent
               text="Phone number"
               className="text-black font-semibold text-base md:text-lg"
             />
+             <i  onClick={handleUpdatePhoneModal} className="pi pi-pen-to-square cursor-pointer text-sm"></i>
+            </div>
             <h1
               onClick={handleUpdatePhoneModal}
               title="Update phone number"
               className=" text-blue-700 font-normal text-sm md:text-base cursor-pointer"
-            >
-              {profileData?.profile?.phone || "N/A"}
+            >           
+              { "N/A"}
             </h1>
           </div>
         </div>

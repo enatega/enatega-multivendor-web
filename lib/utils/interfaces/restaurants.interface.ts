@@ -130,8 +130,8 @@ export interface IOpeningTime {
 }
 
 export interface ITimeSlot {
-  startTime: string;
-  endTime: string;
+  startTime: string[];
+  endTime: string[];
 }
 
 // Double Category

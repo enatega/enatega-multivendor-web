@@ -274,8 +274,8 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
 
   function fittedAddress(address: String | undefined) {
     if (address) {
-      let adr = address.slice(0, 20)
-      if (address.length > 20) {
+      let adr = address.slice(0, 16)
+      if (address.length > 16) {
         adr = adr + '...'
 
       }
@@ -302,6 +302,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                    <Logo className="w-32 h-auto" fillColor="#000000" />
                   </div>
                 )}
+                {!isSearchFocused && 
                 <div
                   className={`flex items-center ${isSearchFocused && "hidden"} hidden lg:flex`}
                   onClick={onHandleAddressModelVisibility}
@@ -324,8 +325,9 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                       hanging={12}
                       color="#94e469"
                     />
-                  </div>
+                  </div> 
                 </div>
+}
               </div>
 
               {/* Center Section */}
@@ -334,7 +336,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
               >
                 <div className="relative w-full">
                   {/* Search Icon - visible only below sm */}
-                  {!isSearchFocused && (
+                  {/* {!isSearchFocused && (
                     <div className="sm:hidden flex justify-end items-center w-full">
                       <div
                         className="w-7 h-7 bg-gray-100 rounded-full flex items-center justify-center cursor-pointer"
@@ -345,7 +347,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                         <SearchSvg width={16} height={16} />
                       </div>
                     </div>
-                  )}
+                  )} */}
 
                   {/* Search Input - hidden on mobile unless focused */}
                   <input
@@ -377,6 +379,18 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
               {/* Right Section */}
               <div className={`flex w-1/3 justify-end items-center space-x-4`}>
                 {/* Login Button */}
+                {!isSearchFocused && (
+                    <div className="sm:hidden flex justify-end items-center w-full">
+                      <div
+                        className="w-7 h-7 bg-gray-100 rounded-full flex items-center justify-center cursor-pointer"
+                        onClick={() => {
+                          setIsSearchFocused(true);
+                        }}
+                      >
+                        <SearchSvg width={16} height={16} />
+                      </div>
+                    </div>
+                  )}
                 {!authToken && !isSearchFocused ?
                   <button
                     className="md:w-20 w-16 h-fit py-3 text-gray-900 md:py-3  px-3 bg-[#5AC12F] rounded text-sm lg:text-[16px] md:text-md "
@@ -405,9 +419,11 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                     </div>
 
                     {/* Show full name on large screens and up */}
-                    <span className="hidden lg:inline">
+                    {cartCount == 0  && 
+                    <span className="hidden xl:inline">
                       {profile?.name || ""}
                     </span>
+}
 
                     <FontAwesomeIcon
                       icon={faChevronDown}
@@ -422,16 +438,17 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                             router.push("/profile");
                           },
                         },
-                        {
-                          label: "Logout",
-                          command: () => {
-                            onLogout();
-                          },
-                        },
+                        
                         {
                           label: "Get Help",
                           command: () => {
                             router.push("/profile/getHelp");
+                          },
+                        },
+                        {
+                          label: "Logout",
+                          command: () => {
+                            onLogout();
                           },
                         },
                       ]}
@@ -445,7 +462,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
 
                 {/* Cart Button */}
                 <div className="p-1">
-                  {isLogin && (
+                  {authToken && (
                     <div>
                       {cartCount > 0 && !isSearchFocused && (
                         <div
@@ -484,7 +501,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                     >
                       {/* <CartSvg color="black" width={22} height={22} /> */}
                       {/* Show on small screens only */}
-                      <div className="block md:hidden">
+                      <div className="block sm:hidden">
                         <CartSvg color="black" width={18} height={18} />
                       </div>
 
@@ -492,7 +509,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                       <div className="hidden sm:block">
                         <CartSvg color="black" width={22} height={22} />
                       </div>
-                      {cartCount > 0 && (
+                      {cartCount > 0 && authToken && (
                         <div className="absolute -top-1 -right-1 bg-black text-[#5AC12F] text-[10px] w-5 h-5 rounded-full flex items-center justify-center">
                           {cartCount}
                         </div>

@@ -12,8 +12,8 @@ import { useUserAddress } from "../context/address/address.context";
 
 const useNearByRestaurantsPreview = (enabled = true) => {
   const { userAddress } = useUserAddress();
-  const userLongitude = userAddress?.location?.coordinates[0] || 0
-  const userLatitude = userAddress?.location?.coordinates[1] || 0
+  const userLongitude = Number(userAddress?.location?.coordinates[0]) || 0
+  const userLatitude = Number(userAddress?.location?.coordinates[1]) || 0
 
   const { data, loading, error, networkStatus } =
     useQuery<INearByRestaurantsPreviewData>(NEAR_BY_RESTAURANTS_PREVIEW, {

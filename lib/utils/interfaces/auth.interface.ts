@@ -74,7 +74,7 @@ export interface IAuthContextProps {
   setIsAuthModalVisible: Dispatch<SetStateAction<boolean>>;
   otp: string | null;
   setOtp: Dispatch<SetStateAction<string | null>>;
-  sendOtpToEmailAddress: { (email: string): Promise<void> };
+  sendOtpToEmailAddress: { (email: string, type?: string): Promise<void> };
   sendOtpToPhoneNumber: { (phone: string): Promise<void> };
   handleCreateUser: (user: ICreateUserArguments) => Promise<ICreateUserData>;
   isRegistering: boolean;
@@ -83,6 +83,7 @@ export interface IAuthContextProps {
   setIsLoading: Dispatch<SetStateAction<boolean>>;
   refetchProfileData: boolean;
   setRefetchProfileData: Dispatch<SetStateAction<boolean>>;
+  handlePasswordReset: (password: string, email: string, setFormData: Dispatch<SetStateAction<IAuthFormData>>) => Promise<void>;
 }
 export interface ILoginProfile {
   userId?: string;
@@ -190,4 +191,11 @@ export interface ICreateUserArguments {
   name?: string;
   notificationToken?: string;
   appleId?: string;
+}
+export interface IVerificationEmailForChangePasswordProps {
+  handleSubmitAfterVerification: () => void;
+  handleResendEmailOtp: () => void;
+  emailOtp: string;
+  setEmailOtp: (otp: string) => void;
+  formData: { email?: string, password?: string, name?: string, phone?: string };
 }
