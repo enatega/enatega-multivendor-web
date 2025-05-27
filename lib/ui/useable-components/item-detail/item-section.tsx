@@ -1,4 +1,5 @@
 // Interface
+import { useConfig } from "@/lib/context/configuration/configuration.context";
 import { SectionProps, Option } from "@/lib/utils/interfaces";
 
 /**
@@ -62,6 +63,8 @@ export const ItemDetailSection = <
     ? (multiSelected as T[]).filter((item) => !item.isOutOfStock)
     : [];
 
+    const { CURRENCY_SYMBOL } = useConfig();
+
   return (
     <div className="mb-4">
       <div className="flex justify-between items-center mb-2">
@@ -103,7 +106,7 @@ export const ItemDetailSection = <
                 {option.title}{" "}
                 {option.isOutOfStock ?<span className="text-red-500">(Out of stock)</span> : ""}{" "}
               </span>
-              <span className="text-sm text-gray-700">${option.price}</span>
+              <span className="text-sm text-gray-700">{CURRENCY_SYMBOL}{option.price}</span>
             </div>
           </label>
         ))}
