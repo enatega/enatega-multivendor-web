@@ -91,7 +91,7 @@ const FoodCard = ({
 
   return (
     <div
-      className={`relative rounded-md shadow-md ${item?.isAvailable ? "cursor-pointer hover:scale-102 hover:opacity-95" : "cursor-not-allowed opacity-80"} transition-transform duration-500 max-h-[272px] w-[96%] ml-[2%] ${pathname === "/restaurants" || pathname === "/store" ? "my-[2%]" : "my-[4%]"}`}
+      className={`relative rounded-md shadow-md ${item?.isAvailable ? "cursor-pointer hover:scale-102 hover:opacity-95" : "cursor-not-allowed opacity-80"} transition-transform duration-500 max-h-[272px] w-[96%] ml-[2%] ${pathname === "/restaurants" || pathname === "/store" ? "my-[2%]" : ""}`}
       onClick={() => {
         if (!item?.isAvailable) {
           handleUpdateIsModalOpen(true, item._id);
@@ -162,7 +162,7 @@ const FoodCard = ({
       {/* Content Section */}
       <div className="p-2 flex flex-col justify-between flex-grow">
         {/* Name & Description */}
-        <div className="flex flex-row justify-between items-center relative border-b border-dashed pb-1">
+        <div className="flex flex-row justify-between items-center relative pb-1">
           <div className="w-[70%]">
             <p className="text-base lg:text-lg text-[#374151] font-semibold line-clamp-1">
               {item?.name || "Food item"}
@@ -186,7 +186,7 @@ const FoodCard = ({
         </div>
 
         {/* Icons Section */}
-        <div className="flex flex-row justify-between w-[80%] sm:w-[100%] lg:w-[75%] pt-1">
+        {/* <div className="flex flex-row justify-between w-[80%] sm:w-[100%] lg:w-[75%] pt-1">
           <IconWithTitle
             logo={() => <ClockSvg isBlue={true} />}
             title={`${item?.deliveryTime || 25} mins`}
@@ -199,7 +199,7 @@ const FoodCard = ({
             />
           )}
           <IconWithTitle logo={FaceSvg} title={item?.reviewAverage || 4.5} />
-        </div>
+        </div> */}
       </div>
 
       {/* Modal for unavailable items */}

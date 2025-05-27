@@ -5,8 +5,8 @@ export default function getEnv(env: "DEV" | "PROD") {
       // WS_SERVER_URL: "wss://enatega-multivendor-revamp.up.railway.app/",
       // SERVER_URL: "https://enatega-multivendor.up.railway.app/",
       // WS_SERVER_URL: "wss://enatega-multivendor.up.railway.app/",
-      SERVER_URL: "https://api-enatega-single-multivendor.up.railway.app/",
-      WS_SERVER_URL: "wss://api-enatega-single-multivendor.up.railway.app/",
+      SERVER_URL: "https://v1-api-enatega-single-multivendor.up.railway.app/",
+      WS_SERVER_URL: "wss://v1-api-enatega-single-multivendor.up.railway.app/",
       // SERVER_URL: "http://localhost:8001/",
       // WS_SERVER_URL: "ws://localhost:8001/",
     };

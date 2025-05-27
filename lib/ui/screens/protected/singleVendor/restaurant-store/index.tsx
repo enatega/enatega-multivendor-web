@@ -48,7 +48,7 @@ export default function RestaurantSingleVendorScreen() {
 
   return (
     <>
-      <div className="flex flex-col space-y-6 mb-8">
+      <div className="flex flex-col space-y-4 mx-auto md:w-[90%]">
         <div>
           {/* Pass the same food click handler to the banner section */}
           <SingleVendorBannerSection onFoodClick={handleFoodClick} />
