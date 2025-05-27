@@ -4,10 +4,12 @@
 import useSingleRestaurantFoodData from "@/lib/hooks/useSingleRestaurantFoodData";
 import CuisinesSliderCard from "@/lib/ui/useable-components/cuisines-slider-card";
 import CuisinesSliderSkeleton from "@/lib/ui/useable-components/custom-skeletons/cuisines.slider.skeleton";
+import { onUseLocalStorage } from "@/lib/utils/methods/local-storage";
 import { useRouter } from "next/navigation";
 
 function CategoryCards() {
-  const { categories, loading, error, restaurant } = useSingleRestaurantFoodData();
+  const { categories, loading, error, restaurant, restaurantId, restaurantSlug} = useSingleRestaurantFoodData();
+  
 
   const router = useRouter();
 
@@ -38,9 +40,20 @@ function CategoryCards() {
   });
 
  const handleCategoryClick = (category) => {
+  //
+  const currentShopType = onUseLocalStorage(
+    "get",
+    "currentShopType"
+  );
+  // const restaurantId = onUseLocalStorage("get", "restaurant");
+  //
   console.log("Category clicked in CategoryCards:", category?._id, restaurant._id);
-    router.replace(`/categoryItemScreen/${category?._id}/${restaurant?._id}`);
+    // router.replace(`/categoryItemScreen/${category?._id}/${restaurant?._id}`);
+    router.replace(
+      `/${currentShopType}/${restaurantSlug}/${restaurantId}`
+    );
   } 
+
 
   return (
     <CuisinesSliderCard

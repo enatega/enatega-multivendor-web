@@ -71,6 +71,8 @@ const useSingleRestaurantFoodData = () => {
     loading: restaurantLoading || popularItemsLoading,
     error: restaurantError || popularItemsError,
     restaurant: restaurantData?.restaurant,
+    restaurantId: restaurantData?.restaurant?._id,
+    restaurantSlug: restaurantData?.restaurant?.slug,
   };
 };
 
