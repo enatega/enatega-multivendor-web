@@ -14,8 +14,8 @@ export default function getEnv(env: "DEV" | "STAGE" | "PROD") {
       };
     case "PROD":
       return {
-          SERVER_URL: "https://enatega-multivendor.up.railway.app/",
-      WS_SERVER_URL: "wss://enatega-multivendor.up.railway.app/",
+        SERVER_URL: "https://enatega-multivendor.up.railway.app/",
+        WS_SERVER_URL: "wss://enatega-multivendor.up.railway.app/",
       };
     default:
       return {
