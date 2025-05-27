@@ -93,12 +93,8 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
     setSearchedKeywords,
   } = useSearchUI();
 
- const formattedSubtotal = useMemo(
-  () =>  { 
-    return cartCount > 0 ? `${CURRENCY_SYMBOL}${calculateSubtotal()}` : `${CURRENCY_SYMBOL}0`}
-  , 
-  [cartCount]
-);
+  // Format subtotal for display
+  const formattedSubtotal = cartCount > 0 ? `${CURRENCY_SYMBOL}${calculateSubtotal()}` : `${CURRENCY_SYMBOL}0`;
 
   console.log(userAddress);
   // Handlers
