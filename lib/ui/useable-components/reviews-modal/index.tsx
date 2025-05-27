@@ -154,7 +154,7 @@ const ReviewsModal = ({
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 border p-4 rounded-md shadow-sm">
                 <div className="mb-4 md:mb-0">
                   <h1 className="text-3xl md:text-5xl font-semibold text-gray-700">
-                    {averageRating?.toFixed(1)}
+                    {averageRating?.toFixed(2)}
                   </h1>
                   <p className="text-gray-500 mt-1 font-normal text-xl md:text-2xl">
                     ({reviewResult?.reviews?.length?.toLocaleString()})
