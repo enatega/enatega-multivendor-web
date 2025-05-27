@@ -18,4 +18,5 @@ export interface IConfigProps {
   COST_TYPE: string;
   TEST_OTP: string;
   SERVER_URL: string;
+  isMultiVendor: boolean;
 }
