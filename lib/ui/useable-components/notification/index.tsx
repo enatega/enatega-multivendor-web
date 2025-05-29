@@ -11,22 +11,22 @@ const CustomNotification = ({
 
   return (
     <div className="flex h-full w-full">
-      <div
-        className={`w-[0.5rem] rounded-bl-lg rounded-tl-lg`}
-        style={{ backgroundColor: styles.textColor }}
-      >
-        <FontAwesomeIcon
-          icon={styles.icon}
-          size="2xl"
-          color={styles.textColor}
-          className="m-4 ml-4"
-        />
-      </div>
+        <div
+          className={`w-[0.5rem] rounded-bl-lg rounded-tl-lg`}
+          style={{ backgroundColor: styles.textColor }}
+        >
+          <FontAwesomeIcon
+            icon={styles.icon}
+            size="2xl"
+            color={styles.textColor}
+            className="m-4 ml-4"
+          />
+        </div>
 
-      <div className="m-4 ml-14">
-        <div className={`font-semibold ${styles.textColor}`}>{title}</div>
-        <div className={`text-sm font-[400] ${styles.textColor}`}>
-          {message}
+        <div className="m-4 ml-14">
+            <div className={`font-semibold ${styles.textColor}`}>{title}</div>
+            <div className={`text-sm font-[400] ${styles.textColor}`}>
+              {message}
         </div>
       </div>
     </div>
