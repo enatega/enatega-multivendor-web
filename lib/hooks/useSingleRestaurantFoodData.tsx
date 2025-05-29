@@ -8,7 +8,7 @@ import useSingleRestaurant from "./useSingleRestaurant";
  */
 const useSingleRestaurantFoodData = () => {
   // Get the single restaurant ID and slug
-  const { restaurantId, restaurantSlug } = useSingleRestaurant();
+  const { restaurantId, restaurantSlug, shopType } = useSingleRestaurant();
 
   // Fetch restaurant data with categories and foods
   const { data: restaurantData, loading: restaurantLoading, error: restaurantError } = useQuery(
@@ -73,6 +73,7 @@ const useSingleRestaurantFoodData = () => {
     restaurant: restaurantData?.restaurant,
     restaurantId: restaurantData?.restaurant?._id,
     restaurantSlug: restaurantData?.restaurant?.slug,
+    shopType: shopType
   };
 };
 
