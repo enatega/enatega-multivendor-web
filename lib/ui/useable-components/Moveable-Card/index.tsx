@@ -53,7 +53,7 @@ const MoveableCard: React.FC<MoveableProps> = ({
         >
            <div className="absolute inset-0 bg-black opacity-30"></div>
           <div className="relative z-10">
-            <h1 className=" text-white text-2xl md:3xl lg:text-4xl font-extrabold mb-3">
+            <h1 className=" text-white text-2xl md:text-3xl lg:text-4xl font-extrabold mb-3">
               {heading}
             </h1>
             <p className="text-white text-lg md:text-2xl lg:text-3xl ">{subText}</p>
@@ -69,7 +69,7 @@ const MoveableCard: React.FC<MoveableProps> = ({
               <h1 className="text-white text-2xl font-bold  text-center ">
                 {heading}
               </h1>
-              <p className="text-white text-2xl md:text-3xl lg:text-4xl font-bold text-center">
+              <p className="text-white text-lg md:text-2xl lg:text-3xl font-bold text-center">
                 {subText}
               </p>
             </div>

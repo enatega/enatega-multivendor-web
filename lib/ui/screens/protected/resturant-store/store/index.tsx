@@ -864,7 +864,7 @@ export default function StoreDetailsScreen() {
                                     </span>
                                   )}
                                 </div>
-                                <p className="text-gray-500 text-sm">
+                                <p className="text-gray-500 text-[11px]">
                                   {meal.description}
                                 </p>
 
