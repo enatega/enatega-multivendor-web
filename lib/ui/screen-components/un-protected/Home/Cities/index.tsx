@@ -35,7 +35,7 @@ const Cities = () => {
             Explore Countries
           </div>
           {/* <div className="flex flex-wrap gap-6 items-center  my-[30px]"> */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 items-center my-[30px]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 items-center my-[30px]">
             {loading ?
               [...Array(8)].map((_, index) => (
                 <ListItem key={index} loading={true} />

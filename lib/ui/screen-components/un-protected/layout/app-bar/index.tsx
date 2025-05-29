@@ -542,7 +542,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
                 <div className="flex gap-4">
                   <LocationSvg width={22} height={22} />
                   <p className="text-[14px] text-[#94e469]">
-                    {userAddress?.deliveryAddress}
+                    {fittedAddress(userAddress?.deliveryAddress)}
                   </p>
                   <div className="sm:flex items-center">
                     <FontAwesomeIcon

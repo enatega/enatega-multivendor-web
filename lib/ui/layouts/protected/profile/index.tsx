@@ -12,7 +12,7 @@ export default function ProfileLayout({
 }: IProtectedProfileLayoutComponent) {
 
   return (
-    <div className="w-screen h-auto flex flex-col pb-20">
+    <div className="w-screen h-auto flex flex-col pb-10">
       <div className="flex flex-col justify-center space-y-6 items-center py-4 px-4  md:px-6 lg:px-12 xl:px-20 2xl:px-[80px] ">
         <ProfileHeader />
         <ProfileTabs />
