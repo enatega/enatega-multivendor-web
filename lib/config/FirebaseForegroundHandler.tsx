@@ -13,7 +13,6 @@ export default function FirebaseForegroundHandler() {
     FIREBASE_STORAGE_BUCKET,
     FIREBASE_MSG_SENDER_ID,
     FIREBASE_APP_ID,
-    FIREBASE_VAPID_KEY, // not used here but okay to keep if needed elsewhere
   } = useConfig();
 
   useEffect(() => {
