@@ -28,6 +28,8 @@ export const ConfigurationProvider = ({
       { currency: "", currencySymbol: "", deliveryRate: 0, costType: "perKM" }
     : data.configuration;
 
+  
+
   const GOOGLE_CLIENT_ID = configuration.webClientID;
   const STRIPE_PUBLIC_KEY = configuration.publishableKey;
   const PAYPAL_KEY = configuration.clientId;
@@ -45,8 +47,11 @@ export const ConfigurationProvider = ({
   const DELIVERY_RATE = configuration.deliveryRate;
   const COST_TYPE = configuration.costType;
   const TEST_OTP = configuration.testOtp;
-  const FIREBASE_API_KEY = configuration.webFirebaseApiKey;
-  const FIREBASE_VAPID_KEY = configuration.webFirebaseVapidKey;
+
+
+
+  
+
   const { SERVER_URL } = getEnv(ENV);
 
   return (
@@ -68,9 +73,6 @@ export const ConfigurationProvider = ({
         COST_TYPE,
         TEST_OTP,
         SERVER_URL,
-        FIREBASE_API_KEY,
-        FIREBASE_VAPID_KEY,
-        
       }}
     >
       {children}
