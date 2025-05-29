@@ -1,5 +1,5 @@
 // Environment
-import getEnv from "@/environment";
+// import getEnv from "@/environment";
 
 // Apollo
 import {
@@ -22,10 +22,12 @@ import { SubscriptionClient } from "subscriptions-transport-ws";
 
 // Utility imports
 import { Subscription } from "zen-observable-ts";
-import { ENV } from "../utils/constants";
+// import { ENV } from "../utils/constants";
 
 export const useSetupApollo = (): ApolloClient<NormalizedCacheObject> => {
-  const { SERVER_URL, WS_SERVER_URL } = getEnv(ENV);
+  // const { SERVER_URL, WS_SERVER_URL } = getEnv(ENV);
+  const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
+  const WS_SERVER_URL = process.env.NEXT_PUBLIC_WS_SERVER_URL;
 
   const cache = new InMemoryCache();
 
@@ -57,9 +59,6 @@ export const useSetupApollo = (): ApolloClient<NormalizedCacheObject> => {
   });
 
   const request = async (operation: Operation): Promise<void> => {
-    // const data = localStorage.getItem(`user-${APP_NAME}`);
-    // Set This Token empty later...
-    // let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2U2OThjZDFkNmFkNmZkMmMyZTk5NWQiLCJlbWFpbCI6ImR1bW15Y3VzdG9tZXIwNkBnbWFpbC5jb20iLCJpYXQiOjE3NDMxNjU2NDV9.XcOHtJtdb55PK6Bgwf2WZnWPHzkuH4vgFwq4yi8RWbA";
     const token = localStorage.getItem("token");
     const userId = localStorage.getItem("userId");
     operation.setContext({
