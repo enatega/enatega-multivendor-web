@@ -13,72 +13,11 @@ import MiniCards from "../../screen-components/un-protected/Home/MiniCards";
 import TinyTiles from "../../useable-components/tinyTiles";
 import Couriers from "../../screen-components/un-protected/Home/ForCouriers";
 import { PaddingContainer } from "../../useable-components/containers";
-import { useMutation } from "@apollo/client";
-import { updateNotificationStatus,saveNotificationTokenWeb } from "@/lib/api/graphql";
 
-import { messaging } from "@/lib/config/firebase";
-import { getToken } from "@/lib/config/firebase";
-
-
-const Main = () => {
-
-  const [mutate] = useMutation(updateNotificationStatus)
-  const [saveNotify]=useMutation(saveNotificationTokenWeb)
-
-  async function enableNotifications() {
-    const permission = await Notification.requestPermission();
-    console.log(permission)
+const Main = () => {  
   
-    if (permission === "granted") {
-      
-      console.log("permisiion granted")
-      await mutate({
-        variables: {
-          orderNotification: true,
-          offerNotification: true,
-        },
-      });
-      console.log("after orderNotificationStatus permission")
-  
-      //🔑 2. Get FCM token
-      const token = await getToken(messaging, {
-        vapidKey: "BOpVOtmawD0hzOR0F5NQTz_7oTlNVwgKX_EgElDnFuILsaE_jWYPIExAMIIGS-nYmy1lhf2QWFHQnDEFWNG_Z5w",
-      });
-  
-      console.log("FCM TOKEN : ",token)
-
-
-      console.log("Running before saveNotify")
-      if (token) {
-        await saveNotify({ variables: { token } });
-        console.log("Running after saveNotify")
-      }
-    }
-  }
-
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js')
-      .then(registration => {
-        console.log('Service Worker registered with scope:', registration.scope);
-      });
-  }
-  
-  // if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-  //   window.addEventListener('load', () => {
-  //     navigator.serviceWorker
-  //       .register('/sw.ts')
-  //       .then((registration) => {
-  //         console.log('Service Worker registered:', registration);
-  //       })
-  //       .catch((err) => {
-  //         console.error('Service Worker registration failed:', err);
-  //       });
-  //   });
-  // }
-
   return (
     <div className="w-screen">
-      <button onClick={enableNotifications}>Enable me</button>
       <Start />
       <PaddingContainer>
         <div className="w-full">

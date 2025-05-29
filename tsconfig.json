@@ -23,6 +23,6 @@
     },
     "target": "ES2017"
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "public/sw.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "public/serviceWorker.js"],
   "exclude": ["cypress.config.ts", "cypress", "node_modules"]
 }

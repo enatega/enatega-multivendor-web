@@ -1,3 +1,4 @@
+import FirebaseForegroundHandler from "@/lib/config/FirebaseForegroundHandler";
 import InstallPWA from "@/lib/ui/pwa/InstallPWA";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
@@ -20,6 +21,9 @@ export default async function RootLayout({
  
   // Providing all messages to the client
   // side is the easiest way to get started
+
+  
+  
   const messages = await getMessages({ locale });
 
   return (
@@ -33,6 +37,7 @@ export default async function RootLayout({
       </head>
       <body>
         <NextIntlClientProvider messages={messages}>
+          <FirebaseForegroundHandler/>
           {children}
           <InstallPWA/>
         </NextIntlClientProvider>

@@ -8,7 +8,8 @@ export const saveNotificationTokenWeb = gql`mutation SaveNotificationTokenWeb($t
   }`;  
   export const updateNotificationStatus = gql` mutation updateNotificationStatus($orderNotification: Boolean!, $offerNotification: Boolean! ) {
    updateNotificationStatus(offerNotification:$offerNotification,orderNotification:$orderNotification){
-    name
+    name,
+    phone,
    }
   }
 `;

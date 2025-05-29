@@ -1,10 +1,10 @@
 {
-    "name": "Your App Name",
-    "short_name": "App",
+    "name": "Enatega MultiVendor",
+    "short_name": "Enatega",
     "description": "A Progressive Web App built with Next.js",
     "start_url": "/",
-    "background_color": "#ffffff",
-    "theme_color": "#0f172a",
+    "background_color": "#94e469",
+    "theme_color": "#94e469",
     "display": "standalone",
     "orientation": "portrait",
     "icons":[

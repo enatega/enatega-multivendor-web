@@ -1,19 +1,18 @@
-// src/firebase.js
+//src/firebase.js
 import { initializeApp } from 'firebase/app';
 import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 
 
 const firebaseConfig ={
-  apiKey: "AIzaSyAq8bimIuLBumhJN8abBWkpNBe28WtAG7k",
-  authDomain: "enatega-multivender-web.firebaseapp.com",
-  projectId: "enatega-multivender-web",
-  storageBucket: "enatega-multivender-web.firebasestorage.app",
-  messagingSenderId: "438532750182",
-  appId: "1:438532750182:web:444c52fcc26e9bb4f0a6a7",
-  measurementId: "G-J0JF7CFLQ9",
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
 const firebaseApp = initializeApp(firebaseConfig);
 const messaging = getMessaging(firebaseApp);
 
-export { messaging, getToken, onMessage };
+export { messaging, getToken, onMessage,firebaseApp };

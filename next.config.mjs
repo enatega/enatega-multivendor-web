@@ -6,7 +6,7 @@ const withPWA = PWA({
     register: true,
     skipWaiting: true,
     // disable: process.env.NODE_ENV === 'development',
-    swSrc: 'public/sw.ts', // Or service-worker.ts if using TS & custom build process
+    swSrc: 'public/serviceWorker.js', // Or service-worker.ts if using TS & custom build process
     buildExcludes: [/middleware-manifest\.json$/],
     scope: '/',
   }
