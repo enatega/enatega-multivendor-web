@@ -3,8 +3,8 @@
 import Image from "next/image";
 import React, { useState } from "react";
 import {usePathname } from "next/navigation";
-import { ClockSvg, CycleSvg, FaceSvg, HeartSvg } from "@/lib/utils/assets/svg";
-import IconWithTitle from "../icon-with-title";
+import {  HeartSvg } from "@/lib/utils/assets/svg";
+// import IconWithTitle from "../icon-with-title";
 import { useConfig } from "@/lib/context/configuration/configuration.context";
 import CustomDialog from "../custom-dialog";
 import { Button } from "primereact/button";
