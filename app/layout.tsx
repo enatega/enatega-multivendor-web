@@ -37,7 +37,7 @@ export default async function RootLayout({
       </head>
       <body>
         <NextIntlClientProvider messages={messages}>
-          <FirebaseForegroundHandler/>
+          {/* <FirebaseForegroundHandler/> */}
           {children}
           <InstallPWA/>
         </NextIntlClientProvider>
