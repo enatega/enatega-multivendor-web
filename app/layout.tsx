@@ -1,3 +1,5 @@
+import FirebaseForegroundHandler from "@/lib/config/FirebaseForegroundHandler";
+import InstallPWA from "@/lib/ui/pwa/InstallPWA";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import Script from "next/script";
@@ -5,6 +7,7 @@ import Script from "next/script";
 
 export const metadata = {
   title: "Enatega Multivendor",
+  manifest:"/manifest.json",
 };
 
 
@@ -15,8 +18,12 @@ export default async function RootLayout({
 }) {
   const locale = await getLocale();
 
+ 
   // Providing all messages to the client
   // side is the easiest way to get started
+
+  
+  
   const messages = await getMessages({ locale });
 
   return (
@@ -30,7 +37,9 @@ export default async function RootLayout({
       </head>
       <body>
         <NextIntlClientProvider messages={messages}>
+          <FirebaseForegroundHandler/>
           {children}
+          <InstallPWA/>
         </NextIntlClientProvider>
       </body>
     </html>
