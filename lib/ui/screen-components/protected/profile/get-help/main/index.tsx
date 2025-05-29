@@ -188,7 +188,7 @@ export default function GetHelpMain() {
 
     return (
         <div className="w-full mx-auto">
-            <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
+            <div className="bg-white md:p-6 rounded-lg shadow-sm mb-6">
                 <div className="mb-6">
                     <TextComponent
                         text={`Hi ${userName} 👋`}

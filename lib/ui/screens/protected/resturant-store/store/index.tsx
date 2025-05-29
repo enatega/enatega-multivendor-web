@@ -74,7 +74,7 @@ export default function StoreDetailsScreen() {
   const [selectedSubCategory, setSelectedSubCategory] = useState("");
   const [isLiked, setIsLiked] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
-  const { CURRENCY_SYMBOL } = useConfig();
+  const { CURRENCY_SYMBOL, isMultiVendor } = useConfig();
   const [subCategoriesForCategories, setSubCategoriesForCategories] = useState<
     ICategoryDetailsResponse[]
   >([]);
@@ -630,6 +630,8 @@ export default function StoreDetailsScreen() {
           </div>
         )}
 
+        {
+          isMultiVendor &&
         <button
           onClick={handleFavoriteClick}
           disabled={addFavoriteLoading}
@@ -641,6 +643,7 @@ export default function StoreDetailsScreen() {
             <HeartSvg filled={isLiked} />
           )}
         </button>
+        }
       </div>
 
       {/* Restaurant Info */}

@@ -32,7 +32,6 @@ const Rider = () => {
       <WhyCardsList cards={cards}/>
       <hr  className='w-[30%] ml-12 border-4 border-green-400 my-12 rounded'/>
       <EmailForm heading={"Become a Rider "} role={"Driver Registration"}/>
-    
     </div>
   )
 }

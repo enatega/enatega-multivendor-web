@@ -26,6 +26,7 @@ const useSingleRestaurant = () => {
     restaurant,
     restaurantId: restaurant?._id || "",
     restaurantSlug: restaurant?.slug || "",
+    shopType: restaurant?.shopType || "restaurant",
     loading,
     error,
     isMultiVendor: IS_MULTIVENDOR,

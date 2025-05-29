@@ -73,7 +73,7 @@ export default function RestaurantDetailsScreen() {
         useState<any>(null);
     const [isLiked, setIsLiked] = useState(false);
     const [showConfetti, setShowConfetti] = useState(false);
-    const { CURRENCY_SYMBOL } = useConfig();
+    const { CURRENCY_SYMBOL, isMultiVendor } = useConfig();
     const [isModalOpen, setIsModalOpen] = useState({ value: false, id: "" });
 
     // Get user profile from context
@@ -561,6 +561,8 @@ export default function RestaurantDetailsScreen() {
                         </div>
                     </div>
                 )}
+                {
+                    isMultiVendor &&
                 <button
                     disabled={addFavoriteLoading}
                     onClick={handleFavoriteClick}
@@ -572,6 +574,7 @@ export default function RestaurantDetailsScreen() {
                         <HeartSvg filled={isLiked} />
                     )}
                 </button>
+                }
             </div>
             {/* Restaurant Info */}
             <div className="bg-gray-50 shadow-[0px_1px_3px_rgba(0,0,0,0.1)] p-3 h-[80px] flex justify-between items-center">

@@ -56,7 +56,7 @@ const MoveableCard: React.FC<MoveableProps> = ({
             <h1 className=" text-white text-2xl md:3xl lg:text-4xl font-extrabold mb-3">
               {heading}
             </h1>
-            <p className="text-white text-md text-lg ">{subText}</p>
+            <p className="text-white text-lg md:text-2xl lg:text-3xl ">{subText}</p>
           </div>
           <div className="relative z-50">{button && button}</div>
         </div>
@@ -66,14 +66,14 @@ const MoveableCard: React.FC<MoveableProps> = ({
             className={`absolute inset-0 flex items-center justify-center  flex-col p-5  ${styles.textContainer}`}
           >
             <div className="w-[80%] md:w-[40%]  ">
-              <h1 className="text-white text-2xl font-bold mb-3 text-center">
+              <h1 className="text-white text-2xl font-bold  text-center ">
                 {heading}
               </h1>
-              <p className="text-white md:text-5xl text-4xl font-extrabold text-center">
+              <p className="text-white text-2xl md:text-3xl lg:text-4xl font-bold text-center">
                 {subText}
               </p>
             </div>
-            <div className="my-3">{button && button}</div>
+            <div className="my-4">{button && button}</div>
           </div>
         </div>
       )}
