@@ -9,7 +9,7 @@ import {
 import { ISeverityStyles } from "../interfaces/toast.interface";
 
 
-export const ENV: "DEV" | "STAGE" | "PROD" = "PROD";
+export const ENV: "DEV" | "STAGE" | "PROD" = "STAGE";
 
 
 // Prices
