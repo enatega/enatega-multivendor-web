@@ -68,6 +68,7 @@ export const ConfigurationProvider = ({
         COST_TYPE,
         TEST_OTP,
         SERVER_URL,
+        isMultiVendor: IS_MULTIVENDOR,
       }}
     >
       {children}

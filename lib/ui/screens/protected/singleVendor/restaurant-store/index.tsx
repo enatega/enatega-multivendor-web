@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Dialog } from "primereact/dialog";
-import { FoodItems, PopularItems, CategoryItems, CategoryCards } from "@/lib/ui/screen-components/protected/single-vendor";
+import { FoodItems, PopularItems, CategoryCards } from "@/lib/ui/screen-components/protected/single-vendor";
 import FoodItemDetail from "@/lib/ui/useable-components/item-detail";
 import useSingleRestaurantFoodData from "@/lib/hooks/useSingleRestaurantFoodData";
 import SingleVendorBannerSection from "@/lib/ui/screen-components/protected/single-vendor/banner-section";
@@ -59,9 +59,9 @@ export default function RestaurantSingleVendorScreen() {
         <div>
           <PopularItems onFoodClick={handleFoodClick} />
         </div>
-        <div>
+        {/* <div>
           <CategoryItems onFoodClick={handleFoodClick} />
-        </div>
+        </div> */}
         <div>
           <CategoryCards />
         </div>

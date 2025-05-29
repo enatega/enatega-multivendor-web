@@ -1,12 +1,15 @@
-import React from 'react'
+import { useAuth } from "@/lib/context/auth/auth.context";
+import React from "react";
 
+const LoginInForSavedAddresses = ({ handleModalToggle }) => {
+    const { authToken } = useAuth();
+    return (
+        <div>
+            <button className="underline" onClick={handleModalToggle}>
+                {!authToken ?  "Login for saved address" : "View saved addresses"}
+            </button>
+        </div>
+    );
+};
 
-const LoginInForSavedAddresses = ({handleModalToggle}) => {
-  return (
-    <div>
-      <button className="underline" onClick={handleModalToggle}>Login for saved address</button>
-    </div>
-  )
-}
-
-export default LoginInForSavedAddresses
+export default LoginInForSavedAddresses;

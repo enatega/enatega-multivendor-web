@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 const partnerWithEnatega = {
   title: "Partner with Enatega",
   links: [
+     { label: "Home", link: "/",internal:true },
     { label: "For Riders", link: "/rider",internal:true },
     { label: "For Restaurants", link: "/restaurantInfo" , internal:true },
   ],
@@ -36,7 +37,7 @@ const followUs = {
   title: "Follow us",
   links: [
     { label: "Blog", link: "https://ninjascode.com/blog",internal:false },
-    { label: "Instagram", link: "https://www.instagram.com/ninjascodeofficial/reel/DHdHAngsG6D/" , internal:false },
+    { label: "Instagram", link: "https://www.instagram.com/ninjascodeofficial?igsh=ajFoeGxud3FqYnd3" , internal:false },
     { label: "Facebook", link: "https://www.facebook.com/enatega/" , internal:false },
     { label: "LinkedIn", link: "https://www.linkedin.com/company/enatega/?originalSubdomain=pk", internal:false },
   ],

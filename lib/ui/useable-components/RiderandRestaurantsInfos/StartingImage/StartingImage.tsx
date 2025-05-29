@@ -10,9 +10,9 @@ import  Image  from 'next/image'
 
 const StartingImage:React.FC<StratingImageProps> = ({image}) => {
   return (
-    <div className='w-full h-[200px] md:h-[500px]'>
-      <Image src={image} alt={"banner Image"}  className='w-full h-full  object-cover md:object-contain' />
-    </div>
+    <div className='w-full h-[200px] md:h-[500px] flex justify-center'>
+    <Image src={image} alt={"banner Image"}  className='md:w-[70%] h-full object-cover object-bottom md:rounded-lg' />
+  </div>
   )
 }
 

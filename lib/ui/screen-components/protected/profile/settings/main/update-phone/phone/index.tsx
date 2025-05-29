@@ -34,13 +34,13 @@ const PhoneEntry = ({ handleChange, handleSubmit, user, handleUpdatePhoneModal }
       <div className="flex flex-row w-full justify-between mt-2 gap-2 md:gap-0">
         <CustomButton
           label={"Cancel"}
-          className="bg-[#5AC12F] text-white flex items-center justify-center rounded-full p-3 w-full md:w-[268px] mb-4 h-14 text-lg font-medium"
+          className="bg-white border border-gray-300 flex items-center justify-center rounded-full p-3 w-full md:w-[268px] mb-4 h-14 text-lg font-medium"
             onClick={handleUpdatePhoneModal}
         />
 
         <CustomButton
           label={"Save"}
-          className="bg-white flex items-center justify-center rounded-full border border-gray-300 p-3 w-full md:w-[268px] h-14 text-lg font-medium"
+          className="bg-[#5AC12F] text-white flex items-center justify-center rounded-full  p-3 w-full md:w-[268px] h-14 text-lg font-medium"
           onClick={handleSubmit}
         />
       </div>

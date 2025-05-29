@@ -7,10 +7,8 @@ import CuisinesSliderSkeleton from "@/lib/ui/useable-components/custom-skeletons
 import { useRouter } from "next/navigation";
 
 function CategoryCards() {
-  const { categories, loading, error, restaurant } = useSingleRestaurantFoodData();
-
+  const { categories, loading, error, restaurant, restaurantId, restaurantSlug, shopType} = useSingleRestaurantFoodData();
   const router = useRouter();
-
 
   if (loading) {
     return <CuisinesSliderSkeleton />;
@@ -38,8 +36,13 @@ function CategoryCards() {
   });
 
  const handleCategoryClick = (category) => {
+  // const restaurantId = onUseLocalStorage("get", "restaurant");
+  //
   console.log("Category clicked in CategoryCards:", category?._id, restaurant._id);
-    router.replace(`/categoryItemScreen/${category?._id}/${restaurant?._id}`);
+    // router.replace(`/categoryItemScreen/${category?._id}/${restaurant?._id}`);
+    router.replace(
+      `/${shopType === "grocery" ? "store" : shopType}/${restaurantSlug}/${restaurantId}`
+    );
   } 
 
   return (
