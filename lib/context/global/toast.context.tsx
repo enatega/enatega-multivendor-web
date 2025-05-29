@@ -32,12 +32,15 @@ export const ToastProvider: React.FC<IToastProviderProps> = ({ children }) => {
       contentStyle: {
         margin: 0,
         padding: 0,
+        
       },
+      
       content: (
         <CustomNotification
           type={config.type}
           title={config.title}
           message={config.message}
+        
         />
       ),
     });
@@ -50,7 +53,12 @@ export const ToastProvider: React.FC<IToastProviderProps> = ({ children }) => {
   return (
     <ToastContext.Provider value={value}>
       {children}
-      <Toast ref={toastRef} />
+      <Toast ref={toastRef}  className="
+        !fixed !top-5 !w-auto !ml-2 sm:!ml-0
+        sm:!left-1/2 sm:!-translate-x-1/2 
+        lg:!left-auto lg:!translate-x-0 lg:!right-5
+        z-[9999]
+" />
     </ToastContext.Provider>
   );
 };
