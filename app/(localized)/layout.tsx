@@ -29,6 +29,7 @@ import { LocationProvider } from "@/lib/context/Location/Location.context";
 import { UserAddressProvider } from "@/lib/context/address/address.context";
 import { SearchUIProvider } from "@/lib/context/search/search.context";
 import NotificationInitializer from "../NotificationInitialzer";
+import FirebaseForegroundHandler from "@/lib/config/FirebaseForegroundHandler";
 
 export default function RootLayout({
   children,
@@ -61,6 +62,7 @@ export default function RootLayout({
                         <SearchUIProvider>
                           <AppLayout>
                             <NotificationInitializer/>
+                            <FirebaseForegroundHandler/>
                             {children}
                             </AppLayout>
                         </SearchUIProvider>
