@@ -19,6 +19,12 @@ export const GET_CONFIG = gql`
       skipEmailVerification
       skipMobileVerification
       costType
+      firebaseKey
+      authDomain
+      projectId
+      storageBucket
+      msgSenderId
+      appId
     }
   }
 `;
