@@ -64,7 +64,7 @@ const MoveableCard: React.FC<MoveableProps> = ({
           <div
             className={`absolute inset-0 flex items-center justify-center  flex-col p-5  ${styles.textContainer}`}
           >
-            <div className="w-[80%] md:w-[40%]  ">
+            <div className="  ">
               <h1 className="text-white text-2xl font-bold mb-3 text-center">
                 {heading}
               </h1>
