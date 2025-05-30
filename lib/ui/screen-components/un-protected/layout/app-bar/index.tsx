@@ -63,7 +63,7 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
 
   // Hooks
   const router = useRouter();
-  const { GOOGLE_MAPS_KEY, CURRENCY_SYMBOL } = useConfig();
+  const { GOOGLE_MAPS_KEY, CURRENCY_SYMBOL,isMultiVendor } = useConfig();
   const {
     cartCount,
     calculateSubtotal,
@@ -153,9 +153,11 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
 
     // Logo click handler
    const logoClickHandler = () => {
-    if (isLogin){
+    if (isLogin && isMultiVendor ){
       router.push("/discovery");
-    }else {
+    }else if(!isMultiVendor){
+      router.push(`/`);
+    }else{
       router.push("/");
     }
    };
@@ -213,6 +215,8 @@ const AppTopbar = ({ handleModalToggle }: IAppBarProps) => {
           </div>
         );
       }
+
+  
 
       // Subcase: Display recent history
       return (

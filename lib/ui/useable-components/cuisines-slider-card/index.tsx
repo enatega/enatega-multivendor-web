@@ -162,13 +162,13 @@ const CuisinesSliderCard: React.FC<CuisinesSliderCardProps> = ({
       <div
         className=""
         style={{
-          width: data.length < 4 ? "max-content" : "100%",
+          width: data.length < 4 ? "auto" : "100%",
           minWidth: "300px",
         }}
       >
         <Carousel
           value={data}
-          className="w-[100%] h-[100%]"
+          className="w-full h-[100%] "
           itemTemplate={renderCardItem}
           numVisible={numVisible}
           numScroll={1}

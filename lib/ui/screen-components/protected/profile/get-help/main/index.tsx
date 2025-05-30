@@ -252,7 +252,7 @@ export default function GetHelpMain() {
                                 onClick={handleCloseModal}
                                 className="text-white hover:text-gray-300"
                             >
-                                <span className="sr-only">Close</span>✕
+                                {/* <span className="sr-only">Close</span>✕ */}
                             </button>
                         </div>
                     </div>

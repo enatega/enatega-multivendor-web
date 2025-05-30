@@ -115,6 +115,7 @@ const BannerRestaurantCard: React.FC<IBannerRestaurantCardProps> = ({ item, onFo
           objectFit="contain"
           style={{ borderRadius: 12 }}
           className="carousel-banner"
+          unoptimized
         />
       )}
       

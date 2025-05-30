@@ -125,6 +125,7 @@ const SliderCard = <T,>({
             />
 
             {/* Navigation Buttons */}
+            {data?.length > 4 && (
             <div className="gap-x-2 hidden md:flex">
               <button
                 className="w-8 h-8 flex items-center justify-center  shadow-md  rounded-full"
@@ -139,6 +140,7 @@ const SliderCard = <T,>({
                 <FontAwesomeIcon icon={faAngleRight} />
               </button>
             </div>
+            )}
           </div>
         </div>
 

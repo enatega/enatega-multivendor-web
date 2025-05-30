@@ -159,7 +159,7 @@ export default function AuthModal({
       className={
         activePanel == 6 || activePanel == 3 || activePanel == 4 ?
           "lg:w-1/2 w-full h-auto"
-        : "lg:w-1/3 w-full max-w-[400px] h-auto"
+        : "lg:w-1/3 w-full max-w-[400px] h-auto mx-4"
       }
       closeOnEscape={activePanel <= 3}
       showHeader={false}

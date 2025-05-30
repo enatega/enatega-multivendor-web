@@ -9,9 +9,11 @@ import CardSkeletonGrid from "@/lib/ui/useable-components/card-skelton-grid";
 import HeaderSingleVendorFavourite from "../header";
 import FavoritesEmptyState from "@/lib/ui/useable-components/favorites-empty-state";
 import useDebounceFunction from "@/lib/hooks/useDebounceForFunction";
+import { useConfig } from "@/lib/context/configuration/configuration.context";
 
 const FavouriteSingleVendorProducts = () => {
   const router = useRouter();
+  const {isMultiVendor} = useConfig()
 
   // Fetch favorite food items
   const {
@@ -21,9 +23,14 @@ const FavouriteSingleVendorProducts = () => {
     fetchPolicy: "network-only",
   });
 
+
   // Navigate to see all favorites
   const handleSeeAllClick = useDebounceFunction(() => {
-    router.push("/see-all/favorite-foods");
+    if(!isMultiVendor){
+      router.push("/seeAllFavorite")
+    }else {
+      router.push("/see-all/favorite-foods");
+    }
   }, 500);
 
   function handleFoodClick(): void {
