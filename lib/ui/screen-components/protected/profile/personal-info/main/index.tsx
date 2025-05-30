@@ -67,7 +67,7 @@ export default function PersonalInfoMain() {
               title="Update phone number"
               className=" text-blue-700 font-normal text-sm md:text-base cursor-pointer"
             >           
-              { "N/A"}
+              {profileData?.profile?.phone ||  "N/A"}
             </h1>
           </div>
         </div>
