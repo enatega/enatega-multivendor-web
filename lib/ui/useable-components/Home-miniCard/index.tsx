@@ -15,7 +15,7 @@ const HomeMiniCard:React.FC<HomeMiniCardProps> = ({image,heading,subText,heading
       height={200}
       alt="Image"
       />
-      <div className='text-center w-[80%] my-[30px] '>
+      <div className='text-center my-[30px] '>
         <h1 className="font-extrabold text-[25px] my-2 "
         style={{color:headingColor}}
         
