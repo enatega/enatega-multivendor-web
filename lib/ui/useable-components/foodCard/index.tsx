@@ -91,7 +91,7 @@ const FoodCard = ({
 
   return (
     <div
-      className={`relative rounded-md shadow-md ${item?.isAvailable ? "cursor-pointer hover:scale-102 hover:opacity-95" : "cursor-not-allowed opacity-80"} transition-transform duration-500 max-h-[272px] w-[96%] ml-[2%] ${pathname === "/restaurants" || pathname === "/store" ? "my-[2%]" : ""}`}
+      className={`relative rounded-md shadow-md ${item?.isAvailable ? "cursor-pointer hover:scale-102 hover:opacity-95" : "cursor-not-allowed opacity-80"} transition-transform duration-500 max-h-[272px] w-[96%] ml-[2%] ${pathname === "/restaurants" || pathname === "/store" ? "my-[2%]" : "my-1"}`}
       onClick={() => {
         if (!item?.isAvailable) {
           handleUpdateIsModalOpen(true, item._id);
