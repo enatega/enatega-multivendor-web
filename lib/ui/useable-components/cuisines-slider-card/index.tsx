@@ -130,7 +130,7 @@ const CuisinesSliderCard: React.FC<CuisinesSliderCardProps> = ({
   return (
     <div className={`${last && "mb-20"}`}>
       <div className="flex justify-between mx-[6px]">
-        <span className="mb-4 font-inter font-bold text-xl sm:text-2xl leading-8 tracking-normal text-gray-900">
+        <span className="mb-1 font-inter font-bold text-xl sm:text-2xl leading-8 tracking-normal text-gray-900">
           {title}
         </span>
         <div className="flex items-center justify-end gap-x-2 mb-2">
