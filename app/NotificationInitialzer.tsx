@@ -15,6 +15,9 @@ export default function NotificationInitializer() {
   const [saveNotify] = useMutation(saveNotificationTokenWeb);
   const [mutatePrefs] = useMutation(updateNotificationStatus);
 
+
+  console.log("I am executing")
+
   const {
     FIREBASE_KEY,
     FIREBASE_AUTH_DOMAIN,
@@ -25,19 +28,8 @@ export default function NotificationInitializer() {
     FIREBASE_VAPID_KEY,
   } = useConfig();
 
-  useEffect(() => {
-    // Wait until all Firebase config keys are available
-    const isFirebaseConfigReady =
-      FIREBASE_KEY &&
-      FIREBASE_AUTH_DOMAIN &&
-      FIREBASE_PROJECT_ID &&
-      FIREBASE_MSG_SENDER_ID &&
-      FIREBASE_APP_ID &&
-      FIREBASE_STORAGE_BUCKET &&
-      FIREBASE_VAPID_KEY;
-
-    if (!isFirebaseConfigReady) return;
-
+  useEffect( () => {
+   
     const firebaseConfig = {
       apiKey: FIREBASE_KEY,
       authDomain: FIREBASE_AUTH_DOMAIN,
@@ -47,12 +39,10 @@ export default function NotificationInitializer() {
       appId: FIREBASE_APP_ID,
     };
 
-    console.log("firebase config ,", firebaseConfig)
-
     const initNotifications = async () => {
       const localToken = localStorage.getItem("token");
       const userId = localStorage.getItem("userId");
-
+    
       if (
         Notification.permission === "default" &&
         localToken &&
@@ -60,8 +50,8 @@ export default function NotificationInitializer() {
       ) {
         const permission = await Notification.requestPermission();
 
-        if (permission === "granted") {
-          // Update user notification preferences
+
+        if (permission == "granted") {
           await mutatePrefs({
             variables: {
               orderNotification: true,
@@ -76,7 +66,7 @@ export default function NotificationInitializer() {
             vapidKey: FIREBASE_VAPID_KEY,
             serviceWorkerRegistration: registration,
           });
-
+          
           if (fcmToken) {
             await saveNotify({ variables: { token: fcmToken } });
           } else {

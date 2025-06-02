@@ -8,16 +8,15 @@ export default function InstallPWA() {
   const [showPrompt, setShowPrompt] = useState(false);
 
   useEffect(() => {
-    // Listen for beforeinstallprompt event
     const handler = (e: Event) => {
-      e.preventDefault(); // Prevent auto prompt
+      e.preventDefault();
       setDeferredPrompt(e);
-      setShowPrompt(true); // Show our custom button
+      setShowPrompt(true);
     };
 
     const installedHandler = () => {
       setIsInstalled(true);
-      setShowPrompt(false); // Hide if already installed
+      setShowPrompt(false);
     };
 
     window.addEventListener('beforeinstallprompt', handler);
@@ -31,28 +30,34 @@ export default function InstallPWA() {
 
   const handleInstallClick = async () => {
     if (deferredPrompt && 'prompt' in deferredPrompt) {
-      // @ts-ignore: because Event type doesn't include prompt
+      // @ts-ignore
       deferredPrompt.prompt();
       // @ts-ignore
       const { outcome } = await deferredPrompt.userChoice;
       if (outcome === 'accepted') {
-        console.log('User accepted the install prompt');
         setShowPrompt(false);
-      } else {
-        console.log('User dismissed the install prompt');
-      }
+      } 
       setDeferredPrompt(null);
     }
+  };
+
+  const handleCloseClick = () => {
+    setShowPrompt(false);
   };
 
   if (isInstalled || !showPrompt) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 bg-white shadow-lg border px-4 py-2 rounded-md z-50">
-      <p className="mb-2 text-sm font-medium">Install this app for a better experience!</p>
+    <div className="fixed bottom-4 right-4 bg-white shadow-lg border px-4 py-2 rounded-md z-50 max-w-xs w-full">
+      <div className="flex justify-between items-center">
+        <p className="text-sm font-medium">Install this app for a better experience!</p>
+        <button onClick={handleCloseClick} className="ml-2 text-gray-500 hover:text-gray-700 text-xl leading-none">
+          &times;
+        </button>
+      </div>
       <button
         onClick={handleInstallClick}
-        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+        className="mt-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition w-full"
       >
         Install App
       </button>
