@@ -42,6 +42,8 @@ messaging.onBackgroundMessage((payload) => {
   self.registration.showNotification(notificationTitle, notificationOptions);
 });
 
+precacheAndRoute(self.__WB_MANIFEST);
+
 self.addEventListener("notificationclick", function (event) {
   event.notification.close();
 
