@@ -1,5 +1,6 @@
 {
     "name": "Enatega MultiVendor",
+    "id":"/",
     "short_name": "Enatega",
     "description": "A Progressive Web App built with Next.js",
     "start_url": "/",
@@ -7,6 +8,9 @@
     "theme_color": "#94e469",
     "display": "standalone",
     "orientation": "portrait",
+    "categories": ["shopping", "food", "delivery"],
+    "dir": "ltr",
+    "lang": "en",
     "icons":[
         {
             "src": "/512.png",
