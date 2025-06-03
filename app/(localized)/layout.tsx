@@ -92,6 +92,7 @@ export default function RootLayout({
           .register("/sw.js")
           .then((registration) => {
             console.log("✅ Service Worker registered:", registration.scope);
+            return registration.update()
           })
           .catch((error) => {
             console.error("❌ SW registration failed:", error);
