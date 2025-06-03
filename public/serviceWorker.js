@@ -12,6 +12,7 @@ import { NetworkFirst, StaleWhileRevalidate } from 'workbox-strategies';
 // import { BackgroundSyncPlugin } from 'workbox-background-sync';
 import { ExpirationPlugin } from 'workbox-expiration';
 
+
 // ✅ Firebase Config
 firebase.initializeApp({
   apiKey: "AIzaSyDx_iSQ9LroTF7NMm20aRvw2wJqhwSnJ3U",
@@ -42,7 +43,11 @@ messaging.onBackgroundMessage((payload) => {
   self.registration.showNotification(notificationTitle, notificationOptions);
 });
 
-precacheAndRoute(self.__WB_MANIFEST);
+precacheAndRoute([
+  { url: '/', revision: 'v1' },
+  { url: '/offline.html', revision: 'v1' }
+  // add more pages here if needed
+]);
 
 self.addEventListener("notificationclick", function (event) {
   event.notification.close();
@@ -119,4 +124,19 @@ registerRoute(
     ],
   })
 );
+
+
+registerRoute(
+  ({ url }) => url.origin === self.location.origin && url.pathname.startsWith('/'),
+  new NetworkFirst({
+    cacheName: 'pages-cache',
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 20,
+        maxAgeSeconds: 24 * 60 * 60, // 1 day
+      }),
+    ],
+  })
+);
+
 

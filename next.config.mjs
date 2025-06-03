@@ -5,6 +5,9 @@ const withPWA = PWA({
     dest: 'public',
     register: true,
     skipWaiting: true,
+    fallbacks: {
+      document: '/offline.html',
+    },
     // disable: process.env.NODE_ENV === 'development',
     swSrc: 'public/serviceWorker.js', // Or service-worker.ts if using TS & custom build process
     buildExcludes: [
@@ -12,6 +15,7 @@ const withPWA = PWA({
       /middleware-manifest\.json$/,     // (often fails too)
     ],
     scope: '/',
+    
   }
 );
 
