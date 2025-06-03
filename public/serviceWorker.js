@@ -42,10 +42,10 @@ messaging.onBackgroundMessage((payload) => {
 
 precacheAndRoute(self.__WB_MANIFEST);
 
-precacheAndRoute([
-  { url: '/', revision: 'v1' },
-  { url: '/offline.html', revision: 'v1' }
-]);
+// precacheAndRoute([
+//   { url: '/', revision: 'v1' },
+//   { url: '/offline.html', revision: 'v1' }
+// ]);
 
 self.addEventListener("notificationclick", function (event) {
   event.notification.close();
@@ -121,3 +121,25 @@ registerRoute(
 );
 
 
+// self.addEventListener('install', (event) => {
+//   console.log('[Service Worker] Installing...');
+
+//   console.log("[Service Worker] Installing...');",event)
+//   event.waitUntil(
+//     (async () => {
+//       console.log("hereee i am ")
+//       self.skipWaiting(); // Forces the waiting SW to become active
+//     })()
+//   );
+// });
+
+// self.addEventListener('activate', (event) => {
+//   console.log('[Service Worker] Activating...');
+//   event.waitUntil(
+//     (async () => {
+
+//       console.log("here in activation ")
+//       await self.clients.claim(); // Take control of open pages
+//     })()
+//   );
+// });
