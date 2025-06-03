@@ -43,7 +43,7 @@ messaging.onBackgroundMessage((payload) => {
   self.registration.showNotification(notificationTitle, notificationOptions);
 });
 
-precacheAndRoute(self.__WB_MANIFEST);
+// precacheAndRoute(self.__WB_MANIFEST);
 
 precacheAndRoute([
   { url: '/', revision: 'v1' },
@@ -72,8 +72,6 @@ self.addEventListener("notificationclick", function (event) {
   }
 })
 
-// ✅ Precache using Workbox
-// precacheAndRoute(self.__WB_MANIFEST);
 
 //✅ Background Sync for GraphQL mutations
 // const bgSyncPlugin = new BackgroundSyncPlugin('graphql-mutations-queue', {
