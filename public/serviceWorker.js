@@ -48,7 +48,6 @@ precacheAndRoute(self.__WB_MANIFEST);
 precacheAndRoute([
   { url: '/', revision: 'v1' },
   { url: '/offline.html', revision: 'v1' }
-  // add more pages here if needed
 ]);
 
 self.addEventListener("notificationclick", function (event) {

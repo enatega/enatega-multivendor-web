@@ -2,14 +2,13 @@ import createNextIntlPlugin from "next-intl/plugin";
 import PWA from 'next-pwa';
 
 const withPWA = PWA({
-    dest: 'public',
     register: true,
     skipWaiting: true,
     fallbacks: {
-      document: '/offline.html',
+      document: 'public/offline.html',
     },
     // disable: process.env.NODE_ENV === 'development',
-    swSrc: 'serviceWorker.js', // Or service-worker.ts if using TS & custom build process
+    swSrc: 'public/serviceWorker.js', // Or service-worker.ts if using TS & custom build process
     buildExcludes: [
       /app-build-manifest\.json$/,
       /middleware-manifest\.json$/,     // (often fails too)
