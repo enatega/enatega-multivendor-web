@@ -43,19 +43,44 @@ export default function RootLayout({
   const value = {
     ripple: true,
   };
+
+  //  useEffect(()=>{
+  //  if ("serviceWorker" in navigator) {
+  //   window.addEventListener("load", () => {
+  //     navigator.serviceWorker
+  //       .register("/sw.js")
+  //       .then((registration) => {
+  //         console.log("Service Worker registered with scope:", registration.scope);
+  //       })
+  //       .catch((error) => {
+  //         console.error("Service Worker registration failed:", error);
+  //       });
+  //   });
+  // }
+  //  },[])
    
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-      navigator.serviceWorker
-        .register("/sw.js")
-        .then((registration) => {
-          console.log("Service Worker registered with scope:", registration.scope);
-        })
-        .catch((error) => {
-          console.error("Service Worker registration failed:", error);
-        });
-    });
-  }
+  // useEffect(() => {
+  //   if ("serviceWorker" in navigator) {
+  //     navigator.serviceWorker
+  //       .getRegistration("/sw.js")
+  //       .then((existingReg) => {
+  //         if (!existingReg) {
+  //           navigator.serviceWorker
+  //             .register("/sw.js")
+  //             .then((registration) => {
+  //               console.log("✅ SW registered with scope:", registration.scope);
+  //             })
+  //             .catch((error) => {
+  //               console.error("❌ SW registration failed:", error);
+  //             });
+  //         } else {
+  //           console.log("ℹ️ SW already registered:", existingReg.scope);
+  //         }
+  //       });
+  //   }
+  // }, []); // ✅ Runs only once on mount
+  
+  
 
   return (
     <html lang="en">

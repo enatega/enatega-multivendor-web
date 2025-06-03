@@ -8,6 +8,7 @@ const Home = dynamic(
 
 export default function RootPage() {
 
+
   // if ('serviceWorker' in navigator) {
   //   window.addEventListener('load', () => {
   //     navigator.serviceWorker.register('/sw.js')

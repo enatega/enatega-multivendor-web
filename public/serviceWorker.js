@@ -9,7 +9,6 @@ importScripts("https://www.gstatic.com/firebasejs/10.3.1/firebase-messaging-comp
 import { precacheAndRoute } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
 import { NetworkFirst, StaleWhileRevalidate } from 'workbox-strategies';
-// import { BackgroundSyncPlugin } from 'workbox-background-sync';
 import { ExpirationPlugin } from 'workbox-expiration';
 
 
@@ -26,8 +25,6 @@ firebase.initializeApp({
 
 // ✅ Get messaging instance
 const messaging = firebase.messaging();
-
-console.log("messaging asdsa : ", messaging)
 
 // ✅ Handle background messages
 messaging.onBackgroundMessage((payload) => {
@@ -72,11 +69,6 @@ self.addEventListener("notificationclick", function (event) {
 })
 
 
-//✅ Background Sync for GraphQL mutations
-// const bgSyncPlugin = new BackgroundSyncPlugin('graphql-mutations-queue', {
-//   maxRetentionTime: 24 * 60, // 24 hours
-// });
-
 // ✅ Cache GraphQL Queries
 registerRoute(
   ({ url, request }) =>
@@ -92,16 +84,6 @@ registerRoute(
     ],
   }),
 );
-
-//✅ Background Sync for Mutations
-// registerRoute(
-//   ({ url, request }) =>
-//     url.pathname.startsWith('/graphql') && request.method === 'POST',
-//   new NetworkFirst({
-//     plugins: [bgSyncPlugin],
-//   }),
-//   'POST'
-// );
 
 // ✅ Cache static resources
 registerRoute(
