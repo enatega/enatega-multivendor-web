@@ -9,7 +9,7 @@ const withPWA = PWA({
       document: '/offline.html',
     },
     // disable: process.env.NODE_ENV === 'development',
-    swSrc: 'public/serviceWorker.js', // Or service-worker.ts if using TS & custom build process
+    swSrc: 'serviceWorker.js', // Or service-worker.ts if using TS & custom build process
     buildExcludes: [
       /app-build-manifest\.json$/,
       /middleware-manifest\.json$/,     // (often fails too)
