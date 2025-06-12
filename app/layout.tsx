@@ -33,6 +33,19 @@ export default async function RootLayout({
           src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"
           strategy="beforeInteractive"
         />
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#94e469" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+
+        {/* Apple splash screen for specific device */}
+        <link
+          rel="apple-touch-startup-image"
+          href="/splash-screen.png"
+          media="(device-width: 390px) and (device-height: 844px)
+          and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+        />
+        {/* Add more media queries for other device sizes if needed */}
       </head>
       <body>
         <NextIntlClientProvider messages={messages}>
